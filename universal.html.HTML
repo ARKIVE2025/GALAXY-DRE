@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Project Investment Calculator | Premium Web Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: #0a0a0a;
+            color: #f5f5f0;
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #d4af37, transparent);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #f4d03f, transparent);
+            bottom: -250px;
+            right: -250px;
+            animation-delay: 7s;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #d4af37, transparent);
+            top: 50%;
+            left: 50%;
+            animation-delay: 14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -100px) scale(1.1); }
+            50% { transform: translate(-50px, 100px) scale(0.9); }
+            75% { transform: translate(-100px, -50px) scale(1.05); }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #d4af37;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particle-float 15s infinite linear;
+        }
+
+        @keyframes particle-float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+
+        .container-main {
+            position: relative;
+            z-index: 1;
+        }
+
+        .serif { font-family: 'Cormorant Garamond', serif; }
+        
+        .gold-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #f9e29d 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .gold-accent { color: #d4af37; }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #000;
+            font-weight: 700;
+            letter-spacing: 2px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 25px rgba(212, 175, 55, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-gold:hover::before { left: 100%; }
+        
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 35px rgba(212, 175, 55, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 30, 30, 0.8);
+            color: #d4af37;
+            border: 2px solid #d4af37;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .luxury-card {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.97) 0%, rgba(30, 25, 20, 0.97) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+            margin: 2.5rem 0;
+        }
+
+        .option-card {
+            background: rgba(15, 15, 15, 0.7);
+            border: 1px solid rgba(100, 100, 100, 0.3);
+            border-radius: 0.875rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option-card:hover {
+            background: rgba(25, 25, 25, 0.9);
+            border-color: rgba(212, 175, 55, 0.6);
+            transform: translateX(6px);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .option-card input[type="checkbox"]:checked ~ .option-content {
+            color: #d4af37;
+        }
+
+        select, input[type="text"], input[type="email"], input[type="number"] {
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid rgba(120, 120, 120, 0.4);
+            color: #f5f5f0;
+            border-radius: 0.625rem;
+            padding: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+        }
+
+        select:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12);
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: #f5f5f0;
+            padding: 0.5rem;
+        }
+
+        .checkbox-luxury {
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.25s;
+            flex-shrink: 0;
+        }
+
+        .checkbox-luxury:checked {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .checkbox-luxury:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .radio-luxury {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .radio-luxury:checked {
+            border-color: #d4af37;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+        }
+
+        .radio-luxury:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.625rem;
+            height: 0.625rem;
+            background: #d4af37;
+            border-radius: 50%;
+        }
+
+        .price-badge {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            padding: 0.375rem 1rem;
+            border-radius: 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .result-section {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(212, 175, 55, 0.03) 100%);
+            border: 2px solid #d4af37;
+            border-radius: 1.25rem;
+            padding: 2.5rem;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .price-display {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .label-text {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .info-tooltip {
+            display: inline-block;
+            width: 1.125rem;
+            height: 1.125rem;
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 0.75rem;
+            line-height: 1.125rem;
+            cursor: help;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+
+        .info-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.98);
+            border: 1px solid #d4af37;
+            color: #f5f5f0;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            width: 250px;
+            font-size: 0.75rem;
+            letter-spacing: normal;
+            text-transform: none;
+            font-weight: 400;
+            line-height: 1.4;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .info-tooltip:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #d4af37;
+            z-index: 1001;
+        }
+
+        .maintenance-box {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            margin-top: 1rem;
+        }
+
+        .info-text {
+            color: rgba(245, 245, 240, 0.65);
+            font-size: 0.875rem;
+            line-height: 1.7;
+            margin-top: 0.5rem;
+        }
+
+        .category-header {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+            border-left: 3px solid #d4af37;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .highlight-box {
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px dashed rgba(212, 175, 55, 0.4);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .luxury-card { padding: 2rem 1.5rem; }
+            .price-display { font-size: 2.75rem; }
+            body { padding: 1rem; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        input[type="text"]::placeholder,
+        input[type="email"]::placeholder {
+            color: rgba(245, 245, 240, 0.3);
+        }
+
+        .grid-custom {
+            display: grid;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-custom {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="container-main min-h-screen flex items-center justify-center p-4 py-12">
+        <div class="max-w-4xl w-full">
+            
+            <!-- Header -->
+            <header class="text-center mb-12 fade-in">
+                <h1 class="serif text-5xl md:text-7xl font-bold mb-4 leading-tight">
+                    Build Your <span class="gold-gradient">Digital Legacy</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                    Professional web solutions tailored to your vision. Calculate your investment with complete transparency.
+                </p>
+            </header>
+
+            <!-- Main Card -->
+            <div class="luxury-card fade-in">
+                <form action="https://formspree.io/f/mjgrrlkz" method="POST" id="calcForm">
+                    
+                    <!-- Hidden Fields for Form Submission -->
+                    <input type="hidden" name="Total Project Investment" id="hiddenTotal">
+                    <input type="hidden" name="Monthly Maintenance Cost" id="hiddenMonthly">
+                    <input type="hidden" name="Selected Features" id="hiddenFeatures">
+
+                    <!-- Section 1: Contact Info -->
+                    <div class="mb-10">
+                        <label class="label-text">1. Your Information</label>
+                        <div class="grid-custom">
+                            <input type="text" name="Full Name" placeholder="Full Name" required>
+                            <input type="email" name="Email Address" placeholder="Email Address" required>
+                            <input type="text" name="Phone Number" placeholder="Phone Number (Optional)" class="md:col-span-2">
+                            <input type="text" name="Organization Name" placeholder="Business / Organization Name" required class="md:col-span-2">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 2: Website Foundation -->
+                    <div class="mb-10">
+                        <label class="label-text">
+                            2. Website Foundation & Scale
+                            <span class="info-tooltip" data-tooltip="This determines your site's size, complexity, and base features. Larger sites include more pages, advanced navigation, and robust infrastructure.">?</span>
+                        </label>
+                        <select id="size" name="Website Foundation">
+                            <option value="500">Quick Launch (1-2 pages) - Perfect for simple landing pages</option>
+                            <option value="1000">Professional Start (3-5 pages) - About, Services, Contact</option>
+                            <option value="1800">Business Standard (6-10 pages) - Full featured website</option>
+                            <option value="2800">Premium Solution (11-20 pages) - Complex site with integrations</option>
+                            <option value="3500">Enterprise Portal (21+ pages) - Multi-section custom platform</option>
+                        </select>
+                        <p class="info-text">Your foundation includes responsive design, mobile optimization, contact forms, and Google Maps integration.</p>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 3: E-Commerce & Transactions -->
+                    <div class="mb-10">
+                        <div class="category-header">
+                            <h3 class="font-bold text-lg gold-accent">E-Commerce & Payment Solutions</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Full E-Commerce Store" value="800" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Full E-Commerce Store</div>
+                                        <span class="price-badge">+$800</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Complete online store with product catalog, shopping cart, inventory management, and payment processing (Stripe/PayPal).</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Simple Payment Integration" value="350" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Simple Payment Integration</div>
+                                        <span class="price-badge">+$350</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Accept donations, payments, or orders without full store functionality. Ideal for services, tithes, or simple product sales.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Subscription Management" value="600" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Subscription & Membership System</div>
+                                        <span class="price-badge">+$600</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Recurring payments, member tiers, exclusive content access, and automated billing.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 4: Booking & Scheduling -->
+                    <div class="mb-10">
+                        <div class="category-header">
+                            <h3 class="font-bold text-lg gold-accent">Booking, Reservations & Scheduling</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Appointment Booking" value="450" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Appointment Booking System</div>
+                                        <span class="price-badge">+$450</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Let clients schedule appointments online with calendar sync, automated reminders, and staff management.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Table Reservations" value="400" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Restaurant Table Reservations</div>
+                                        <span class="price-badge">+$400</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Real-time table availability, reservation management, and customer notification system for restaurants.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Event Calendar" value="250" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Interactive Event Calendar</div>
+                                        <span class="price-badge">+$250</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Display upcoming events with RSVP, ticket sales, and Google Calendar integration.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 5: Content & Media -->
+                    <div class="mb-10">
+                        <div class="category-header">
+                            <h3 class="font-bold text-lg gold-accent">Content & Media Management</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Blog Platform" value="300" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Professional Blog Platform</div>
+                                        <span class="price-badge">+$300</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Full-featured blog with categories, tags, author profiles, and comment system.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Media Library" value="400" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Media Library & Archive</div>
+                                        <span class="price-badge">+$400</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Upload and organize videos, podcasts, sermons, or training materials with search and filtering.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Photo Gallery" value="200" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Photo Gallery & Portfolios</div>
+                                        <span class="price-badge">+$200</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Showcase your work, events, or projects with beautiful lightbox galleries.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Digital Menu" value="250" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Digital Menu / Product Catalog</div>
+                                        <span class="price-badge">+$250</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Display your menu, services, or product listings with prices, descriptions, and filtering options.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 6: Advanced Features -->
+                    <div class="mb-10">
+                        <div class="category-header">
+                            <h3 class="font-bold text-lg gold-accent">Advanced Features & Integrations</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Member Portal" value="500" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Member Portal & Login System</div>
+                                        <span class="price-badge">+$500</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Secure area for members with profiles, exclusive content, and personalized dashboards.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Live Streaming" value="500" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Live Stream Integration</div>
+                                        <span class="price-badge">+$500</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Embed live broadcasts from YouTube, Facebook, Vimeo, or custom streaming platforms.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Custom Forms" value="300" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Custom Form Builder</div>
+                                        <span class="price-badge">+$300</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Create unlimited custom forms for applications, surveys, feedback, registrations, and more.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Email Marketing" value="350" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Email Marketing & Newsletters</div>
+                                        <span class="price-badge">+$350</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Build email lists, create campaigns, and track engagement with Mailchimp or similar integration.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Multi-Language" value="400" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Multi-Language Support</div>
+                                        <span class="price-badge">+$400</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Translate your entire website into multiple languages with easy language switching.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: SEO Package" value="300" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Advanced SEO Package</div>
+                                        <span class="price-badge">+$300</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Comprehensive search optimization, analytics setup, and local business listings.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Social Integration" value="200" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Social Media Integration</div>
+                                        <span class="price-badge">+$200</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Embed Instagram feeds, Facebook pages, and social sharing capabilities throughout your site.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Custom Database" value="700" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Custom Database & CRM</div>
+                                        <span class="price-badge">+$700</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Track customers, leads, members, or inventory with a custom-built database system.</p>
+                                </div>
+                            </label>
+
+                            <label class="option-card flex items-start gap-4">
+                                <input type="checkbox" name="Feature: Mobile App" value="600" class="checkbox-luxury mt-1" data-monthly="0">
+                                <div class="option-content flex-1">
+                                    <div class="flex items-start justify-between mb-1">
+                                        <div class="font-semibold text-base">Mobile App Companion</div>
+                                        <span class="price-badge">+$600</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">Connect your website to a mobile app (iOS/Android) for enhanced engagement and notifications.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 7: Content Creation -->
+                    <div class="mb-10">
+                        <label class="label-text">
+                            3. Professional Content Creation
+                            <span class="info-tooltip" data-tooltip="Professional copywriting ensures your message connects with visitors. We craft compelling text that reflects your brand voice and drives action.">?</span>
+                        </label>
+                        <select id="copy" name="Content Creation Service">
+                            <option value="0">We'll provide all text and images</option>
+                            <option value="400">Basic Copywriting (Up to 5 pages of content)</option>
+                            <option value="700">Standard Package (6-12 pages + SEO optimization)</option>
+                            <option value="1000">Premium Content (13+ pages + professional photography coordination)</option>
+                        </select>
+                        <p class="info-text">Professional content helps you stand out and communicate your value clearly to visitors.</p>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Section 8: Monthly Maintenance -->
+                    <div class="mb-10">
+                        <label class="label-text">
+                            4. Ongoing Monthly Maintenance (Optional)
+                            <span class="info-tooltip" data-tooltip="Monthly maintenance keeps your site fresh and functional. Choose based on how frequently you need updates and what type of changes you'll require.">?</span>
+                        </label>
+                        
+                        <div class="maintenance-box">
+                            <label class="flex items-start gap-3 cursor-pointer mb-6">
+                                <input type="checkbox" id="maintenanceToggle" class="checkbox-luxury mt-1">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-lg mb-2">I need ongoing monthly support</div>
+                                    <p class="info-text">Select this if you anticipate needing regular updates to your website each month.</p>
+                                </div>
+                            </label>
+                            
+                            <div id="maintenanceOptions" class="hidden space-y-4">
+                                <div class="highlight-box">
+                                    <h4 class="font-bold text-sm uppercase tracking-wide gold-accent mb-3">Choose Your Support Level:</h4>
+                                    
+                                    <label class="flex items-start gap-3 cursor-pointer mb-4 p-3 rounded-lg hover:bg-black hover:bg-opacity-30 transition">
+                                        <input type="radio" name="Monthly Maintenance Type" value="50" checked class="radio-luxury mt-1">
+                                        <div class="flex-1">
+                                            <div class="font-semibold text-base mb-1">Text & Content Updates Only</div>
+                                            <p class="text-sm text-gray-400 leading-relaxed mb-2">Perfect for: Updating text, changing photos, modifying event dates, editing contact information, or adjusting existing content.</p>
+                                            <div class="gold-accent font-bold text-lg">$50/month</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-black hover:bg-opacity-30 transition">
+                                        <input type="radio" name="Monthly Maintenance Type" value="250" class="radio-luxury mt-1">
+                                        <div class="flex-1">
+                                            <div class="font-semibold text-base mb-1">Full Maintenance & Development</div>
+                                            <p class="text-sm text-gray-400 leading-relaxed mb-2">Includes everything above PLUS: Design modifications, new features, technical updates, security patches, performance optimization, and troubleshooting.</p>
+                                            <div class="gold-accent font-bold text-lg">$250/month</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <p class="text-xs text-gray-500 italic leading-relaxed">
+                                    * Monthly maintenance is billed separately and can be paused or cancelled anytime. No long-term contracts required. Hosting and domain renewal fees are separate.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Calculate Button -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button type="button" onclick="calculateTotal()" class="flex-1 btn-gold py-5 rounded-xl uppercase text-sm font-bold relative">
+                            Calculate Investment
+                        </button>
+                        <button type="button" onclick="resetCalculator()" class="btn-secondary py-5 px-8 rounded-xl uppercase text-sm font-bold">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Results Section -->
+                <div id="result" class="hidden mt-10">
+                    <div class="result-section text-center">
+                        <p class="text-sm uppercase tracking-widest text-gray-400 mb-3">Your Project Investment</p>
+                        <h2 id="totalPrice" class="price-display gold-gradient mb-2"></h2>
+                        <p class="text-sm text-gray-500 mb-6">One-time development cost</p>
+                        
+                        <div id="monthlySection" class="hidden mt-8 pt-8 border-t border-gold-accent border-opacity-30">
+                            <p class="text-sm uppercase tracking-widest text-gray-400 mb-3">Ongoing Monthly Support</p>
+                            <h3 id="monthlyPrice" class="serif text-4xl font-bold gold-accent mb-2"></h3>
+                            <p id="monthlyDescription" class="text-sm text-gray-400"></p>
+                        </div>
+
+                        <div class="mt-8 pt-8 border-t border-gray-700">
+                            <h4 class="font-bold text-sm uppercase tracking-wide gold-accent mb-3">What's Included:</h4>
+                            <ul class="text-left text-sm text-gray-400 space-y-2 max-w-xl mx-auto mb-6">
+                                <li>✓ Custom responsive design optimized for all devices</li>
+                                <li>✓ Professional development and testing</li>
+                                <li>✓ Initial content upload and setup</li>
+                                <li>✓ Training on how to manage your site</li>
+                                <li>✓ 30-day post-launch support</li>
+                            </ul>
+                            <p class="text-xs text-gray-500 leading-relaxed max-w-xl mx-auto">
+                                <strong>Not Included:</strong> Hosting ($15-75/month depending on traffic), domain registration ($12-20/year), third-party service fees (payment processing, email marketing platforms), and premium stock photos if needed.
+                            </p>
+                        </div>
+
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                            <button type="submit" form="calcForm" class="flex-1 btn-gold py-4 rounded-xl uppercase text-sm font-bold">
+                                Request This Quote
+                            </button>
+                            <button type="button" onclick="resetCalculator()" class="btn-secondary py-4 px-8 rounded-xl uppercase text-sm font-bold">
+                                Start Over
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-10 text-gray-500 text-sm">
+                <p>Questions about what you need? We're here to help guide you through the process.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Toggle maintenance options visibility
+        document.getElementById('maintenanceToggle').addEventListener('change', function() {
+            const options = document.getElementById('maintenanceOptions');
+            if (this.checked) {
+                options.classList.remove('hidden');
+            } else {
+                options.classList.add('hidden');
+            }
+        });
+
+        function calculateTotal() {
+            // Validate required fields
+            const form = document.getElementById('calcForm');
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = '#ef4444';
+                } else {
+                    field.style.borderColor = 'rgba(120, 120, 120, 0.4)';
+                }
+            });
+
+            if (!isValid) {
+                alert('Please fill in all required fields (Name, Email, and Organization Name)');
+                return;
+            }
+
+            // Calculate project total
+            let total = parseInt(document.getElementById('size').value);
+            total += parseInt(document.getElementById('copy').value);
+            
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:not(#maintenanceToggle):checked');
+            let selectedFeatures = [];
+            
+            checkboxes.forEach(checkbox => {
+                total += parseInt(checkbox.value);
+                if (checkbox.name.startsWith('Feature:')) {
+                    selectedFeatures.push(checkbox.name.replace('Feature: ', ''));
+                }
+            });
+
+            // Cap at $3500
+            const cappedTotal = Math.min(total, 3500);
+            const wasCapped = total > 3500;
+
+            // Display total
+            let displayText = "$" + cappedTotal.toLocaleString();
+            if (wasCapped) {
+                displayText += " (Premium Package)";
+            }
+            document.getElementById('totalPrice').innerText = displayText;
+            
+            // Handle monthly maintenance
+            const maintenanceToggle = document.getElementById('maintenanceToggle');
+            const monthlySection = document.getElementById('monthlySection');
+            
+            if (maintenanceToggle.checked) {
+                const selectedMaintenance = document.querySelector('input[name="Monthly Maintenance Type"]:checked');
+                const monthlyPrice = parseInt(selectedMaintenance.value);
+                document.getElementById('monthlyPrice').innerText = "$" + monthlyPrice + "/month";
+                
+                // Add description
+                const descriptions = {
+                    50: "Text and content updates only",
+                    250: "Full maintenance with design changes and new features"
+                };
+                document.getElementById('monthlyDescription').innerText = descriptions[monthlyPrice];
+                
+                monthlySection.classList.remove('hidden');
+                
+                // Set hidden field
+                document.getElementById('hiddenMonthly').value = "$" + monthlyPrice + "/month - " + descriptions[monthlyPrice];
+            } else {
+                monthlySection.classList.add('hidden');
+                document.getElementById('hiddenMonthly').value = "None selected";
+            }
+
+            // Set hidden fields for form submission
+            document.getElementById('hiddenTotal').value = displayText;
+            document.getElementById('hiddenFeatures').value = selectedFeatures.length > 0 ? selectedFeatures.join(', ') : 'None selected';
+
+            // Show results
+            document.getElementById('result').classList.remove('hidden');
+            
+            // Smooth scroll to results
+            setTimeout(() => {
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 150);
+        }
+
+        function resetCalculator() {
+            document.getElementById('calcForm').reset();
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('maintenanceOptions').classList.add('hidden');
+            
+            // Reset border colors
+            const fields = document.querySelectorAll('input[required]');
+            fields.forEach(field => {
+                field.style.borderColor = 'rgba(120, 120, 120, 0.4)';
+            });
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Handle form submission
+        document.getElementById('calcForm').addEventListener('submit', function(e) {
+            // The form will submit naturally to Formspree
+            // Just ensure hidden fields are populated
+            if (document.getElementById('result').classList.contains('hidden')) {
+                e.preventDefault();
+                alert('Please calculate your investment before submitting the quote request.');
+            }
+        });
+    </script>
+</body>
+</html>

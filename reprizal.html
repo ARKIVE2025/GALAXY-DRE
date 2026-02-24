@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Investment Calculator | Premium Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a0a; color: #f5f5f0; font-family: 'Montserrat', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: float 20s infinite ease-in-out; }
+        .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, #d4af37, transparent); top: -200px; left: -200px; }
+        .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, #f4d03f, transparent); bottom: -250px; right: -250px; animation-delay: 7s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-50px, 100px) scale(0.9); } }
+        .container-main { position: relative; z-index: 1; }
+        .serif { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #d4af37 0%, #f9e29d 50%, #d4af37 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .gold-accent { color: #d4af37; }
+        .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); color: #000; font-weight: 700; letter-spacing: 2px; transition: all 0.4s; box-shadow: 0 4px 25px rgba(212, 175, 55, 0.4); }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 8px 35px rgba(212, 175, 55, 0.6); }
+        .luxury-card { background: linear-gradient(135deg, rgba(20, 20, 20, 0.97) 0%, rgba(30, 25, 20, 0.97) 100%); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 1.5rem; padding: 3rem; backdrop-filter: blur(20px); }
+        .option-card { background: rgba(15, 15, 15, 0.7); border: 1px solid rgba(100, 100, 100, 0.3); border-radius: 0.875rem; padding: 1.25rem; cursor: pointer; transition: all 0.3s; }
+        .option-card:hover { border-color: #d4af37; transform: translateX(6px); }
+        .checkbox-luxury { appearance: none; width: 1.5rem; height: 1.5rem; border: 2px solid rgba(212, 175, 55, 0.5); border-radius: 0.375rem; cursor: pointer; position: relative; }
+        .checkbox-luxury:checked { background: #d4af37; }
+        .checkbox-luxury:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #000; font-weight: bold; }
+        .selection-screen { display: flex; gap: 2rem; justify-content: center; margin-top: 2rem; }
+        .mode-card { width: 300px; padding: 2rem; text-align: center; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 1rem; cursor: pointer; transition: 0.3s; background: rgba(20, 20, 20, 0.8); }
+        .mode-card:hover { border-color: #d4af37; background: rgba(212, 175, 55, 0.1); transform: scale(1.05); }
+        .hidden { display: none; }
+        select, input { background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(120, 120, 120, 0.4); color: #fff; padding: 1rem; border-radius: 0.5rem; width: 100%; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+
+    <div class="container-main min-h-screen flex items-center justify-center p-4 py-12">
+        <div class="max-w-4xl w-full">
+            <header class="text-center mb-12">
+                <h1 class="serif text-5xl md:text-6xl font-bold mb-4">Your <span class="gold-gradient">Digital Vision</span></h1>
+                <p id="headerSubtitle" class="text-gray-400">Select a path to begin your professional journey.</p>
+            </header>
+
+            <div id="modeSelection" class="selection-screen">
+                <div class="mode-card" onclick="showForm('consulting')">
+                    <h3 class="serif text-2xl font-bold gold-accent mb-2">Consulting</h3>
+                    <p class="text-sm text-gray-400">Project management, AI, and creative strategy.</p>
+                </div>
+                <div class="mode-card" onclick="showForm('digital')">
+                    <h3 class="serif text-2xl font-bold gold-accent mb-2">Digital Services</h3>
+                    <p class="text-sm text-gray-400">Web development, E-commerce, and Portals.</p>
+                </div>
+            </div>
+
+            <div id="consultingForm" class="luxury-card hidden">
+                <form action="https://formspree.io/f/mjgrrlkz" method="POST" id="cForm">
+                    <label class="gold-accent text-xs tracking-widest uppercase mb-4 block">1. Contact Information</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <input type="text" name="Name" placeholder="Full Name" required>
+                        <input type="email" name="Email" placeholder="Email Address" required>
+                    </div>
+
+                    <label class="gold-accent text-xs tracking-widest uppercase mb-4 block">2. What can we help with?</label>
+                    <div class="space-y-3 mb-8">
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: Lowering Cost" value="250" class="checkbox-luxury consult-check">
+                            <div class="flex-1">Lowering Operational Costs <span class="float-right gold-accent">$250</span></div>
+                        </label>
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: Drone" value="450" class="checkbox-luxury consult-check">
+                            <div class="flex-1">Drone Services (Video/Photo) <span class="float-right gold-accent">$450</span></div>
+                        </label>
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: Video" value="400" class="checkbox-luxury consult-check">
+                            <div class="flex-1">Video Creation & Editing <span class="float-right gold-accent">$400</span></div>
+                        </label>
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: AI" value="500" class="checkbox-luxury consult-check">
+                            <div class="flex-1">AI Consultation (LLM/Training) <span class="float-right gold-accent">$500</span></div>
+                        </label>
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: Podcast" value="300" class="checkbox-luxury consult-check">
+                            <div class="flex-1">Podcasting / VLoG Setup <span class="float-right gold-accent">$300</span></div>
+                        </label>
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: Audio" value="150" class="checkbox-luxury consult-check">
+                            <div class="flex-1">Audio Editing <span class="float-right gold-accent">$150</span></div>
+                        </label>
+                        <label class="option-card flex items-center gap-4">
+                            <input type="checkbox" name="Help: PM" value="150" class="checkbox-luxury consult-check">
+                            <div class="flex-1">Project Management <span class="float-right gold-accent">$150</span></div>
+                        </label>
+                    </div>
+                    
+                    <div class="text-center p-6 border-t border-gray-800">
+                        <p class="text-sm text-gray-400 mb-2">Total Consulting Investment</p>
+                        <h2 id="consultTotal" class="serif text-4xl gold-gradient mb-6">$0</h2>
+                        <button type="submit" class="btn-gold w-full py-4 rounded-xl">Request Consultation</button>
+                        <button type="button" onclick="location.reload()" class="mt-4 text-xs text-gray-500 underline">Back to Selection</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="digitalForm" class="luxury-card hidden">
+                <p class="text-center text-gray-400">Digital Services Calculator Loaded.</p>
+                <button type="button" onclick="location.reload()" class="mt-4 text-xs text-gray-500 underline block mx-auto">Back to Selection</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showForm(type) {
+            document.getElementById('modeSelection').classList.add('hidden');
+            if(type === 'consulting') {
+                document.getElementById('consultingForm').classList.remove('hidden');
+                document.getElementById('headerSubtitle').innerText = "Not what services we offer, but what can we help with?";
+            } else {
+                window.location.href = "universal.html"; // Or toggle visibility if code is same file
+            }
+        }
+
+        document.querySelectorAll('.consult-check').forEach(box => {
+            box.addEventListener('change', () => {
+                let total = 0;
+                document.querySelectorAll('.consult-check:checked').forEach(checked => {
+                    total += parseInt(checked.value);
+                });
+                document.getElementById('consultTotal').innerText = "$" + total.toLocaleString();
+            });
+        });
+    </script>
+</body>
+</html>
