@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Andre Method // Revenue & Alignment System</title>
+    <style>
+        /* CORE VISUAL STYLES [Preserved from GALAXY_IN_THE_AIR] */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            color: #FFFFFF;
+        }
+        
+        canvas { 
+            display: block; 
+            cursor: grab;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+        
+        /* UI OVERLAY */
+        #interface {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .system-label {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+            opacity: 1;
+            line-height: 1.5;
+        }
+        
+        .stat-line {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            font-weight: 400;
+            line-height: 1.8;
+        }
+        
+        .stat-line strong {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+        
+        /* DATA DISPLAY */
+        #dataDisplay {
+            position: absolute;
+            bottom: 100px;
+            left: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #00FF41;
+            pointer-events: none;
+            z-index: 10;
+            line-height: 1.8;
+            opacity: 0.7;
+        }
+        
+        .data-line {
+            letter-spacing: 1px;
+        }
+        
+        /* CAMERA CONTROLS */
+        #cameraControls {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        
+        .camera-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #FFFFFF;
+            padding: 0;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            pointer-events: all;
+        }
+        
+        .camera-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+        
+        /* SETTINGS BUTTON */
+        #settingsBtn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            pointer-events: all;
+        }
+        
+        #settingsBtn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* SETTINGS PANEL */
+        #settingsPanel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: #000000;
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 32px 24px;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        #settingsPanel.active {
+            right: 0;
+        }
+        
+        .settings-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .settings-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .close-settings {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px 12px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .settings-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* NEW: ACTION BUTTON FOR PORTAL */
+        .portal-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .portal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        /* MODAL STYLES */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        #modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+            letter-spacing: 1px;
+        }
+        
+        .modal-category {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 24px;
+        }
+
+        .modal-protocol {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        /* TOGGLE SWITCH STYLE */
+        .toggle-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+        
+        .toggle-control label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* TOOLTIP */
+        #tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #FFFFFF;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div id="interface">
+        <div class="system-label" id="systemLabelDisplay">ANDRE METHOD // REVENUE CORE</div>
+        <div class="stat-line">ANCHOR: <strong id="missionDisplay">ANDRE GO</strong></div>
+        <div class="stat-line">STATUS: <strong id="statusDisplay">ACTIVE</strong></div>
+        <div class="stat-line">MODE: <strong id="modeDisplay">FOUNDER</strong></div>
+    </div>
+    
+    <div id="dataDisplay">
+        <div class="data-line">→ TRACKING REVENUE VECTORS</div>
+        <div class="data-line">→ 90-DAY GOAL: ACTIVE</div>
+        <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
+    </div>
+    
+    <div id="cameraControls">
+        <button class="camera-btn" onclick="resetCamera()" title="Reset View">⌂</button>
+        <button class="camera-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        <button class="camera-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+    </div>
+    
+    <button id="settingsBtn" onclick="toggleSettings()">MENU</button>
+    
+    <div id="settingsPanel">
+        <button class="close-settings" onclick="toggleSettings()">✕</button>
+        <div class="settings-header">Control Deck</div>
+        <div class="settings-subtitle">System Navigation & View Modes</div>
+        
+        <div class="settings-section">
+            <h3>Quick Actions</h3>
+            <button class="portal-btn" onclick="window.location.href='andre.html'">
+                OPEN EVALUATION PORTAL
+            </button>
+        </div>
+
+        <div class="settings-section">
+            <h3>View Mode</h3>
+            <div class="toggle-control">
+                <label>Founder Mode (Private)</label>
+                <input type="checkbox" id="founderToggle" checked onchange="updateModeDisplay()">
+            </div>
+        </div>
+        
+        <div id="nodeColorControls"></div>
+    </div>
+    
+    <div id="tooltip"></div>
+    
+    <div id="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="modal-header" id="modalTitle">Node Title</div>
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-body" id="modalDescription">Description</div>
+            <div class="modal-protocol">
+                <div class="modal-protocol-title" style="font-size:10px; text-transform:uppercase; margin-bottom:8px; opacity:0.6;">Protocol / Action</div>
+                <div id="modalProtocol">Protocol Text</div>
+            </div>
+            <div id="modalActionArea" style="margin-top:20px;"></div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- CONFIGURATION ---
+        const CONFIG = {
+            nodeSize: 2.5,
+            centerNodeSize: 5, // Larger for Andre Go
+            nodeHoverSize: 3.5,
+            rotationSpeed: 0.0003,
+            starCount: 4000,
+            particleCount: 1000,
+            asteroidCount: 200
+        };
+
+        // --- UPDATED NODE DATA (ALIGNMENT V10) ---
+        // Includes Founder Mode (Private) vs Public Mode descriptions
+        const nodesData = [
+            // REVENUE ANCHOR (CENTER)
+            { 
+                id: "CORE", x: 0, y: 0, z: 0, 
+                name: "Andre Go", 
+                isCenter: true, 
+                category: "Revenue Engine",
+                desc: "[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats.", 
+                protocol: "Discovery: Stop losing AI insights. Capture. Edit. Export.",
+                public_desc: "You've discovered the memory layer for AI. Capture every insight across Claude, GPT, and Gemini instantly.",
+                public_protocol: "Action: Install Extension (v2.4.0)"
+            },
+            
+            // EVALUATION PORTAL (BRIDGE TO UTILITY SITE)
+            { 
+                id: "EVALUATE", x: 70, y: 30, z: 120, 
+                name: "START EVALUATION", 
+                category: "Action Portal",
+                desc: "[FOUNDER] Gateway to the Andre Rebuilt utility page (Price Reality).", 
+                protocol: "Action: Redirect user to /andre.html",
+                public_desc: "Stop overpaying. Click here to analyze a service, quote, or contract against our independent standards.",
+                public_protocol: "Action: Open Evaluation Tool",
+                isPortal: true // Flag to trigger button
+            },
+
+            // FOUNDATIONAL ANCHOR
+            { 
+                id: "CHRIST", x: 0, y: 70, z: 0, 
+                name: "Christ", 
+                category: "Foundation",
+                desc: "[FOUNDER] Ethics and Purpose filter. Is this honoring?", 
+                protocol: "John 14:6 - The Way, The Truth, The Life.",
+                public_desc: "The cornerstone of our policy and ethics. Truth without alignment is noise.",
+                public_protocol: "Principle: Integrity in every transaction."
+            },
+            
+            // STRATEGIC SUPPORT (DRE)
+            { 
+                id: "DRE", x: -110, y: 30, z: -70, 
+                name: "DRE System", 
+                category: "Strategic Tool",
+                desc: "[FOUNDER] Use to filter redundant expenses and validate ideas.", 
+                protocol: "Alignment Architect: Diagnose. Redesign. Complete.",
+                public_desc: "A diagnostic framework to expose broken project systems and redesign them for completion.",
+                public_protocol: "Process: 7-Stage Analysis"
+            },
+
+            // PUBLIC SERVICES (ORBITING ANDRE GO)
+            { 
+                id: "CONSULT", x: 100, y: -40, z: -80, 
+                name: "Church Consulting", 
+                category: "Service",
+                desc: "[FOUNDER] High-margin authority builder.", 
+                protocol: "Focus: Limit outgoing cash through tech optimization.",
+                public_desc: "Helping ministries steward resources by eliminating unnecessary technology costs.",
+                public_protocol: "Service: Tech Audit"
+            },
+            { 
+                id: "CONTENT", x: -80, y: -70, z: 90, 
+                name: "YouTube / Stream", 
+                category: "Authority Builder",
+                desc: "[FOUNDER] Top-of-funnel for Andre Go adoption.", 
+                protocol: "Goal: Translate system builds into video content.",
+                public_desc: "Watch the systems being built in real-time. Transparency in execution.",
+                public_protocol: "Channel: Andre Method"
+            },
+            {
+                id: "EXTENSION_DATA", x: 40, y: -50, z: 60,
+                name: "Session Data",
+                category: "Feature",
+                desc: "[FOUNDER] Storage mechanism for Andre Go extension.",
+                protocol: "Local Storage / JSON Export",
+                public_desc: "Your data stays local. We don't train on your chats.",
+                public_protocol: "Privacy: 100% Local"
+            }
+        ];
+
+        // --- COLOR MAPPING ---
+        const nodeColors = {
+            "CORE": 0x00d4ff,      // Cyan (Revenue)
+            "CHRIST": 0xFFFFFF,    // White (Foundation)
+            "EVALUATE": 0x3b82f6,  // Blue (Action)
+            "DRE": 0xd4af37,       // Gold (Strategy)
+            "CONSULT": 0x50C878,   // Emerald (Service)
+            "CONTENT": 0xFF6B6B,   // Red (Media)
+            "EXTENSION_DATA": 0x9370DB // Purple (Tech)
+        };
+
+        // --- SCENE SETUP ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 80, 250);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 50;
+        controls.maxDistance = 700;
+
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        // --- STARFIELD ---
+        const starField = new THREE.Group();
+        const starGeo = new THREE.BufferGeometry();
+        const starPositions = [];
+        for (let i = 0; i < CONFIG.starCount; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 400 + Math.random() * 400;
+            starPositions.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+        }
+        starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 1.5, transparent: true, opacity: 0.8 });
+        const stars = new THREE.Points(starGeo, starMat);
+        starField.add(stars);
+        scene.add(starField);
+
+        // --- ASTEROID FIELD ---
+        const asteroidField = new THREE.Group();
+        for (let i = 0; i < CONFIG.asteroidCount; i++) {
+            const size = 0.3 + Math.random() * 1.2;
+            const geo = new THREE.DodecahedronGeometry(size, 0);
+            const mat = new THREE.MeshBasicMaterial({ color: 0x444444, wireframe: true, transparent: true, opacity: 0.15 });
+            const asteroid = new THREE.Mesh(geo, mat);
+            const r = 200 + Math.random() * 300;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.random() * Math.PI;
+            asteroid.position.set(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+            asteroidField.add(asteroid);
+        }
+        scene.add(asteroidField);
+
+        // --- NODES GENERATION ---
+        const nodeObjects = new Map();
+        const clickableNodes = [];
+
+        nodesData.forEach(n => {
+            const size = n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize;
+            const color = nodeColors[n.id] || 0xFFFFFF;
+            const pos = new THREE.Vector3(n.x, n.y, n.z);
+            
+            // Sphere
+            const planetGeo = new THREE.SphereGeometry(size, 32, 32);
+            const planetMat = new THREE.MeshBasicMaterial({ color: color });
+            const planet = new THREE.Mesh(planetGeo, planetMat);
+            planet.position.copy(pos);
+            planet.userData = { nodeId: n.id, nodeData: n };
+            mainGroup.add(planet);
+            clickableNodes.push(planet);
+            
+            // Glows
+            const innerGlow = new THREE.Mesh(new THREE.SphereGeometry(size * 1.2, 32, 32), new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.4, side: THREE.BackSide }));
+            innerGlow.position.copy(pos);
+            mainGroup.add(innerGlow);
+            
+            const outerGlow = new THREE.Mesh(new THREE.SphereGeometry(size * 1.5, 32, 32), new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.2, side: THREE.BackSide }));
+            outerGlow.position.copy(pos);
+            mainGroup.add(outerGlow);
+            
+            // Text Label
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = 'bold 48px Arial';
+            const textWidth = ctx.measureText(n.name).width;
+            canvas.width = textWidth + 32;
+            canvas.height = 64;
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(n.name, 16, 32);
+            
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0.9 }));
+            const aspect = canvas.width / canvas.height;
+            sprite.scale.set(aspect * 4, 4, 1);
+            sprite.position.set(n.x, n.y + (size + 3), n.z);
+            mainGroup.add(sprite);
+            
+            nodeObjects.set(n.id, { planet, innerGlow, outerGlow, label: sprite, originalSize: size });
+        });
+
+        // --- CONNECTIONS (All connect to CORE) ---
+        const centerNode = nodesData.find(n => n.id === "CORE");
+        nodesData.forEach(n => {
+            if (n.id !== "CORE") {
+                const points = [new THREE.Vector3(centerNode.x, centerNode.y, centerNode.z), new THREE.Vector3(n.x, n.y, n.z)];
+                const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: nodeColors[n.id] || 0xFFFFFF, transparent: true, opacity: 0.3 }));
+                mainGroup.add(line);
+            }
+        });
+
+        // --- INTERACTION LOGIC ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let hoveredNode = null;
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            
+            const intersects = raycaster.intersectObjects(clickableNodes);
+            const tooltip = document.getElementById('tooltip');
+
+            if (intersects.length > 0) {
+                const newHovered = intersects[0].object;
+                if (hoveredNode !== newHovered) {
+                    if (hoveredNode) resetNodeScale(hoveredNode);
+                    hoveredNode = newHovered;
+                    scaleNode(hoveredNode, CONFIG.nodeHoverSize);
+                    document.body.style.cursor = 'pointer';
+                }
+                tooltip.style.display = 'block';
+                tooltip.style.left = event.clientX + 15 + 'px';
+                tooltip.style.top = event.clientY + 15 + 'px';
+                tooltip.textContent = hoveredNode.userData.nodeData.name;
+            } else {
+                if (hoveredNode) {
+                    resetNodeScale(hoveredNode);
+                    hoveredNode = null;
+                }
+                document.body.style.cursor = 'grab';
+                tooltip.style.display = 'none';
+            }
+        }
+
+        function scaleNode(mesh, targetSize) {
+            const obj = nodeObjects.get(mesh.userData.nodeId);
+            if (obj) {
+                const s = targetSize / obj.originalSize;
+                obj.planet.scale.set(s,s,s);
+                obj.innerGlow.scale.set(s,s,s);
+                obj.outerGlow.scale.set(s,s,s);
+            }
+        }
+
+        function resetNodeScale(mesh) {
+            const obj = nodeObjects.get(mesh.userData.nodeId);
+            if (obj) {
+                obj.planet.scale.set(1,1,1);
+                obj.innerGlow.scale.set(1,1,1);
+                obj.outerGlow.scale.set(1,1,1);
+            }
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        
+        // --- MODAL LOGIC (FOUNDER vs PUBLIC) ---
+        window.openModal = function(data) {
+            const isFounder = document.getElementById('founderToggle').checked;
+            
+            document.getElementById('modalTitle').textContent = data.name;
+            document.getElementById('modalCategory').textContent = data.category;
+            
+            // Toggle Logic
+            document.getElementById('modalDescription').textContent = isFounder ? data.desc : (data.public_desc || data.desc);
+            document.getElementById('modalProtocol').textContent = isFounder ? data.protocol : (data.public_protocol || data.protocol);
+            
+            // Action Area for Portal
+            const actionArea = document.getElementById('modalActionArea');
+            actionArea.innerHTML = ''; // Clear previous
+            
+            if (data.isPortal) {
+                const btn = document.createElement('button');
+                btn.className = 'portal-btn';
+                btn.textContent = 'ENTER EVALUATION PORTAL';
+                btn.onclick = function() { window.location.href = 'andre.html'; };
+                actionArea.appendChild(btn);
+            }
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        window.addEventListener('click', (event) => {
+            if (hoveredNode) openModal(hoveredNode.userData.nodeData);
+        });
+
+        // --- GLOBAL UI FUNCTIONS ---
+        window.resetCamera = () => { camera.position.set(0, 80, 250); controls.target.set(0,0,0); };
+        window.zoomIn = () => camera.position.sub(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
+        window.zoomOut = () => camera.position.add(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
+        window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('active');
+        window.updateModeDisplay = () => {
+            const isFounder = document.getElementById('founderToggle').checked;
+            document.getElementById('modeDisplay').textContent = isFounder ? "FOUNDER" : "PUBLIC";
+            document.getElementById('modeDisplay').style.color = isFounder ? "#00FF41" : "#00d4ff";
+        };
+
+        // --- COLOR CONTROLS GENERATION ---
+        (function buildColorControls() {
+            const container = document.getElementById('nodeColorControls');
+            nodesData.forEach(node => {
+                const div = document.createElement('div');
+                div.className = 'settings-section';
+                div.style.marginBottom = '10px';
+                div.style.border = 'none';
+                
+                const label = document.createElement('label');
+                label.style.fontSize = '11px';
+                label.style.color = 'rgba(255,255,255,0.5)';
+                label.textContent = node.name;
+                
+                const input = document.createElement('input');
+                input.type = 'color';
+                input.value = '#' + (nodeColors[node.id] || 0xFFFFFF).toString(16).padStart(6, '0');
+                input.style.marginLeft = '10px';
+                input.style.border = 'none';
+                input.style.background = 'transparent';
+                
+                input.addEventListener('input', (e) => {
+                    const color = parseInt(e.target.value.replace('#',''), 16);
+                    nodeColors[node.id] = color;
+                    const obj = nodeObjects.get(node.id);
+                    if(obj) {
+                        obj.planet.material.color.setHex(color);
+                        obj.innerGlow.material.color.setHex(color);
+                        obj.outerGlow.material.color.setHex(color);
+                    }
+                });
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                container.appendChild(div);
+            });
+        })();
+
+        // --- ANIMATION ---
+        function animate() {
+            requestAnimationFrame(animate);
+            mainGroup.rotation.y += CONFIG.rotationSpeed;
+            starField.rotation.y += CONFIG.rotationSpeed * 0.2;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

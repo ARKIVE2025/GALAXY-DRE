@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANDRE – Stop Overpaying for Services You Don't Need</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0e27;
+      --bg-mid: #151b3d;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #3b82f6;
+      --accent-tertiary: #8b5cf6;
+      --accent-glow: rgba(0, 212, 255, 0.4);
+      --accent-soft: rgba(0, 212, 255, 0.12);
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+      --text-muted: #718096;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --warning: #fbbf24;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * { 
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Animated gradient background */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 60% 60%, rgba(0, 212, 255, 0.06) 0%, transparent 40%),
+        linear-gradient(135deg, #0a0e27 0%, #151b3d 50%, #0f1a35 100%);
+      z-index: 0;
+      animation: gradientShift 20s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { 
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+      50% { 
+        opacity: 0.9;
+        transform: scale(1.05) rotate(1deg);
+      }
+    }
+
+    /* Subtle grid overlay */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      z-index: 100;
+      padding: 20px 40px;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(10, 14, 39, 0.8);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientFlow 6s ease infinite;
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .tagline {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 500;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      padding: 10px 20px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      background: var(--glass-bg);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.primary {
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      border: none;
+      color: #000;
+      font-weight: 600;
+      box-shadow: 0 0 20px var(--accent-glow);
+      animation: gradientFlow 6s ease infinite;
+    }
+
+    .nav-btn.primary:hover {
+      box-shadow: 0 0 30px var(--accent-glow), 0 0 50px rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* Main container */
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      margin-bottom: 80px;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-title {
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #00d4ff 40%, #3b82f6 70%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+      animation: gradientFlow 8s ease infinite;
+    }
+
+    .hero-subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 40px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* Chat Card - x.ai style */
+    .chat-container {
+      max-width: 900px;
+      margin: 0 auto 100px;
+      animation: fadeInUp 0.8s ease 0.2s backwards;
+    }
+
+    .chat-card {
+      position: relative;
+      background: var(--glass-bg);
+      backdrop-filter: blur(40px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 
+        0 0 60px rgba(0, 212, 255, 0.2),
+        0 0 40px rgba(59, 130, 246, 0.15),
+        0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Smoke-like ambient effect behind card */
+    .chat-card::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      height: 150%;
+      background: 
+        radial-gradient(ellipse at 30% 40%, rgba(0, 212, 255, 0.3) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 60%, rgba(59, 130, 246, 0.25) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      filter: blur(60px);
+      animation: smoke 8s ease-in-out infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes smoke {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 0.7;
+      }
+      25% {
+        transform: translate(-48%, -52%) scale(1.1) rotate(5deg);
+        opacity: 0.85;
+      }
+      50% {
+        transform: translate(-52%, -48%) scale(1.15) rotate(-3deg);
+        opacity: 0.9;
+      }
+      75% {
+        transform: translate(-50%, -51%) scale(1.08) rotate(7deg);
+        opacity: 0.8;
+      }
+    }
+
+    /* Shimmer effect on top border */
+    .chat-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to { left: 100%; }
+    }
+
+    .chat-header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .chat-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .chat-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .chat-body {
+      padding: 32px;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .chat-placeholder-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .chat-placeholder-text {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .chat-input-area {
+      padding: 24px 32px;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      min-height: 52px;
+      max-height: 200px;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .send-btn {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      border: none;
+      border-radius: 12px;
+      color: #000;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+      animation: gradientFlow 6s ease infinite;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(0, 212, 255, 0.5), 0 3px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .send-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Four Pillars Section */
+    .pillars-section {
+      margin-bottom: 100px;
+      animation: fadeInUp 0.8s ease 0.4s backwards;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-description {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .pillar-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 100%;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      animation: gradientSlide 3s linear infinite;
+    }
+
+    @keyframes gradientSlide {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-primary);
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2), 0 6px 20px rgba(59, 130, 246, 0.15);
+    }
+
+    .pillar-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .pillar-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .pillar-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .pillar-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Trust Section */
+    .trust-section {
+      max-width: 800px;
+      margin: 0 auto 100px;
+      text-align: center;
+      animation: fadeInUp 0.8s ease 0.6s backwards;
+    }
+
+    .trust-statement {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .trust-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--accent-primary);
+    }
+
+    .trust-list {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .trust-list li {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      padding-left: 28px;
+      position: relative;
+      text-align: left;
+    }
+
+    .trust-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--success);
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .trust-footer {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+      border-top: 1px solid var(--glass-border);
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+
+    /* Research Archive Section */
+    .archive-section {
+      margin-bottom: 100px;
+      animation: fadeInUp 0.8s ease 0.8s backwards;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .tab:hover {
+      background: var(--accent-soft);
+      color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      color: #000;
+      border: none;
+      font-weight: 600;
+      animation: gradientFlow 6s ease infinite;
+    }
+
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .archive-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .archive-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-primary);
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2), 0 6px 20px rgba(59, 130, 246, 0.1);
+    }
+
+    .archive-category {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--accent-soft);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .archive-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .archive-excerpt {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .archive-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-top: 12px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .status-badge.debunked {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+    }
+
+    .status-badge.verified {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .status-badge.conditional {
+      background: rgba(251, 191, 36, 0.1);
+      color: var(--warning);
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid var(--glass-border);
+      padding: 40px;
+      text-align: center;
+      background: rgba(10, 14, 39, 0.8);
+      backdrop-filter: blur(20px);
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .footer-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--accent-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 40px 20px;
+      }
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .hero-subtitle {
+        font-size: 16px;
+      }
+
+      .pillars-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .archive-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chat-card {
+        border-radius: 16px;
+      }
+
+      header {
+        padding: 16px 20px;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      nav {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background effects -->
+  <div class="bg-gradient"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo">ANDRE</div>
+        <div class="tagline">Stop Overpaying</div>
+      </div>
+      <nav>
+        <a href="#research" class="nav-btn">Research</a>
+        <a href="#how-it-works" class="nav-btn">How It Works</a>
+        <a href="#" class="nav-btn primary">Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <h1 class="hero-title">Before you pay a vendor, we tell you what's unnecessary, overpriced, or risky.</h1>
+      <p class="hero-subtitle">We help people and businesses avoid getting overcharged, upsold, or locked into services they don't actually need.</p>
+    </section>
+
+    <!-- Chat Interface -->
+    <section class="chat-container">
+      <div class="chat-card">
+        <div class="chat-header">
+          <h3>Ask About Any Service or Quote</h3>
+          <p>Tell us what you're being asked to pay for — we'll help you figure out if it's worth it</p>
+        </div>
+        <div class="chat-body">
+          <div class="chat-placeholder">
+            <div class="chat-placeholder-icon">💬</div>
+            <div class="chat-placeholder-text">
+              Chat system will be integrated here.<br>
+              You'll be able to ask questions and get real-time analysis.
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="chat-input-wrapper">
+            <textarea 
+              class="chat-input" 
+              placeholder="Tell us what you're being asked to pay for — a service, a quote, a contract, electronics, or a digital tool. You don't need to explain it perfectly. Just explain it honestly."
+              rows="1"
+            ></textarea>
+            <button class="send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Four Pillars -->
+    <section class="pillars-section" id="how-it-works">
+      <div class="section-header">
+        <h2 class="section-title">How We Help You Avoid Bad Deals</h2>
+        <p class="section-description">We analyze what you're being charged and help you make informed decisions</p>
+      </div>
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <span class="pillar-icon">💰</span>
+          <h3 class="pillar-title">Price Reality</h3>
+          <p class="pillar-description">We compare what you're being charged to what others are actually paying — locally and online.</p>
+        </div>
+        <div class="pillar-card">
+          <span class="pillar-icon">✓</span>
+          <h3 class="pillar-title">Need Check</h3>
+          <p class="pillar-description">We help figure out if you really need the service or if it's just a nice-sounding add-on.</p>
+        </div>
+        <div class="pillar-card">
+          <span class="pillar-icon">🚨</span>
+          <h3 class="pillar-title">Risk Scan</h3>
+          <p class="pillar-description">We look for red flags like long contracts, auto-renewals, vague promises, and lock-ins.</p>
+        </div>
+        <div class="pillar-card">
+          <span class="pillar-icon">🎯</span>
+          <h3 class="pillar-title">Better Options</h3>
+          <p class="pillar-description">If something is overpriced or unnecessary, we show cheaper or simpler alternatives.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Statement -->
+    <section class="trust-section">
+      <div class="trust-statement">
+        <h2 class="trust-title">How We Stay Independent</h2>
+        <ul class="trust-list">
+          <li>We don't sell products.</li>
+          <li>We don't take kickbacks.</li>
+          <li>We don't negotiate contracts.</li>
+          <li>We provide independent analysis so you can decide with clear information.</li>
+        </ul>
+        <p class="trust-footer">Our only goal is to help you avoid unnecessary costs and risky commitments.</p>
+      </div>
+    </section>
+
+    <!-- Public Research & Breakdowns -->
+    <section class="archive-section" id="research">
+      <div class="section-header">
+        <h2 class="section-title">Public Research & Breakdowns</h2>
+        <p class="section-description">See how we think and learn from real examples</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="filterArchive('all')">All Reports</button>
+        <button class="tab" onclick="filterArchive('software')">Software & Tools</button>
+        <button class="tab" onclick="filterArchive('services')">Services</button>
+        <button class="tab" onclick="filterArchive('security')">Security</button>
+        <button class="tab" onclick="filterArchive('career')">Career</button>
+      </div>
+
+      <div class="archive-grid">
+        <div class="archive-card" data-category="software">
+          <div class="archive-category">Software & Tools</div>
+          <h3 class="archive-title">Is Norton Antivirus Necessary in 2026?</h3>
+          <p class="archive-excerpt">
+            Built-in OS security features have evolved significantly. For most users, third-party antivirus software introduces more friction than protection.
+          </p>
+          <div class="archive-meta">
+            <span>Jan 15, 2026</span>
+            <span class="status-badge debunked">Debunked</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="services">
+          <div class="archive-category">Subscription Services</div>
+          <h3 class="archive-title">LinkedIn Premium: Value Analysis</h3>
+          <p class="archive-excerpt">
+            Comprehensive review of Premium features vs. free alternatives. 87% of premium features can be replicated through strategic profile optimization.
+          </p>
+          <div class="archive-meta">
+            <span>Jan 12, 2026</span>
+            <span class="status-badge conditional">Conditional</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="security">
+          <div class="archive-category">Security & Privacy</div>
+          <h3 class="archive-title">VPN Services: Personal Use Assessment</h3>
+          <p class="archive-excerpt">
+            Investigation into actual privacy gains vs. marketing claims. Most consumer VPN use cases can be addressed through free browser configurations.
+          </p>
+          <div class="archive-meta">
+            <span>Jan 10, 2026</span>
+            <span class="status-badge debunked">Debunked</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="career">
+          <div class="archive-category">Career Tools</div>
+          <h3 class="archive-title">Resume Writing Services Evaluation</h3>
+          <p class="archive-excerpt">
+            Analysis of 50+ resume services reveals standardized templates and recycled advice. Alternative approaches deliver better results.
+          </p>
+          <div class="archive-meta">
+            <span>Jan 8, 2026</span>
+            <span class="status-badge debunked">Debunked</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="software">
+          <div class="archive-category">Software & Tools</div>
+          <h3 class="archive-title">Grammarly Premium Worth Assessment</h3>
+          <p class="archive-excerpt">
+            Comparative study of free vs. premium features. Free tier covers 94% of common use cases. Premium justified only for specific professional needs.
+          </p>
+          <div class="archive-meta">
+            <span>Jan 5, 2026</span>
+            <span class="status-badge conditional">Conditional</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="services">
+          <div class="archive-category">Subscription Services</div>
+          <h3 class="archive-title">Cloud Storage: Actual Need vs. Upsell</h3>
+          <p class="archive-excerpt">
+            Average user utilizes only 23% of paid cloud storage. Strategic use of multiple free tiers can eliminate most paid subscriptions.
+          </p>
+          <div class="archive-meta">
+            <span>Jan 3, 2026</span>
+            <span class="status-badge debunked">Debunked</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="security">
+          <div class="archive-category">Security & Privacy</div>
+          <h3 class="archive-title">Password Manager Necessity Review</h3>
+          <p class="archive-excerpt">
+            Security analysis confirms password managers are one of few genuinely necessary tools. Browser-based solutions sufficient for most users.
+          </p>
+          <div class="archive-meta">
+            <span>Dec 28, 2025</span>
+            <span class="status-badge verified">Verified</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="career">
+          <div class="archive-category">Career Tools</div>
+          <h3 class="archive-title">Professional Networking Event ROI</h3>
+          <p class="archive-excerpt">
+            Data from 200+ professionals shows paid networking events yield lower ROI than strategic cold outreach and online community engagement.
+          </p>
+          <div class="archive-meta">
+            <span>Dec 22, 2025</span>
+            <span class="status-badge debunked">Debunked</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#" class="footer-link">About</a>
+        <a href="#" class="footer-link">Privacy</a>
+        <a href="#" class="footer-link">Terms</a>
+        <a href="#" class="footer-link">Contact</a>
+      </div>
+      <p>&copy; 2026 ANDRE. Independent analysis to help you avoid unnecessary costs.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Archive filtering
+    function filterArchive(category) {
+      const tabs = document.querySelectorAll('.tab');
+      const cards = document.querySelectorAll('.archive-card');
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto-resize textarea
+    const textarea = document.querySelector('.chat-input');
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+    });
+
+    // Send button interaction
+    const sendBtn = document.querySelector('.send-btn');
+    sendBtn.addEventListener('click', function() {
+      const input = document.querySelector('.chat-input');
+      if (input.value.trim()) {
+        // Placeholder for chat functionality
+        console.log('Message sent:', input.value);
+        input.value = '';
+        input.style.height = 'auto';
+      }
+    });
+
+    // Enter to send (Shift+Enter for new line)
+    textarea.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendBtn.click();
+      }
+    });
+  </script>
+
+</body>
+</html>
