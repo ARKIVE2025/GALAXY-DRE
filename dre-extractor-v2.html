@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover"/>
+  <title>DRE Extractor — Andre Method</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#F4F5F7;--surface:#fff;--panel:#1F2328;
+      --panel-nav:rgba(255,255,255,0.06);--panel-nav-active:rgba(255,255,255,0.12);
+      --accent:#5B7CDD;--accent-soft:#EEF2FF;
+      --green:#4CAF82;--green-soft:#EEF9F4;
+      --amber:#D4923A;--amber-soft:#FDF4E7;
+      --red:#E05C5C;--red-soft:#FEF0F0;
+      --gray:#B0BAC7;--gray-soft:#F1F3F5;
+      --border:rgba(0,0,0,0.07);
+      --text:#1F2328;--text2:#6B7585;--text3:#9AA3B0;
+      --sh-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+      --sh-md:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+      --sh-lg:0 20px 48px rgba(0,0,0,0.12),0 8px 20px rgba(0,0,0,0.06);
+      --r-sm:10px;--r-md:16px;--r-lg:24px;--r-xl:32px;
+    }
+    html,body{height:100%;font-family:DM Sans,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+
+    /* ====== BOOT ====== */
+    #boot{position:fixed;inset:0;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1)}
+    #boot.fade-out{opacity:0;pointer-events:none}
+    .boot-logo{font-size:15px;font-weight:500;letter-spacing:0.22em;color:rgba(255,255,255,0.9);text-transform:uppercase;margin-bottom:48px;opacity:0;animation:fadeUp 0.5s ease 0.3s forwards}
+    .boot-scan-lines{width:280px;display:flex;flex-direction:column;gap:16px;margin-bottom:40px}
+    .boot-line{display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(6px)}
+    .boot-line.show{animation:fadeUp 0.4s cubic-bezier(0.2,0,0,1) forwards}
+    .boot-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;transform:scale(0);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+    .boot-dot.lit{transform:scale(1)}
+    .boot-line-text{font-family:DM Mono,monospace;font-size:12px;color:rgba(255,255,255,0.55);letter-spacing:0.04em}
+    .boot-line-label{font-size:12px;color:rgba(255,255,255,0.4);margin-left:auto;font-family:DM Mono,monospace}
+    .boot-line-label.done{color:var(--green)}
+    .boot-bar-wrap{width:280px;height:2px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;opacity:0;animation:fadeUp 0.4s ease 1.2s forwards}
+    .boot-bar{height:100%;background:linear-gradient(90deg,var(--accent),#7B9EF7);border-radius:99px;width:0%;transition:width 1.8s cubic-bezier(0.4,0,0.2,1)}
+    .boot-status{margin-top:20px;font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);opacity:0;animation:fadeUp 0.4s ease 1.3s forwards}
+
+    /* ====== SHELL ====== */
+    #shell{height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.5s ease}
+    #shell.visible{opacity:1}
+    .device{width:1080px;height:680px;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--sh-lg),0 0 0 1px rgba(0,0,0,0.06);display:flex;overflow:hidden}
+
+    /* ====== LEFT PANEL ====== */
+    .left-panel{width:240px;flex-shrink:0;background:var(--panel);display:flex;flex-direction:column;padding:32px 0}
+    .panel-logo{padding:0 24px 28px;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .panel-logo-name{font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em}
+    .panel-logo-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;margin-top:3px}
+    .panel-body{flex:1;padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow:hidden}
+    .panel-section-label{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 8px}
+
+    /* File info widget */
+    .file-widget{background:rgba(255,255,255,0.05);border-radius:var(--r-sm);padding:14px;margin-bottom:4px}
+    .file-widget-title{font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:10px}
+    .file-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+    .file-row:last-child{margin-bottom:0}
+    .file-key{font-size:11px;color:rgba(255,255,255,0.35)}
+    .file-val{font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);font-family:DM Mono,monospace;text-align:right;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* Privacy note */
+    .privacy-note{background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.15);border-radius:var(--r-sm);padding:12px 14px}
+    .privacy-note-title{font-size:10px;font-weight:600;color:var(--green);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+    .privacy-note-body{font-size:10px;color:rgba(255,255,255,0.3);line-height:1.5}
+
+    .panel-footer{padding:16px 24px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:auto}
+    .status-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .status-dot.green{background:var(--green);box-shadow:0 0 0 3px rgba(76,175,130,0.2);animation:pulse-green 2.5s ease infinite}
+    .status-dot.amber{background:var(--amber);box-shadow:0 0 0 3px rgba(212,146,58,0.2);animation:pulse-amber 1s ease infinite}
+    .status-text{font-size:11px;color:rgba(255,255,255,0.3)}
+    .status-text strong{font-weight:500;color:rgba(255,255,255,0.55)}
+    .brand-link{font-size:10px;color:rgba(255,255,255,0.18);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s}
+    .brand-link:hover{color:rgba(255,255,255,0.45)}
+
+    /* ====== HINGE ====== */
+    .hinge{width:1px;background:rgba(0,0,0,0.12);flex-shrink:0}
+
+    /* ====== RIGHT PANEL ====== */
+    .right-panel{flex:1;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+
+    /* ====== ANIMATIONS ====== */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse-green{0%,100%{box-shadow:0 0 0 3px rgba(76,175,130,0.2)}50%{box-shadow:0 0 0 5px rgba(76,175,130,0.06)}}
+    @keyframes pulse-amber{0%,100%{box-shadow:0 0 0 3px rgba(212,146,58,0.2)}50%{box-shadow:0 0 0 5px rgba(212,146,58,0.06)}}
+    @keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+
+    /* ====== SHARED PANEL HEADER ====== */
+    .panel-header{padding:36px 44px 28px;border-bottom:1px solid var(--border);background:var(--surface)}
+    .panel-eyebrow{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+    .panel-title{font-size:24px;font-weight:600;color:var(--text);letter-spacing:-0.02em}
+    .panel-desc{font-size:13px;color:var(--text2);margin-top:5px;line-height:1.55}
+
+    /* ====== STATE: UPLOAD ====== */
+    #stateUpload .right-panel-body{padding:32px 44px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;flex:1}
+    .drop-zone{border:2px dashed var(--border);border-radius:var(--r-lg);background:var(--surface);padding:52px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.22s ease;text-align:center;flex:1}
+    .drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:var(--accent-soft)}
+    .drop-icon-wrap{width:60px;height:60px;background:var(--gray-soft);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+    .drop-zone:hover .drop-icon-wrap,.drop-zone.dragover .drop-icon-wrap{background:var(--accent-soft);transform:scale(1.08)}
+    .drop-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+    .drop-sub{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:22px}
+    .btn-select{background:var(--panel);color:#fff;border:none;padding:12px 28px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:opacity 0.18s,transform 0.18s;margin-bottom:20px}
+    .btn-select:hover{opacity:0.88;transform:translateY(-1px)}
+    .format-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+    .chip{background:var(--gray-soft);color:var(--text2);font-size:11px;font-weight:500;padding:4px 10px;border-radius:99px;font-family:DM Mono,monospace}
+
+    /* ====== STATE: PROCESSING ====== */
+    .processing-wrap{flex:1;padding:32px 44px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+    .proc-card{background:var(--surface);border-radius:var(--r-md);padding:24px 26px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
+    .proc-top{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+    .proc-spinner-box{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .spinner{width:20px;height:20px;border:2.5px solid rgba(91,124,221,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.75s linear infinite}
+    .proc-stage-name{font-size:15px;font-weight:600;color:var(--text)}
+    .proc-stage-sub{font-size:12px;color:var(--text3);margin-top:2px}
+    .prog-track{height:4px;background:var(--gray-soft);border-radius:99px;overflow:hidden;margin-bottom:10px}
+    .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#7B9EF7);width:0%;transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}
+    .prog-row{display:flex;justify-content:space-between}
+    .prog-pct{font-size:11px;font-weight:600;color:var(--accent);font-family:DM Mono,monospace}
+    .prog-label{font-size:11px;color:var(--text3);font-family:DM Mono,monospace}
+    .stage-list{display:flex;flex-direction:column;gap:8px}
+    .stage-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border);transition:all 0.25s}
+    .stage-item.active{border-color:rgba(91,124,221,0.25);background:var(--accent-soft)}
+    .stage-item.done{opacity:0.55}
+    .stage-num{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;font-family:DM Mono,monospace;transition:all 0.25s}
+    .stage-item.active .stage-num{border-color:var(--accent);background:var(--accent);color:#fff}
+    .stage-item.done .stage-num{border-color:var(--green);background:var(--green);color:#fff;font-size:12px}
+    .stage-text{font-size:13px;font-weight:500;color:var(--text)}
+    .stage-item.active .stage-text{color:var(--accent)}
+    .stage-detail{font-size:11px;color:var(--text3);margin-top:1px}
+
+    /* ====== STATE: DOWNLOAD ====== */
+    .download-wrap{flex:1;padding:32px 44px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+    .success-banner{background:linear-gradient(135deg,#1F2328,#2a3d5e);border-radius:var(--r-md);padding:22px 24px;display:flex;align-items:center;gap:18px}
+    .success-icon-box{width:46px;height:46px;background:rgba(76,175,130,0.18);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+    .success-title{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px}
+    .success-sub{font-size:12px;color:rgba(255,255,255,0.4)}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .stat-card{background:var(--surface);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
+    .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px}
+    .stat-val{font-size:19px;font-weight:600;color:var(--text);font-family:DM Mono,monospace;letter-spacing:-0.01em}
+    .stat-sub{font-size:11px;color:var(--text2);margin-top:2px}
+    .waveform-card{background:var(--surface);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
+    .waveform-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
+    .waveform-bars{display:flex;align-items:center;gap:2px;height:36px}
+    .waveform-bar{flex:1;background:var(--accent);opacity:0.55;border-radius:2px;transition:height 0.3s ease}
+    .action-row{display:flex;gap:10px;margin-top:2px}
+    .btn-download{flex:1;background:var(--panel);color:#fff;border:none;padding:14px 24px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.18s,transform 0.18s}
+    .btn-download:hover{opacity:0.88;transform:translateY(-1px)}
+    .btn-again{background:var(--surface);color:var(--text2);border:1px solid var(--border);padding:14px 20px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s;white-space:nowrap}
+    .btn-again:hover{background:var(--gray-soft)}
+
+    .hidden{display:none!important}
+  </style>
+</head>
+<body>
+
+<!-- ====== BOOT ====== -->
+<div id="boot">
+  <div class="boot-logo">DRE Extractor</div>
+  <div class="boot-scan-lines">
+    <div class="boot-line" id="bl0"><div class="boot-dot" id="bd0"></div><span class="boot-line-text">Loading audio engine</span><span class="boot-line-label" id="bs0">—</span></div>
+    <div class="boot-line" id="bl1"><div class="boot-dot" id="bd1"></div><span class="boot-line-text">Initializing WAV decoder</span><span class="boot-line-label" id="bs1">—</span></div>
+    <div class="boot-line" id="bl2"><div class="boot-dot" id="bd2"></div><span class="boot-line-text">Verifying secure context</span><span class="boot-line-label" id="bs2">—</span></div>
+  </div>
+  <div class="boot-bar-wrap"><div class="boot-bar" id="bootBar"></div></div>
+  <div class="boot-status" id="bootStatus">Initializing DRE Extractor…</div>
+</div>
+
+<!-- ====== SHELL ====== -->
+<div id="shell">
+  <div class="device">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="panel-logo">
+        <div class="panel-logo-name">DRE Extractor</div>
+        <div class="panel-logo-sub">Andre Method</div>
+      </div>
+
+      <div class="panel-body">
+        <div class="panel-section-label">File Info</div>
+        <div class="file-widget">
+          <div class="file-widget-title">Source</div>
+          <div class="file-row"><span class="file-key">Name</span><span class="file-val" id="infoName">—</span></div>
+          <div class="file-row"><span class="file-key">Size</span><span class="file-val" id="infoSize">—</span></div>
+          <div class="file-row"><span class="file-key">Type</span><span class="file-val" id="infoType">—</span></div>
+        </div>
+        <div class="file-widget">
+          <div class="file-widget-title">Output</div>
+          <div class="file-row"><span class="file-key">Format</span><span class="file-val">WAV · PCM</span></div>
+          <div class="file-row"><span class="file-key">Depth</span><span class="file-val">16-bit</span></div>
+          <div class="file-row"><span class="file-key">Channels</span><span class="file-val" id="infoChannels">—</span></div>
+          <div class="file-row"><span class="file-key">Sample Rate</span><span class="file-val" id="infoSampleRate">—</span></div>
+        </div>
+
+        <div class="panel-section-label" style="padding-top:4px">Privacy</div>
+        <div class="privacy-note">
+          <div class="privacy-note-title">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="var(--green)"><path d="M5 0L9.33 2.5v5L5 10 .67 7.5v-5z"/></svg>
+            On-Device Only
+          </div>
+          <div class="privacy-note-body">No uploads. No servers. Audio is decoded and converted entirely inside your browser using the Web Audio API.</div>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <div class="status-row">
+          <div class="status-dot green" id="statusDot"></div>
+          <div class="status-text">Engine: <strong id="engineStatus">Ready</strong></div>
+        </div>
+        <a href="https://andremethod.com" target="_blank" class="brand-link">andremethod.com</a>
+      </div>
+    </div>
+
+    <!-- HINGE -->
+    <div class="hinge"></div>
+
+    <!-- RIGHT PANEL — UPLOAD STATE -->
+    <div class="right-panel" id="stateUpload">
+      <div class="panel-header">
+        <div class="panel-eyebrow">Audio Engine</div>
+        <div class="panel-title">Extract Audio</div>
+        <div class="panel-desc">Drop any video or audio file. Decoded natively in your browser — nothing is uploaded. Output is a lossless 16-bit WAV file.</div>
+      </div>
+      <div class="right-panel-body">
+        <div class="drop-zone" id="dropZone" onclick="fileInput.click()">
+          <div class="drop-icon-wrap">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 3v14M7 9l6-6 6 6"/>
+              <line x1="3" y1="22" x2="23" y2="22"/>
+            </svg>
+          </div>
+          <div class="drop-title">Drop file here</div>
+          <div class="drop-sub">or click to select from your device</div>
+          <button class="btn-select" onclick="event.stopPropagation();fileInput.click()">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.5 2v8M4 6l3.5-4L11 6"/><line x1="2" y1="13" x2="13" y2="13"/></svg>
+            Select Video or Audio File
+          </button>
+          <div class="format-chips">
+            <span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">AVI</span>
+            <span class="chip">MKV</span><span class="chip">MP3</span><span class="chip">AAC</span>
+            <span class="chip">WEBM</span><span class="chip">M4A</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL — PROCESSING STATE -->
+    <div class="right-panel hidden" id="stateProcessing">
+      <div class="panel-header">
+        <div class="panel-eyebrow">Audio Engine</div>
+        <div class="panel-title">Extracting Audio</div>
+        <div class="panel-desc">Browser native decoder is running. This happens entirely on your device.</div>
+      </div>
+      <div class="processing-wrap">
+        <div class="proc-card">
+          <div class="proc-top">
+            <div class="proc-spinner-box"><div class="spinner"></div></div>
+            <div>
+              <div class="proc-stage-name" id="stageName">Reading file…</div>
+              <div class="proc-stage-sub" id="stageSub">Buffering source data into memory</div>
+            </div>
+          </div>
+          <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+          <div class="prog-row">
+            <span class="prog-pct" id="progPct">0%</span>
+            <span class="prog-label" id="progLabel">Processing…</span>
+          </div>
+        </div>
+        <div class="stage-list">
+          <div class="stage-item active" id="st0">
+            <div class="stage-num" id="sn0">1</div>
+            <div><div class="stage-text">Read source file</div><div class="stage-detail" id="sd0">In progress…</div></div>
+          </div>
+          <div class="stage-item" id="st1">
+            <div class="stage-num" id="sn1">2</div>
+            <div><div class="stage-text">Decode audio stream</div><div class="stage-detail" id="sd1">Pending</div></div>
+          </div>
+          <div class="stage-item" id="st2">
+            <div class="stage-num" id="sn2">3</div>
+            <div><div class="stage-text">Build WAV container</div><div class="stage-detail" id="sd2">Pending</div></div>
+          </div>
+          <div class="stage-item" id="st3">
+            <div class="stage-num" id="sn3">4</div>
+            <div><div class="stage-text">Prepare download</div><div class="stage-detail" id="sd3">Pending</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL — DOWNLOAD STATE -->
+    <div class="right-panel hidden" id="stateDownload">
+      <div class="panel-header">
+        <div class="panel-eyebrow">Extraction Complete</div>
+        <div class="panel-title">Ready to Download</div>
+        <div class="panel-desc">Your audio has been decoded and packaged as a lossless WAV file.</div>
+      </div>
+      <div class="download-wrap">
+        <div class="success-banner">
+          <div class="success-icon-box">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#4CAF82" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 11 8.5 15.5 18 6"/></svg>
+          </div>
+          <div>
+            <div class="success-title">Extraction successful</div>
+            <div class="success-sub" id="fileNameDisplay">audio.wav is ready</div>
+          </div>
+        </div>
+
+        <div class="waveform-card">
+          <div class="waveform-label">Waveform Preview</div>
+          <div class="waveform-bars" id="waveformBars"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-label">Duration</div><div class="stat-val" id="statDur">—</div><div class="stat-sub">minutes : seconds</div></div>
+          <div class="stat-card"><div class="stat-label">File Size</div><div class="stat-val" id="statSize">—</div><div class="stat-sub">WAV · Lossless PCM</div></div>
+          <div class="stat-card"><div class="stat-label">Sample Rate</div><div class="stat-val" id="statSR">—</div><div class="stat-sub" id="statChLabel">Stereo · 2ch</div></div>
+          <div class="stat-card"><div class="stat-label">Bit Rate</div><div class="stat-val" id="statBR">—</div><div class="stat-sub">16-bit PCM depth</div></div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-download" id="downloadBtn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+            Download WAV
+          </button>
+          <button class="btn-again" onclick="resetTool()">Extract Another</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .device -->
+</div><!-- #shell -->
+
+<input type="file" id="fileInput" accept="video/*,audio/*" hidden/>
+
+<script>
+  // ===== HELPERS =====
+  const G = id => document.getElementById(id);
+  const show = id => G(id).classList.remove('hidden');
+  const hide = id => G(id).classList.add('hidden');
+
+  // ===== SIDEBAR UPDATE =====
+  function setSidebar(name, size, type) {
+    G('infoName').textContent  = name.length > 15 ? name.slice(0,13) + '…' : name;
+    G('infoSize').textContent  = size;
+    G('infoType').textContent  = type;
+  }
+  function setEngine(label, state) {
+    G('engineStatus').textContent = label;
+    const dot = G('statusDot');
+    dot.className = 'status-dot ' + (state === 'busy' ? 'amber' : 'green');
+  }
+
+  // ===== PROGRESS STAGES =====
+  function setStage(active, pct, name, sub) {
+    for (let i = 0; i < 4; i++) {
+      const item = G('st' + i), num = G('sn' + i), det = G('sd' + i);
+      if (i < active) {
+        item.className = 'stage-item done';
+        num.textContent = '✓';
+        det.textContent = 'Complete';
+      } else if (i === active) {
+        item.className = 'stage-item active';
+        num.textContent = i + 1;
+        det.textContent = 'In progress…';
+      } else {
+        item.className = 'stage-item';
+        num.textContent = i + 1;
+        det.textContent = 'Pending';
+      }
+    }
+    G('progFill').style.width = pct + '%';
+    G('progPct').textContent   = pct + '%';
+    if (name) G('stageName').textContent = name;
+    if (sub)  G('stageSub').textContent  = sub;
+  }
+
+  // ===== DROP ZONE =====
+  const dz = G('dropZone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f) processFile(f);
+  });
+  G('fileInput').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (f) processFile(f);
+  });
+
+  // ===== MAIN PROCESS (original logic preserved exactly) =====
+  async function processFile(file) {
+    // Update sidebar
+    setSidebar(file.name, (file.size / 1024 / 1024).toFixed(1) + ' MB', file.type.split('/')[1]?.toUpperCase() || file.name.split('.').pop().toUpperCase());
+    setEngine('Processing', 'busy');
+
+    // Switch to processing state
+    hide('stateUpload');
+    show('stateProcessing');
+    setStage(0, 10, 'Reading file…', 'Buffering ' + (file.size/1024/1024).toFixed(1) + ' MB into memory');
+
+    try {
+      // 1. Read File (original)
+      const arrayBuffer = await file.arrayBuffer();
+      setStage(1, 35, 'Decoding audio stream…', 'Browser native Web Audio API running');
+
+      // 2. Decode Audio — original browser native engine
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+      // Update sidebar with decoded info
+      G('infoChannels').textContent  = audioBuffer.numberOfChannels === 2 ? 'Stereo' : 'Mono';
+      G('infoSampleRate').textContent = (audioBuffer.sampleRate / 1000).toFixed(1) + ' kHz';
+
+      setStage(2, 65, 'Building WAV container…', 'Writing PCM headers and interleaving channels');
+
+      // 3. Convert to WAV Blob (original bufferToWave)
+      const wavBlob = bufferToWave(audioBuffer, audioBuffer.length);
+      const url      = URL.createObjectURL(wavBlob);
+      const newName  = file.name.replace(/\.[^/.]+$/, '') + '.wav';
+
+      setStage(3, 90, 'Preparing download…', 'Generating object URL');
+      await new Promise(r => setTimeout(r, 280));
+      setStage(4, 100, 'Done', 'Complete');
+      await new Promise(r => setTimeout(r, 300));
+
+      // 4. Populate download state
+      const dur   = audioBuffer.duration;
+      const mm    = String(Math.floor(dur / 60)).padStart(2, '0');
+      const ss    = String(Math.floor(dur % 60)).padStart(2, '0');
+      const kbps  = Math.round(audioBuffer.sampleRate * audioBuffer.numberOfChannels * 16 / 1000);
+      const mb    = (wavBlob.size / 1024 / 1024).toFixed(2);
+      const chLbl = audioBuffer.numberOfChannels === 2 ? 'Stereo · 2ch' : 'Mono · 1ch';
+
+      G('fileNameDisplay').textContent = newName + ' is ready';
+      G('statDur').textContent   = mm + ':' + ss;
+      G('statSize').textContent  = mb + ' MB';
+      G('statSR').textContent    = (audioBuffer.sampleRate/1000).toFixed(1) + 'k';
+      G('statBR').textContent    = kbps + 'k';
+      G('statChLabel').textContent = chLbl;
+
+      // Waveform (decorative)
+      const bars = G('waveformBars');
+      bars.innerHTML = '';
+      for (let i = 0; i < 52; i++) {
+        const b = document.createElement('div');
+        b.className = 'waveform-bar';
+        b.style.height = (12 + Math.random() * 76) + '%';
+        bars.appendChild(b);
+      }
+
+      // Download button
+      G('downloadBtn').onclick = () => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = newName;
+        a.click();
+      };
+
+      // Switch UI
+      setEngine('Ready', 'ready');
+      hide('stateProcessing');
+      show('stateDownload');
+
+    } catch (err) {
+      setEngine('Error', 'ready');
+      G('stageName').textContent = 'Extraction failed';
+      G('stageSub').textContent  = 'File may be corrupted, DRM-protected, or unsupported';
+      G('progFill').style.background = 'var(--red)';
+      setTimeout(() => { resetTool(); }, 3000);
+    }
+  }
+
+  // ===== RESET =====
+  function resetTool() {
+    G('infoName').textContent = '—'; G('infoSize').textContent = '—';
+    G('infoType').textContent = '—'; G('infoChannels').textContent = '—';
+    G('infoSampleRate').textContent = '—';
+    G('fileInput').value = '';
+    setEngine('Ready', 'ready');
+    hide('stateProcessing'); hide('stateDownload');
+    show('stateUpload');
+  }
+
+  // ===== WAV ENCODER (original — untouched) =====
+  function bufferToWave(abuffer, len) {
+    let numOfChan = abuffer.numberOfChannels,
+        length    = len * numOfChan * 2 + 44,
+        buffer    = new ArrayBuffer(length),
+        view      = new DataView(buffer),
+        channels  = [], i, sample,
+        offset    = 0, pos = 0;
+
+    setUint32(0x46464952); setUint32(length - 8);   setUint32(0x45564157);
+    setUint32(0x20746d66); setUint32(16);             setUint16(1);
+    setUint16(numOfChan);  setUint32(abuffer.sampleRate);
+    setUint32(abuffer.sampleRate * 2 * numOfChan);
+    setUint16(numOfChan * 2); setUint16(16);
+    setUint32(0x61746164); setUint32(length - pos - 4);
+
+    for (i = 0; i < abuffer.numberOfChannels; i++)
+      channels.push(abuffer.getChannelData(i));
+
+    while (pos < len) {
+      for (i = 0; i < numOfChan; i++) {
+        sample = Math.max(-1, Math.min(1, channels[i][pos]));
+        sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+        view.setInt16(44 + offset, sample, true);
+        offset += 2;
+      }
+      pos++;
+    }
+    return new Blob([buffer], { type: 'audio/wav' });
+
+    function setUint16(d) { view.setUint16(pos, d, true); pos += 2; }
+    function setUint32(d) { view.setUint32(pos, d, true); pos += 4; }
+  }
+
+  // ===== BOOT SEQUENCE =====
+  [400, 750, 1100].forEach((d, i) => {
+    setTimeout(() => {
+      const line = G('bl' + i), dot = G('bd' + i), stat = G('bs' + i);
+      line.classList.add('show');
+      setTimeout(() => { dot.classList.add('lit'); stat.textContent = '✓'; stat.classList.add('done'); }, 280);
+    }, d);
+  });
+  setTimeout(() => { G('bootBar').style.width = '100%'; G('bootStatus').textContent = 'System ready.'; }, 1400);
+  setTimeout(() => {
+    const boot = G('boot'), shell = G('shell');
+    boot.classList.add('fade-out');
+    shell.classList.add('visible');
+    setTimeout(() => { boot.style.display = 'none'; }, 700);
+  }, 3000);
+</script>
+</body>
+</html>

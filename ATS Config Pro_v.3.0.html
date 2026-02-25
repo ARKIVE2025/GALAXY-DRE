@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RePrizal AI Resume Builder | Smart PDF Import</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #4895ef;
+            --accent: #4cc9f0;
+            --accent-dark: #3aa8d8;
+            --text-primary: #2b2d42;
+            --text-secondary: #6c757d;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #06b6d4;
+            --border: #e9ecef;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header & Branding */
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-text {
+            text-align: left;
+        }
+
+        .company-name {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .company-tagline {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .ai-powered {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(76, 201, 240, 0.1);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: var(--accent-dark);
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--border);
+            z-index: 1;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            z-index: 2;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+            cursor: pointer;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .step.active .step-icon {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        }
+
+        .step.completed .step-icon {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Sections */
+        .form-section {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .required::after {
+            content: ' *';
+            color: var(--error);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background: var(--bg-white);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .error-message {
+            display: none;
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-dark);
+        }
+
+        /* PDF Conversion Box */
+        .pdf-conversion-box {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .pdf-conversion-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .pdf-conversion-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .conversion-steps {
+            background: var(--bg-white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .conversion-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .conversion-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Import Section */
+        .import-section {
+            margin-bottom: 2rem;
+        }
+
+        .file-drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            background: var(--bg-light);
+        }
+
+        .file-drop-zone:hover {
+            border-color: var(--accent);
+            background: rgba(76, 201, 240, 0.05);
+        }
+
+        .file-drop-zone.dragover {
+            border-color: var(--success);
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .supported-formats {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .format-tag {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .import-preview {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .import-preview.active {
+            display: block;
+        }
+
+        .preview-content {
+            font-family: monospace;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            color: var(--text-secondary);
+        }
+
+        .parsing-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .parsing-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Work Experience */
+        .work-experience-item {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .date-inputs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .date-inputs .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* Level Selector */
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .level-option {
+            padding: 1.5rem 1rem;
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .level-option:hover {
+            border-color: var(--primary-light);
+        }
+
+        .level-option.selected {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        /* Industry Selector */
+        .industry-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .industry-option {
+            padding: 1.5rem 1rem;
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .industry-option:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .industry-option.selected {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .industry-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        /* Skills Input */
+        .skills-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .skill-tag {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .skill-tag .remove {
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .skill-tag .remove:hover {
+            color: var(--error);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        /* Notification */
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: auto;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-section {
+                padding: 1.5rem;
+            }
+            
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .supported-formats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand-header">
+                <div class="logo">R</div>
+                <div class="brand-text">
+                    <div class="company-name">RePrizal</div>
+                    <div class="company-tagline">AI-Powered Career Solutions</div>
+                </div>
+            </div>
+            <h1>AI RESUME BUILDER</h1>
+            <p class="subtitle">Transform your career narrative with our intelligent resume builder, powered by advanced AI technology</p>
+            <div class="ai-powered">
+                <i class="fas fa-robot"></i>
+                <span>Now with LLM-Powered PDF Conversion</span>
+            </div>
+        </header>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps" id="progressSteps">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="step active" data-step="1">
+                <div class="step-icon">1</div>
+                <div class="step-label">Import Resume</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-icon">2</div>
+                <div class="step-label">Level & Industry</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-icon">3</div>
+                <div class="step-label">Personal Info</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-icon">4</div>
+                <div class="step-label">Experience</div>
+            </div>
+            <div class="step" data-step="5">
+                <div class="step-icon">5</div>
+                <div class="step-label">Education & Skills</div>
+            </div>
+            <div class="step" data-step="6">
+                <div class="step-icon">6</div>
+                <div class="step-label">Target Job</div>
+            </div>
+            <div class="step" data-step="7">
+                <div class="step-icon">7</div>
+                <div class="step-label">Export</div>
+            </div>
+        </div>
+
+        <form id="resumeForm">
+            <!-- Step 1: Enhanced Import Section with PDF Conversion -->
+            <div class="form-section active" id="step1">
+                <h2><i class="fas fa-file-import"></i> Import Your Resume</h2>
+                
+                <!-- PDF Conversion Assistant -->
+                <div class="pdf-conversion-box">
+                    <i class="fas fa-magic pdf-conversion-icon"></i>
+                    <h3>Have a PDF Resume?</h3>
+                    <p class="help-text" style="margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        PDF parsing can be unreliable. Instead, download our AI conversion template and let your favorite AI assistant (ChatGPT, Claude, etc.) convert your PDF to our format perfectly!
+                    </p>
+                    
+                    <div class="conversion-steps">
+                        <div class="conversion-step">
+                            <div class="step-number">1</div>
+                            <div>
+                                <strong>Download Template</strong>
+                                <p class="help-text">Click the button below to download the PDF conversion template</p>
+                            </div>
+                        </div>
+                        <div class="conversion-step">
+                            <div class="step-number">2</div>
+                            <div>
+                                <strong>Upload to AI Assistant</strong>
+                                <p class="help-text">Upload both your PDF resume and the template file to ChatGPT, Claude, or any LLM</p>
+                            </div>
+                        </div>
+                        <div class="conversion-step">
+                            <div class="step-number">3</div>
+                            <div>
+                                <strong>Get JSON File</strong>
+                                <p class="help-text">The AI will convert your PDF and provide a JSON file formatted for this tool</p>
+                            </div>
+                        </div>
+                        <div class="conversion-step">
+                            <div class="step-number">4</div>
+                            <div>
+                                <strong>Upload Here</strong>
+                                <p class="help-text">Upload the JSON file below to automatically populate all fields</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-accent" onclick="downloadPDFConversionTemplate()" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        <i class="fas fa-download"></i> Download PDF Conversion Template
+                    </button>
+                </div>
+                
+                <div class="import-section">
+                    <div class="file-drop-zone" id="fileDropZone">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <h3>Drag & Drop Your JSON File Here</h3>
+                        <p class="help-text">or click to browse your files</p>
+                        
+                        <div class="supported-formats">
+                            <div class="format-tag">
+                                <i class="fas fa-file-code"></i>
+                                <span>JSON Configuration</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="universalFileInput" class="file-input" accept=".json">
+                    
+                    <p class="help-text" style="text-align: center;">Upload the JSON file generated by your AI assistant or a previous configuration</p>
+                </div>
+
+                <div class="import-preview" id="importPreview">
+                    <div class="parsing-status" id="parsingStatus">
+                        <i class="fas fa-spinner parsing-spinner"></i>
+                        <span>Processing your file...</span>
+                    </div>
+                    <div class="preview-content" id="previewContent"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <div></div>
+                    <button type="button" class="btn btn-accent" onclick="nextStep(2)">Skip Import <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Level & Industry -->
+            <div class="form-section" id="step2">
+                <h2><i class="fas fa-chart-line"></i> Select Your Profile</h2>
+                
+                <div class="form-group">
+                    <label class="required">Experience Level</label>
+                    <div class="level-selector" id="levelSelector">
+                        <div class="level-option" data-level="entry">
+                            <strong>Entry Level</strong>
+                            <div class="help-text">0-2 years experience</div>
+                        </div>
+                        <div class="level-option" data-level="junior">
+                            <strong>Junior</strong>
+                            <div class="help-text">2-5 years experience</div>
+                        </div>
+                        <div class="level-option" data-level="mid">
+                            <strong>Mid-Level</strong>
+                            <div class="help-text">5-10 years experience</div>
+                        </div>
+                        <div class="level-option" data-level="senior">
+                            <strong>Senior</strong>
+                            <div class="help-text">10+ years experience</div>
+                        </div>
+                        <div class="level-option" data-level="executive">
+                            <strong>Executive</strong>
+                            <div class="help-text">Leadership roles</div>
+                        </div>
+                    </div>
+                    <div class="error-message" id="levelError">Please select your experience level</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Industry Experience</label>
+                    <p class="help-text">Select all industries where you have relevant experience</p>
+                    <div class="industry-selector" id="industrySelector">
+                        <div class="industry-option tech" data-industry="tech">
+                            <div class="industry-icon"><i class="fas fa-laptop-code"></i></div>
+                            <strong>Technology</strong>
+                            <div class="help-text">Software, IT, Engineering</div>
+                        </div>
+                        <div class="industry-option healthcare" data-industry="healthcare">
+                            <div class="industry-icon"><i class="fas fa-heartbeat"></i></div>
+                            <strong>Healthcare</strong>
+                            <div class="help-text">Medical, Pharma, Biotech</div>
+                        </div>
+                        <div class="industry-option finance" data-industry="finance">
+                            <div class="industry-icon"><i class="fas fa-chart-line"></i></div>
+                            <strong>Finance</strong>
+                            <div class="help-text">Banking, Accounting, Insurance</div>
+                        </div>
+                        <div class="industry-option education" data-industry="education">
+                            <div class="industry-icon"><i class="fas fa-graduation-cap"></i></div>
+                            <strong>Education</strong>
+                            <div class="help-text">Teaching, Administration, Research</div>
+                        </div>
+                        <div class="industry-option creative" data-industry="creative">
+                            <div class="industry-icon"><i class="fas fa-palette"></i></div>
+                            <strong>Creative</strong>
+                            <div class="help-text">Design, Marketing, Media</div>
+                        </div>
+                        <div class="industry-option customer-service" data-industry="customer-service">
+                            <div class="industry-icon"><i class="fas fa-headset"></i></div>
+                            <strong>Customer Service</strong>
+                            <div class="help-text">Support, Service, Relations</div>
+                        </div>
+                    </div>
+                    <div class="selected-industries" id="selectedIndustries"></div>
+                    <div class="error-message" id="industryError">Please select at least one industry</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-accent" onclick="nextStep(3)">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Personal Information -->
+            <div class="form-section" id="step3">
+                <h2><i class="fas fa-user"></i> Personal Information</h2>
+                
+                <div class="form-group">
+                    <label for="fullName" class="required">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                    <div class="error-message" id="fullNameError">Please enter your full name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="required">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" class="required">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                    <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location" class="required">Location (City, State)</label>
+                    <input type="text" id="location" name="location" required>
+                    <div class="error-message" id="locationError">Please enter your location</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="linkedin">LinkedIn URL</label>
+                    <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                </div>
+                
+                <div class="form-group">
+                    <label for="summary">Professional Summary</label>
+                    <textarea id="summary" name="summary" placeholder="Briefly describe your professional background and key strengths"></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-accent" onclick="nextStep(4)">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 4: Work Experience -->
+            <div class="form-section" id="step4">
+                <h2><i class="fas fa-briefcase"></i> Work Experience</h2>
+                
+                <div id="workExperienceContainer">
+                    <div class="work-experience-item">
+                        <button type="button" class="remove-btn" onclick="removeWorkExperience(this)"><i class="fas fa-times"></i></button>
+                        
+                        <div class="form-group">
+                            <label class="required">Company Name</label>
+                            <input type="text" name="company[]" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Job Title</label>
+                            <input type="text" name="jobTitle[]" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Employment Dates</label>
+                            <div class="date-inputs">
+                                <div class="form-group">
+                                    <input type="month" name="startDate[]" required>
+                                    <div class="help-text">Start Date</div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="month" name="endDate[]">
+                                    <div class="help-text">End Date (leave empty if current)</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Job Description</label>
+                            <textarea name="description[]" placeholder="Describe your responsibilities and achievements" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Achievements & Metrics</label>
+                            <textarea name="achievements[]" placeholder="List any quantifiable achievements, e.g., 'Increased sales by 20%'"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-secondary" onclick="addWorkExperience()"><i class="fas fa-plus"></i> Add Another Job</button>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-accent" onclick="nextStep(5)">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 5: Education & Skills -->
+            <div class="form-section" id="step5">
+                <h2><i class="fas fa-graduation-cap"></i> Education & Skills</h2>
+                
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="includeEducation" onchange="toggleEducation()">
+                        <label for="includeEducation">Include Education Section</label>
+                    </div>
+                    
+                    <div id="educationSection" style="display: none;">
+                        <div class="form-group">
+                            <label class="required">School Name</label>
+                            <input type="text" id="schoolName" name="schoolName">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Degree/Certificate</label>
+                            <input type="text" id="degree" name="degree">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Field of Study</label>
+                            <input type="text" id="fieldOfStudy" name="fieldOfStudy">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Graduation Year</label>
+                            <input type="number" id="gradYear" name="gradYear" min="1950" max="2030">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="skills">Skills</label>
+                    <input type="text" id="skillInput" placeholder="Type a skill and press Enter">
+                    <div class="skills-input" id="skillsContainer"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="certifications">Certifications</label>
+                    <textarea id="certifications" name="certifications" placeholder="List any relevant certifications"></textarea>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(4)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-accent" onclick="nextStep(6)">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 6: Target Job -->
+            <div class="form-section" id="step6">
+                <h2><i class="fas fa-bullseye"></i> Target Job Information</h2>
+                
+                <div class="form-group">
+                    <label for="targetJobTitle" class="required">Job Title You're Applying For</label>
+                    <input type="text" id="targetJobTitle" name="targetJobTitle" required>
+                    <div class="error-message" id="targetJobTitleError">Please enter the job title you're applying for</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="targetCompany" class="required">Company Name</label>
+                    <input type="text" id="targetCompany" name="targetCompany" required>
+                    <div class="error-message" id="targetCompanyError">Please enter the company name</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="jobDescription" class="required">Job Description/Listing</label>
+                    <textarea id="jobDescription" name="jobDescription" placeholder="Paste the complete job listing here" required></textarea>
+                    <p class="help-text">Copy and paste the entire job posting - this helps Andre AI tailor your resume specifically for this role</p>
+                    <div class="error-message" id="jobDescriptionError">Please paste the job description</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(5)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-accent" onclick="nextStep(7)">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 7: Export Configuration -->
+            <div class="form-section" id="step7">
+                <h2><i class="fas fa-download"></i> Export AI Configuration</h2>
+                
+                <div class="form-group">
+                    <label>Export Options</label>
+                    <p class="help-text">Generate a JSON configuration file that can be loaded into any AI assistant to create your tailored resume</p>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="enableAIAnalysis" checked>
+                        <label for="enableAIAnalysis">Enable AI Skills Analysis</label>
+                    </div>
+                    <p class="help-text">Allow Andre AI to identify hidden skills and transferable abilities from your experience</p>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="enableJobTailoring" checked>
+                        <label for="enableJobTailoring">Enable Job-Specific Tailoring</label>
+                    </div>
+                    <p class="help-text">Optimize your resume specifically for the target job description</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(6)"><i class="fas fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-accent" onclick="generateAIResumeConfig()">
+                        <i class="fas fa-file-code"></i> Generate AI Config
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <footer>
+            <div class="footer-brand">
+                <div class="footer-logo">R</div>
+                <div>RePrizal AI</div>
+            </div>
+            <p>© 2023 RePrizal AI. All rights reserved. | Powered by Andre AI Technology</p>
+        </footer>
+    </div>
+
+    <div id="notification"></div>
+
+    <script>
+        // Current step tracking
+        let currentStep = 1;
+        let selectedLevel = null;
+        let selectedIndustries = [];
+        let skills = [];
+        let workExperienceCount = 1;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFileDropZone();
+            initializeLevelSelector();
+            initializeIndustrySelector();
+            initializeSkillInput();
+            updateProgressBar();
+        });
+
+        // Download PDF Conversion Template
+        function downloadPDFConversionTemplate() {
+            const template = {
+                templateVersion: "2.6",
+                templateName: "RePrizal AI - PDF to JSON Converter",
+                instructions: {
+                    role: "You are a helpful assistant that converts resume PDFs into structured JSON format for the RePrizal AI Resume Builder.",
+                    task: "Extract all information from the provided PDF resume and format it according to the exact JSON structure below.",
+                    steps: [
+                        "1. Read and analyze the entire PDF resume carefully",
+                        "2. Extract all personal information (name, email, phone, location, LinkedIn)",
+                        "3. Extract work experience with all details (company, title, dates, descriptions, achievements)",
+                        "4. Extract education information if present",
+                        "5. Extract all skills mentioned",
+                        "6. Extract certifications if present",
+                        "7. Format everything into the exact JSON structure provided below",
+                        "8. Return ONLY the JSON object, no additional text or explanation"
+                    ],
+                    importantNotes: [
+                        "- Preserve all original text and details from the resume",
+                        "- For dates, use YYYY-MM format (e.g., '2023-01' for January 2023)",
+                        "- If end date is current/present, use 'Present' as the value",
+                        "- For experienceLevel, choose one: 'entry', 'junior', 'mid', 'senior', or 'executive'",
+                        "- For industries, choose from: 'tech', 'healthcare', 'finance', 'education', 'creative', 'customer-service'",
+                        "- Include multiple industries if the person has cross-industry experience",
+                        "- Extract achievements separately from job descriptions when possible"
+                    ]
+                },
+                requiredOutputFormat: {
+                    experienceLevel: "entry|junior|mid|senior|executive",
+                    industries: ["tech", "healthcare"],
+                    personalInfo: {
+                        fullName: "John Doe",
+                        email: "john.doe@email.com",
+                        phone: "(555) 123-4567",
+                        location: "San Francisco, CA",
+                        linkedin: "https://linkedin.com/in/johndoe",
+                        summary: "Professional summary extracted from resume"
+                    },
+                    workExperience: [
+                        {
+                            company: "Company Name",
+                            jobTitle: "Job Title",
+                            startDate: "2020-01",
+                            endDate: "2023-06",
+                            description: "Main job responsibilities and duties",
+                            achievements: "Specific achievements with metrics"
+                        }
+                    ],
+                    education: {
+                        schoolName: "University Name",
+                        degree: "Bachelor of Science",
+                        fieldOfStudy: "Computer Science",
+                        gradYear: "2020"
+                    },
+                    skills: ["JavaScript", "Python", "Project Management"],
+                    certifications: "List of certifications"
+                },
+                examplePrompt: "I have uploaded a PDF resume. Please convert it to JSON format using the exact structure specified in the template. Extract all information carefully and return only the JSON object."
+            };
+            
+            downloadJSON(template, 'RePrizal_PDF_Conversion_Template.json');
+            showNotification('PDF Conversion Template downloaded! Upload it with your PDF to any AI assistant.', 'success');
+        }
+
+        // File drop zone functionality
+        function initializeFileDropZone() {
+            const dropZone = document.getElementById('fileDropZone');
+            const fileInput = document.getElementById('universalFileInput');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+        }
+
+        // Enhanced file selection handler (JSON only)
+        async function handleFileSelect(file) {
+            if (!file) return;
+
+            const preview = document.getElementById('importPreview');
+            const parsingStatus = document.getElementById('parsingStatus');
+            const previewContent = document.getElementById('previewContent');
+
+            preview.classList.add('active');
+            parsingStatus.style.display = 'flex';
+            previewContent.textContent = '';
+
+            try {
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                
+                if (fileExtension !== 'json') {
+                    throw new Error('Only JSON files are supported. Please use the PDF Conversion Template for PDF resumes.');
+                }
+
+                const resumeData = await handleJSONFile(file);
+                
+                // Store the data and auto-populate form
+                storeImportedData(resumeData);
+                
+                parsingStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Resume data loaded successfully!</span>';
+                previewContent.textContent = JSON.stringify(resumeData, null, 2);
+                
+                showNotification(`Successfully imported ${file.name}`, 'success');
+                
+                // Auto-advance to next step
+                setTimeout(() => nextStep(2), 1500);
+
+            } catch (error) {
+                parsingStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Error loading file</span>';
+                previewContent.textContent = `Error: ${error.message}`;
+                showNotification(`Error importing file: ${error.message}`, 'error');
+            }
+        }
+
+        // Store imported data for later use
+        function storeImportedData(data) {
+            sessionStorage.setItem('importedResumeData', JSON.stringify(data));
+        }
+
+        // JSON file handler
+        async function handleJSONFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const config = JSON.parse(e.target.result);
+                        const userData = config.userData || config;
+                        resolve(userData);
+                    } catch (error) {
+                        reject(new Error('Invalid JSON format'));
+                    }
+                };
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsText(file);
+            });
+        }
+
+        // Initialize level selector
+        function initializeLevelSelector() {
+            const levelOptions = document.querySelectorAll('.level-option');
+            levelOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    levelOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedLevel = this.getAttribute('data-level');
+                    document.getElementById('levelError').style.display = 'none';
+                });
+            });
+        }
+
+        // Initialize industry selector
+        function initializeIndustrySelector() {
+            const industryOptions = document.querySelectorAll('.industry-option');
+            industryOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const industry = this.getAttribute('data-industry');
+                    
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        selectedIndustries = selectedIndustries.filter(i => i !== industry);
+                    } else {
+                        this.classList.add('selected');
+                        selectedIndustries.push(industry);
+                    }
+                    
+                    updateSelectedIndustriesDisplay();
+                    document.getElementById('industryError').style.display = 'none';
+                });
+            });
+        }
+
+        // Update selected industries display
+        function updateSelectedIndustriesDisplay() {
+            const container = document.getElementById('selectedIndustries');
+            container.innerHTML = '';
+            
+            selectedIndustries.forEach(industry => {
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    ${getIndustryDisplayName(industry)}
+                    <span class="remove" onclick="removeIndustry('${industry}')"><i class="fas fa-times"></i></span>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        // Get display name for industry
+        function getIndustryDisplayName(industry) {
+            const names = {
+                'tech': 'Technology',
+                'healthcare': 'Healthcare',
+                'finance': 'Finance',
+                'education': 'Education',
+                'creative': 'Creative',
+                'customer-service': 'Customer Service'
+            };
+            return names[industry] || industry;
+        }
+
+        // Remove industry from selection
+        function removeIndustry(industry) {
+            selectedIndustries = selectedIndustries.filter(i => i !== industry);
+            document.querySelector(`.industry-option[data-industry="${industry}"]`).classList.remove('selected');
+            updateSelectedIndustriesDisplay();
+        }
+
+        // Initialize skill input
+        function initializeSkillInput() {
+            const skillInput = document.getElementById('skillInput');
+            
+            skillInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const skill = this.value.trim();
+                    if (skill && !skills.includes(skill)) {
+                        addSkill(skill);
+                        this.value = '';
+                    }
+                }
+            });
+        }
+
+        // Add a skill
+        function addSkill(skill) {
+            skills.push(skill);
+            updateSkillsDisplay();
+        }
+
+        // Remove a skill
+        function removeSkill(skill) {
+            skills = skills.filter(s => s !== skill);
+            updateSkillsDisplay();
+        }
+
+        // Update skills display
+        function updateSkillsDisplay() {
+            const skillsContainer = document.getElementById('skillsContainer');
+            skillsContainer.innerHTML = '';
+            
+            skills.forEach(skill => {
+                const skillTag = document.createElement('div');
+                skillTag.className = 'skill-tag';
+                skillTag.innerHTML = `
+                    ${skill}
+                    <span class="remove" onclick="removeSkill('${skill}')"><i class="fas fa-times"></i></span>
+                `;
+                skillsContainer.appendChild(skillTag);
+            });
+        }
+
+        // Toggle education section
+        function toggleEducation() {
+            const educationSection = document.getElementById('educationSection');
+            const includeEducation = document.getElementById('includeEducation').checked;
+            educationSection.style.display = includeEducation ? 'block' : 'none';
+        }
+
+        // Add work experience
+        function addWorkExperience() {
+            workExperienceCount++;
+            
+            const workExperienceContainer = document.getElementById('workExperienceContainer');
+            const newExperience = document.createElement('div');
+            newExperience.className = 'work-experience-item';
+            newExperience.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeWorkExperience(this)"><i class="fas fa-times"></i></button>
+                
+                <div class="form-group">
+                    <label class="required">Company Name</label>
+                    <input type="text" name="company[]" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Job Title</label>
+                    <input type="text" name="jobTitle[]" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Employment Dates</label>
+                    <div class="date-inputs">
+                        <div class="form-group">
+                            <input type="month" name="startDate[]" required>
+                            <div class="help-text">Start Date</div>
+                        </div>
+                        <div class="form-group">
+                            <input type="month" name="endDate[]">
+                            <div class="help-text">End Date (leave empty if current)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Job Description</label>
+                    <textarea name="description[]" placeholder="Describe your responsibilities and achievements" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Achievements & Metrics</label>
+                    <textarea name="achievements[]" placeholder="List any quantifiable achievements, e.g., 'Increased sales by 20%'"></textarea>
+                </div>
+            `;
+            
+            workExperienceContainer.appendChild(newExperience);
+        }
+
+        // Remove work experience
+        function removeWorkExperience(button) {
+            const workExperienceItem = button.closest('.work-experience-item');
+            workExperienceItem.remove();
+            workExperienceCount--;
+            
+            if (workExperienceCount === 0) {
+                addWorkExperience();
+            }
+        }
+
+        // Navigate to next step
+        function nextStep(step) {
+            if (!validateStep(currentStep)) {
+                return;
+            }
+            
+            // Check if we have imported data to populate
+            if (step === 2) {
+                populateFormWithImportedData();
+            }
+            
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('completed');
+            
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            
+            updateProgressBar();
+        }
+
+        // Navigate to previous step
+        function prevStep(step) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+            
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            
+            updateProgressBar();
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            const progress = ((currentStep - 1) / 6) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Validate current step
+        function validateStep(step) {
+            let isValid = true;
+            
+            switch(step) {
+                case 1:
+                    // No validation needed for import step
+                    break;
+                case 2:
+                    if (!selectedLevel) {
+                        document.getElementById('levelError').style.display = 'block';
+                        isValid = false;
+                    }
+                    
+                    if (selectedIndustries.length === 0) {
+                        document.getElementById('industryError').style.display = 'block';
+                        isValid = false;
+                    }
+                    break;
+                case 6:
+                    // Validate target job information
+                    const targetJobTitle = document.getElementById('targetJobTitle').value.trim();
+                    const targetCompany = document.getElementById('targetCompany').value.trim();
+                    const jobDescription = document.getElementById('jobDescription').value.trim();
+                    
+                    if (!targetJobTitle) {
+                        document.getElementById('targetJobTitleError').style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById('targetJobTitleError').style.display = 'none';
+                    }
+                    
+                    if (!targetCompany) {
+                        document.getElementById('targetCompanyError').style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById('targetCompanyError').style.display = 'none';
+                    }
+                    
+                    if (!jobDescription) {
+                        document.getElementById('jobDescriptionError').style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById('jobDescriptionError').style.display = 'none';
+                    }
+                    break;
+            }
+            
+            return isValid;
+        }
+
+        // Populate form with imported data
+        function populateFormWithImportedData() {
+            const importedData = sessionStorage.getItem('importedResumeData');
+            if (!importedData) return;
+            
+            const data = JSON.parse(importedData);
+            
+            // Populate personal info
+            if (data.personalInfo) {
+                if (data.personalInfo.fullName) document.getElementById('fullName').value = data.personalInfo.fullName;
+                if (data.personalInfo.email) document.getElementById('email').value = data.personalInfo.email;
+                if (data.personalInfo.phone) document.getElementById('phone').value = data.personalInfo.phone;
+                if (data.personalInfo.location) document.getElementById('location').value = data.personalInfo.location;
+                if (data.personalInfo.linkedin) document.getElementById('linkedin').value = data.personalInfo.linkedin;
+                if (data.personalInfo.summary) document.getElementById('summary').value = data.personalInfo.summary;
+            }
+            
+            // Populate level and industries
+            if (data.experienceLevel) {
+                selectedLevel = data.experienceLevel;
+                document.querySelectorAll('.level-option').forEach(option => {
+                    if (option.getAttribute('data-level') === data.experienceLevel) {
+                        option.classList.add('selected');
+                    }
+                });
+            }
+            
+            if (data.industries && Array.isArray(data.industries)) {
+                selectedIndustries = data.industries;
+                document.querySelectorAll('.industry-option').forEach(option => {
+                    const industry = option.getAttribute('data-industry');
+                    if (data.industries.includes(industry)) {
+                        option.classList.add('selected');
+                    }
+                });
+                updateSelectedIndustriesDisplay();
+            }
+            
+            // Populate work experience
+            if (data.workExperience && Array.isArray(data.workExperience) && data.workExperience.length > 0) {
+                populateWorkExperience(data.workExperience);
+            }
+            
+            // Populate education
+            if (data.education) {
+                populateEducation(data.education);
+            }
+            
+            // Populate skills
+            if (data.skills && Array.isArray(data.skills)) {
+                skills = data.skills;
+                updateSkillsDisplay();
+            }
+            
+            // Populate certifications
+            if (data.certifications) {
+                document.getElementById('certifications').value = data.certifications;
+            }
+            
+            showNotification('Form populated with imported data!', 'success');
+        }
+
+        // Populate work experience from imported data
+        function populateWorkExperience(workExperienceArray) {
+            const container = document.getElementById('workExperienceContainer');
+            container.innerHTML = '';
+            
+            workExperienceArray.forEach((job, index) => {
+                const workItem = document.createElement('div');
+                workItem.className = 'work-experience-item';
+                
+                const company = job.company ? job.company.replace(/"/g, '&quot;') : '';
+                const jobTitle = job.jobTitle ? job.jobTitle.replace(/"/g, '&quot;') : '';
+                const startDate = job.startDate ? job.startDate.replace(/"/g, '&quot;') : '';
+                const endDate = (job.endDate && job.endDate !== 'Present') ? job.endDate.replace(/"/g, '&quot;') : '';
+                const description = job.description ? job.description.replace(/"/g, '&quot;') : '';
+                const achievements = job.achievements ? job.achievements.replace(/"/g, '&quot;') : '';
+                
+                workItem.innerHTML = `
+                    <button type="button" class="remove-btn" onclick="removeWorkExperience(this)"><i class="fas fa-times"></i></button>
+                    
+                    <div class="form-group">
+                        <label class="required">Company Name</label>
+                        <input type="text" name="company[]" value="${company}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Job Title</label>
+                        <input type="text" name="jobTitle[]" value="${jobTitle}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Employment Dates</label>
+                        <div class="date-inputs">
+                            <div class="form-group">
+                                <input type="month" name="startDate[]" value="${startDate}" required>
+                                <div class="help-text">Start Date</div>
+                            </div>
+                            <div class="form-group">
+                                <input type="month" name="endDate[]" value="${endDate}">
+                                <div class="help-text">End Date (leave empty if current)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Job Description</label>
+                        <textarea name="description[]" placeholder="Describe your responsibilities and achievements" required>${description}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Achievements & Metrics</label>
+                        <textarea name="achievements[]" placeholder="List any quantifiable achievements, e.g., 'Increased sales by 20%'">${achievements}</textarea>
+                    </div>
+                `;
+                
+                container.appendChild(workItem);
+            });
+            
+            workExperienceCount = workExperienceArray.length;
+        }
+
+        // Populate education from imported data
+        function populateEducation(educationData) {
+            const includeEducation = document.getElementById('includeEducation');
+            includeEducation.checked = true;
+            
+            const educationSection = document.getElementById('educationSection');
+            educationSection.style.display = 'block';
+            
+            if (educationData.schoolName) {
+                document.getElementById('schoolName').value = educationData.schoolName;
+            }
+            if (educationData.degree) {
+                document.getElementById('degree').value = educationData.degree;
+            }
+            if (educationData.fieldOfStudy) {
+                document.getElementById('fieldOfStudy').value = educationData.fieldOfStudy;
+            }
+            if (educationData.gradYear) {
+                document.getElementById('gradYear').value = educationData.gradYear;
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            if (type === 'success') {
+                notification.style.background = 'var(--success)';
+            } else if (type === 'error') {
+                notification.style.background = 'var(--error)';
+            } else if (type === 'warning') {
+                notification.style.background = 'var(--warning)';
+            } else {
+                notification.style.background = 'var(--info)';
+            }
+            
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Generate AI Resume Configuration
+        function generateAIResumeConfig() {
+            if (!validateStep(6)) {
+                showNotification('Please complete the Target Job information', 'error');
+                return;
+            }
+            
+            const resumeData = collectResumeData();
+            const enableAIAnalysis = document.getElementById('enableAIAnalysis').checked;
+            const enableJobTailoring = document.getElementById('enableJobTailoring').checked;
+            
+            const aiConfig = {
+                version: "2.6",
+                generatedDate: new Date().toISOString(),
+                tool: "RePrizal AI Resume Builder",
+                poweredBy: "Andre AI",
+                userData: resumeData,
+                aiInstructions: {
+                    role: "You are Andre AI, an expert resume writer and career consultant created by RePrizal LLC. Your task is to create a professional, ATS-optimized resume based on the provided user data and target job description.",
+                    process: [
+                        "1. Analyze the target job description to identify key requirements and keywords",
+                        "2. Extract and identify transferable skills from the user's work descriptions",
+                        "3. Rewrite work experience using professional terminology that matches the job requirements",
+                        "4. Generate a compelling professional summary if not provided",
+                        "5. Optimize the resume for ATS systems while maintaining readability",
+                        "6. Format the output as a professional document ready for PDF/DOC export"
+                    ],
+                    levelSpecificInstructions: getLevelInstructions(resumeData.experienceLevel),
+                    outputRequirements: {
+                        format: "Create a well-structured resume with clear sections",
+                        style: "Professional and concise",
+                        length: resumeData.experienceLevel === 'entry' || resumeData.experienceLevel === 'junior' ? "1 page" : "1-2 pages",
+                        keywords: "Include relevant keywords from the job description",
+                        quantification: "Add metrics and achievements where possible"
+                    },
+                    interactionGuidelines: [
+                        "Ask clarifying questions if work descriptions need more detail",
+                        "Offer options for different resume styles (traditional, modern, ATS-optimized)",
+                        "Suggest whether a cover letter would strengthen the application",
+                        "Provide multiple versions if applying to different role types"
+                    ],
+                    brandGuidelines: {
+                        company: "RePrizal LLC",
+                        tool: "AI Resume Builder",
+                        aiAgent: "Andre AI",
+                        tone: "Professional, helpful, and empowering"
+                    }
+                },
+                formattingStandards: {
+                    fonts: {
+                        heading: "Arial or Calibri, 14-16pt",
+                        body: "Arial or Calibri, 10-11pt"
+                    },
+                    margins: "0.5-1 inch all sides",
+                    sections: [
+                        "Contact Information",
+                        "Professional Summary",
+                        "Work Experience",
+                        "Education",
+                        "Skills",
+                        "Additional Sections (if relevant)"
+                    ],
+                    bulletPoints: "Use action verbs and quantifiable achievements"
+                },
+                analysisOptions: {
+                    enableSkillsAnalysis: enableAIAnalysis,
+                    enableJobTailoring: enableJobTailoring,
+                    targetJobTitle: resumeData.targetJob.title,
+                    targetCompany: resumeData.targetJob.company
+                }
+            };
+            
+            downloadJSON(aiConfig, 'RePrizal_AI_Resume_Config.json');
+            showNotification('AI Configuration generated! Load this into your AI assistant.', 'success');
+        }
+
+        // Get level-specific instructions
+        function getLevelInstructions(level) {
+            const instructions = {
+                entry: "Focus on education, internships, projects, and transferable skills. Emphasize potential and eagerness to learn.",
+                junior: "Highlight growth, learning experiences, and increasing responsibilities. Show progression and skill development.",
+                mid: "Emphasize leadership, project management, and specialized expertise. Show impact and contributions.",
+                senior: "Focus on strategic thinking, team leadership, and measurable business impact. Highlight expertise and mentorship.",
+                executive: "Emphasize vision, strategy, organizational transformation, and P&L responsibility. Focus on enterprise-level achievements."
+            };
+            return instructions[level] || instructions.mid;
+        }
+
+        // Download JSON file
+        function downloadJSON(data, filename) {
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename || 'resume_config.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Collect all resume data from the form
+        function collectResumeData() {
+            const personalInfo = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                location: document.getElementById('location').value,
+                linkedin: document.getElementById('linkedin').value,
+                summary: document.getElementById('summary').value
+            };
+            
+            const workExperience = [];
+            const companyInputs = document.getElementsByName('company[]');
+            const jobTitleInputs = document.getElementsByName('jobTitle[]');
+            const startDateInputs = document.getElementsByName('startDate[]');
+            const endDateInputs = document.getElementsByName('endDate[]');
+            const descriptionInputs = document.getElementsByName('description[]');
+            const achievementsInputs = document.getElementsByName('achievements[]');
+            
+            for (let i = 0; i < companyInputs.length; i++) {
+                workExperience.push({
+                    company: companyInputs[i].value,
+                    jobTitle: jobTitleInputs[i].value,
+                    startDate: startDateInputs[i].value,
+                    endDate: endDateInputs[i].value || 'Present',
+                    description: descriptionInputs[i].value,
+                    achievements: achievementsInputs[i].value
+                });
+            }
+            
+            const includeEducation = document.getElementById('includeEducation').checked;
+            const education = includeEducation ? {
+                schoolName: document.getElementById('schoolName').value,
+                degree: document.getElementById('degree').value,
+                fieldOfStudy: document.getElementById('fieldOfStudy').value,
+                gradYear: document.getElementById('gradYear').value
+            } : null;
+            
+            const targetJob = {
+                title: document.getElementById('targetJobTitle').value,
+                company: document.getElementById('targetCompany').value,
+                description: document.getElementById('jobDescription').value
+            };
+            
+            return {
+                experienceLevel: selectedLevel,
+                industries: selectedIndustries,
+                personalInfo,
+                workExperience,
+                education,
+                skills,
+                certifications: document.getElementById('certifications').value,
+                targetJob
+            };
+        }
+    </script>
+</body>
+</html>

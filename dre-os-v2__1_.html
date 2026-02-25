@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DRE OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#F4F5F7;--surface:#fff;--panel:#1F2328;
+      --panel-nav:rgba(255,255,255,0.06);--panel-nav-active:rgba(255,255,255,0.12);
+      --accent:#5B7CDD;--accent-soft:#EEF2FF;
+      --green:#4CAF82;--green-soft:#EEF9F4;
+      --amber:#D4923A;--amber-soft:#FDF4E7;
+      --red:#E05C5C;--red-soft:#FEF0F0;
+      --gray:#B0BAC7;--gray-soft:#F1F3F5;
+      --border:rgba(0,0,0,0.07);
+      --text:#1F2328;--text2:#6B7585;--text3:#9AA3B0;
+      --sh-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+      --sh-md:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+      --sh-lg:0 20px 48px rgba(0,0,0,0.12),0 8px 20px rgba(0,0,0,0.06);
+      --r-sm:10px;--r-md:16px;--r-lg:24px;--r-xl:32px;
+    }
+    html,body{height:100%;font-family:DM Sans,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+    #boot{position:fixed;inset:0;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1)}
+    #boot.fade-out{opacity:0;pointer-events:none}
+    .boot-logo{font-size:15px;font-weight:500;letter-spacing:0.22em;color:rgba(255,255,255,0.9);text-transform:uppercase;margin-bottom:48px;opacity:0;animation:fadeUp 0.5s ease 0.3s forwards}
+    .boot-scan-lines{width:280px;display:flex;flex-direction:column;gap:16px;margin-bottom:40px}
+    .boot-line{display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(6px)}
+    .boot-line.show{animation:fadeUp 0.4s cubic-bezier(0.2,0,0,1) forwards}
+    .boot-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;transform:scale(0);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+    .boot-dot.lit{transform:scale(1)}
+    .boot-line-text{font-family:DM Mono,monospace;font-size:12px;color:rgba(255,255,255,0.55);letter-spacing:0.04em}
+    .boot-line-label{font-size:12px;color:rgba(255,255,255,0.4);margin-left:auto;font-family:DM Mono,monospace}
+    .boot-line-label.done{color:var(--green)}
+    .boot-bar-wrap{width:280px;height:2px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;opacity:0;animation:fadeUp 0.4s ease 1.2s forwards}
+    .boot-bar{height:100%;background:linear-gradient(90deg,var(--accent),#7B9EF7);border-radius:99px;width:0%;transition:width 1.8s cubic-bezier(0.4,0,0.2,1)}
+    .boot-status{margin-top:20px;font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);opacity:0;animation:fadeUp 0.4s ease 1.3s forwards}
+    #shell{height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.5s ease}
+    #shell.visible{opacity:1}
+    .device{width:1080px;height:680px;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--sh-lg),0 0 0 1px rgba(0,0,0,0.06);display:flex;overflow:hidden}
+    .left-panel{width:240px;flex-shrink:0;background:var(--panel);display:flex;flex-direction:column;padding:32px 0}
+    .panel-logo{padding:0 24px 28px;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .panel-logo-name{font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em}
+    .panel-logo-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;margin-top:3px}
+    .sidebar-score{margin:16px 12px 0;background:rgba(255,255,255,0.05);border-radius:var(--r-sm);padding:12px 14px}
+    .sidebar-score-label{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px}
+    .sidebar-score-bar-bg{height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden}
+    .sidebar-score-bar{height:100%;border-radius:99px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1),background 0.4s ease}
+    .sidebar-score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .sidebar-score-num{font-size:13px;font-weight:600;color:#fff}
+    .sidebar-score-tier{font-size:11px;font-weight:500}
+    nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+    .nav-section-label{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 6px}
+    .nav-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:13.5px;font-weight:400;color:rgba(255,255,255,0.5);width:100%;text-align:left;transition:all 0.18s ease;position:relative}
+    .nav-btn:hover{background:var(--panel-nav);color:rgba(255,255,255,0.85)}
+    .nav-btn.active{background:var(--panel-nav-active);color:#fff;font-weight:500}
+    .nav-btn.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--accent);border-radius:0 3px 3px 0}
+    .nav-icon{width:16px;height:16px;flex-shrink:0;opacity:0.6}
+    .nav-btn.active .nav-icon{opacity:1}
+    .panel-footer{padding:16px 24px 0;border-top:1px solid rgba(255,255,255,0.06)}
+    .status-row{display:flex;align-items:center;gap:8px}
+    .status-dot-live{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(76,175,130,0.2);animation:pulse-green 2.5s ease infinite}
+    .status-text{font-size:11.5px;color:rgba(255,255,255,0.3)}
+    .status-text strong{color:rgba(255,255,255,0.55);font-weight:500}
+    .hinge{width:1px;background:rgba(0,0,0,0.12);flex-shrink:0}
+    .right-panel{flex:1;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column}
+    #content{flex:1;display:flex;flex-direction:column}
+    .right-panel::-webkit-scrollbar{width:4px}
+    .right-panel::-webkit-scrollbar-thumb{background:var(--gray);border-radius:99px}
+    .panel-content{padding:36px 40px;flex:1}
+    .quiz-wrap,.wt-wrap{flex:1;display:flex;flex-direction:column}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideInRight{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes pulse-green{0%,100%{box-shadow:0 0 0 3px rgba(76,175,130,0.2)}50%{box-shadow:0 0 0 5px rgba(76,175,130,0.08)}}
+    .module-wrap{animation:fadeUp 0.28s cubic-bezier(0.2,0,0,1)}
+    .stagger>*{opacity:0;transform:translateY(10px)}
+    .stagger.run>*:nth-child(1){animation:fadeUp 0.3s ease 0.00s forwards}
+    .stagger.run>*:nth-child(2){animation:fadeUp 0.3s ease 0.07s forwards}
+    .stagger.run>*:nth-child(3){animation:fadeUp 0.3s ease 0.14s forwards}
+    .stagger.run>*:nth-child(4){animation:fadeUp 0.3s ease 0.21s forwards}
+    .stagger.run>*:nth-child(5){animation:fadeUp 0.3s ease 0.28s forwards}
+    .stagger.run>*:nth-child(6){animation:fadeUp 0.3s ease 0.35s forwards}
+    .module-header{margin-bottom:24px}
+    .module-eyebrow{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+    .module-title{font-size:24px;font-weight:600;color:var(--text);letter-spacing:-0.02em}
+    .module-desc{font-size:13px;color:var(--text2);margin-top:5px;line-height:1.55}
+    .score-banner{background:var(--surface);border-radius:var(--r-md);padding:20px 24px;box-shadow:var(--sh-sm);border:1px solid var(--border);display:flex;align-items:center;gap:20px;margin-bottom:18px}
+    .score-ring{position:relative;width:64px;height:64px;flex-shrink:0}
+    .score-ring svg{transform:rotate(-90deg)}
+    .score-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600}
+    .score-meta{flex:1}
+    .score-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px}
+    .score-title{font-size:17px;font-weight:600;color:var(--text)}
+    .score-desc{font-size:12px;color:var(--text2);margin-top:3px}
+    .score-cta{flex-shrink:0}
+    .btn-primary{background:var(--panel);color:#fff;border:none;padding:10px 18px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.18s,transform 0.18s;white-space:nowrap}
+    .btn-primary:hover{opacity:0.88;transform:translateY(-1px)}
+    .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border);padding:9px 16px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s}
+    .btn-secondary:hover{background:var(--gray-soft)}
+    .btn-accent{background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.18s,transform 0.18s}
+    .btn-accent:hover{opacity:0.9;transform:translateY(-1px)}
+    .overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .status-card{background:var(--surface);border-radius:var(--r-md);padding:18px 20px;box-shadow:var(--sh-sm);border:1px solid var(--border);cursor:pointer;transition:box-shadow 0.2s,transform 0.2s}
+    .status-card:hover{box-shadow:var(--sh-md);transform:translateY(-1px)}
+    .status-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .status-card-title{font-size:12px;color:var(--text2)}
+    .status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500}
+    .status-badge.protected{background:var(--green-soft);color:var(--green)}
+    .status-badge.partial{background:var(--amber-soft);color:var(--amber)}
+    .status-badge.none{background:var(--gray-soft);color:var(--gray)}
+    .status-badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+    .status-card-layer{font-size:16px;font-weight:600;color:var(--text);letter-spacing:-0.01em}
+    .status-card-bar-wrap{height:3px;background:var(--gray-soft);border-radius:99px;margin-top:12px;overflow:hidden}
+    .status-card-bar{height:100%;border-radius:99px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+    .status-card-bar.protected{background:var(--green);width:100%}
+    .status-card-bar.partial{background:var(--amber);width:55%}
+    .status-card-bar.none{background:var(--gray);width:8%}
+    .toggle-card{background:var(--surface);border-radius:var(--r-md);padding:18px 20px;box-shadow:var(--sh-sm);border:1px solid var(--border);display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:box-shadow 0.2s,transform 0.2s}
+    .toggle-card:hover{box-shadow:var(--sh-md);transform:translateY(-1px)}
+    .toggle-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .toggle-card-icon.protected{background:var(--green-soft)}
+    .toggle-card-icon.none{background:var(--gray-soft)}
+    .toggle-card-icon.partial{background:var(--amber-soft)}
+    .toggle-card-body{flex:1}
+    .toggle-card-title{font-size:14px;font-weight:500;color:var(--text)}
+    .toggle-card-sub{font-size:12px;color:var(--text3);margin-top:2px}
+    .toggle-card-right{display:flex;align-items:center;gap:10px}
+    .mini-status{font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px}
+    .mini-status.protected{background:var(--green-soft);color:var(--green)}
+    .mini-status.partial{background:var(--amber-soft);color:var(--amber)}
+    .mini-status.none{background:var(--gray-soft);color:var(--gray)}
+    .btn-fix{background:var(--accent-soft);color:var(--accent);border:none;padding:7px 13px;border-radius:8px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:background 0.18s}
+    .btn-fix:hover{background:#dce6fb}
+    .btn-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--gray-soft);color:var(--text2);font-size:12px;text-decoration:none;transition:background 0.18s,color 0.18s;flex-shrink:0}
+    .btn-link:hover{background:var(--accent-soft);color:var(--accent)}
+    .toggle-switch{width:42px;height:24px;border-radius:99px;cursor:pointer;position:relative;transition:background 0.22s;flex-shrink:0}
+    .toggle-switch.on{background:var(--panel)}
+    .toggle-switch.off{background:#D1D5DB}
+    .toggle-thumb{position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);transition:left 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+    .toggle-switch.on .toggle-thumb{left:21px}
+    .toggle-switch.off .toggle-thumb{left:3px}
+    /* QUIZ */
+    .quiz-wrap{display:flex;flex-direction:column;min-height:100%;background:var(--bg);animation:fadeIn 0.3s ease}
+    .quiz-header{padding:28px 40px 20px;border-bottom:1px solid var(--border);background:var(--surface)}
+    .quiz-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .quiz-title{font-size:18px;font-weight:600;color:var(--text)}
+    .quiz-step{font-size:12px;color:var(--text3);font-family:DM Mono,monospace}
+    .quiz-progress-bg{height:3px;background:var(--gray-soft);border-radius:99px;overflow:hidden}
+    .quiz-progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width 0.4s cubic-bezier(0.4,0,0.2,1)}
+    .quiz-body{flex:1;padding:28px 40px;overflow-y:auto;min-height:0}
+    .quiz-q{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.015em;margin-bottom:8px;animation:fadeUp 0.3s ease}
+    .quiz-q-sub{font-size:13px;color:var(--text2);margin-bottom:28px;line-height:1.5}
+    .quiz-options{display:flex;flex-direction:column;gap:10px}
+    .quiz-opt{background:var(--surface);border:2px solid var(--border);border-radius:var(--r-md);padding:16px 20px;cursor:pointer;transition:all 0.18s;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:500;color:var(--text);font-family:DM Sans,sans-serif;text-align:left;width:100%}
+    .quiz-opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+    .quiz-opt.selected{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+    .quiz-opt-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+    .quiz-opt.selected .quiz-opt-dot{border-color:var(--accent);background:var(--accent)}
+    .quiz-opt-check{display:none;color:#fff;font-size:11px;font-weight:700}
+    .quiz-opt.selected .quiz-opt-check{display:block}
+    .quiz-opt-label{flex:1}
+    .quiz-opt-sub{font-size:12px;color:var(--text3);font-weight:400;margin-top:2px}
+    .quiz-footer{padding:20px 40px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:space-between;align-items:center}
+    .quiz-footer-hint{font-size:12px;color:var(--text3)}
+    /* EMAIL GATE */
+    .email-gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;animation:fadeUp 0.4s ease}
+    .email-gate-icon{width:56px;height:56px;background:var(--accent-soft);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+    .email-gate-title{font-size:22px;font-weight:600;color:var(--text);margin-bottom:8px}
+    .email-gate-desc{font-size:14px;color:var(--text2);max-width:340px;line-height:1.6;margin-bottom:28px}
+    .email-input-row{display:flex;gap:10px;width:100%;max-width:380px}
+    .email-input{flex:1;padding:11px 16px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;background:var(--surface)}
+    .email-input:focus{border-color:var(--accent)}
+    .email-skip{font-size:12px;color:var(--text3);margin-top:14px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+    /* WALKTHROUGH */
+    .wt-wrap{display:flex;flex-direction:column;min-height:100%;background:var(--bg);animation:slideInRight 0.3s cubic-bezier(0.2,0,0,1)}
+    .wt-header{padding:18px 24px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px}
+    .wt-back{background:none;border:none;cursor:pointer;color:var(--accent);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;display:flex;align-items:center;gap:5px;padding:0}
+    .wt-header-info{flex:1}
+    .wt-title{font-size:15px;font-weight:600;color:var(--text)}
+    .wt-sub{font-size:12px;color:var(--text3)}
+    .wt-step-badge{background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;font-family:DM Mono,monospace;white-space:nowrap}
+    .wt-body{flex:1;display:flex;overflow:hidden;min-height:0}
+    .wt-steps{width:190px;flex-shrink:0;padding:18px 14px;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+    .wt-step-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background 0.15s}
+    .wt-step-item.current{background:var(--accent-soft)}
+    .wt-step-num{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--text3);flex-shrink:0;font-family:DM Mono,monospace;transition:all 0.2s}
+    .wt-step-item.current .wt-step-num{border-color:var(--accent);background:var(--accent);color:#fff}
+    .wt-step-item.done .wt-step-num{border-color:var(--green);background:var(--green);color:#fff}
+    .wt-step-label{font-size:12px;color:var(--text2);font-weight:500;line-height:1.3}
+    .wt-step-item.current .wt-step-label{color:var(--accent)}
+    .wt-main{flex:1;display:flex;overflow:hidden}
+    .wt-instruction{flex:1;padding:26px 28px;overflow-y:auto;display:flex;flex-direction:column}
+    .wt-instruction-num{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;font-family:DM Mono,monospace}
+    .wt-instruction-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:10px;letter-spacing:-0.015em}
+    .wt-instruction-body{font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+    .wt-instruction-body strong{color:var(--text);font-weight:600}
+    .wt-instruction-tip{background:var(--accent-soft);border-radius:var(--r-sm);padding:12px 14px;font-size:12.5px;color:#3d5db8;margin-bottom:20px;border-left:3px solid var(--accent)}
+    .wt-nav{display:flex;gap:10px;margin-top:auto;padding-top:16px}
+    .wt-phone-wrap{width:210px;flex-shrink:0;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--gray-soft);border-left:1px solid var(--border)}
+    .wt-phone{width:150px;background:#0A0A0A;border-radius:26px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,0.25)}
+    .wt-phone-screen{background:#1C1C1E;border-radius:18px;overflow:hidden;min-height:270px}
+    .wt-phone-notch{height:14px;background:#0A0A0A;display:flex;align-items:center;justify-content:center}
+    .wt-phone-notch-pill{width:32px;height:4px;background:#222;border-radius:99px}
+    .wt-phone-label{font-size:9px;color:var(--text3);text-align:center;margin-top:10px;letter-spacing:0.05em}
+    .mock-settings{background:#F2F2F7;min-height:256px}
+    .mock-topbar{background:#fff;padding:7px 10px 6px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(0,0,0,0.08)}
+    .mock-back-arrow{font-size:12px;color:#007AFF}
+    .mock-topbar-title{font-size:10px;font-weight:600;color:#000;flex:1;text-align:center}
+    .mock-settings-group{background:#fff;margin:7px 6px;border-radius:8px;overflow:hidden}
+    .mock-settings-item{display:flex;align-items:center;padding:7px 9px;border-bottom:1px solid rgba(0,0,0,0.06);gap:7px}
+    .mock-settings-item:last-child{border-bottom:none}
+    .mock-item-icon{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px}
+    .mock-item-label{flex:1;font-size:9px;font-weight:500;color:#000}
+    .mock-item-value{font-size:8px;color:#8E8E93}
+    .mock-item-chevron{font-size:9px;color:#C7C7CC;margin-left:2px}
+    .mock-toggle-sm{width:26px;height:15px;border-radius:99px;position:relative;transition:background 0.3s;flex-shrink:0}
+    .mock-toggle-sm.on{background:#34C759}
+    .mock-toggle-sm.off{background:#E5E5EA}
+    .mock-toggle-sm-thumb{position:absolute;top:2px;width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left 0.25s cubic-bezier(0.34,1.56,0.64,1)}
+    .mock-toggle-sm.on .mock-toggle-sm-thumb{left:13px}
+    .mock-toggle-sm.off .mock-toggle-sm-thumb{left:2px}
+    .mock-highlight{background:rgba(0,122,255,0.1);animation:pulse-blue 1.5s ease infinite}
+    .mock-section-label{font-size:8px;color:#8E8E93;text-transform:uppercase;letter-spacing:0.05em;padding:6px 10px 2px}
+    @keyframes pulse-blue{0%,100%{background:rgba(0,122,255,0.06)}50%{background:rgba(0,122,255,0.18)}}
+    .completion-banner{background:linear-gradient(135deg,#1F2328,#2C3D60);border-radius:var(--r-md);padding:20px 24px;display:flex;align-items:center;gap:18px;margin-bottom:16px}
+    .completion-icon{width:44px;height:44px;background:rgba(76,175,130,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .completion-text-title{font-size:16px;font-weight:600;color:#fff;margin-bottom:3px}
+    .completion-text-sub{font-size:12px;color:rgba(255,255,255,0.5)}
+  </style>
+</head>
+<body>
+<div id="boot">
+  <div class="boot-logo">DRE OS</div>
+  <div class="boot-scan-lines">
+    <div class="boot-line" id="bl0"><div class="boot-dot" id="bd0"></div><span class="boot-line-text">Scanning device layer</span><span class="boot-line-label" id="bs0">—</span></div>
+    <div class="boot-line" id="bl1"><div class="boot-dot" id="bd1"></div><span class="boot-line-text">Analyzing network signals</span><span class="boot-line-label" id="bs1">—</span></div>
+    <div class="boot-line" id="bl2"><div class="boot-dot" id="bd2"></div><span class="boot-line-text">Mapping browser exposure</span><span class="boot-line-label" id="bs2">—</span></div>
+    <div class="boot-line" id="bl3"><div class="boot-dot" id="bd3"></div><span class="boot-line-text">Verifying identity layer</span><span class="boot-line-label" id="bs3">—</span></div>
+  </div>
+  <div class="boot-bar-wrap"><div class="boot-bar" id="bootBar"></div></div>
+  <div class="boot-status" id="bootStatus">Initializing DRE OS…</div>
+</div>
+<div id="shell">
+  <div class="device">
+    <div class="left-panel">
+      <div class="panel-logo">
+        <div class="panel-logo-name">DRE OS</div>
+        <div class="panel-logo-sub">Exposure Reduction System</div>
+      </div>
+      <div class="sidebar-score">
+        <div class="sidebar-score-label">Exposure Score</div>
+        <div class="sidebar-score-row">
+          <div class="sidebar-score-num" id="sidebarScoreNum">—</div>
+          <div class="sidebar-score-tier" id="sidebarScoreTier" style="color:var(--gray)">Not assessed</div>
+        </div>
+        <div class="sidebar-score-bar-bg"><div class="sidebar-score-bar" id="sidebarScoreBar" style="width:0%;background:var(--gray)"></div></div>
+      </div>
+      <nav>
+        <div class="nav-section-label">System</div>
+        <button class="nav-btn active" onclick="loadModule('overview',this)" id="nav-overview">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1.5"/><rect x="9" y="2" width="5" height="5" rx="1.5"/><rect x="2" y="9" width="5" height="5" rx="1.5"/><rect x="9" y="9" width="5" height="5" rx="1.5"/></svg>
+          Exposure Overview
+        </button>
+        <div class="nav-section-label">Layers</div>
+        <button class="nav-btn" onclick="loadModule('device',this)" id="nav-device">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="1.5" width="10" height="13" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/></svg>
+          Device
+        </button>
+        <button class="nav-btn" onclick="loadModule('network',this)" id="nav-network">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 2c-2 1.5-3.5 3.5-3.5 6s1.5 4.5 3.5 6M8 2c2 1.5 3.5 3.5 3.5 6S10 14.5 8 14"/><line x1="2" y1="8" x2="14" y2="8"/></svg>
+          Network
+        </button>
+        <button class="nav-btn" onclick="loadModule('browser',this)" id="nav-browser">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><line x1="2" y1="6" x2="14" y2="6"/><circle cx="4.5" cy="4.5" r="0.8" fill="currentColor" stroke="none"/><circle cx="7" cy="4.5" r="0.8" fill="currentColor" stroke="none"/></svg>
+          Browser
+        </button>
+        <button class="nav-btn" onclick="loadModule('identity',this)" id="nav-identity">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>
+          Identity
+        </button>
+      </nav>
+      <div class="panel-footer">
+        <div class="status-row">
+          <div class="status-dot-live"></div>
+          <div class="status-text">Status: <strong>Stable</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="hinge"></div>
+    <div class="right-panel" id="rightPanel">
+      <div class="panel-content" id="content"></div>
+    </div>
+  </div>
+</div>
+<script>
+const APP = {
+  assessed:false, score:0, tier:'none', email:'',
+  layerStatus:{device:'none',network:'none',browser:'none',identity:'none'},
+  device:[
+    {key:'private-dns',  title:'Private DNS',               sub:'Encrypt DNS queries to prevent ISP tracking',    status:'none',wt:true},
+    {key:'ad-id',        title:'Ad ID Reset',               sub:'Periodically reset advertising identifier',      status:'none',wt:true},
+    {key:'app-tracking', title:'App Tracking Restrictions', sub:'Limit cross-app tracking permissions',           status:'none',wt:true},
+  ],
+  network:[
+    {key:'secure-dns',   title:'Secure DNS / Router DNS',   sub:'Encrypted DNS-over-HTTPS on device and router',  status:'none',wt:true,  link:'https://1.1.1.1/'},
+    {key:'wifi-protect', title:'Public WiFi Protection',    sub:'Guard against open network exposure',            status:'none',wt:true,  link:'https://www.consumer.ftc.gov/articles/how-protect-your-privacy-online'},
+    {key:'vpn-setup',    title:'VPN Setup',                 sub:'Encrypt internet traffic for privacy and security', status:'none',wt:true,link:'https://www.eff.org/pages/choose-vpn'},
+  ],
+  browser:[
+    {key:'tracker-block',title:'Tracker Blocking',          sub:'Block third-party ad and analytics trackers',    status:'none',wt:true,  link:'https://www.eff.org/privacybadger'},
+    {key:'cookie-clear', title:'Cookie Auto-Clear',         sub:'Remove session cookies on browser close',        status:'none',wt:true,  link:'https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox'},
+    {key:'private-search',title:'Private Search Engine',   sub:'Avoid search engine profiling and tracking',      status:'none',wt:true,  link:'https://duckduckgo.com/app'},
+    {key:'extensions',   title:'Privacy Browser Extensions',sub:'uBlock Origin, Privacy Badger, HTTPS Everywhere', status:'none',wt:true, link:'https://www.eff.org/privacybadger'},
+  ],
+  identity:[
+    {key:'2fa',          title:'2FA Enabled',               sub:'Two-factor authentication is active',            status:'none',wt:false, link:'https://www.cisa.gov/two-factor-authentication'},
+    {key:'password-mgr', title:'Password Manager Active',   sub:'Unique strong passwords across accounts',        status:'none',wt:false, link:'https://bitwarden.com/'},
+    {key:'data-broker',  title:'Data Broker Opt-Out',       sub:'Remove personal data from public broker databases', status:'none',wt:true,link:'https://www.abine.com/ghostery'},
+  ]
+};
+
+const QUIZ=[
+  {id:'wifi',q:'Do you regularly use public WiFi networks?',sub:'Coffee shops, airports, hotels — any open network counts.',opts:[
+    {label:'Yes, often',sub:'Multiple times per week',affects:{layer:'network',key:'wifi-protect',val:'none'}},
+    {label:'Sometimes',sub:'Occasionally when needed',affects:{layer:'network',key:'wifi-protect',val:'partial'}},
+    {label:'Rarely or never',sub:'I avoid public networks',affects:{layer:'network',key:'wifi-protect',val:'protected'}},
+  ]},
+  {id:'passwords',q:'Do you reuse passwords across multiple accounts?',sub:'Using the same password on different sites is a major exposure risk.',opts:[
+    {label:'Yes, mostly the same',sub:'Same or slightly varied passwords',affects:{layer:'identity',key:'password-mgr',val:'none'}},
+    {label:'Some reuse',sub:'Different for important accounts',affects:{layer:'identity',key:'password-mgr',val:'partial'}},
+    {label:'No, all unique',sub:'Unique password per account',affects:{layer:'identity',key:'password-mgr',val:'protected'}},
+  ]},
+  {id:'dns',q:'Have you configured Private or Secure DNS on your device?',sub:'Private DNS encrypts your domain lookups, hiding them from your ISP.',opts:[
+    {label:"No / I do not know",sub:'Default settings unchanged',affects:{layer:'device',key:'private-dns',val:'none'}},
+    {label:'Partially set up',sub:'Done on some devices',affects:{layer:'device',key:'private-dns',val:'partial'}},
+    {label:'Yes, configured',sub:'Private DNS active on my device',affects:{layer:'device',key:'private-dns',val:'protected'}},
+  ]},
+  {id:'2fa',q:'Do you use two-factor authentication (2FA)?',sub:'2FA adds a second verification step, greatly reducing account takeover risk.',opts:[
+    {label:'No, not set up',sub:'Password only',affects:{layer:'identity',key:'2fa',val:'none'}},
+    {label:'On some accounts',sub:'Only on key accounts',affects:{layer:'identity',key:'2fa',val:'partial'}},
+    {label:'Yes, on all major',sub:'2FA enabled everywhere I can',affects:{layer:'identity',key:'2fa',val:'protected'}},
+  ]},
+  {id:'trackers',q:'Does your browser block third-party trackers?',sub:'Tracker blocking prevents ad networks from following you across websites.',opts:[
+    {label:'No / default browser',sub:'No blocking extensions',affects:{layer:'browser',key:'tracker-block',val:'none'}},
+    {label:'Basic built-in blocking',sub:'Some browser-level protection',affects:{layer:'browser',key:'tracker-block',val:'partial'}},
+    {label:'Yes, actively blocked',sub:'uBlock Origin or equivalent active',affects:{layer:'browser',key:'tracker-block',val:'protected'}},
+  ]},
+  {id:'adid',q:"Have you reset or limited your device's advertising ID?",sub:'Ad IDs let apps track your behavior across the entire app ecosystem.',opts:[
+    {label:'No / not sure',sub:'Default advertising ID active',affects:{layer:'device',key:'ad-id',val:'none'}},
+    {label:'Limited but not reset',sub:'Partial restriction applied',affects:{layer:'device',key:'ad-id',val:'partial'}},
+    {label:'Yes, reset/disabled',sub:'Ad ID reset or fully disabled',affects:{layer:'device',key:'ad-id',val:'protected'}},
+  ]},
+  {id:'cookies',q:'Do you clear cookies or use a browser that auto-clears them?',sub:'Cookie accumulation enables persistent cross-site tracking profiles.',opts:[
+    {label:'No, never clear them',sub:'Cookies accumulate indefinitely',affects:{layer:'browser',key:'cookie-clear',val:'none'}},
+    {label:'Occasionally',sub:'Manual clearing now and then',affects:{layer:'browser',key:'cookie-clear',val:'partial'}},
+    {label:'Yes, automatic/regular',sub:'Auto-clear or frequent manual',affects:{layer:'browser',key:'cookie-clear',val:'protected'}},
+  ]},
+  {id:'apptracking',q:'Have you reviewed app tracking permissions on your phone?',sub:'Apps request tracking access — most users grant it without realizing.',opts:[
+    {label:'No, never reviewed',sub:'Default permissions in place',affects:{layer:'device',key:'app-tracking',val:'none'}},
+    {label:'Reviewed a few',sub:'Adjusted some permissions',affects:{layer:'device',key:'app-tracking',val:'partial'}},
+    {label:'Yes, denied most apps',sub:'Tracking denied app by app',affects:{layer:'device',key:'app-tracking',val:'protected'}},
+  ]},
+  {id:'securednsfull',q:'Do you use DNS-over-HTTPS or an encrypted DNS service?',sub:'Services like Cloudflare 1.1.1.1 or NextDNS encrypt all DNS queries.',opts:[
+    {label:'No / not configured',sub:'Standard ISP DNS in use',affects:{layer:'network',key:'secure-dns',val:'none'}},
+    {label:'Partially configured',sub:'On one device or network',affects:{layer:'network',key:'secure-dns',val:'partial'}},
+    {label:'Yes, fully set up',sub:'Encrypted DNS across my network',affects:{layer:'network',key:'secure-dns',val:'protected'}},
+  ]},
+  {id:'vpn',q:'Do you use a VPN for your internet traffic?',sub:'A VPN encrypts your connection, hiding activity from your ISP and public networks.',opts:[
+    {label:'No, I do not use one',sub:'Traffic is unencrypted to your ISP',affects:{layer:'network',key:'vpn-setup',val:'none'}},
+    {label:'Sometimes',sub:'Only on public WiFi or occasionally',affects:{layer:'network',key:'vpn-setup',val:'partial'}},
+    {label:'Yes, regularly',sub:'VPN active for most browsing',affects:{layer:'network',key:'vpn-setup',val:'protected'}},
+  ]},
+  {id:'databrokers',q:'Have you opted out of data broker databases?',sub:'Data brokers sell your personal info — name, address, relatives — to anyone who pays.',opts:[
+    {label:'No, never done this',sub:'Your data is likely publicly listed',affects:{layer:'identity',key:'data-broker',val:'none'}},
+    {label:'A few sites only',sub:'Partial opt-out done',affects:{layer:'identity',key:'data-broker',val:'partial'}},
+    {label:'Yes, major brokers done',sub:'Actively managing broker listings',affects:{layer:'identity',key:'data-broker',val:'protected'}},
+  ]},
+  {id:'privatesearch',q:'Do you use a privacy-focused search engine?',sub:'Standard search engines build a profile from every query you make.',opts:[
+    {label:'No, I use Google/Bing',sub:'All queries are tracked and profiled',affects:{layer:'browser',key:'private-search',val:'none'}},
+    {label:'Occasionally',sub:'Mixed use of private and standard',affects:{layer:'browser',key:'private-search',val:'partial'}},
+    {label:'Yes, DuckDuckGo or similar',sub:'No-track search engine as default',affects:{layer:'browser',key:'private-search',val:'protected'}},
+  ]},
+  {id:'extensions',q:'Do you use privacy-focused browser extensions?',sub:'Extensions like uBlock Origin and Privacy Badger block trackers at the browser level.',opts:[
+    {label:'No extensions installed',sub:'No tracker blocking active',affects:{layer:'browser',key:'extensions',val:'none'}},
+    {label:'One or two installed',sub:'Partial tracker blocking',affects:{layer:'browser',key:'extensions',val:'partial'}},
+    {label:'Yes, uBlock + more',sub:'Comprehensive tracker blocking active',affects:{layer:'browser',key:'extensions',val:'protected'}},
+  ]},
+];
+
+function mI(icon,bg,label,val,extra,hl){return '<div class="mock-settings-item'+(hl?' mock-highlight':'')+'"><div class="mock-item-icon" style="background:'+bg+'">'+icon+'</div><span class="mock-item-label">'+label+'</span>'+(val?'<span class="mock-item-value">'+val+'</span>':'')+(extra||'')+'<span class="mock-item-chevron">›</span></div>';}
+function mT(icon,bg,label,on,hl){return '<div class="mock-settings-item'+(hl?' mock-highlight':'')+'"><div class="mock-item-icon" style="background:'+bg+'">'+icon+'</div><span class="mock-item-label">'+label+'</span><div class="mock-toggle-sm '+(on?'on':'off')+'"><div class="mock-toggle-sm-thumb"></div></div></div>';}
+function phone(c){return '<div class="wt-phone"><div class="wt-phone-screen"><div class="wt-phone-notch"><div class="wt-phone-notch-pill"></div></div>'+c+'</div></div>';}
+function settingsMain(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-topbar-title">Settings</span></div><div class="mock-settings-group">'+mI('🔗','#E3F2FD','Connections','WiFi, Bluetooth','')+mI('🔔','#F3E5F5','Notifications','','')+mI('🔒','#E8F5E9','Privacy','','')+mI('⚙️','#FAFAFA','General','',' ')+'</div></div>');}
+function settingsConns(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Connections</span></div><div class="mock-settings-group">'+mI('📶','#E3F2FD','WiFi','Connected','')+mI('📡','#FFF3E0','Mobile networks','','')+mI('🌐','#E8F5E9','Private DNS','Off','',true)+'</div></div>');}
+function settingsDns(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Private DNS</span></div><div class="mock-section-label">Mode</div><div class="mock-settings-group"><div class="mock-settings-item"><span class="mock-item-label">Off</span></div><div class="mock-settings-item"><span class="mock-item-label">Automatic</span></div><div class="mock-settings-item mock-highlight"><span style="color:#007AFF;font-size:9px">✓</span><span class="mock-item-label" style="margin-left:4px">Private DNS provider hostname</span></div></div></div>');}
+function settingsDnsInput(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Private DNS</span></div><div class="mock-settings-group" style="margin-top:10px"><div class="mock-settings-item mock-highlight" style="flex-direction:column;align-items:flex-start;gap:4px"><span style="font-size:8px;color:#8E8E93">Hostname</span><span style="font-size:7px;color:#007AFF;font-family:monospace">1dot1dot1dot1.cloudflare-dns.com</span></div></div><div style="display:flex;justify-content:flex-end;padding:6px 10px"><div style="background:#007AFF;color:#fff;font-size:8px;padding:4px 10px;border-radius:4px;font-weight:600">Save</div></div></div>');}
+function settingsPrivacy(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Privacy</span></div><div class="mock-settings-group">'+mI('🔐','#E8F5E9','Permission manager','')+mI('📢','#FFF3E0','Ads','','',true)+mT('✂️','#F3E5F5','Send diagnostic data',false)+'</div></div>');}
+function settingsAds(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Ads</span></div><div class="mock-section-label">Your Advertising ID</div><div class="mock-settings-group"><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:3px"><span class="mock-item-label">Ad ID</span><span style="font-size:7px;color:#8E8E93;font-family:monospace">a3f8b2c1-9e4d-11ec-...</span></div></div><div class="mock-settings-group" style="margin-top:6px">'+mI('🔄','#E3F2FD','Reset advertising ID','','',true)+mI('🗑️','#FFEBEE','Delete advertising ID','','')+' </div></div>');}
+function settingsAdsReset(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Ads</span></div><div class="mock-settings-group" style="margin-top:10px"><div class="mock-settings-item" style="flex-direction:column;align-items:center;gap:5px;padding:14px 10px"><span style="font-size:18px">✅</span><span style="font-size:8px;color:#34C759;font-weight:600">Ad ID Deleted</span><span style="font-size:7px;color:#8E8E93;text-align:center">Apps can no longer track you using an advertising ID</span></div></div></div>');}
+function settingsPerms(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Permission Manager</span></div><div class="mock-settings-group">'+mI('📍','#FCE4EC','Location','12 apps','',true)+mI('🎤','#E8EAF6','Microphone','4 apps','')+mI('📷','#E8F5E9','Camera','6 apps','')+mI('📜','#FFF9C4','Contacts','8 apps','')+'</div></div>');}
+function settingsLocPerms(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Location</span></div><div class="mock-section-label">Allowed all the time</div><div class="mock-settings-group">'+mI('🗺️','#E3F2FD','Maps','Always','')+' </div><div class="mock-section-label">While in use</div><div class="mock-settings-group">'+mI('🛒','#FFF3E0','Shopping App','While using','',true)+mI('🎮','#F3E5F5','Game App','While using','',true)+'</div></div>');}
+function chromeMenu(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar" style="background:#1A73E8"><span style="color:#fff;font-size:9px;font-weight:600">Chrome</span></div><div style="background:#F1F3F4;padding:5px 7px;display:flex;gap:5px;align-items:center"><div style="flex:1;background:#fff;height:14px;border-radius:7px;font-size:7px;color:#5F6368;display:flex;align-items:center;padding:0 6px">google.com</div><span style="font-size:11px;color:#5F6368">⋮</span></div><div style="background:#fff;margin:5px;border-radius:6px;border:1px solid rgba(0,0,0,0.08)"><div class="mock-settings-item" style="font-size:8px">New tab</div><div class="mock-settings-item" style="font-size:8px">New Incognito tab</div><div class="mock-settings-item mock-highlight" style="font-size:8px"><strong>Settings</strong></div></div></div>');}
+function chromePrivacy(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Chrome Settings</span></div><div class="mock-settings-group">'+mI('🔒','#E3F2FD','Privacy and security','','',true)+mI('🌎','#E8F5E9','Site settings','')+mI('💾','#FFF3E0','Downloads','')+'</div></div>');}
+function chromeSecureDns(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Privacy and Security</span></div><div class="mock-settings-group">'+mI('🗑️','#FAFAFA','Clear browsing data','')+mI('🛡','#FAFAFA','Safe Browsing','')+mT('🌐','#E3F2FD','Use secure DNS',true,true)+'</div><div class="mock-section-label">DNS Provider</div><div class="mock-settings-group"><div class="mock-settings-item mock-highlight" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label">Cloudflare (1.1.1.1)</span><span style="font-size:7px;color:#8E8E93">Fast, private DNS resolver</span></div></div></div>');}
+function chromeCookies(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Site Settings</span></div><div class="mock-settings-group">'+mI('🍪','#FFF3E0','Cookies and site data','','',true)+mI('📍','#FCE4EC','Location','')+mI('🎤','#E8EAF6','Microphone','')+'</div><div class="mock-settings-group" style="margin-top:5px">'+mT('🚫','#FFEBEE','Block third-party cookies',true,true)+'</div></div>');}
+function chromeSafeBrowse(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Safe Browsing</span></div><div class="mock-settings-group"><div class="mock-settings-item mock-highlight" style="flex-direction:column;align-items:flex-start;gap:2px"><div style="display:flex;gap:6px;align-items:center"><div style="width:9px;height:9px;border-radius:50%;background:#1A73E8"></div><span class="mock-item-label">Enhanced protection</span></div><span style="font-size:7px;color:#8E8E93;padding-left:15px">Faster, proactive protection</span></div><div class="mock-settings-item"><div style="width:9px;height:9px;border-radius:50%;border:2px solid #C7C7CC;margin-right:4px"></div><span class="mock-item-label">Standard protection</span></div></div></div>');}
+function chromeClearExit(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Privacy</span></div><div class="mock-settings-group">'+mT('🚪','#E8F5E9','Close all tabs on exit',true,true)+mT('🍪','#FFEBEE','Clear cookies on exit',true,true)+mT('📁','#FFF3E0','Clear cache on exit',true)+'</div><div class="mock-section-label">Status</div><div class="mock-settings-group"><div class="mock-settings-item" style="background:#E8F5E9"><span style="font-size:9px;color:#34C759;font-weight:600">✓ Auto-clear configured</span></div></div></div>');}
+function wifiSettings(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">WiFi</span></div><div class="mock-settings-group">'+mI('⚙️','#FAFAFA','WiFi preferences','')+mI('','#FAFAFA','Saved networks','8','')+'</div><div class="mock-section-label">Advanced</div><div class="mock-settings-group">'+mT('🔄','#FFEBEE','Auto-connect to open networks',false,true)+mT('📡','#FFF3E0','Connect to suggested networks',false)+'</div></div>');}
+function wifiWarning(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-topbar-title">Network Security</span></div><div style="padding:10px 8px"><div style="background:#FFF9C4;border-radius:8px;padding:9px;margin-bottom:8px"><div style="font-size:8px;font-weight:700;color:#F57F17;margin-bottom:3px">⚠ Public WiFi Active</div><div style="font-size:7px;color:#795548;line-height:1.5">Avoid logging into sensitive accounts. HTTPS sites only.</div></div><div style="background:#E8F5E9;border-radius:8px;padding:9px"><div style="font-size:8px;font-weight:700;color:#2E7D32;margin-bottom:3px">✓ Best Practices</div><div style="font-size:7px;color:#388E3C;line-height:1.5">• Padlock visible in browser<br>• No banking/email login<br>• VPN active if available</div></div></div></div>');}
+function wifiSaved(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Saved Networks</span></div><div class="mock-settings-group"><div class="mock-settings-item"><span class="mock-item-label">Home Network</span><span class="mock-item-value" style="color:#34C759">Trusted</span><span class="mock-item-chevron">›</span></div><div class="mock-settings-item mock-highlight"><span class="mock-item-label">Starbucks WiFi</span><span style="font-size:7px;background:#FFEBEE;color:#E05C5C;padding:2px 6px;border-radius:4px">Forget</span></div><div class="mock-settings-item mock-highlight"><span class="mock-item-label">Airport_Free_WiFi</span><span style="font-size:7px;background:#FFEBEE;color:#E05C5C;padding:2px 6px;border-radius:4px">Forget</span></div></div></div>');}
+
+function vpnChoose(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-topbar-title">Choose a VPN</span></div><div class="mock-settings-group"><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label" style="color:#34C759;font-weight:600">✓ Mullvad VPN</span><span style="font-size:7px;color:#8E8E93">No-logs, anonymous, audited</span></div><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label">ProtonVPN</span><span style="font-size:7px;color:#8E8E93">Free tier available, Swiss-based</span></div><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label">IVPN</span><span style="font-size:7px;color:#8E8E93">Privacy-focused, minimal logging</span></div></div><div class="mock-settings-group" style="margin-top:6px"><div class="mock-settings-item" style="background:#FFEBEE"><span style="font-size:8px;color:#E05C5C;font-weight:600">✗ Avoid free VPNs</span></div></div></div>');}
+function vpnInstall(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar" style="background:#1A73E8"><span style="color:#fff;font-size:9px;font-weight:600">App Store</span></div><div style="margin:8px 6px;background:#fff;border-radius:8px;border:1px solid rgba(0,0,0,0.1);padding:10px;display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#1F2328;border-radius:8px;flex-shrink:0"></div><div style="flex:1"><div style="font-size:9px;font-weight:600">Mullvad VPN</div><div style="font-size:7px;color:#8E8E93">Mullvad VPN AB</div></div><div style="background:#007AFF;color:#fff;font-size:7px;padding:3px 8px;border-radius:10px;font-weight:600">GET</div></div><div class="mock-settings-group" style="margin-top:4px"><div class="mock-settings-item" style="background:#E8F5E9"><span style="font-size:8px;color:#34C759;font-weight:600">✓ Verify: developer name matches</span></div></div></div>');}
+function vpnConnect(){return phone('<div class="mock-settings" style="background:#1F2328"><div class="mock-topbar" style="background:#2C3138"><span style="color:#fff;font-size:9px;font-weight:600;flex:1;text-align:center">Mullvad VPN</span></div><div style="padding:14px 10px;text-align:center"><div style="width:48px;height:48px;background:rgba(76,175,130,0.2);border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center"><span style="color:#4CAF82;font-size:20px">🔒</span></div><div style="font-size:10px;font-weight:600;color:#4CAF82;margin-bottom:3px">Connected</div><div style="font-size:7px;color:rgba(255,255,255,0.4)">New York, US · 45ms</div></div><div class="mock-settings-group" style="margin:0 6px"><div class="mock-settings-item" style="background:#1C2830"><span style="font-size:8px;color:rgba(255,255,255,0.6)">Kill Switch</span><div class="mock-toggle-sm on" style="margin-left:auto"><div class="mock-toggle-sm-thumb" style="left:13px"></div></div></div></div></div>');}
+function searchChoose(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-topbar-title">Search Engines</span></div><div class="mock-settings-group"><div class="mock-settings-item mock-highlight"><div style="width:18px;height:18px;background:#DE5833;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center"><span style="color:#fff;font-size:8px;font-weight:700">D</span></div><div style="flex:1;margin-left:6px"><div style="font-size:9px;font-weight:600">DuckDuckGo</div><div style="font-size:7px;color:#8E8E93">No tracking, no profiling</div></div><span style="color:#007AFF;font-size:9px">✓</span></div><div class="mock-settings-item"><div style="width:18px;height:18px;background:#1A73E8;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center"><span style="color:#fff;font-size:8px;font-weight:700">S</span></div><div style="flex:1;margin-left:6px"><div style="font-size:9px">Startpage</div><div style="font-size:7px;color:#8E8E93">Google results, privately</div></div></div></div></div>');}
+function searchDefault(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Search engine</span></div><div class="mock-settings-group"><div class="mock-settings-item"><span class="mock-item-label">Google</span></div><div class="mock-settings-item mock-highlight"><span class="mock-item-label" style="color:#007AFF;font-weight:600">DuckDuckGo</span><span style="color:#007AFF;font-size:10px">✓</span></div><div class="mock-settings-item"><span class="mock-item-label">Bing</span></div></div></div>');}
+function extUblock(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar" style="background:#1A73E8"><span style="color:#fff;font-size:9px;font-weight:600">Chrome Web Store</span></div><div style="margin:8px 6px;background:#fff;border-radius:8px;border:1px solid rgba(0,0,0,0.1);padding:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:28px;height:28px;background:#E8F5E9;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><span style="font-size:14px">🛡</span></div><div><div style="font-size:9px;font-weight:600">uBlock Origin</div><div style="font-size:7px;color:#8E8E93">Raymond Hill · 10M+ users</div></div></div><div style="background:#1A73E8;color:#fff;font-size:8px;padding:5px;border-radius:6px;text-align:center;font-weight:600">Add to Chrome</div></div></div>');}
+function extBadger(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar" style="background:#1A73E8"><span style="color:#fff;font-size:9px;font-weight:600">Chrome Web Store</span></div><div style="margin:8px 6px;background:#fff;border-radius:8px;border:1px solid rgba(0,0,0,0.1);padding:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:28px;height:28px;background:#FFF3E0;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center"><span style="font-size:14px">🦡</span></div><div><div style="font-size:9px;font-weight:600">Privacy Badger</div><div style="font-size:7px;color:#8E8E93">EFF · Learns as you browse</div></div></div><div style="background:#1A73E8;color:#fff;font-size:8px;padding:5px;border-radius:6px;text-align:center;font-weight:600">Add to Chrome</div></div></div>');}
+function extHttps(){return phone('<div class="mock-settings" style="background:#fff"><div class="mock-topbar"><span class="mock-back-arrow">‹</span><span class="mock-topbar-title">Security</span></div><div class="mock-section-label">Safe Browsing</div><div class="mock-settings-group">'+mT('🔒','#E8F5E9','Always use secure connections',true,true)+'</div><div class="mock-section-label">Status</div><div class="mock-settings-group"><div class="mock-settings-item" style="background:#E8F5E9"><span style="font-size:8px;color:#34C759;font-weight:600">✓ HTTPS enforced on all sites</span></div></div></div>');}
+function brokerList(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-topbar-title">Data Brokers</span></div><div class="mock-settings-group"><div class="mock-settings-item" style="background:#FEF0F0"><span style="font-size:8px;color:#E05C5C;font-weight:600">⚠ Your data found on:</span></div><div class="mock-settings-item"><span class="mock-item-label">Spokeo</span><span class="mock-item-value" style="color:#E05C5C">Listed</span></div><div class="mock-settings-item"><span class="mock-item-label">Whitepages</span><span class="mock-item-value" style="color:#E05C5C">Listed</span></div><div class="mock-settings-item"><span class="mock-item-label">Intelius</span><span class="mock-item-value" style="color:#E05C5C">Listed</span></div><div class="mock-settings-item"><span class="mock-item-label">BeenVerified</span><span class="mock-item-value" style="color:#E05C5C">Listed</span></div></div></div>');}
+function brokerOptout(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-topbar-title">Opt-Out Requests</span></div><div class="mock-settings-group"><div class="mock-settings-item" style="background:#E8F5E9"><span style="font-size:8px;color:#34C759;font-weight:600">✓ Spokeo — Submitted</span></div><div class="mock-settings-item mock-highlight"><span class="mock-item-label">Whitepages</span><span style="font-size:7px;background:#EEF2FF;color:#5B7CDD;padding:2px 6px;border-radius:4px">Submit →</span></div><div class="mock-settings-item"><span class="mock-item-label">Intelius</span><span class="mock-item-value">Pending</span></div><div class="mock-settings-item"><span class="mock-item-label">BeenVerified</span><span class="mock-item-value">Pending</span></div></div><div class="mock-section-label">Re-check in 30 days</div></div>');}
+function brokerAuto(){return phone('<div class="mock-settings"><div class="mock-topbar"><span class="mock-topbar-title">Automated Removal</span></div><div class="mock-settings-group"><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label">DeleteMe</span><span style="font-size:7px;color:#8E8E93">$129/yr · 100+ brokers covered</span></div><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label">Incogni</span><span style="font-size:7px;color:#8E8E93">$77/yr · Ongoing auto-removal</span></div><div class="mock-settings-item" style="flex-direction:column;align-items:flex-start;gap:2px"><span class="mock-item-label">Privacy Bee</span><span style="font-size:7px;color:#8E8E93">Free tier available</span></div></div></div>');}
+
+const WALKTHROUGHS={
+  'private-dns':{title:'Set Up Private DNS',sub:'Android Settings Walkthrough',steps:[
+    {label:'Open Settings',title:'Open your Android Settings',body:'Tap the <strong>gear icon</strong> in your notification shade. This opens your main Settings menu.',tip:'<strong>Tip:</strong> You can search "Private DNS" in the Settings search bar to jump directly.',screen:settingsMain()},
+    {label:'Find Connections',title:'Tap "Connections" or "Network & Internet"',body:'Scroll to find <strong>Connections</strong> (Samsung) or <strong>Network & Internet</strong> (stock Android). Tap it.',tip:'<strong>Note:</strong> The label varies by manufacturer but the option is always present.',screen:settingsConns()},
+    {label:'Private DNS',title:'Select "Private DNS"',body:'Scroll to the bottom of Connections. Tap <strong>Private DNS</strong>. This opens the configuration screen.',tip:'<strong>Why it matters:</strong> This encrypts all DNS queries so your ISP cannot see which websites you visit.',screen:settingsDns()},
+    {label:'Enter Provider',title:'Enter the provider hostname',body:'Select <strong>"Private DNS provider hostname"</strong> and enter: <code style="background:var(--accent-soft);color:var(--accent);padding:2px 6px;border-radius:4px;font-family:DM Mono,monospace;font-size:12px">1dot1dot1dot1.cloudflare-dns.com</code> then tap Save.',tip:'<strong>Free & trusted:</strong> Cloudflare 1.1.1.1 is one of the fastest, most private DNS resolvers available.',screen:settingsDnsInput()},
+  ]},
+  'ad-id':{title:'Reset Your Ad ID',sub:'Android Settings Walkthrough',steps:[
+    {label:'Open Settings',title:'Open Android Settings',body:'Tap the <strong>gear icon</strong> in your notification shade or app drawer.',tip:'<strong>Goal:</strong> Reset the unique ID advertisers use to track you across apps.',screen:settingsMain()},
+    {label:'Go to Privacy',title:'Navigate to "Privacy"',body:'Scroll down in Settings and tap <strong>Privacy</strong>. This houses all data and tracking controls for your device.',tip:'<strong>Note:</strong> On some Samsung devices this may be under "Biometrics and security."',screen:settingsPrivacy()},
+    {label:'Ads Settings',title:'Tap "Ads" or "Advertising ID"',body:'Inside Privacy, find <strong>Ads</strong> (Google) or <strong>Advertising ID</strong>. Tap it to see your current Ad ID.',tip:'<strong>What this is:</strong> Your Ad ID is a fingerprint advertisers use to track you across all apps on your device.',screen:settingsAds()},
+    {label:'Delete ID',title:'Delete your Advertising ID',body:'Tap <strong>"Delete advertising ID"</strong> to opt out entirely. Or tap <strong>"Reset"</strong> to generate a fresh ID. Deleting is the stronger option.',tip:'<strong>Recommended:</strong> Delete entirely if you do not rely on personalized ads.',screen:settingsAdsReset()},
+  ]},
+  'app-tracking':{title:'Restrict App Tracking',sub:'Android Permissions Walkthrough',steps:[
+    {label:'Open Settings',title:'Open Android Settings',body:'Open the <strong>Settings</strong> app from your app drawer or notification shade.',tip:'<strong>Goal:</strong> Audit which apps have tracking permissions and revoke unnecessary ones.',screen:settingsMain()},
+    {label:'Permission Manager',title:'Go to Privacy then Permission Manager',body:'Tap <strong>Privacy</strong>, then <strong>Permission Manager</strong>. This shows every permission category and which apps have access.',tip:'<strong>Tip:</strong> Start with Location, Camera, and Microphone — these are the highest-risk permissions.',screen:settingsPerms()},
+    {label:'Review Apps',title:'Tap each permission to audit apps',body:'Select a category like <strong>Location</strong>. Tap any app to change its access from "Allow all the time" to <strong>"Ask every time"</strong> or <strong>"Deny"</strong>.',tip:'<strong>Rule:</strong> If an app does not need a permission to function, deny it.',screen:settingsLocPerms()},
+  ]},
+  'secure-dns':{title:'Enable Secure DNS',sub:'Chrome Browser Walkthrough',steps:[
+    {label:'Open Chrome',title:'Open Chrome Settings',body:'Open <strong>Chrome</strong>. Tap the <strong>three-dot menu</strong> in the top right, then tap <strong>Settings</strong>.',tip:'<strong>Note:</strong> This works for Chrome on Android, iOS, and desktop.',screen:chromeMenu()},
+    {label:'Privacy Settings',title:'Tap "Privacy and Security"',body:'In Chrome Settings, find and tap <strong>Privacy and security</strong>.',tip:'<strong>While here:</strong> You will want to set up Clear browsing data next.',screen:chromePrivacy()},
+    {label:'Secure DNS',title:'Enable "Use secure DNS"',body:'Tap <strong>"Use secure DNS"</strong>. Toggle it ON, then select <strong>Cloudflare (1.1.1.1)</strong> from the dropdown.',tip:'<strong>Result:</strong> Chrome now encrypts all DNS lookups, hiding your browsing destinations from your ISP.',screen:chromeSecureDns()},
+  ]},
+  'wifi-protect':{title:'Protect on Public WiFi',sub:'Settings and Behavior Walkthrough',steps:[
+    {label:'WiFi Settings',title:'Disable auto-connect to open networks',body:'Go to <strong>Settings then Connections then WiFi then Advanced</strong>. Disable <strong>"Auto-connect to open networks"</strong> and <strong>"Connect to suggested networks."</strong>',tip:'<strong>Why:</strong> Auto-connect can expose your device to rogue hotspots mimicking trusted networks.',screen:wifiSettings()},
+    {label:'Safe Habits',title:'Limit sensitive activity on public WiFi',body:'On public WiFi, avoid logging into banking, email, or sensitive accounts. Use <strong>HTTPS sites only</strong> — look for the padlock in your browser.',tip:'<strong>Quick rule:</strong> Public WiFi = read-only browsing. No logins, no purchases.',screen:wifiWarning()},
+    {label:'Forget Networks',title:'Forget unused public networks',body:'Go to <strong>Settings then WiFi then Saved Networks</strong>. Tap any public network you no longer need, then tap <strong>Forget</strong>.',tip:'<strong>Result:</strong> Your device will not auto-reconnect to potentially compromised networks.',screen:wifiSaved()},
+  ]},
+  'tracker-block':{title:'Block Trackers in Chrome',sub:'Chrome Browser Walkthrough',steps:[
+    {label:'Open Chrome',title:'Go to Chrome Site Settings',body:'In Chrome, tap the <strong>three-dot menu then Settings then Site Settings</strong>.',tip:'<strong>Goal:</strong> Block cross-site tracking and third-party cookies.',screen:chromeMenu()},
+    {label:'Block Cookies',title:'Block Third-Party Cookies',body:'Tap <strong>Cookies and site data</strong>. Enable <strong>"Block third-party cookies."</strong> This stops ad networks from tracking you across different websites.',tip:'<strong>Impact:</strong> Ads become less targeted. Your browsing profile becomes significantly harder to build.',screen:chromeCookies()},
+    {label:'Safe Browsing',title:'Enable Enhanced Safe Browsing',body:'Go back to <strong>Privacy and security then Safe Browsing</strong>. Select <strong>"Enhanced protection."</strong>',tip:'<strong>Note:</strong> Enhanced mode shares some data with Google to detect threats — weigh this tradeoff.',screen:chromeSafeBrowse()},
+  ]},
+  'cookie-clear':{title:'Set Up Cookie Auto-Clear',sub:'Chrome Browser Walkthrough',steps:[
+    {label:'Privacy Settings',title:'Open Chrome Privacy Settings',body:'Open Chrome, tap the <strong>three-dot menu then Settings then Privacy and security.</strong>',tip:'<strong>Goal:</strong> Set Chrome to automatically clear cookies so tracking profiles do not accumulate.',screen:chromePrivacy()},
+    {label:'Auto-Clear',title:'Enable Clear on Exit',body:'Tap <strong>"Close all tabs and clear data on exit"</strong> and toggle it ON. Then select Cookies, Cache, and Site data to be cleared automatically.',tip:'<strong>Result:</strong> Every time you close Chrome, your session data is wiped. No tracking persistence.',screen:chromeClearExit()},
+  ]},
+
+  'vpn-setup':{title:'Set Up a VPN',sub:'Network Privacy Walkthrough',steps:[
+    {label:'Choose a VPN',title:'Choose a reputable VPN provider',body:'Not all VPNs are equal. Look for providers with a strict <strong>no-logs policy</strong>, audited by third parties. Recommended options: <strong>Mullvad</strong> (most private), <strong>ProtonVPN</strong> (free tier available), or <strong>IVPN</strong>.',tip:'<strong>Avoid:</strong> Free VPNs that monetize your data — they defeat the purpose entirely.',screen:vpnChoose()},
+    {label:'Install App',title:'Download and install the VPN app',body:'Go to the provider official website or your device app store. Download the official app for your device. <strong>Do not use third-party VPN apps</strong> — only the official provider app.',tip:'<strong>Verify:</strong> Check the developer name in the app store matches the VPN company.',screen:vpnInstall()},
+    {label:'Connect',title:'Connect before browsing',body:'Open the VPN app and tap <strong>Connect</strong>. Choose a server close to your location for best speed, or a different country for location privacy. Always connect <strong>before</strong> opening other apps.',tip:'<strong>Kill switch:</strong> Enable the kill switch in VPN settings — this blocks all traffic if the VPN drops, preventing accidental exposure.',screen:vpnConnect()},
+  ]},
+  'private-search':{title:'Switch to a Private Search Engine',sub:'Browser Settings Walkthrough',steps:[
+    {label:'Choose Engine',title:'Pick your private search engine',body:'Standard search engines build profiles from your queries. Switch to one that does not track you: <strong>DuckDuckGo</strong> (most popular), <strong>Startpage</strong> (uses Google results, privately), or <strong>Brave Search</strong> (independent index).',tip:'<strong>Recommended:</strong> DuckDuckGo for ease of use. Startpage if you need Google-quality results without the tracking.',screen:searchChoose()},
+    {label:'Set Default',title:'Set as your default search engine in Chrome',body:'Open Chrome. Tap the <strong>three-dot menu → Settings → Search engine</strong>. Tap <strong>Other search engines</strong> and select or add DuckDuckGo. Set it as default.',tip:'<strong>Result:</strong> Every search you run will go through DuckDuckGo instead of Google, with zero query profiling.',screen:searchDefault()},
+  ]},
+  'extensions':{title:'Install Privacy Browser Extensions',sub:'Chrome / Desktop Walkthrough',steps:[
+    {label:'uBlock Origin',title:'Install uBlock Origin — Ad & tracker blocker',body:'Go to the <strong>Chrome Web Store</strong> and search for <strong>uBlock Origin</strong> by Raymond Hill. Click <strong>Add to Chrome</strong>. This single extension blocks the majority of ads and trackers automatically.',tip:'<strong>Most impactful:</strong> uBlock Origin alone removes 90%+ of third-party trackers. It is the single best privacy extension available.',screen:extUblock()},
+    {label:'Privacy Badger',title:'Install Privacy Badger — Intelligent tracker learning',body:'Search the Chrome Web Store for <strong>Privacy Badger</strong> by EFF. Install it. Privacy Badger learns which trackers follow you across sites and blocks them automatically over time.',tip:'<strong>Complements uBlock:</strong> Privacy Badger catches trackers that uBlock might miss, using behavioral analysis instead of block lists.',screen:extBadger()},
+    {label:'HTTPS Everywhere',title:'Enforce HTTPS on all sites',body:'Install <strong>HTTPS Everywhere</strong> by EFF, or enable <strong>Always use HTTPS</strong> natively in Chrome: Settings → Privacy and security → Security → Always use secure connections.',tip:'<strong>Note:</strong> Modern Chrome has this built in. Enable it under Settings → Security → Always use secure connections.',screen:extHttps()},
+  ]},
+  'data-broker':{title:'Data Broker Opt-Out',sub:'Identity Protection Walkthrough',steps:[
+    {label:'Understand Brokers',title:'What data brokers are and why they matter',body:'Data brokers collect your name, address, phone number, relatives, and behavioral data — then sell it publicly. Anyone can pay to find information about you. The biggest brokers: <strong>Spokeo, Whitepages, Intelius, BeenVerified, MyLife</strong>.',tip:'<strong>The risk:</strong> This data enables spam, phishing, social engineering, and physical location tracking. Removing it reduces your attack surface.',screen:brokerList()},
+    {label:'Opt Out Manually',title:'Submit opt-out requests to major brokers',body:'Visit each site and find their opt-out page. Search for your name, find your listing, then submit a removal request. Key sites to start: <strong>Spokeo.com/optout</strong>, <strong>Whitepages.com/suppression-requests</strong>, <strong>Intelius.com/opt-out</strong>.',tip:'<strong>Expect delays:</strong> Removals take 24–72 hours typically. Set a calendar reminder to check back and re-opt-out every 3–6 months as data re-appears.',screen:brokerOptout()},
+    {label:'Automate',title:'Consider an automated removal service',body:'Manual opt-outs are tedious and must be repeated. Tools like <strong>DeleteMe</strong>, <strong>Incogni</strong>, or <strong>Privacy Bee</strong> automate ongoing removal across 100+ brokers. Most cost $100–150/year.',tip:'<strong>Worth it if:</strong> You are a public figure, executive, healthcare worker, or anyone with elevated personal safety concerns.',screen:brokerAuto()},
+  ]},};
+
+const SL={protected:'Protected',partial:'Partial',none:'Not Configured'};
+function icon(s){const c={protected:'#4CAF82',partial:'#D4923A',none:'#B0BAC7'}[s]||'#B0BAC7';return '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="'+c+'" stroke-width="1.6">'+(s==='protected'?'<polyline points="3 9 7 13 15 5"/>':s==='partial'?'<path d="M9 4v5M9 13v.5"/>':'<line x1="4" y1="4" x2="14" y2="14"/><line x1="14" y1="4" x2="4" y2="14"/>')+'</svg>';}
+function stagger(){const el=document.getElementById('sw');if(!el)return;requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('run')));}
+
+function computeScore(){
+  const layers=['device','network','browser','identity'];
+  let total=0,max=0;
+  layers.forEach(l=>{
+    APP[l].forEach(i=>{max+=10;if(i.status==='protected')total+=10;else if(i.status==='partial')total+=5;});
+    const p=APP[l].filter(i=>i.status==='protected').length;
+    const pa=APP[l].filter(i=>i.status==='partial').length;
+    APP.layerStatus[l]=p===APP[l].length?'protected':(p>0||pa>0)?'partial':'none';
+  });
+  APP.score=Math.round((total/max)*100);
+  APP.tier=APP.score>=70?'low':APP.score>=40?'moderate':'high';
+  const num=document.getElementById('sidebarScoreNum');
+  const bar=document.getElementById('sidebarScoreBar');
+  const tier=document.getElementById('sidebarScoreTier');
+  if(!num)return;
+  const tc={low:'var(--green)',moderate:'var(--amber)',high:'var(--red)',none:'var(--gray)'}[APP.tier||'none'];
+  const tl={low:'Low Exposure',moderate:'Moderate',high:'High Exposure',none:'Not assessed'}[APP.tier||'none'];
+  num.textContent=APP.assessed?APP.score:'—';
+  bar.style.width=APP.assessed?APP.score+'%':'0%';
+  bar.style.background=tc;
+  tier.textContent=tl;
+  tier.style.color=tc;
+}
+
+function renderOverview(){
+  computeScore();
+  const s=APP.score,t=APP.tier;
+  const tc={low:'var(--green)',moderate:'var(--amber)',high:'var(--red)'}[t]||'var(--gray)';
+  const tl={low:'Low Exposure',moderate:'Moderate Exposure',high:'High Exposure'}[t]||'Not Assessed';
+  const td={low:'Strong protection across most layers. Keep configurations active.',moderate:'Several gaps detected. Use the guided fix buttons to reduce exposure.',high:'Significant exposure across multiple layers. Start with Device and Browser.'}[t]||'Run the assessment to see your personal exposure score.';
+  const circ=2*Math.PI*26;
+  const layers=['device','network','browser','identity'];
+  return '<div class="module-wrap"><div class="module-header"><div class="module-eyebrow">System Snapshot</div><div class="module-title">Exposure Overview</div><div class="module-desc">Your current digital exposure across all protection layers.</div></div>'
+    +'<div class="score-banner"><div class="score-ring"><svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#F1F3F5" stroke-width="5"/><circle cx="32" cy="32" r="26" fill="none" stroke="'+tc+'" stroke-width="5" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-(APP.assessed?s:0)/100))+'" stroke-linecap="round" style="transition:stroke-dashoffset 0.8s"/></svg><div class="score-ring-num" style="color:'+tc+'">'+(APP.assessed?s:'—')+'</div></div>'
+    +'<div class="score-meta"><div class="score-label">Overall Exposure Score</div><div class="score-title">'+tl+'</div><div class="score-desc">'+td+'</div></div>'
+    +'<div class="score-cta"><button class="btn-primary" onclick="startAssessment()">'+(APP.assessed?'Reassess':'Begin Assessment')+'</button></div></div>'
+    +'<div class="overview-grid stagger" id="sw">'+layers.map(l=>{const st=APP.layerStatus[l],lb=SL[st],nm=l.charAt(0).toUpperCase()+l.slice(1);return '<div class="status-card" data-nav="'+l+'" onclick="navCard(this)"><div class="status-card-top"><div class="status-card-title">'+nm+' Layer</div><div class="status-badge '+st+'"><div class="status-badge-dot"></div>'+lb+'</div></div><div class="status-card-layer">'+nm+'</div><div class="status-card-bar-wrap"><div class="status-card-bar '+st+'"></div></div></div>';}).join('')+'</div></div>';
+}
+
+function renderLayer(m){
+  const items=APP[m];
+  const meta={device:['Device Hardening','Device Layer','Configure your device to limit data collection and ad tracking.'],network:['Network Privacy','Network Layer','Protect your connection from exposure and interception.'],browser:['Browser Protection','Browser Layer','Reduce your browser fingerprint and block third-party trackers.'],identity:['Identity Protection','Identity Layer','Secure your accounts with strong authentication.']};
+  const [title,ey,desc]=meta[m];
+  const allPro=items.every(i=>i.status==='protected');
+  let cards='';
+  items.forEach((item,i)=>{
+    const fixBtn=item.wt&&WALKTHROUGHS[item.key]
+      ?'<button class="btn-fix" data-key="'+item.key+'" data-mod="'+m+'" data-idx="'+i+'" onclick="wtCard(this)">'+(item.status==='protected'?'Review':'Fix →')+'</button>'
+      :'';
+    const linkBtn=item.link
+      ?'<a href="'+item.link+'" target="_blank" class="btn-link" title="Official resource">↗</a>'
+      :'';
+    cards+='<div class="toggle-card">'
+      +'<div class="toggle-card-icon '+item.status+'">'+icon(item.status)+'</div>'
+      +'<div class="toggle-card-body"><div class="toggle-card-title">'+item.title+'</div><div class="toggle-card-sub">'+item.sub+'</div></div>'
+      +'<div class="toggle-card-right"><span class="mini-status '+item.status+'">'+SL[item.status]+'</span>'
+      +linkBtn+fixBtn
+      +'<div class="toggle-switch '+(item.status==='protected'?'on':'off')+'" data-mod="'+m+'" data-idx="'+i+'" onclick="toggleCard(this)"><div class="toggle-thumb"></div></div>'
+      +'</div></div>';
+  });
+  return '<div class="module-wrap"><div class="module-header"><div class="module-eyebrow">'+ey+'</div><div class="module-title">'+title+'</div><div class="module-desc">'+desc+'</div></div>'
+    +(allPro?'<div class="completion-banner"><div class="completion-icon"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#4CAF82" stroke-width="2"><polyline points="4 11 8 15 18 6"/></svg></div><div><div class="completion-text-title">Layer Fully Protected</div><div class="completion-text-sub">All configurations in this layer are active.</div></div></div>':'')
+    +'<div class="stagger" id="sw">'+cards+'</div></div>';
+}
+
+
+function toggleCard(el){const m=el.getAttribute('data-mod'),i=parseInt(el.getAttribute('data-idx'));const item=APP[m][i];item.status=item.status==='protected'?'none':'protected';computeScore();loadModule(m,document.querySelector('.nav-btn.active'),true);}
+function toggleItem(m,i,el){toggleCard(el);}
+
+let QS={q:0,answers:{}};
+function startAssessment(){QS={q:0,answers:{}};showQ();}
+function showQ(){
+  const rp=document.getElementById('content');
+  const q=QUIZ[QS.q];
+  const pct=Math.round((QS.q/QUIZ.length)*100);
+  const old=document.getElementById('quizO');if(old)old.remove();
+  rp.innerHTML='';
+  const o=document.createElement('div');o.className='quiz-wrap';o.id='quizO';
+  o.innerHTML='<div class="quiz-header"><div class="quiz-header-top"><div class="quiz-title">Exposure Assessment</div><div class="quiz-step">'+(QS.q+1)+' / '+QUIZ.length+'</div></div><div class="quiz-progress-bg"><div class="quiz-progress-fill" style="width:'+pct+'%"></div></div></div>'
+    +'<div class="quiz-body"><div class="quiz-q">'+q.q+'</div><div class="quiz-q-sub">'+q.sub+'</div><div class="quiz-options">'+q.opts.map((op,i)=>'<button class="quiz-opt" onclick="pickOpt('+i+')" id="qo'+i+'"><div class="quiz-opt-dot"><span class="quiz-opt-check">✓</span></div><div class="quiz-opt-label"><div>'+op.label+'</div>'+(op.sub?'<div class="quiz-opt-sub">'+op.sub+'</div>':'')+'</div></button>').join('')+'</div></div>'
+    +'<div class="quiz-footer"><div class="quiz-footer-hint">Tap an answer to continue</div>'+(QS.q>0?'<button class="btn-secondary" onclick="quizBack()">← Back</button>':'')+'</div>';
+  rp.appendChild(o);
+}
+function pickOpt(i){
+  const q=QUIZ[QS.q],op=q.opts[i];
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('qo'+i).classList.add('selected');
+  if(op.affects){const {layer,key,val}=op.affects;const it=APP[layer]&&APP[layer].find(x=>x.key===key);if(it)it.status=val;}
+  QS.answers[q.id]=i;
+  setTimeout(()=>{if(QS.q<QUIZ.length-1){QS.q++;showQ();}else{showEmailGate();}},350);
+}
+function quizBack(){if(QS.q>0){QS.q--;showQ();}}
+
+function showEmailGate(){
+  const rp=document.getElementById('content');
+  const old=document.getElementById('quizO');if(old)old.remove();
+  rp.innerHTML='';
+  const o=document.createElement('div');o.className='quiz-wrap';o.id='quizO';
+  o.innerHTML='<div class="quiz-header"><div class="quiz-header-top"><div class="quiz-title">Assessment Complete</div><div class="quiz-step">'+QUIZ.length+' / '+QUIZ.length+'</div></div><div class="quiz-progress-bg"><div class="quiz-progress-fill" style="width:100%"></div></div></div>'
+    +'<div class="email-gate"><div class="email-gate-icon"><svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="7" width="20" height="14" rx="2"/><polyline points="3 7 13 15 23 7"/></svg></div>'
+    +'<div class="email-gate-title">Your results are ready</div><div class="email-gate-desc">Enter your email to receive your full Exposure Report and personalized fix guide — free.</div>'
+    +'<div class="email-input-row"><input class="email-input" type="email" id="emailIn" placeholder="you@email.com"/><button class="btn-accent" onclick="submitEmail()">View Score</button></div>'
+    +'<div class="email-skip" onclick="skipEmail()">Skip for now</div></div>';
+  rp.appendChild(o);
+}
+function submitEmail(){const v=document.getElementById('emailIn').value.trim();if(v&&v.includes('@'))APP.email=v;finalizeAssessment();}
+function skipEmail(){finalizeAssessment();}
+function finalizeAssessment(){APP.assessed=true;computeScore();loadModule('overview',document.getElementById('nav-overview'));}
+
+let WT={key:'',mod:'',idx:0,step:0};
+function wtCard(el){const key=el.getAttribute('data-key'),mod=el.getAttribute('data-mod'),idx=parseInt(el.getAttribute('data-idx'));openWT(key,mod,idx);}
+function openWT(key,mod,idx){WT={key,mod,idx,step:0};renderWT();}
+function renderWT(){
+  const wt=WALKTHROUGHS[WT.key];if(!wt)return;
+  const s=wt.steps[WT.step];
+  const rp=document.getElementById('content');
+  const old=document.getElementById('wtO');if(old)old.remove();
+  rp.innerHTML='';
+  const o=document.createElement('div');o.className='wt-wrap';o.id='wtO';
+  o.innerHTML='<div class="wt-header"><button class="wt-back" onclick="closeWT()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 2 4 7 9 12"/></svg> Back</button><div class="wt-header-info"><div class="wt-title">'+wt.title+'</div><div class="wt-sub">'+wt.sub+'</div></div><div class="wt-step-badge">Step '+(WT.step+1)+' of '+wt.steps.length+'</div></div>'
+    +'<div class="wt-body"><div class="wt-steps">'+wt.steps.map((st,i)=>'<div class="wt-step-item '+(i===WT.step?'current':i<WT.step?'done':'')+'" onclick="goWtStep('+i+')"><div class="wt-step-num">'+(i<WT.step?'✓':i+1)+'</div><div class="wt-step-label">'+st.label+'</div></div>').join('')+'</div>'
+    +'<div class="wt-main"><div class="wt-instruction"><div class="wt-instruction-num">Step '+(WT.step+1)+'</div><div class="wt-instruction-title">'+s.title+'</div><div class="wt-instruction-body">'+s.body+'</div>'+(s.tip?'<div class="wt-instruction-tip">'+s.tip+'</div>':'')
+    +'<div class="wt-nav">'+(WT.step>0?'<button class="btn-secondary" onclick="goWtStep('+(WT.step-1)+')">← Previous</button>':'<div></div>')
+    +(WT.step<wt.steps.length-1?'<button class="btn-accent" onclick="goWtStep('+(WT.step+1)+')">Next Step →</button>':'<button class="btn-accent" onclick="completeWT()">✓ Mark as Protected</button>')
+    +'</div></div>'
+    +'<div class="wt-phone-wrap">'+s.screen+'<div class="wt-phone-label">Simulated settings view</div></div></div></div>';
+  rp.appendChild(o);
+}
+function goWtStep(i){const wt=WALKTHROUGHS[WT.key];if(i>=0&&i<wt.steps.length){WT.step=i;renderWT();}}
+function closeWT(){loadModule(WT.mod,document.getElementById('nav-'+WT.mod));}
+function completeWT(){const item=APP[WT.mod][WT.idx];if(item)item.status='protected';computeScore();closeWT();loadModule(WT.mod,document.getElementById('nav-'+WT.mod));}
+
+function navCard(el){const l=el.getAttribute('data-nav');loadModule(l,document.getElementById('nav-'+l));}
+function loadModule(m,btn,silent=false){
+  if(btn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  document.getElementById('content').innerHTML='';
+  const contentDiv=document.getElementById('content');
+  const wrapper=document.createElement('div');
+  wrapper.className='panel-content';
+  wrapper.innerHTML=m==='overview'?renderOverview():renderLayer(m);
+  contentDiv.appendChild(wrapper);
+  stagger();
+}
+
+[400,750,1050,1350].forEach((d,i)=>{
+  setTimeout(()=>{
+    const l=document.getElementById('bl'+i),dot=document.getElementById('bd'+i),s=document.getElementById('bs'+i);
+    l.classList.add('show');
+    setTimeout(()=>{dot.classList.add('lit');s.textContent='✓';s.classList.add('done');},280);
+  },d);
+});
+setTimeout(()=>{document.getElementById('bootBar').style.width='100%';document.getElementById('bootStatus').textContent='System ready.';},1600);
+setTimeout(()=>{
+  const boot=document.getElementById('boot'),shell=document.getElementById('shell');
+  boot.classList.add('fade-out');shell.classList.add('visible');
+  loadModule('overview',null);
+  setTimeout(()=>{boot.style.display='none';},700);
+},3400);
+</script>
+</body>
+</html>
