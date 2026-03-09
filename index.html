@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Andre Method // Revenue & Alignment System</title>
+    <title>DRE CORE SYSTEMS LANDING PAGE</title>
     <style>
         /* CORE VISUAL STYLES [Preserved from GALAXY_IN_THE_AIR] */
         * {
@@ -359,7 +359,7 @@
     <div id="dataDisplay">
         <div class="data-line">→ TRACKING REVENUE VECTORS</div>
         <div class="data-line">→ 90-DAY GOAL: ACTIVE</div>
-        <div class="data-line">→ NODES ONLINE: 10</div>
+        <div class="data-line">→ NODES ONLINE: 11</div>
         <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
     </div>
     
@@ -380,6 +380,12 @@
             <h3>Quick Actions</h3>
             <button class="portal-btn" onclick="window.location.href='andre.html'">
                 OPEN EVALUATION PORTAL
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); color: #fff;" onclick="window.location.href='Dre_Go_lndpage.html'">
+                GET ANDRE GO FREE →
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;" onclick="window.location.href='ZIP_tool.html'">
+                OPEN ZIP TOOL
             </button>
             <button class="portal-btn" style="background: linear-gradient(135deg, #FF8C00 0%, #FF5500 100%);" onclick="window.location.href='dre-extractor-v2.html'">
                 OPEN DRE EXTRACTOR
@@ -450,11 +456,15 @@
                 id: "CORE", x: 0, y: 0, z: 0, 
                 name: "Andre Go", 
                 isCenter: true, 
-                category: "Revenue Engine",
-                desc: "[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats.", 
-                protocol: "Discovery: Stop losing AI insights. Capture. Edit. Export.",
-                public_desc: "You've discovered the memory layer for AI. Capture every insight across Claude, GPT, and Gemini instantly.",
-                public_protocol: "Action: Install Extension (v2.4.0)"
+                category: "Revenue Engine · Chrome Extension",
+                desc: "[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats. Chrome Web Store live. $9.99/mo or $19.99 lifetime. 3 free sessions to hook. Push content → installs → MRR.", 
+                protocol: "90-Day Play: Drive traffic via YouTube/Stream → land on Dre_Go_lndpage → free session → convert. Every node in this galaxy feeds THIS.",
+                public_desc: "🔥 Never lose your AI convos again.\n\nAndre Go saves every message across ChatGPT, Claude, Gemini, and Copilot — automatically. Browser crash? Tab closed? Model switched? Your thread survives all of it.\n\n✅ Auto-saves every message instantly\n✅ Switch models without losing context\n✅ Your data stays yours — export any time\n✅ Works across all major AI platforms\n\n✨ Start FREE with 3 sessions. Then just $9.99/mo — or own it forever for $19.99.",
+                public_protocol: "👇 One click. Your AI memory starts now.",
+                isPortal: true,
+                portalFile: "Dre_Go_lndpage.html",
+                portalLabel: "GET ANDRE GO FREE →",
+                portalStyle: "background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); color: #fff; font-size: 13px;"
             },
             
             // EVALUATION PORTAL
@@ -523,6 +533,21 @@
 
             // ── NEW NODES ─────────────────────────────────────────────
 
+            // ZIP TOOL
+            {
+                id: "ZIP_TOOL", x: 90, y: 55, z: -110,
+                name: "ZIP Tool",
+                category: "File Utility",
+                desc: "[FOUNDER] Browser-native file archiver. Zero server upload. Good cross-sell for privacy-conscious users already using DRE OS and DRE Extractor.",
+                protocol: "Use: Queue files/folders → compress to ZIP, or drop a ZIP → extract. All local. No server.",
+                public_desc: "Create and extract ZIP archives entirely in your browser. No uploads, no accounts, no waiting. Drag in your files, hit compress, done.",
+                public_protocol: "Action: Open ZIP Tool → Drop Files → Archive or Extract",
+                isPortal: true,
+                portalFile: "ZIP_tool.html",
+                portalLabel: "OPEN ZIP TOOL",
+                portalStyle: "background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;"
+            },
+
             // DRE EXTRACTOR
             {
                 id: "DRE_EXTRACTOR", x: -50, y: 60, z: -145,
@@ -573,6 +598,7 @@
             "CONTENT":          0xFF6B6B,
             "EXTENSION_DATA":   0x9370DB,
             // New nodes
+            "ZIP_TOOL":         0xf59e0b,
             "DRE_EXTRACTOR":    0xFF8C00,
             "DRE_OS":           0x00C853,
             "REPRIZAL":         0x7C3AED
@@ -774,21 +800,32 @@
                 const btn = document.createElement('button');
                 btn.className = 'portal-btn';
 
-                // Style per tool
-                const styleMap = {
-                    'dre-extractor-v2.html':    'background: linear-gradient(135deg, #FF8C00 0%, #FF5500 100%); color: #000;',
-                    'dre-os-v2__1_.html':        'background: linear-gradient(135deg, #00C853 0%, #009624 100%); color: #000;',
-                    'ATS_Config_Pro_v_3_0.html': 'background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;',
-                };
-                btn.style.cssText = styleMap[data.portalFile] || '';
+                // Use node-defined style if present, else fall back to file-based map
+                if (data.portalStyle) {
+                    btn.style.cssText = data.portalStyle;
+                } else {
+                    const styleMap = {
+                        'dre-extractor-v2.html':    'background: linear-gradient(135deg, #FF8C00 0%, #FF5500 100%); color: #000;',
+                        'dre-os-v2__1_.html':        'background: linear-gradient(135deg, #00C853 0%, #009624 100%); color: #000;',
+                        'ATS_Config_Pro_v_3_0.html': 'background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;',
+                        'ZIP_tool.html':             'background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;',
+                    };
+                    btn.style.cssText = styleMap[data.portalFile] || '';
+                }
 
-                const labelMap = {
-                    'andre.html':                'ENTER EVALUATION PORTAL',
-                    'dre-extractor-v2.html':     'OPEN DRE EXTRACTOR',
-                    'dre-os-v2__1_.html':        'OPEN DRE OS',
-                    'ATS_Config_Pro_v_3_0.html': 'OPEN REPRIZAL AI',
-                };
-                btn.textContent = labelMap[data.portalFile] || 'OPEN TOOL';
+                // Use node-defined label if present, else fall back to file-based map
+                if (data.portalLabel) {
+                    btn.textContent = data.portalLabel;
+                } else {
+                    const labelMap = {
+                        'andre.html':                'ENTER EVALUATION PORTAL',
+                        'dre-extractor-v2.html':     'OPEN DRE EXTRACTOR',
+                        'dre-os-v2__1_.html':        'OPEN DRE OS',
+                        'ATS_Config_Pro_v_3_0.html': 'OPEN REPRIZAL AI',
+                        'ZIP_tool.html':             'OPEN ZIP TOOL',
+                    };
+                    btn.textContent = labelMap[data.portalFile] || 'OPEN TOOL';
+                }
                 btn.onclick = function() { window.location.href = data.portalFile; };
                 actionArea.appendChild(btn);
             }
