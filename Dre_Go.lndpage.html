@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Andre Go - Never Lose Your AI Convos Again 🔥</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1a0033 0%, #0a0015 50%, #1a0033 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+    
+    /* Animated Background Grid */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 170, 255, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 20s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    @keyframes gridMove {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(50px); }
+    }
+    
+    /* Floating Particles */
+    .particle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      background: #00aaff;
+      border-radius: 50%;
+      animation: float 15s infinite;
+      opacity: 0.6;
+      z-index: 0;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-100vh) translateX(50px); }
+    }
+    
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Header */
+    header {
+      padding: 40px 0;
+      text-align: center;
+    }
+    
+    .logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 80px;
+      background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 8px;
+      text-shadow: 0 0 40px rgba(255, 0, 255, 0.5);
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes glowPulse {
+      0%, 100% { filter: drop-shadow(0 0 20px #ff00ff); }
+      50% { filter: drop-shadow(0 0 40px #00ffff); }
+    }
+    
+    .tagline {
+      font-size: 24px;
+      margin-top: 10px;
+      color: #00ff88;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      position: relative;
+    }
+    
+    .hero h1 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 72px;
+      line-height: 1.1;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #00aaff 0%, #00ff88 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: slideIn 1s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero p {
+      font-size: 22px;
+      max-width: 700px;
+      margin: 0 auto 50px;
+      color: #b0e0ff;
+      line-height: 1.6;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 20px 60px;
+      font-size: 24px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ff00ff, #00ffff);
+      color: #000;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 2px;
+      box-shadow: 0 10px 40px rgba(255, 0, 255, 0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+    
+    .cta-button:hover::before {
+      left: 100%;
+    }
+    
+    .cta-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 50px rgba(0, 255, 255, 0.6);
+    }
+    
+    .free-badge {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: rgba(0, 255, 136, 0.2);
+      border: 2px solid #00ff88;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Features Grid */
+    .features {
+      padding: 80px 20px;
+    }
+    
+    .features h2 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 64px;
+      text-align: center;
+      margin-bottom: 60px;
+      background: linear-gradient(135deg, #ffff00, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid transparent;
+      border-radius: 20px;
+      padding: 40px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(0, 170, 255, 0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.5s;
+    }
+    
+    .feature-card:hover::before {
+      top: -100%;
+      left: -100%;
+    }
+    
+    .feature-card:hover {
+      border-color: #00aaff;
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(0, 170, 255, 0.4);
+    }
+    
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      display: block;
+    }
+    
+    .feature-card h3 {
+      font-size: 28px;
+      margin-bottom: 15px;
+      color: #00ffff;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .feature-card p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #b0e0ff;
+    }
+    
+    .feature-card ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    
+    .feature-card li {
+      padding: 8px 0;
+      padding-left: 30px;
+      position: relative;
+      color: #00ff88;
+      font-size: 15px;
+    }
+    
+    .feature-card li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #00ff88;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    /* Premium Section */
+    .premium {
+      padding: 100px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 0, 255, 0.1));
+      border-top: 2px solid #ffd700;
+      border-bottom: 2px solid #ffd700;
+      margin: 80px 0;
+    }
+    
+    .premium h2 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 56px;
+      background: linear-gradient(135deg, #ffd700, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+    }
+    
+    .premium p {
+      font-size: 20px;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      color: #ffeb99;
+    }
+    
+    .price-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 50px;
+      flex-wrap: wrap;
+    }
+    
+    .price-box {
+      background: rgba(255, 215, 0, 0.1);
+      border: 3px solid #ffd700;
+      border-radius: 20px;
+      padding: 40px;
+      min-width: 300px;
+      transition: all 0.3s;
+    }
+    
+    .price-box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
+    }
+    
+    .price-box h3 {
+      font-size: 32px;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+    
+    .price {
+      font-size: 48px;
+      font-weight: 800;
+      color: #fff;
+      margin: 20px 0;
+    }
+    
+    .price-box ul {
+      text-align: left;
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+    
+    .price-box li {
+      padding: 10px 0;
+      padding-left: 30px;
+      position: relative;
+      color: #ffeb99;
+    }
+    
+    .price-box li::before {
+      content: '★';
+      position: absolute;
+      left: 0;
+      color: #ffd700;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border-top: 1px solid rgba(0, 170, 255, 0.3);
+    }
+    
+    footer p {
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .social-links {
+      margin: 20px 0;
+    }
+    
+    .social-links a {
+      display: inline-block;
+      margin: 0 15px;
+      color: #00aaff;
+      font-size: 18px;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .social-links a:hover {
+      color: #00ff88;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo { font-size: 48px; }
+      .hero h1 { font-size: 42px; }
+      .hero p { font-size: 18px; }
+      .cta-button { padding: 15px 40px; font-size: 18px; }
+      .features h2 { font-size: 42px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .price-boxes { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  
+  <!-- Floating Particles -->
+  <div class="particle" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
+  <div class="particle" style="top: 30%; left: 80%; animation-delay: 3s;"></div>
+  <div class="particle" style="top: 60%; left: 10%; animation-delay: 6s;"></div>
+  <div class="particle" style="top: 80%; left: 70%; animation-delay: 9s;"></div>
+  <div class="particle" style="top: 50%; left: 50%; animation-delay: 12s;"></div>
+  
+  <div class="container">
+    <header>
+      <div class="logo">ANDRE GO</div>
+      <div class="tagline">by Andre Method</div>
+    </header>
+    
+    <section class="hero">
+      <h1>Never Lose Your<br>AI Convos Again 🔥</h1>
+      <p>Your browser crashes. Your chats disappear. Your code is gone. Your research? Lost forever. NOT ANYMORE.</p>
+      <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button">
+        GET IT FREE 
+      </a>
+      <div class="free-badge">✨ Start with 3 Free Sessions</div>
+    </section>
+    
+    <section class="features">
+      <h2>Why Andre Go Hits Different</h2>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon">💾</span>
+          <h3>No More Lost Work</h3>
+          <p>Real-time saves got you covered. Browser crash? Tab closed? No sweat.</p>
+          <ul>
+            <li>Auto-saves every message instantly</li>
+            <li>Recover conversations anytime</li>
+            <li>Never lose AI-generated code again</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🔄</span>
+          <h3>Switch Models Like a Boss</h3>
+          <p>Jump from Claude to GPT to Gemini without losing your thread.</p>
+          <ul>
+            <li>Carry full conversation history</li>
+            <li>Stop AI from going "dumb" mid-chat</li>
+            <li>Fresh model, same context</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🌐</span>
+          <h3>Platform Freedom</h3>
+          <p>Your history ain't locked to one AI company. Your data, your rules.</p>
+          <ul>
+            <li>Works with ChatGPT, Claude, Gemini, Copilot</li>
+            <li>Export to any format you need</li>
+            <li>Access chats across all your devices*</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">🎯</span>
+          <h3>Find Stuff Instantly</h3>
+          <p>No more digging through dead chat logs. Organize. Search. Win.</p>
+          <ul>
+            <li>Smart organization by session</li>
+            <li>Query your own chat history</li>
+            <li>Spot trends across conversations</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">✏️</span>
+          <h3>Edit Like a Pro</h3>
+          <p>AI got 90% right but messed up one detail? Fix it directly. No restart needed.</p>
+          <ul>
+            <li>Edit messages on the fly</li>
+            <li>Remove mistakes, keep the gold</li>
+            <li>Perfect your AI conversations</li>
+          </ul>
+        </div>
+        
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3>Export Everything</h3>
+          <p>Turn chats into usable data. JSON, TXT, MD, CSV - whatever you need.</p>
+          <ul>
+            <li>Instant documentation for work</li>
+            <li>Audit trail for AI decisions</li>
+            <li>Code blocks with formatting intact</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    
+    <section class="premium">
+      <h2>Level Up to Premium</h2>
+      <p>Go unlimited. Chat with your data. Never lose code blocks. Get the full experience.</p>
+      
+      <div class="price-boxes">
+        <div class="price-box">
+          <h3>Monthly</h3>
+          <div class="price">$9.99<span style="font-size: 20px;">/mo</span></div>
+          <ul>
+            <li>Unlimited sessions</li>
+            <li>Andre Cloud AI included</li>
+            <li>Chat with your data</li>
+            <li>Full code capture</li>
+            <li>No API keys needed</li>
+          </ul>
+          <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button" style="display: inline-block; margin-top: 20px; font-size: 16px; padding: 12px 30px;">Get Monthly</a>
+        </div>
+        
+        <div class="price-box">
+          <h3>Lifetime</h3>
+          <div class="price">$19.99<span style="font-size: 20px;">/once</span></div>
+          <ul>
+            <li>Unlimited sessions forever</li>
+            <li>Full code capture</li>
+            <li>Use your own API keys</li>
+            <li>All AI providers supported</li>
+            <li>One payment, lifetime access</li>
+          </ul>
+          <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button" style="display: inline-block; margin-top: 20px; font-size: 16px; padding: 12px 30px;">Go Lifetime</a>
+        </div>
+      </div>
+    </section>
+    
+    <section class="hero">
+      <h1>Stop Losing.<br>Start Winning. 🏆</h1>
+      <p>Every dev, researcher, and creative who's serious about AI is already using Andre Go. Join them.</p>
+      <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button">
+        INSTALL NOW
+      </a>
+      <div class="free-badge">⚡ Free Forever - No Card Required</div>
+    </section>
+  </div>
+  
+  <footer>
+    <p>Andre Go - by Andre Method</p>
+    <div class="social-links">
+      <a href="https://www.andremethod.com">Website</a>
+      <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc">Chrome Store</a>
+    </div>
+    <p style="margin-top: 20px; font-size: 12px;">* Cross-device sync coming soon. Currently stores locally per browser.</p>
+  </footer>
+</body>
+</html>
