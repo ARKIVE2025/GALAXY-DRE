@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Andre Go - Never Lose Your AI Convos Again 🔥</title>
+  <title>Andre Go - Intelligence. Captured.</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;600;700&display=swap');
     
     * {
       margin: 0;
@@ -14,48 +14,65 @@
     }
     
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1a0033 0%, #0a0015 50%, #1a0033 100%);
+      font-family: 'Montserrat', sans-serif;
+      background: #000;
       color: #fff;
       overflow-x: hidden;
     }
     
-    /* Animated Background Grid */
-    .grid-bg {
+    /* Animated Crosshair Background */
+    .crosshair-bg {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: 
-        linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 170, 255, 0.1) 1px, transparent 1px);
-      background-size: 50px 50px;
-      animation: gridMove 20s linear infinite;
-      pointer-events: none;
+      background: 
+        linear-gradient(0deg, transparent 49%, rgba(212, 175, 55, 0.1) 50%, transparent 51%),
+        linear-gradient(90deg, transparent 49%, rgba(212, 175, 55, 0.1) 50%, transparent 51%);
+      background-size: 100px 100px;
+      animation: targetMove 30s linear infinite;
+      opacity: 0.3;
       z-index: 0;
     }
     
-    @keyframes gridMove {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(50px); }
+    @keyframes targetMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 100px 100px; }
     }
     
-    /* Floating Particles */
-    .particle {
+    /* Gun Barrel Intro Effect */
+    .gun-barrel {
       position: fixed;
-      width: 3px;
-      height: 3px;
-      background: #00aaff;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border: 20px solid #d4af37;
       border-radius: 50%;
-      animation: float 15s infinite;
-      opacity: 0.6;
-      z-index: 0;
+      opacity: 0;
+      animation: gunBarrel 3s ease-out forwards;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 
+        0 0 0 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 100px rgba(212, 175, 55, 0.5);
     }
     
-    @keyframes float {
-      0%, 100% { transform: translateY(0) translateX(0); }
-      50% { transform: translateY(-100vh) translateX(50px); }
+    @keyframes gunBarrel {
+      0% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(0.1);
+      }
+      70% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(3);
+      }
     }
     
     .container {
@@ -70,82 +87,147 @@
     header {
       padding: 40px 0;
       text-align: center;
+      position: relative;
     }
     
     .logo {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 80px;
-      background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 8px;
-      text-shadow: 0 0 40px rgba(255, 0, 255, 0.5);
-      animation: glowPulse 3s ease-in-out infinite;
+      font-family: 'Playfair Display', serif;
+      font-size: 90px;
+      font-weight: 900;
+      color: #d4af37;
+      letter-spacing: 20px;
+      text-transform: uppercase;
+      position: relative;
+      display: inline-block;
     }
     
-    @keyframes glowPulse {
-      0%, 100% { filter: drop-shadow(0 0 20px #ff00ff); }
-      50% { filter: drop-shadow(0 0 40px #00ffff); }
+    .logo::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      bottom: -10px;
+      left: 0;
+      animation: goldShimmer 3s ease-in-out infinite;
+    }
+    
+    @keyframes goldShimmer {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    
+    .agent-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: #d4af37;
+      letter-spacing: 8px;
+      margin-top: 10px;
+      font-weight: 300;
     }
     
     .tagline {
-      font-size: 24px;
-      margin-top: 10px;
-      color: #00ff88;
-      font-weight: 600;
+      font-size: 16px;
+      margin-top: 20px;
+      color: #888;
+      font-weight: 300;
+      letter-spacing: 4px;
       text-transform: uppercase;
-      letter-spacing: 2px;
     }
     
     /* Hero Section */
     .hero {
       text-align: center;
-      padding: 80px 20px;
+      padding: 120px 20px;
       position: relative;
+      background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
     }
     
     .hero h1 {
-      font-family: 'Bebas Neue', cursive;
+      font-family: 'Playfair Display', serif;
       font-size: 72px;
-      line-height: 1.1;
+      line-height: 1.2;
       margin-bottom: 30px;
-      background: linear-gradient(135deg, #00aaff 0%, #00ff88 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: slideIn 1s ease-out;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 3px;
+      animation: fadeInUp 1.5s ease-out;
     }
     
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-50px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px);
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0);
+      }
+    }
+    
+    .mission-brief {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-style: italic;
+      color: #d4af37;
+      margin-bottom: 30px;
+      font-weight: 400;
     }
     
     .hero p {
-      font-size: 22px;
+      font-size: 18px;
       max-width: 700px;
-      margin: 0 auto 50px;
-      color: #b0e0ff;
-      line-height: 1.6;
+      margin: 30px auto;
+      color: #ccc;
+      line-height: 1.8;
+      font-weight: 300;
+      letter-spacing: 1px;
     }
     
+    /* Dossier Classification */
+    .classified {
+      display: inline-block;
+      padding: 5px 20px;
+      border: 2px solid #d4af37;
+      color: #d4af37;
+      font-size: 12px;
+      letter-spacing: 3px;
+      margin: 20px 0;
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .classified::before,
+    .classified::after {
+      content: '▬';
+      position: absolute;
+      color: #d4af37;
+      font-size: 20px;
+    }
+    
+    .classified::before { left: -30px; }
+    .classified::after { right: -30px; }
+    
+    /* CTA Button - License to Download */
     .cta-button {
       display: inline-block;
       padding: 20px 60px;
-      font-size: 24px;
-      font-weight: 800;
+      font-size: 18px;
+      font-weight: 600;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #ff00ff, #00ffff);
+      background: linear-gradient(135deg, #d4af37 0%, #f4e4b0 50%, #d4af37 100%);
       color: #000;
       border: none;
-      border-radius: 50px;
       cursor: pointer;
       text-decoration: none;
-      letter-spacing: 2px;
-      box-shadow: 0 10px 40px rgba(255, 0, 255, 0.5);
-      transition: all 0.3s ease;
+      letter-spacing: 3px;
+      box-shadow: 
+        0 0 30px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: relative;
       overflow: hidden;
+      margin: 30px 0;
     }
     
     .cta-button::before {
@@ -155,7 +237,7 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
       transition: left 0.5s;
     }
     
@@ -164,393 +246,498 @@
     }
     
     .cta-button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 15px 50px rgba(0, 255, 255, 0.6);
+      transform: translateY(-3px);
+      box-shadow: 
+        0 10px 40px rgba(212, 175, 55, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
     }
     
-    .free-badge {
+    .clearance-badge {
       display: inline-block;
       margin-top: 20px;
-      padding: 10px 20px;
-      background: rgba(0, 255, 136, 0.2);
-      border: 2px solid #00ff88;
-      border-radius: 30px;
-      font-size: 14px;
-      font-weight: 600;
+      padding: 10px 30px;
+      background: transparent;
+      border: 1px solid #555;
+      font-size: 12px;
+      color: #888;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      letter-spacing: 1px;
     }
     
-    /* Features Grid */
-    .features {
-      padding: 80px 20px;
+    /* Intelligence Briefing - Features */
+    .briefing {
+      padding: 100px 20px;
+      background: linear-gradient(180deg, transparent 0%, rgba(212, 175, 55, 0.05) 50%, transparent 100%);
     }
     
-    .features h2 {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 64px;
+    .briefing h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
       text-align: center;
-      margin-bottom: 60px;
-      background: linear-gradient(135deg, #ffff00, #ff00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      color: #d4af37;
+      font-weight: 700;
+      letter-spacing: 2px;
     }
     
-    .feature-grid {
+    .briefing-subtitle {
+      text-align: center;
+      font-size: 16px;
+      color: #888;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 80px;
+    }
+    
+    .dossier-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 40px;
     }
     
-    .feature-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid transparent;
-      border-radius: 20px;
-      padding: 40px;
+    .dossier-card {
+      background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(40, 40, 40, 0.6) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      padding: 50px;
       backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
     }
     
-    .feature-card::before {
+    .dossier-card::before {
       content: '';
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(0, 170, 255, 0.1), transparent);
-      transform: rotate(45deg);
-      transition: all 0.5s;
-    }
-    
-    .feature-card:hover::before {
-      top: -100%;
+      top: 0;
       left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+      transition: left 0.6s;
     }
     
-    .feature-card:hover {
-      border-color: #00aaff;
+    .dossier-card:hover::before {
+      left: 100%;
+    }
+    
+    .dossier-card:hover {
+      border-color: #d4af37;
       transform: translateY(-10px);
-      box-shadow: 0 20px 60px rgba(0, 170, 255, 0.4);
+      box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
     }
     
-    .feature-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-      display: block;
+    .dossier-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 72px;
+      color: rgba(212, 175, 55, 0.2);
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-weight: 900;
     }
     
-    .feature-card h3 {
+    .dossier-card h3 {
+      font-family: 'Playfair Display', serif;
       font-size: 28px;
-      margin-bottom: 15px;
-      color: #00ffff;
-      font-weight: 800;
-      text-transform: uppercase;
+      margin-bottom: 20px;
+      color: #d4af37;
+      font-weight: 700;
       letter-spacing: 1px;
     }
     
-    .feature-card p {
+    .dossier-card p {
       font-size: 16px;
-      line-height: 1.6;
-      color: #b0e0ff;
+      line-height: 1.8;
+      color: #ccc;
+      margin-bottom: 25px;
+      font-weight: 300;
     }
     
-    .feature-card ul {
+    .capability-list {
       list-style: none;
       padding: 0;
-      margin-top: 20px;
     }
     
-    .feature-card li {
-      padding: 8px 0;
+    .capability-list li {
+      padding: 12px 0;
       padding-left: 30px;
       position: relative;
-      color: #00ff88;
-      font-size: 15px;
+      color: #aaa;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      letter-spacing: 0.5px;
     }
     
-    .feature-card li::before {
-      content: '✓';
+    .capability-list li::before {
+      content: '◆';
       position: absolute;
       left: 0;
-      color: #00ff88;
-      font-weight: bold;
-      font-size: 18px;
+      color: #d4af37;
+      font-size: 12px;
     }
     
-    /* Premium Section */
-    .premium {
-      padding: 100px 20px;
+    /* Premium Access Section */
+    .premium-access {
+      padding: 120px 20px;
       text-align: center;
-      background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 0, 255, 0.1));
-      border-top: 2px solid #ffd700;
-      border-bottom: 2px solid #ffd700;
-      margin: 80px 0;
+      background: 
+        linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+      border-top: 1px solid rgba(212, 175, 55, 0.3);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      margin: 100px 0;
     }
     
-    .premium h2 {
-      font-family: 'Bebas Neue', cursive;
-      font-size: 56px;
-      background: linear-gradient(135deg, #ffd700, #ff00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .premium-access h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      color: #d4af37;
       margin-bottom: 30px;
+      font-weight: 700;
     }
     
-    .premium p {
-      font-size: 20px;
-      max-width: 800px;
-      margin: 0 auto 40px;
-      color: #ffeb99;
+    .premium-access p {
+      font-size: 18px;
+      max-width: 700px;
+      margin: 0 auto 60px;
+      color: #bbb;
+      line-height: 1.8;
+      font-weight: 300;
     }
     
-    .price-boxes {
+    .license-tiers {
       display: flex;
       justify-content: center;
-      gap: 40px;
-      margin-top: 50px;
+      gap: 50px;
+      margin-top: 60px;
       flex-wrap: wrap;
     }
     
-    .price-box {
-      background: rgba(255, 215, 0, 0.1);
-      border: 3px solid #ffd700;
-      border-radius: 20px;
-      padding: 40px;
-      min-width: 300px;
-      transition: all 0.3s;
+    .license-card {
+      background: rgba(20, 20, 20, 0.9);
+      border: 2px solid #d4af37;
+      padding: 60px 40px;
+      min-width: 350px;
+      transition: all 0.4s;
+      position: relative;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
     }
     
-    .price-box:hover {
+    .license-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #d4af37, transparent, #d4af37);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    
+    .license-card:hover::before {
+      opacity: 1;
+    }
+    
+    .license-card:hover {
       transform: scale(1.05);
-      box-shadow: 0 20px 60px rgba(255, 215, 0, 0.4);
+      box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
     }
     
-    .price-box h3 {
-      font-size: 32px;
-      color: #ffd700;
-      margin-bottom: 10px;
+    .license-tier {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      color: #888;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    
+    .license-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: #d4af37;
+      margin-bottom: 15px;
+      font-weight: 700;
     }
     
     .price {
-      font-size: 48px;
-      font-weight: 800;
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
       color: #fff;
-      margin: 20px 0;
+      margin: 25px 0;
+      font-weight: 300;
     }
     
-    .price-box ul {
+    .price span {
+      font-size: 18px;
+      color: #888;
+    }
+    
+    .license-card ul {
       text-align: left;
       list-style: none;
       padding: 0;
-      margin: 20px 0;
+      margin: 30px 0;
     }
     
-    .price-box li {
-      padding: 10px 0;
+    .license-card li {
+      padding: 15px 0;
       padding-left: 30px;
       position: relative;
-      color: #ffeb99;
+      color: #bbb;
+      font-size: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      letter-spacing: 0.5px;
     }
     
-    .price-box li::before {
-      content: '★';
+    .license-card li::before {
+      content: '✓';
       position: absolute;
       left: 0;
-      color: #ffd700;
+      color: #d4af37;
+      font-weight: bold;
     }
+    
+    /* Mission Quote */
+    .mission-quote {
+      text-align: center;
+      padding: 80px 20px;
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-style: italic;
+      color: #d4af37;
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.6;
+      position: relative;
+    }
+    
+    .mission-quote::before,
+    .mission-quote::after {
+      content: '"';
+      font-size: 100px;
+      color: rgba(212, 175, 55, 0.2);
+      position: absolute;
+    }
+    
+    .mission-quote::before { top: -20px; left: 0; }
+    .mission-quote::after { bottom: -60px; right: 0; }
     
     /* Footer */
     footer {
       text-align: center;
-      padding: 60px 20px;
-      background: rgba(0, 0, 0, 0.5);
-      border-top: 1px solid rgba(0, 170, 255, 0.3);
+      padding: 80px 20px;
+      background: rgba(0, 0, 0, 0.9);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: #d4af37;
+      margin-bottom: 20px;
+      letter-spacing: 10px;
     }
     
     footer p {
+      color: #666;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    
+    .footer-links {
+      margin: 30px 0;
+    }
+    
+    .footer-links a {
+      display: inline-block;
+      margin: 0 20px;
       color: #888;
       font-size: 14px;
-    }
-    
-    .social-links {
-      margin: 20px 0;
-    }
-    
-    .social-links a {
-      display: inline-block;
-      margin: 0 15px;
-      color: #00aaff;
-      font-size: 18px;
       text-decoration: none;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       transition: color 0.3s;
+      border-bottom: 1px solid transparent;
     }
     
-    .social-links a:hover {
-      color: #00ff88;
+    .footer-links a:hover {
+      color: #d4af37;
+      border-bottom-color: #d4af37;
     }
     
     /* Responsive */
     @media (max-width: 768px) {
-      .logo { font-size: 48px; }
+      .logo { font-size: 48px; letter-spacing: 10px; }
       .hero h1 { font-size: 42px; }
-      .hero p { font-size: 18px; }
-      .cta-button { padding: 15px 40px; font-size: 18px; }
-      .features h2 { font-size: 42px; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .price-boxes { flex-direction: column; align-items: center; }
+      .mission-brief { font-size: 20px; }
+      .cta-button { padding: 15px 40px; font-size: 14px; }
+      .briefing h2 { font-size: 36px; }
+      .dossier-grid { grid-template-columns: 1fr; }
+      .license-tiers { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
-  <div class="grid-bg"></div>
-  
-  <!-- Floating Particles -->
-  <div class="particle" style="top: 10%; left: 20%; animation-delay: 0s;"></div>
-  <div class="particle" style="top: 30%; left: 80%; animation-delay: 3s;"></div>
-  <div class="particle" style="top: 60%; left: 10%; animation-delay: 6s;"></div>
-  <div class="particle" style="top: 80%; left: 70%; animation-delay: 9s;"></div>
-  <div class="particle" style="top: 50%; left: 50%; animation-delay: 12s;"></div>
+  <div class="crosshair-bg"></div>
+  <div class="gun-barrel"></div>
   
   <div class="container">
     <header>
       <div class="logo">ANDRE GO</div>
-      <div class="tagline">by Andre Method</div>
+      <div class="agent-number">AGENT GO</div>
+      <div class="tagline">Intelligence Division - Andre Method</div>
     </header>
     
     <section class="hero">
-      <h1>Never Lose Your<br>AI Convos Again 🔥</h1>
-      <p>Your browser crashes. Your chats disappear. Your code is gone. Your research? Lost forever. NOT ANYMORE.</p>
+      <div class="classified">CLASSIFIED: TOP SECRET</div>
+      <h1>Intelligence.<br>Captured.</h1>
+      <p class="mission-brief">Your mission: Never lose critical AI intelligence again.</p>
+      <p>Browser crashes. Closed tabs. Lost conversations. Vanished code. Disappeared research.</p>
+      <p><strong>Mission compromised.</strong></p>
+      <p>Andre Go ensures your intelligence assets are secured, preserved, and ready for deployment at any moment.</p>
       <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button">
-        GET IT FREE 
+        Activate Agent Clearance
       </a>
-      <div class="free-badge">✨ Start with 3 Free Sessions</div>
+      <div class="clearance-badge">Access Level: Free Entry</div>
     </section>
     
-    <section class="features">
-      <h2>Why Andre Go Hits Different</h2>
+    <section class="briefing">
+      <h2>Field Capabilities</h2>
+      <div class="briefing-subtitle">Mission-Critical Features</div>
       
-      <div class="feature-grid">
-        <div class="feature-card">
-          <span class="feature-icon">💾</span>
-          <h3>No More Lost Work</h3>
-          <p>Real-time saves got you covered. Browser crash? Tab closed? No sweat.</p>
-          <ul>
-            <li>Auto-saves every message instantly</li>
-            <li>Recover conversations anytime</li>
-            <li>Never lose AI-generated code again</li>
+      <div class="dossier-grid">
+        <div class="dossier-card">
+          <div class="dossier-number">01</div>
+          <h3>Automatic Intelligence Preservation</h3>
+          <p>Real-time encryption and storage of all conversational intelligence. Your assets are protected the moment they're created.</p>
+          <ul class="capability-list">
+            <li>Instant auto-save protocol</li>
+            <li>Recovery systems engaged</li>
+            <li>Code snippets secured</li>
           </ul>
         </div>
         
-        <div class="feature-card">
-          <span class="feature-icon">🔄</span>
-          <h3>Switch Models Like a Boss</h3>
-          <p>Jump from Claude to GPT to Gemini without losing your thread.</p>
-          <ul>
-            <li>Carry full conversation history</li>
-            <li>Stop AI from going "dumb" mid-chat</li>
-            <li>Fresh model, same context</li>
+        <div class="dossier-card">
+          <div class="dossier-number">02</div>
+          <h3>Cross-Platform Operations</h3>
+          <p>Seamlessly transition between AI platforms without compromising mission continuity. Your intelligence travels with you.</p>
+          <ul class="capability-list">
+            <li>Maintain full conversation context</li>
+            <li>Prevent memory degradation</li>
+            <li>Fresh deployment, intact intel</li>
           </ul>
         </div>
         
-        <div class="feature-card">
-          <span class="feature-icon">🌐</span>
-          <h3>Platform Freedom</h3>
-          <p>Your history ain't locked to one AI company. Your data, your rules.</p>
-          <ul>
-            <li>Works with ChatGPT, Claude, Gemini, Copilot</li>
-            <li>Export to any format you need</li>
-            <li>Access chats across all your devices*</li>
+        <div class="dossier-card">
+          <div class="dossier-number">03</div>
+          <h3>Universal Compatibility</h3>
+          <p>Operates across all major intelligence platforms. Your data remains sovereign, never held hostage by a single provider.</p>
+          <ul class="capability-list">
+            <li>ChatGPT, Claude, Gemini, Copilot</li>
+            <li>Export to any required format</li>
+            <li>Multi-device accessibility</li>
           </ul>
         </div>
         
-        <div class="feature-card">
-          <span class="feature-icon">🎯</span>
-          <h3>Find Stuff Instantly</h3>
-          <p>No more digging through dead chat logs. Organize. Search. Win.</p>
-          <ul>
-            <li>Smart organization by session</li>
-            <li>Query your own chat history</li>
-            <li>Spot trends across conversations</li>
+        <div class="dossier-card">
+          <div class="dossier-number">04</div>
+          <h3>Rapid Intelligence Retrieval</h3>
+          <p>Advanced indexing and search protocols. Locate critical information in seconds, not hours.</p>
+          <ul class="capability-list">
+            <li>Organized mission archives</li>
+            <li>Query historical intelligence</li>
+            <li>Pattern recognition across sessions</li>
           </ul>
         </div>
         
-        <div class="feature-card">
-          <span class="feature-icon">✏️</span>
-          <h3>Edit Like a Pro</h3>
-          <p>AI got 90% right but messed up one detail? Fix it directly. No restart needed.</p>
-          <ul>
-            <li>Edit messages on the fly</li>
-            <li>Remove mistakes, keep the gold</li>
-            <li>Perfect your AI conversations</li>
+        <div class="dossier-card">
+          <div class="dossier-number">05</div>
+          <h3>Field Editing Protocol</h3>
+          <p>Modify intelligence in real-time. Correct errors without restarting operations.</p>
+          <ul class="capability-list">
+            <li>In-place corrections</li>
+            <li>Eliminate errors, preserve value</li>
+            <li>Refine operational data</li>
           </ul>
         </div>
         
-        <div class="feature-card">
-          <span class="feature-icon">📊</span>
-          <h3>Export Everything</h3>
-          <p>Turn chats into usable data. JSON, TXT, MD, CSV - whatever you need.</p>
-          <ul>
-            <li>Instant documentation for work</li>
-            <li>Audit trail for AI decisions</li>
-            <li>Code blocks with formatting intact</li>
+        <div class="dossier-card">
+          <div class="dossier-number">06</div>
+          <h3>Multi-Format Intelligence Export</h3>
+          <p>Deploy your data in any required format. Complete documentation and audit capability.</p>
+          <ul class="capability-list">
+            <li>JSON, TXT, MD, CSV formats</li>
+            <li>Instant mission documentation</li>
+            <li>Preserved code formatting</li>
           </ul>
         </div>
       </div>
     </section>
     
-    <section class="premium">
-      <h2>Level Up to Premium</h2>
-      <p>Go unlimited. Chat with your data. Never lose code blocks. Get the full experience.</p>
+    <div class="mission-quote">
+      What did the AI recommend about that critical project three weeks ago? With Andre Go, you'll always have the answer.
+    </div>
+    
+    <section class="premium-access">
+      <h2>Classified Access Levels</h2>
+      <p>Upgrade your clearance. Unlimited operations. Advanced intelligence features. Full operational capability.</p>
       
-      <div class="price-boxes">
-        <div class="price-box">
+      <div class="license-tiers">
+        <div class="license-card">
+          <div class="license-tier">Recurring License</div>
           <h3>Monthly</h3>
-          <div class="price">$9.99<span style="font-size: 20px;">/mo</span></div>
+          <div class="price">$9.99<span>/month</span></div>
           <ul>
-            <li>Unlimited sessions</li>
-            <li>Andre Cloud AI included</li>
-            <li>Chat with your data</li>
-            <li>Full code capture</li>
-            <li>No API keys needed</li>
+            <li>Unlimited mission archives</li>
+            <li>Andre Cloud intelligence included</li>
+            <li>Query your own data</li>
+            <li>Complete code preservation</li>
+            <li>No external keys required</li>
           </ul>
-          <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button" style="display: inline-block; margin-top: 20px; font-size: 16px; padding: 12px 30px;">Get Monthly</a>
+          <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button" style="font-size: 14px; padding: 12px 30px; margin-top: 20px;">Activate Monthly</a>
         </div>
         
-        <div class="price-box">
+        <div class="license-card">
+          <div class="license-tier">Permanent License</div>
           <h3>Lifetime</h3>
-          <div class="price">$19.99<span style="font-size: 20px;">/once</span></div>
+          <div class="price">$19.99<span>/once</span></div>
           <ul>
-            <li>Unlimited sessions forever</li>
-            <li>Full code capture</li>
-            <li>Use your own API keys</li>
-            <li>All AI providers supported</li>
-            <li>One payment, lifetime access</li>
+            <li>Unlimited operations forever</li>
+            <li>Full code capture capability</li>
+            <li>Deploy your own intelligence keys</li>
+            <li>All AI platforms supported</li>
+            <li>Single payment, permanent access</li>
           </ul>
-          <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button" style="display: inline-block; margin-top: 20px; font-size: 16px; padding: 12px 30px;">Go Lifetime</a>
+          <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button" style="font-size: 14px; padding: 12px 30px; margin-top: 20px;">Activate Lifetime</a>
         </div>
       </div>
     </section>
     
     <section class="hero">
-      <h1>Stop Losing.<br>Start Winning. 🏆</h1>
-      <p>Every dev, researcher, and creative who's serious about AI is already using Andre Go. Join them.</p>
+      <div class="classified">MISSION BRIEFING</div>
+      <h1>The Name is Go.<br>Andre Go.</h1>
+      <p>Developers. Researchers. Professionals. Blue-collar workers. Intelligence operatives who refuse to lose critical data.</p>
+      <p><strong>They've already deployed Andre Go.</strong></p>
+      <p>Your mission, should you choose to accept it: Join the ranks of those who never lose intelligence.</p>
       <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc" class="cta-button">
-        INSTALL NOW
+        Accept Mission
       </a>
-      <div class="free-badge">⚡ Free Forever - No Card Required</div>
+      <div class="clearance-badge">Clearance Level: Free Access - No Credentials Required</div>
     </section>
   </div>
   
   <footer>
-    <p>Andre Go - by Andre Method</p>
-    <div class="social-links">
-      <a href="https://www.andremethod.com">Website</a>
-      <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc">Chrome Store</a>
+    <div class="footer-logo">ANDRE GO</div>
+    <p>Intelligence Division - Andre Method</p>
+    <div class="footer-links">
+      <a href="https://www.andremethod.com">Headquarters</a>
+      <a href="https://chromewebstore.google.com/detail/andre-go/ndgnaajhlngfeaelminlnhepkhgfbgoc">Field Deployment</a>
     </div>
-    <p style="margin-top: 20px; font-size: 12px;">* Cross-device sync coming soon. Currently stores locally per browser.</p>
+    <p style="margin-top: 40px; font-size: 10px;">* Multi-device synchronization: Coming Soon. Current deployment: Local storage per browser.</p>
   </footer>
 </body>
 </html>
