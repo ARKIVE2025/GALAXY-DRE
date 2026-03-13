@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRE Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+:root{
+  --bg:#F4F5F7;--surface:#fff;--panel:#1F2328;
+  --pnav:rgba(255,255,255,0.06);--pnav-on:rgba(255,255,255,0.12);
+  --t1:#1F2328;--t2:#6B7585;--t3:#9AA3B0;
+  --ti:#fff;--ti2:rgba(255,255,255,0.55);--ti3:rgba(255,255,255,0.3);
+  --bd:rgba(0,0,0,0.07);--bdi:rgba(255,255,255,0.06);
+  --ac:#5B7CDD;--acs:#EEF2FF;
+  --ok:#4CAF82;--oks:#EEF9F4;
+  --warn:#D4923A;--warns:#FDF4E7;
+  --err:#E05C5C;--errs:#FEF0F0;
+  --neu:#B0BAC7;--neus:#F1F3F5;
+  --hl:#FFF176;
+  --hly:rgba(255,220,0,0.55);
+  --hlg:rgba(72,199,90,0.42);
+  --hlb:rgba(91,124,221,0.38);
+  --hlp:rgba(228,30,99,0.3);
+  --hlo:rgba(255,140,0,0.45);
+  --hlu:rgba(160,40,200,0.32);
+  --r1:10px;--r2:16px;--r3:24px;--rp:99px;
+  --s1:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --s2:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
+  --s3:0 20px 48px rgba(0,0,0,0.12),0 8px 20px rgba(0,0,0,0.06);
+}
+body.dark{
+  --bg:#0F1117;--surface:#181C23;--panel:#0A0D12;
+  --pnav:rgba(255,255,255,0.05);--pnav-on:rgba(255,255,255,0.1);
+  --t1:#E8ECF2;--t2:#8A95A3;--t3:#555E6B;
+  --ti:#E8ECF2;--ti2:rgba(232,236,242,0.55);--ti3:rgba(232,236,242,0.28);
+  --bd:rgba(255,255,255,0.07);--bdi:rgba(255,255,255,0.07);
+  --ac:#7B9AE8;--acs:#1A2340;
+  --ok:#3DBF7A;--oks:#0F2218;
+  --warn:#E0A44A;--warns:#231A0A;
+  --err:#E86B6B;--errs:#231010;
+  --neu:#3A4250;--neus:#1A1E26;
+  --hl:rgba(255,230,0,0.35);
+  --hly:rgba(255,220,0,0.38);
+  --hlg:rgba(72,199,90,0.3);
+  --hlb:rgba(91,124,221,0.3);
+  --hlp:rgba(228,30,99,0.25);
+  --hlo:rgba(255,140,0,0.32);
+  --hlu:rgba(160,40,200,0.28);
+  --s1:0 1px 3px rgba(0,0,0,0.3),0 1px 2px rgba(0,0,0,0.2);
+  --s2:0 4px 16px rgba(0,0,0,0.4),0 2px 6px rgba(0,0,0,0.2);
+  --s3:0 20px 48px rgba(0,0,0,0.5),0 8px 20px rgba(0,0,0,0.3);
+}
+body.dark .mov{background:rgba(0,0,0,0.72);}
+body.dark .mo{background:var(--surface);color:var(--t1);}
+body.dark input, body.dark textarea, body.dark select{color-scheme:dark;}
+body.dark .fs option, body.dark .fsel option, body.dark .cmpsel option{background:var(--surface);color:var(--t1);}
+body.dark mark.hl{background:rgba(255,230,0,0.4);color:var(--t1);}
+body.dark .chcard{background:var(--surface);}
+body.dark #tc{background:var(--surface);color:var(--t1);border-color:var(--bd);}
+body.dark .topbar{background:var(--surface);}
+body.dark .card{background:var(--surface);}
+body.dark .cmphead{background:var(--surface);}
+body.dark .rtoc{background:var(--surface);}
+body.dark .rright{background:var(--surface);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);display:flex;height:100vh;overflow:hidden;font-size:13px;line-height:1.55;transition:background 0.25s,color 0.25s;}
+
+/* SIDEBAR */
+#sb{width:252px;min-width:252px;background:var(--panel);display:flex;flex-direction:column;overflow:hidden;}
+.sbh{padding:20px 20px 14px;border-bottom:1px solid var(--bdi);}
+.sblogo{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.lm{width:30px;height:30px;background:var(--ac);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.sbt{font-size:15px;font-weight:600;color:var(--ti);letter-spacing:-0.015em;}
+.sbs{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ti3);margin-top:2px;}
+.sbnav{padding:10px 12px;display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto;}
+.nsl{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--ti3);padding:10px 8px 4px;}
+.nb{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r1);background:transparent;border:none;color:var(--ti2);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:background 0.15s,color 0.15s;text-align:left;width:100%;}
+.nb:hover{background:var(--pnav);color:var(--ti);}
+.nb.on{background:var(--pnav-on);color:var(--ti);}
+.nb svg{opacity:0.6;flex-shrink:0;}
+.nb.on svg,.nb:hover svg{opacity:1;}
+.nba{margin-left:auto;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ti2);flex-shrink:0;}
+.nb:hover .nba,.nb.on .nba{background:rgba(255,255,255,0.18);color:var(--ti);}
+.sbf{padding:12px;border-top:1px solid var(--bdi);display:flex;flex-direction:column;gap:6px;}
+.divi{height:1px;background:var(--bdi);margin:4px 0;}
+
+/* UPLOAD */
+.upz{border:1.5px dashed rgba(255,255,255,0.15);border-radius:var(--r1);padding:12px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s;position:relative;}
+.upz:hover,.upz.drag{border-color:var(--ac);background:rgba(91,124,221,0.08);}
+.upz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--bd);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--s1);gap:12px;}
+.tbt{font-size:15px;font-weight:600;letter-spacing:-0.015em;white-space:nowrap;}
+.tbr{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+#content{flex:1;overflow-y:auto;padding:22px 26px;}
+
+/* SEARCH */
+.sw{position:relative;flex:1;max-width:360px;}
+.si{width:100%;padding:8px 12px 8px 34px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t1);outline:none;transition:border-color 0.15s;}
+.si:focus{border-color:var(--ac);background:var(--surface);}
+.sico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none;}
+.sc{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;}
+mark.hl{background:var(--hl);border-radius:2px;padding:0 1px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--r2);box-shadow:var(--s1);padding:20px;margin-bottom:18px;transition:box-shadow 0.2s;animation:fu 0.3s cubic-bezier(0.2,0,0,1) both;}
+.card:hover{box-shadow:var(--s2);}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ct{font-size:14px;font-weight:600;letter-spacing:-0.01em;}
+.ey{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);margin-bottom:4px;}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.sc2{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);padding:14px 16px;transition:box-shadow 0.2s,transform 0.2s;}
+.sc2:hover{box-shadow:var(--s2);transform:translateY(-1px);}
+.sv{font-size:26px;font-weight:700;letter-spacing:-0.03em;line-height:1;margin-bottom:5px;}
+.sl{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);}
+.sc2.ac .sv{color:var(--ac);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r1);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:opacity 0.15s,transform 0.1s;white-space:nowrap;}
+.btn:hover{opacity:0.88;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.bp{background:var(--panel);color:var(--ti);}
+.ba{background:var(--ac);color:#fff;box-shadow:0 2px 8px rgba(91,124,221,0.3);}
+.bs{background:var(--surface);color:var(--t1);border:1px solid var(--bd);}
+.bg{background:transparent;color:var(--t2);border:1px dashed var(--bd);}
+.bg:hover{background:var(--acs);color:var(--ac);border-color:var(--ac);}
+.bsm{padding:5px 10px;font-size:12px;}
+.bxs{padding:3px 8px;font-size:11px;}
+
+/* TABLE */
+.tw{overflow-x:auto;border-radius:var(--r1);border:1px solid var(--bd);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{background:var(--bg);position:sticky;top:0;z-index:1;}
+th{padding:10px 12px;text-align:left;font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--bd);white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--bd);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+tr.sm td{background:var(--warns);}
+td[contenteditable]{outline:none;cursor:text;min-width:60px;transition:background 0.15s;}
+td[contenteditable]:hover{background:var(--acs);}
+td[contenteditable]:focus{background:var(--acs);box-shadow:inset 0 0 0 2px var(--ac);border-radius:4px;}
+.cxb{width:36px;}
+.dbt{width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s,color 0.15s;padding:0;}
+.dbt:hover{background:var(--errs);color:var(--err);}
+
+/* TAGS / BADGES */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--rp);font-size:11px;font-weight:500;background:var(--neus);color:var(--t2);margin:1px 2px 1px 0;}
+.ta{background:var(--acs);color:var(--ac);}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:var(--rp);font-size:10px;font-weight:600;padding:0 5px;background:var(--acs);color:var(--ac);}
+
+/* FILTERS */
+.fr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.fs{padding:7px 28px 7px 10px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t1);cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7585' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+.fs:focus{border-color:var(--ac);}
+
+/* THREAD MAP */
+.tr2{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.tl{width:100px;color:var(--t2);font-size:12px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;}
+.tcp{padding:2px 7px;border-radius:var(--rp);font-size:10px;font-weight:500;background:var(--neus);color:var(--t3);font-family:'DM Mono',monospace;border:1px solid var(--bd);}
+.tcp.on{background:var(--acs);color:var(--ac);border-color:rgba(91,124,221,0.2);}
+
+/* CHAR / LOC CARDS */
+.chcard{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);padding:16px;margin-bottom:10px;animation:fu 0.25s cubic-bezier(0.2,0,0,1) both;}
+.chn{font-size:14px;font-weight:600;margin-bottom:4px;}
+.chb{font-size:12px;color:var(--t2);margin-bottom:10px;line-height:1.5;}
+.act-t{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;}
+.act-r{display:flex;gap:8px;margin-bottom:5px;font-size:12px;}
+.act-c{font-family:'DM Mono',monospace;font-size:11px;color:var(--ac);background:var(--acs);padding:1px 7px;border-radius:var(--rp);flex-shrink:0;align-self:flex-start;margin-top:1px;}
+
+/* READ VIEW */
+#content.read-mode{padding:0;overflow:hidden;display:flex;height:100%;}
+.rl{display:flex;width:100%;height:100%;}
+.rtoc{width:220px;min-width:220px;border-right:1px solid var(--bd);overflow-y:auto;background:var(--surface);padding:12px 0;flex-shrink:0;}
+.rtoc-t{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);padding:8px 16px 6px;}
+.ti2b{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-size:13px;color:var(--t2);transition:background 0.12s;line-height:1.4;}
+.ti2b:hover{background:var(--bg);color:var(--t1);}
+.ti2b.on{background:var(--acs);color:var(--ac);font-weight:600;}
+.ti2b.on .tinum{color:var(--ac);}
+.tinum{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);flex-shrink:0;width:24px;}
+.rbody{flex:1;overflow-y:auto;padding:40px 56px;}
+.rhead{font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px;}
+.rmeta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--bd);}
+.rprose{font-size:15px;line-height:1.9;color:var(--t1);font-family:'DM Sans',sans-serif;max-width:680px;word-break:break-word;}
+.rnav{display:flex;align-items:center;justify-content:space-between;margin-top:48px;padding-top:20px;border-top:1px solid var(--bd);max-width:680px;}
+
+/* MODAL */
+.mov{position:fixed;inset:0;background:rgba(31,35,40,0.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fi 0.2s ease;}
+.mo{background:var(--surface);border-radius:var(--r3);box-shadow:var(--s3);width:520px;max-width:92vw;max-height:88vh;overflow-y:auto;padding:28px;animation:fu 0.3s cubic-bezier(0.2,0,0,1);}
+.mot{font-size:17px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px;}
+.mos{font-size:12px;color:var(--t2);margin-bottom:20px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:5px;display:block;}
+.fi2{width:100%;padding:9px 12px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t1);outline:none;transition:border-color 0.15s;}
+.fi2:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(91,124,221,0.12);}
+textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
+.fi2[type="password"]{font-family:'DM Mono',monospace;}
+.fsel{width:100%;padding:9px 12px;border-radius:var(--r1);border:1px solid var(--bd);font-family:'DM Sans',sans-serif;font-size:13px;background:var(--surface);color:var(--t1);outline:none;cursor:pointer;}
+.fsel:focus{border-color:var(--ac);}
+.ae{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+.ae input:first-child{width:80px;flex-shrink:0;}
+.ae input:last-child{flex:1;}
+.pg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.pb{padding:10px 12px;border-radius:var(--r1);border:1.5px solid var(--bd);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:border-color 0.15s;text-align:left;color:var(--t1);}
+.pb:hover{border-color:var(--ac);background:var(--acs);}
+.pb.on{border-color:var(--ac);background:var(--acs);color:var(--ac);}
+.pd{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+.mof{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--bd);}
+
+/* TOAST */
+#tc{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:var(--panel);color:var(--ti);padding:10px 16px;border-radius:var(--r1);font-size:13px;font-weight:500;box-shadow:var(--s3);display:flex;align-items:center;gap:8px;animation:fu 0.3s cubic-bezier(0.2,0,0,1) both;pointer-events:all;min-width:220px;}
+.toast.ok::before,.toast.er::before,.toast.in::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.toast.ok::before{background:var(--ok);}
+.toast.er::before{background:var(--err);}
+.toast.in::before{background:var(--ac);}
+
+/* MISC */
+.cr{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.chip{padding:4px 10px;border-radius:var(--rp);font-size:11px;font-weight:500;background:var(--neus);color:var(--t2);border:1px solid var(--bd);}
+.es{text-align:center;padding:40px 20px;}
+
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--neu);border-radius:99px;}
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fi{from{opacity:0;}to{opacity:1;}}
+@keyframes so{to{opacity:0;transform:translateX(16px);}}
+
+/* ── HIGHLIGHT SYSTEM ── */
+/* Color classes used when rendering prose */
+.hspan{border-radius:3px;cursor:pointer;transition:box-shadow .15s;}
+.hspan:hover{box-shadow:0 0 0 2px rgba(0,0,0,0.18);}
+.hc-yellow{background:var(--hly);}
+.hc-green{background:var(--hlg);}
+.hc-blue{background:var(--hlb);}
+.hc-pink{background:var(--hlp);}
+.hc-orange{background:var(--hlo);}
+.hc-purple{background:var(--hlu);}
+
+/* Floating toolbar */
+#hltb{position:fixed;z-index:500;display:none;
+  background:#1F2328;border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.28),0 2px 8px rgba(0,0,0,0.18);
+  padding:8px 10px;gap:7px;align-items:center;flex-wrap:wrap;min-width:260px;}
+#hltb.vis{display:flex;}
+.htsw{width:22px;height:22px;border-radius:50%;border:2.5px solid rgba(255,255,255,0.12);
+  cursor:pointer;flex-shrink:0;transition:transform .15s,border-color .15s;}
+.htsw:hover,.htsw.sel{transform:scale(1.3);border-color:rgba(255,255,255,0.7);}
+.htdiv{width:1px;height:20px;background:rgba(255,255,255,0.12);flex-shrink:0;}
+#htag{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);
+  border-radius:7px;color:#fff;font-size:11px;font-family:'DM Sans',sans-serif;
+  padding:5px 9px;width:100px;outline:none;}
+#htag::placeholder{color:rgba(255,255,255,0.35);}
+#htag:focus{border-color:#5B7CDD;}
+#htsave{background:#5B7CDD;color:#fff;border:none;border-radius:7px;
+  font-size:11px;font-weight:600;padding:5px 12px;cursor:pointer;}
+#htsave:hover{background:#4a6ac8;}
+#htcancel{background:transparent;color:rgba(255,255,255,0.5);border:none;
+  font-size:18px;line-height:1;cursor:pointer;padding:0 3px;}
+
+/* RIGHT PANEL */
+.rright{width:270px;min-width:270px;border-left:1px solid var(--bd);
+  background:var(--surface);display:flex;flex-direction:column;flex-shrink:0;}
+.rrh{padding:12px 14px 10px;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.rrt{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);}
+.rrsearch{padding:6px 10px;border-bottom:1px solid var(--bd);flex-shrink:0;}
+.rrsearch input{width:100%;padding:6px 10px;border-radius:8px;border:1px solid var(--bd);
+  background:var(--bg);font-size:11px;font-family:'DM Sans',sans-serif;color:var(--t1);outline:none;}
+.rrsearch input:focus{border-color:var(--ac);}
+.rrlist{flex:1;overflow-y:auto;padding:8px;}
+
+/* Highlight cards in panel */
+.hlcard{background:var(--bg);border:1px solid var(--bd);border-radius:10px;
+  padding:10px 12px 10px 14px;margin-bottom:8px;cursor:pointer;
+  position:relative;transition:border-color .15s,box-shadow .15s;}
+.hlcard:hover{border-color:var(--ac);box-shadow:var(--s2);}
+.hlcard-bar{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:10px 0 0 10px;}
+.hlcard-txt{font-size:12px;line-height:1.6;color:var(--t1);margin-bottom:5px;word-break:break-word;}
+.hlcard-foot{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.hlcard-ch{font-size:10px;font-family:'DM Mono',monospace;color:var(--ac);
+  background:var(--acs);padding:1px 7px;border-radius:99px;}
+.hlcard-tag{font-size:10px;padding:1px 7px;border-radius:99px;
+  background:var(--neus);color:var(--t2);cursor:pointer;}
+.hlcard-tag:hover{background:var(--acs);color:var(--ac);}
+.hlcard-del{position:absolute;right:5px;top:5px;width:20px;height:20px;
+  border-radius:5px;background:transparent;border:none;color:var(--t3);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .12s,background .12s;}
+.hlcard:hover .hlcard-del{opacity:1;}
+.hlcard-del:hover{background:var(--errs);color:var(--err);}
+
+
+/* COMPARE VIEW */
+.cmpgrid{display:grid;grid-template-columns:1fr 1fr;height:100%;overflow:hidden;}
+.cmppane{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--bd);}
+.cmppane:last-child{border-right:none;}
+.cmphead{padding:10px 16px;border-bottom:1px solid var(--bd);background:var(--surface);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.cmpbody{flex:1;overflow-y:auto;padding:24px 28px;font-size:14px;line-height:1.9;
+  color:var(--t1);font-family:'DM Sans',sans-serif;word-break:break-word;}
+.cmpbody .hspan{display:inline;border-radius:3px;cursor:pointer;padding:1px 0;}
+.cmp-legend{display:flex;flex-wrap:wrap;gap:5px;padding:6px 16px;
+  border-bottom:1px solid var(--bd);background:var(--bg);flex-shrink:0;}
+.cmp-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;
+  color:var(--t2);padding:2px 7px;border-radius:99px;border:1px solid var(--bd);background:var(--surface);}
+.cmp-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cmpsel{background:var(--bg);border:1px solid var(--bd);border-radius:8px;
+  font-size:12px;font-weight:500;color:var(--t1);padding:5px 26px 5px 10px;
+  cursor:pointer;outline:none;font-family:'DM Sans',sans-serif;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7585' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;}
+.cmpsel:focus{border-color:var(--ac);}
+
+/* Panel toggle button */
+.hltoggle{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;
+  border-radius:8px;background:var(--bg);border:1px solid var(--bd);
+  cursor:pointer;font-size:11px;font-weight:500;color:var(--t2);
+  transition:background .12s,color .12s,border-color .12s;}
+.hltoggle:hover,.hltoggle.on{background:var(--acs);color:var(--ac);border-color:rgba(91,124,221,.3);}
+
+/* TOC highlight dot */
+.toc-hldot{font-size:9px;color:var(--ac);margin-left:auto;flex-shrink:0;}
+.theme-card{border:2px solid var(--bd);border-radius:var(--r2);padding:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.theme-card:hover{border-color:var(--ac);box-shadow:var(--s1);}
+.theme-card.theme-on{border-color:var(--ac);box-shadow:0 0 0 3px var(--acs);}
+.theme-check{width:20px;height:20px;display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+
+<div id="sb">
+  <div class="sbh">
+    <div class="sblogo">
+      <div class="lm">DF</div>
+      <div><div class="sbt">DRE Flow</div><div class="sbs">Story Intelligence</div></div>
+    </div>
+  </div>
+  <div class="sbnav">
+    <div class="nsl">Views</div>
+    <button class="nb on" id="nb-dashboard" onclick="showView('dashboard')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.5" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1.5" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1.5" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1.5" fill="currentColor"/></svg>
+      Dashboard
+    </button>
+    <button class="nb" id="nb-timeline" onclick="showView('timeline')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Timeline
+      <span class="badge" id="bdg-event" style="margin-left:auto">0</span>
+    </button>
+    <button class="nb" id="nb-read" onclick="showView('read')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M4 5h6M4 7h6M4 9h4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+      Read
+      <span class="badge" id="bdg-read" style="margin-left:auto">0</span>
+    </button>
+    <button class="nb" id="nb-characters" onclick="showView('characters')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M2 12c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Characters
+      <span class="badge" id="bdg-char" style="margin-left:auto">0</span>
+      <span class="nba" onclick="event.stopPropagation();openAddChar()">+</span>
+    </button>
+    <button class="nb" id="nb-highlights" onclick="showView('highlights')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 11l1.5-4.5L10 2l2 2-6.5 4.5L2 11z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 4l2 2" stroke="currentColor" stroke-width="1.25"/></svg>
+      Highlights
+      <span class="badge" id="bdg-hl" style="margin-left:auto">0</span>
+    </button>
+    <button class="nb" id="nb-locations" onclick="showView('locations')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1C4.791 1 3 2.791 3 5c0 3.5 4 8 4 8s4-4.5 4-8c0-2.209-1.791-4-4-4z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5" r="1.5" stroke="currentColor" stroke-width="1.25"/></svg>
+      Locations
+      <span class="badge" id="bdg-loc" style="margin-left:auto">0</span>
+      <span class="nba" onclick="event.stopPropagation();openAddLoc()">+</span>
+    </button>
+    <button class="nb" id="nb-settings" onclick="showView('settings')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.2" stroke="currentColor" stroke-width="1.4"/><path d="M7 1.5v1M7 11.5v1M1.5 7h1M11.5 7h1M3.1 3.1l.7.7M10.2 10.2l.7.7M10.2 3.1l-.7.7M3.1 10.2l.7.7" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+      Settings
+    </button>
+    <div class="divi" style="margin:8px 0;"></div>
+    <div class="nsl">Import Manuscript</div>
+    <button class="btn ba" onclick="openPasteModal()" style="width:100%;justify-content:center;font-size:12px;">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="3" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M5 3V2a2 2 0 014 0v1" stroke="currentColor" stroke-width="1.5"/></svg>
+      Paste Manuscript Text
+    </button>
+    <button class="btn" id="gdoc-btn" onclick="openGDocsModal()" style="width:100%;justify-content:center;font-size:12px;background:var(--surface);color:var(--t1);border:1px solid var(--bd);">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#4285F4" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6" stroke="#4285F4" stroke-width="2" stroke-linejoin="round"/><path d="M8 13h8M8 17h5" stroke="#4285F4" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span id="gdoc-btn-label">Open from Google Docs</span>
+    </button>
+    <input type="file" id="fileInput" accept=".txt,.docx" style="display:none">
+    <button class="btn bs" onclick="document.getElementById('fileInput').click()" style="width:100%;justify-content:center;font-size:11px;color:var(--ti3);border-color:var(--bdi);background:transparent;">
+      or try file upload
+    </button>
+    <div id="ai-ind" style="display:none;padding:10px 12px;border-radius:var(--r1);background:rgba(91,124,221,0.1);border:1px solid rgba(91,124,221,0.2);margin-top:8px;">
+      <div id="ai-lbl" style="font-size:11px;color:var(--ac);font-weight:600;margin-bottom:6px;">Analyzing…</div>
+      <div style="height:3px;background:rgba(91,124,221,0.15);border-radius:99px;overflow:hidden;"><div id="ai-bar" style="height:100%;background:var(--ac);border-radius:99px;width:0%;transition:width 0.4s ease;"></div></div>
+      <div id="ai-ctr" style="font-size:10px;color:var(--ti3);margin-top:5px;font-family:'DM Mono',monospace;"></div>
+    </div>
+  </div>
+  <div class="sbf">
+    <button class="btn ba" onclick="addEvent()" style="width:100%;justify-content:center;">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Add Timeline Event
+    </button>
+    <div style="display:flex;gap:6px;">
+      <button class="btn bs" onclick="saveP()" style="flex:1;justify-content:center;font-size:12px;">Save</button>
+      <button class="btn bs" onclick="loadP()" style="flex:1;justify-content:center;font-size:12px;">Load</button>
+      <button class="btn bs" onclick="exportJ()" style="flex:1;justify-content:center;font-size:12px;">Export</button>
+    </div>
+    <button class="btn bs" onclick="showView('settings')" style="width:100%;justify-content:center;font-size:12px;">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.2" stroke="currentColor" stroke-width="1.4"/><path d="M7 1.5v1M7 11.5v1M1.5 7h1M11.5 7h1" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+      Settings
+    </button>
+  </div>
+</div>
+
+<div id="main">
+  <div class="topbar">
+    <span class="tbt" id="vt">Dashboard</span>
+    <div class="sw">
+      <span class="sico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="#9AA3B0" stroke-width="1.5"/><path d="M9.5 9.5L13 13" stroke="#9AA3B0" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+      <input class="si" id="gsearch" type="text" placeholder="Search characters, locations, events…" oninput="doSearch(this.value)" onkeydown="if(event.key==='Enter')stepMatch(event.shiftKey?-1:1)">
+      <span class="sc" id="scnt" style="cursor:pointer;user-select:none;" onclick="stepMatch(1)" title="Click or press Enter to jump to next match"></span>
+    </div>
+    <div class="tbr" id="tbr"></div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<div id="tc"></div>
+<div id="mr"></div>
+
+<!-- HIGHLIGHT TOOLBAR -->
+<div id="hltb">
+  <div class="htsw sel" data-c="yellow" style="background:#FFD700;" title="Yellow" onclick="pickColor('yellow',this)"></div>
+  <div class="htsw" data-c="green"  style="background:#48C75A;" title="Green"  onclick="pickColor('green',this)"></div>
+  <div class="htsw" data-c="blue"   style="background:#5B7CDD;" title="Blue"   onclick="pickColor('blue',this)"></div>
+  <div class="htsw" data-c="pink"   style="background:#E41E63;" title="Pink"   onclick="pickColor('pink',this)"></div>
+  <div class="htsw" data-c="orange" style="background:#FF8C00;" title="Orange" onclick="pickColor('orange',this)"></div>
+  <div class="htsw" data-c="purple" style="background:#A028C8;" title="Purple" onclick="pickColor('purple',this)"></div>
+  <div class="htdiv"></div>
+  <input id="htag" placeholder="tag, tag2…" autocomplete="off" onkeydown="if(event.key==='Enter')commitHL()">
+  <button id="htsave" onclick="commitHL()">Save</button>
+  <button id="htcancel" onclick="closeHLToolbar()">×</button>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────
+var events     = [];
+var chars      = [];
+var locs       = [];
+var highlights = [];  // {id,chIdx,chNum,chHead,start,end,text,color,tags,note,ts}
+var curView    = 'dashboard';
+var cfilt      = '';
+var chfilt     = '';
+var srch       = '';
+var readIdx    = 0;
+var hlPanelOn  = true;
+var hlColor    = 'yellow';
+var hlPending  = null; // {start,end,text} in raw text offsets
+var hlTagFilt  = '';
+
+var HL_SOLID = {yellow:'#FFD700',green:'#48C75A',blue:'#5B7CDD',
+                pink:'#E41E63',orange:'#FF8C00',purple:'#A028C8'};
+var HL_BG    = {yellow:'rgba(255,220,0,.52)',green:'rgba(72,199,90,.4)',
+                blue:'rgba(91,124,221,.36)',  pink:'rgba(228,30,99,.28)',
+                orange:'rgba(255,140,0,.42)', purple:'rgba(160,40,200,.3)'};
+
+// ── HELPERS ──────────────────────────────────────
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function hl(text, term){
+  if (!term || !text) return esc(text);
+  var escaped = term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return esc(String(text)).replace(new RegExp('('+escaped+')','gi'),'<mark class="hl">$1</mark>');
+}
+
+function allCharNames(){
+  var s = new Set();
+  events.forEach(function(e){ if(e.characters) e.characters.split(',').forEach(function(c){ var t=c.trim(); if(t) s.add(t); }); });
+  chars.forEach(function(c){ s.add(c.name); });
+  return s;
+}
+function allLocNames(){
+  var s = new Set();
+  events.forEach(function(e){ if(e.location && e.location.trim()) s.add(e.location.trim()); });
+  locs.forEach(function(l){ s.add(l.name); });
+  return s;
+}
+function getChaps(){
+  var s = new Set();
+  events.forEach(function(e){ if(e.chapter!==undefined && e.chapter!=='') s.add(String(e.chapter).trim()); });
+  return s;
+}
+function readableEvents(){
+  return events.filter(function(e){ return e.fullText; });
+}
+function threadMap(){
+  var map = {};
+  var allCh = Array.from(getChaps()).sort(function(a,b){ return parseInt(a)-parseInt(b); });
+  events.forEach(function(e){
+    if (!e.characters) return;
+    e.characters.split(',').forEach(function(c){
+      var n = c.trim(); if(!n) return;
+      if (!map[n]) map[n] = new Set();
+      if (e.chapter!==undefined && e.chapter!=='') map[n].add(String(e.chapter).trim());
+    });
+  });
+  chars.forEach(function(ch){
+    if (!map[ch.name]) map[ch.name] = new Set();
+    if (ch.activity) ch.activity.forEach(function(a){ if(a.chapter) map[ch.name].add(String(a.chapter).trim()); });
+  });
+  return { map:map, allCh:allCh };
+}
+
+// ── SEARCH ───────────────────────────────────────
+var _matchIdx = 0;
+function doSearch(v){
+  srch = v.trim().toLowerCase();
+  _matchIdx = 0;
+  renderView();
+  var marks = document.querySelectorAll('mark.hl');
+  var el = document.getElementById('scnt');
+  if (!srch){
+    el.textContent = '';
+  } else if (marks.length){
+    el.textContent = marks.length+' match'+(marks.length!==1?'es':'');
+    if (curView==='read' && marks[0]){
+      marks[0].scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  } else {
+    el.textContent = 'no matches';
+  }
+}
+
+function stepMatch(dir){
+  var marks = document.querySelectorAll('mark.hl');
+  if (!marks.length) return;
+  _matchIdx = ((_matchIdx + dir) % marks.length + marks.length) % marks.length;
+  marks.forEach(function(m){ m.style.outline=''; });
+  marks[_matchIdx].scrollIntoView({behavior:'smooth', block:'center'});
+  marks[_matchIdx].style.outline = '2px solid #E05C5C';
+  document.getElementById('scnt').textContent = (_matchIdx+1)+' / '+marks.length;
+}
+
+// ── ROUTING ──────────────────────────────────────
+function showView(v){
+  var c = document.getElementById('content');
+  c.className = '';
+  curView = v;
+  document.querySelectorAll('.nb').forEach(function(b){ b.classList.remove('on'); });
+  var btn = document.getElementById('nb-'+v);
+  if (btn) btn.classList.add('on');
+  var titles = {dashboard:'Dashboard',timeline:'Timeline',read:'Read',characters:'Characters',locations:'Locations',highlights:'Highlights',compare:'Compare Chapters',settings:'Settings'};
+  document.getElementById('vt').textContent = titles[v]||v;
+  renderView();
+}
+
+function renderView(){
+  var c = document.getElementById('content');
+  if      (curView==='dashboard')  renderDash(c);
+  else if (curView==='timeline')   renderTL(c);
+  else if (curView==='read')       renderRead(c);
+  else if (curView==='characters') renderChars(c);
+  else if (curView==='locations')  renderLocs(c);
+  else if (curView==='highlights') renderHLView(c);
+  else if (curView==='compare')    renderCompare(c);
+  else if (curView==='settings')   renderSettings(c);
+  updateBadges();
+}
+
+// ── DASHBOARD ────────────────────────────────────
+function renderDash(c){
+  document.getElementById('tbr').innerHTML = '';
+  var chaps = getChaps(), cn = allCharNames(), ln = allLocNames();
+  var tm = threadMap();
+  var html = '<div class="card"><div class="ey">Story Overview</div>';
+  html += '<div style="font-size:18px;font-weight:600;letter-spacing:-0.02em;margin-bottom:16px;">Project Statistics</div>';
+  html += '<div class="sg">';
+  html += '<div class="sc2"><div class="sv">'+chaps.size+'</div><div class="sl">Chapters</div></div>';
+  html += '<div class="sc2"><div class="sv">'+events.length+'</div><div class="sl">Events</div></div>';
+  html += '<div class="sc2 ac"><div class="sv">'+cn.size+'</div><div class="sl">Characters</div></div>';
+  html += '<div class="sc2"><div class="sv">'+ln.size+'</div><div class="sl">Locations</div></div>';
+  html += '</div></div>';
+
+  if (cn.size > 0){
+    html += '<div class="card"><div class="ch"><div class="ct">Character Thread Map</div><span class="tag ta">'+cn.size+' characters</span></div>';
+    html += '<p style="font-size:12px;color:var(--t2);margin-bottom:14px;">Filled = character present in that chapter.</p>';
+    var sorted = Object.entries(tm.map).sort(function(a,b){ return b[1].size-a[1].size; });
+    sorted.forEach(function(entry){
+      var name = entry[0], chapSet = entry[1];
+      html += '<div class="tr2"><div class="tl" title="'+esc(name)+'">'+hl(name,srch)+'</div><div style="display:flex;gap:3px;flex-wrap:wrap;">';
+      tm.allCh.forEach(function(ch){
+        html += '<span class="tcp'+(chapSet.has(ch)?' on':'')+'">'+esc(ch)+'</span>';
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  if (ln.size > 0){
+    html += '<div class="card"><div class="ch"><div class="ct">Locations</div></div><div class="cr">';
+    Array.from(ln).forEach(function(l){ html += '<span class="chip">'+hl(l,srch)+'</span>'; });
+    html += '</div></div>';
+  }
+
+  if (events.length===0 && chars.length===0){
+    html += '<div class="card"><div class="es"><div style="font-size:28px;opacity:0.3;margin-bottom:10px;">📖</div>';
+    html += '<p style="font-weight:600;color:var(--t1);margin-bottom:8px;">Upload your manuscript to get started</p>';
+    html += '<p style="color:var(--t2);font-size:12px;">Drop a .docx or .txt in the sidebar.</p></div></div>';
+  }
+  c.innerHTML = html;
+}
+
+// ── TIMELINE ─────────────────────────────────────
+function renderTL(c){
+  var cn = allCharNames(), chaps = getChaps();
+  var tbr = document.getElementById('tbr');
+  var fhtml = '<div class="fr">';
+  fhtml += '<select class="fs" onchange="cfilt=this.value;renderTL(document.getElementById(\'content\'))"><option value="">All Characters</option>';
+  Array.from(cn).sort().forEach(function(n){ fhtml += '<option value="'+esc(n)+'"'+(cfilt===n?' selected':'')+'>'+esc(n)+'</option>'; });
+  fhtml += '</select>';
+  fhtml += '<select class="fs" onchange="chfilt=this.value;renderTL(document.getElementById(\'content\'))"><option value="">All Chapters</option>';
+  Array.from(chaps).sort(function(a,b){return parseInt(a)-parseInt(b);}).forEach(function(ch){ fhtml += '<option value="'+esc(ch)+'"'+(chfilt===ch?' selected':'')+'>'+esc(ch)+'</option>'; });
+  fhtml += '</select>';
+  fhtml += '<button class="btn bs bsm" onclick="cfilt=\'\';chfilt=\'\';renderTL(document.getElementById(\'content\'))">Clear</button>';
+  if (hasAI()) fhtml += '<button class="btn ba bsm" onclick="runTimelineCheck()">✦ Check Consistency</button>';
+  fhtml += '</div>';
+  tbr.innerHTML = fhtml;
+
+  if (events.length===0){
+    c.innerHTML = '<div class="card"><div class="es"><div style="font-size:28px;opacity:0.3;margin-bottom:10px;">🗓</div><p style="font-weight:600;color:var(--t1);">Timeline is empty</p><p style="color:var(--t2);margin-top:4px;">Upload a manuscript or click Add Timeline Event.</p></div></div>';
+    return;
+  }
+
+  var filtered = events.map(function(e,i){ return Object.assign({},e,{_i:i}); });
+  if (cfilt) filtered = filtered.filter(function(e){ return e.characters && e.characters.split(',').map(function(x){return x.trim();}).indexOf(cfilt)>-1; });
+  if (chfilt) filtered = filtered.filter(function(e){ return String(e.chapter||'').trim()===chfilt; });
+
+  var html = '<div class="card" style="padding:0;overflow:hidden;"><div class="tw" style="border:none;border-radius:0;"><table>';
+  html += '<thead><tr><th style="width:70px">Ch.</th><th>Scene Summary</th><th>Characters</th><th>Location</th><th>Notes</th><th style="width:110px;text-align:center">Actions</th></tr></thead><tbody id="tlbody"></tbody></table></div></div>';
+  c.innerHTML = html;
+
+  var tbody = document.getElementById('tlbody');
+  filtered.forEach(function(e){
+    var i = e._i;
+    var isM = srch && (String(e.chapter||'').toLowerCase().includes(srch)||String(e.event||'').toLowerCase().includes(srch)||String(e.characters||'').toLowerCase().includes(srch)||String(e.location||'').toLowerCase().includes(srch)||String(e.notes||'').toLowerCase().includes(srch));
+    var tr = document.createElement('tr');
+    if (isM) tr.className = 'sm';
+    tr.innerHTML =
+      '<td contenteditable spellcheck="false" oninput="upEv('+i+',\'chapter\',this.innerText)">'+hl(String(e.chapter||''),srch)+'</td>'+
+      '<td contenteditable spellcheck="false" oninput="upEv('+i+',\'event\',this.innerText)" style="min-width:150px">'+hl(e.event||'',srch)+'</td>'+
+      '<td contenteditable spellcheck="false" oninput="upEv('+i+',\'characters\',this.innerText)">'+hl(e.characters||'',srch)+'</td>'+
+      '<td contenteditable spellcheck="false" oninput="upEv('+i+',\'location\',this.innerText)">'+hl(e.location||'',srch)+'</td>'+
+      '<td contenteditable spellcheck="false" oninput="upEv('+i+',\'notes\',this.innerText)" style="min-width:140px;font-size:12px;color:var(--t2)">'+hl(e.notes||'',srch)+'</td>'+
+      '<td style="text-align:center;white-space:nowrap;">'+
+        (e.fullText ? '<button class="btn bs bxs" onclick="openRead('+i+')" style="margin-right:3px;">Read</button>' : '')+
+        '<button class="dbt" style="display:inline-flex" onclick="delEv('+i+')"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>'+
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// open Read view at a specific event index
+function openRead(evIdx){
+  var readable = readableEvents();
+  var target = events[evIdx];
+  var ri = readable.findIndex(function(e){ return e === target; });
+  if (ri > -1) readIdx = ri;
+  showView('read');
+}
+
+// ── READ VIEW ────────────────────────────────────
+function renderRead(c){
+  ensureEventIds();
+  var btnHtml =
+    '<button class="hltoggle'+(hlPanelOn?' on':'')+'" onclick="toggleHLPanel()" id="hl-tog">'+
+    '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 11l1.5-4.5L10 2l2 2-6.5 4.5L2 11z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'+
+    ' Highlights <span class="badge" style="margin-left:3px">'+highlights.length+'</span></button>'+
+    '<button class="btn bs bsm" onclick="showView(\'compare\')">⧉ Compare</button>'+
+    (hasAI() ? '<button class="btn ba bsm" onclick="openAskChapter()">✦ Ask AI</button>' : '<button class="btn bs bsm" onclick="openSettings()" title="Set AI key to unlock">✦ Ask AI</button>');
+  document.getElementById('tbr').innerHTML = btnHtml;
+  c.className = 'read-mode';
+
+  var readable = readableEvents();
+  if (readable.length === 0){
+    c.className = '';
+    c.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:60vh;"><div class="es"><div style="font-size:32px;opacity:0.3;">📄</div><p style="font-weight:600;color:var(--t1);margin-bottom:6px;">No chapters to read yet</p><p style="color:var(--t2);font-size:12px;">Upload a .docx or .txt manuscript first.</p></div></div>';
+    return;
+  }
+  if (readIdx >= readable.length) readIdx = 0;
+  var cur = readable[readIdx];
+
+  // TOC
+  var tocHtml = '<div class="rtoc"><div class="rtoc-t">Chapters</div>';
+  readable.forEach(function(e, i){
+    var label = esc(e.heading || e.event || 'Ch. '+e.chapter);
+    var cnt = highlights.filter(function(h){ return h.chapterId===(e.fullText?e.fullText.substring(0,80):('idx_'+i)); }).length;
+    tocHtml += '<button class="ti2b'+(i===readIdx?' on':'')+'" onclick="jumpCh('+i+')">';
+    tocHtml += '<span class="tinum">'+esc(String(e.chapter))+'</span>';
+    tocHtml += '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">'+label+'</span>';
+    if (cnt) tocHtml += '<span class="toc-hldot">🖊'+cnt+'</span>';
+    tocHtml += '</button>';
+  });
+  tocHtml += '</div>';
+
+  // Meta
+  var metaHtml = '';
+  if (cur.event && cur.event !== 'Analyzing…') metaHtml += '<span class="tag ta">'+esc(cur.event)+'</span>';
+  if (cur.characters) cur.characters.split(',').forEach(function(ch){ var t=ch.trim(); if(t) metaHtml += '<span class="tag">'+esc(t)+'</span>'; });
+  if (cur.location) metaHtml += '<span class="tag">📍 '+esc(cur.location)+'</span>';
+
+  // Prev/Next
+  var prevBtn = '<button class="btn bs bsm" '+(readIdx===0?'disabled style="opacity:.4;cursor:not-allowed"':'')+' onclick="jumpCh('+(readIdx-1)+')">← Previous</button>';
+  var nextBtn = '<button class="btn bs bsm" '+(readIdx===readable.length-1?'disabled style="opacity:.4;cursor:not-allowed"':'')+' onclick="jumpCh('+(readIdx+1)+')">Next →</button>';
+  var counter = '<span style="font-size:12px;color:var(--t3);font-family:\'DM Mono\',monospace;">'+(readIdx+1)+' / '+readable.length+'</span>';
+
+  // Prose with highlights rendered inline
+  var proseHtml = buildProseHTML(cur.fullText||'', cur.fullText ? cur.fullText.substring(0,80) : ('idx_'+readIdx));
+
+  var bodyHtml =
+    '<div class="rbody" id="rbody">'+
+    '<div class="rhead">'+esc(cur.heading || 'Chapter '+cur.chapter)+'</div>'+
+    '<div class="rmeta">'+metaHtml+'</div>'+
+    '<div class="rprose" id="rproseEl" style="user-select:text;-webkit-user-select:text;">'+proseHtml+'</div>'+
+    '<div class="rnav">'+prevBtn+counter+nextBtn+'</div>'+
+    '</div>';
+
+  // Right highlights panel
+  var panelHtml = '';
+  if (hlPanelOn){
+    panelHtml =
+      '<div class="rright" id="rrpanel">'+
+      '<div class="rrh"><span class="rrt">Highlights</span>'+
+        '<span class="badge">'+highlights.filter(function(h){return h.chapterId===(cur.fullText?cur.fullText.substring(0,80):('idx_'+readIdx));}).length+'</span>'+
+      '</div>'+
+      '<div class="rrsearch"><input id="rrsearch" type="text" placeholder="Search tags or text…" autocomplete="off" oninput="renderRRPanel()" value="'+esc(hlTagFilt)+'"></div>'+
+      '<div class="rrlist" id="rrlist"></div>'+
+      '</div>';
+  }
+
+  c.innerHTML = '<div class="rl">'+tocHtml+bodyHtml+panelHtml+'</div>';
+
+  // Attach mouseup to prose for text selection
+  var prose = document.getElementById('rproseEl');
+  if (prose){
+    prose.addEventListener('mouseup', onProseSelect);
+    prose.addEventListener('touchend', onProseSelect);
+  }
+
+  renderRRPanel();
+}
+
+// ── BUILD PROSE HTML with highlight spans ─────────
+// Handles both saved highlights (color spans) AND live search marks.
+// Highlights are matched by chapterId (stable event identity).
+function buildProseHTML(rawText, chapterId){
+  if (!rawText) return '';
+
+  // Collect saved highlights for this chapter, sorted by start
+  var hls = highlights.filter(function(h){ return h.chapterId===chapterId; })
+    .slice().sort(function(a,b){ return a.start-b.start; });
+
+  // Build the escaped+highlighted HTML segment by segment
+  function renderSegment(text){
+    if (!srch || !text) return escPreserve(text);
+    var escaped = srch.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    var result = '';
+    var re = new RegExp('('+escaped+')','gi');
+    var last = 0, m;
+    re.lastIndex = 0;
+    while ((m = re.exec(text)) !== null){
+      result += escPreserve(text.slice(last, m.index));
+      result += '<mark class="hl">'+escPreserve(m[1])+'</mark>';
+      last = m.index + m[1].length;
+    }
+    result += escPreserve(text.slice(last));
+    return result;
+  }
+
+  if (!hls.length){
+    return renderSegment(rawText);
+  }
+
+  var out = '';
+  var pos = 0;
+  hls.forEach(function(h){
+    if (h.start > pos){
+      out += renderSegment(rawText.slice(pos, h.start));
+    }
+    var bg    = HL_BG[h.color]  || HL_BG.yellow;
+    var solid = HL_SOLID[h.color]|| HL_SOLID.yellow;
+    var tagStr = h.tags && h.tags.length ? '#'+h.tags.join(' #') : '';
+    out += '<span class="hspan hc-'+esc(h.color)+'" '+
+           'style="background:'+bg+';outline:1px solid '+solid+'22;" '+
+           'data-hlid="'+h.id+'" title="'+esc(tagStr)+'" '+
+           'onclick="openHLEdit(\''+h.id+'\')">'
+         + renderSegment(rawText.slice(h.start, h.end))
+         + '</span>';
+    pos = h.end;
+  });
+  if (pos < rawText.length){
+    out += renderSegment(rawText.slice(pos));
+  }
+  return out;
+}
+
+// Escape that converts newlines to <br> for HTML rendering
+function escPreserve(s){
+  return String(s||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+}
+
+// ── TEXT SELECTION → TOOLBAR ─────────────────────
+function onProseSelect(e){
+  // Small delay so selection is finalised on touch
+  setTimeout(function(){
+    var sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+    var selText = sel.toString();
+    if (!selText || selText.trim().length < 1) return;
+
+    // Map selection back to raw text offsets
+    var prose = document.getElementById('rproseEl');
+    if (!prose) return;
+    var range = sel.getRangeAt(0);
+
+    // Get char offset of range.startContainer/startOffset within prose's textContent
+    var startOff = getTextOffset(prose, range.startContainer, range.startOffset);
+    var endOff   = getTextOffset(prose, range.endContainer,   range.endOffset);
+
+    if (startOff < 0 || endOff <= startOff) return;
+
+    hlPending = { start: startOff, end: endOff, text: selText };
+
+    // Position toolbar
+    var rect = range.getBoundingClientRect();
+    var tb = document.getElementById('hltb');
+    document.getElementById('htag').value = '';
+    // Reset swatches
+    document.querySelectorAll('.htsw').forEach(function(s){ s.classList.remove('sel'); });
+    var selSw = document.querySelector('.htsw[data-c="'+hlColor+'"]');
+    if (selSw) selSw.classList.add('sel');
+
+    tb.classList.add('vis');
+    var left = Math.max(8, Math.min(rect.left + window.scrollX, window.innerWidth - 300));
+    var top  = rect.top + window.scrollY - 58;
+    if (top < 8) top = rect.bottom + window.scrollY + 8;
+    tb.style.left = left + 'px';
+    tb.style.top  = top  + 'px';
+  }, 10);
+}
+
+// Walk the DOM tree to get a character offset within a container element
+function getTextOffset(container, node, nodeOffset){
+  var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+  var offset = 0;
+  var n;
+  while ((n = walker.nextNode())){
+    if (n === node) return offset + nodeOffset;
+    offset += n.textContent.length;
+  }
+  return -1;
+}
+
+function pickColor(c, el){
+  hlColor = c;
+  document.querySelectorAll('.htsw').forEach(function(s){ s.classList.remove('sel'); });
+  if (el) el.classList.add('sel');
+}
+
+function closeHLToolbar(){
+  document.getElementById('hltb').classList.remove('vis');
+  hlPending = null;
+  if (window.getSelection) window.getSelection().removeAllRanges();
+}
+
+function commitHL(){
+  if (!hlPending){ closeHLToolbar(); return; }
+  var txt = hlPending.text.trim();
+  if (!txt){ toast('Nothing selected','er'); closeHLToolbar(); return; }
+
+  var tagRaw = (document.getElementById('htag').value||'').trim();
+  var tags = tagRaw ? tagRaw.split(/[,;]+/).map(function(t){ return t.trim().toLowerCase(); }).filter(Boolean) : [];
+
+  var readable = readableEvents();
+  var cur = readable[readIdx] || {};
+  var h = {
+    id:        uid(),
+    chapterId: cur.fullText ? cur.fullText.substring(0,80) : ('idx_'+readIdx),
+    chNum:     cur.chapter||'',
+    chHead:    cur.heading || 'Chapter '+cur.chapter,
+    start:     hlPending.start,
+    end:       hlPending.end,
+    text:      txt,
+    color:     hlColor,
+    tags:      tags,
+    note:      '',
+    ts:        Date.now()
+  };
+  highlights.push(h);
+  hlPending = null;
+  closeHLToolbar();
+  updateBadges();
+
+  // Re-render prose in place without full page re-render (preserves scroll)
+  var prose = document.getElementById('rproseEl');
+  if (prose){
+    var cur2 = readable[readIdx];
+    prose.innerHTML = buildProseHTML(cur2 ? cur2.fullText||'' : '', cur2&&cur2.fullText ? cur2.fullText.substring(0,80) : ('idx_'+readIdx));
+    prose.removeEventListener('mouseup', onProseSelect);
+    prose.addEventListener('mouseup', onProseSelect);
+  }
+  renderRRPanel();
+  // Update ALL highlight badges (topbar toggle button + right panel header + sidebar nav)
+  var topBadge = document.querySelector('#hl-tog .badge');
+  if (topBadge) topBadge.textContent = highlights.length;
+  var rrBadge = document.querySelector('#rrpanel .rrh .badge');
+  if (rrBadge) rrBadge.textContent = highlights.filter(function(h2){return h2.chapterId===(cur.fullText?cur.fullText.substring(0,80):('idx_'+readIdx));}).length;
+  // Update toc dot
+  var tocBtn = document.querySelectorAll('.ti2b')[readIdx];
+  if (tocBtn){
+    var existDot = tocBtn.querySelector('.toc-hldot');
+    var cnt = highlights.filter(function(h2){return h2.chapterId===(cur.fullText?cur.fullText.substring(0,80):('idx_'+readIdx));}).length;
+    if (existDot) existDot.textContent = cnt ? '🖊'+cnt : '';
+    else if (cnt){
+      var dot = document.createElement('span');
+      dot.className='toc-hldot'; dot.textContent='🖊'+cnt;
+      tocBtn.appendChild(dot);
+    }
+  }
+  toast('Highlight saved'+(tags.length ? ' — #'+tags.join(' #') : ''),'ok');
+}
+
+// Dismiss toolbar on outside click
+document.addEventListener('mousedown', function(e){
+  var tb = document.getElementById('hltb');
+  if (tb && tb.classList.contains('vis') && !tb.contains(e.target)){
+    var prose = document.getElementById('rproseEl');
+    if (!prose || !prose.contains(e.target)) closeHLToolbar();
+  }
+});
+
+// ── HIGHLIGHTS RIGHT PANEL ────────────────────────
+function renderRRPanel(){
+  var list = document.getElementById('rrlist');
+  if (!list) return;
+  var search = document.getElementById('rrsearch');
+  var q = (search ? search.value : hlTagFilt).trim().toLowerCase();
+  hlTagFilt = q;
+
+  var hls = highlights.filter(function(h){ var rd=readableEvents(); var ev=rd[readIdx]; return h.chapterId===(ev&&ev.fullText?ev.fullText.substring(0,80):'idx_'+readIdx); });
+  if (q){
+    hls = hls.filter(function(h){
+      return h.text.toLowerCase().includes(q) ||
+             h.tags.some(function(t){ return t.includes(q); }) ||
+             (h.note||'').toLowerCase().includes(q);
+    });
+  }
+  hls = hls.slice().sort(function(a,b){ return a.start-b.start; });
+
+  if (!hls.length){
+    list.innerHTML = '<div style="padding:20px 10px;text-align:center;"><div style="font-size:22px;opacity:.25;margin-bottom:8px;">🖊</div>'+
+      '<p style="font-size:11px;color:var(--t3);">'+(q?'No matches':'Select text in the chapter to highlight')+'</p></div>';
+    return;
+  }
+
+  var html = '';
+  hls.forEach(function(h){
+    var solid = HL_SOLID[h.color]||'#ccc';
+    var shortTxt = h.text.length>100 ? h.text.slice(0,100)+'…' : h.text;
+    html += '<div class="hlcard" onclick="scrollToHL(\''+h.id+'\')">';
+    html += '<div class="hlcard-bar" style="background:'+solid+'"></div>';
+    html += '<div style="padding-left:8px">';
+    html += '<div class="hlcard-txt">'+esc(shortTxt)+'</div>';
+    if (h.note) html += '<div style="font-size:11px;color:var(--t2);font-style:italic;margin-bottom:4px">'+esc(h.note)+'</div>';
+    html += '<div class="hlcard-foot">';
+    h.tags.forEach(function(t){
+      html += '<span class="hlcard-tag" onclick="event.stopPropagation();filterRR(\''+esc(t)+'\')">#'+esc(t)+'</span>';
+    });
+    html += '</div></div>';
+    html += '<button class="hlcard-del" onclick="event.stopPropagation();deleteHL(\''+h.id+'\')"><svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>';
+    html += '</div>';
+  });
+  list.innerHTML = html;
+}
+
+function filterRR(tag){
+  var s = document.getElementById('rrsearch');
+  if (s){ s.value=tag; renderRRPanel(); }
+}
+
+function scrollToHL(id){
+  var span = document.querySelector('[data-hlid="'+id+'"]');
+  if (span) span.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function toggleHLPanel(){
+  hlPanelOn = !hlPanelOn;
+  renderRead(document.getElementById('content'));
+}
+
+function deleteHL(id){
+  highlights = highlights.filter(function(h){ return h.id!==id; });
+  updateBadges();
+  // Re-render prose
+  var readable = readableEvents();
+  var prose = document.getElementById('rproseEl');
+  if (prose && readable[readIdx]){
+    var _re=readable[readIdx]; prose.innerHTML = buildProseHTML(_re.fullText||'', _re.fullText?_re.fullText.substring(0,80):('idx_'+readIdx));
+    prose.removeEventListener('mouseup', onProseSelect);
+    prose.addEventListener('mouseup', onProseSelect);
+  }
+  renderRRPanel();
+  // Sync all badges
+  var topBadge = document.querySelector('#hl-tog .badge');
+  if (topBadge) topBadge.textContent = highlights.length;
+  var rrBadge = document.querySelector('#rrpanel .rrh .badge');
+  if (rrBadge) rrBadge.textContent = highlights.filter(function(h2){var rd=readableEvents();var ev=rd[readIdx];return h2.chapterId===(ev&&ev.fullText?ev.fullText.substring(0,80):'idx_'+readIdx);}).length;
+  toast('Highlight removed','in');
+}
+
+// ── HIGHLIGHTS FULL VIEW ─────────────────────────
+function renderHLView(c){
+  c.className = '';
+  document.getElementById('tbr').innerHTML =
+    (highlights.length ? '<button class="btn bs bsm" onclick="exportHLCSV()">Export CSV</button>' : '')+
+    (highlights.length && hasAI() ? '<button class="btn ba bsm" onclick="analyzeHighlights()">✦ Analyze Highlights</button>' : '');
+
+  if (!highlights.length){
+    c.innerHTML = '<div class="card"><div class="es"><div style="font-size:32px;opacity:.3">🖊</div>'+
+      '<p style="font-weight:600;color:var(--t1);margin-bottom:6px">No highlights yet</p>'+
+      '<p style="color:var(--t2);font-size:12px">Go to Read, select text, and save a highlight.</p></div></div>';
+    return;
+  }
+
+  var allTags = [];
+  highlights.forEach(function(h){ h.tags.forEach(function(t){ if(allTags.indexOf(t)<0) allTags.push(t); }); });
+  allTags.sort();
+
+  var html = '<div class="card" style="margin-bottom:14px;">';
+  html += '<div style="font-size:13px;font-weight:600;margin-bottom:10px">Filter by Tag</div>';
+  html += '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">';
+  html += '<input class="si" id="hlvsearch" type="text" placeholder="Search tags, text, chapter…" style="max-width:260px;" oninput="renderHLList()">';
+  if (allTags.length){
+    allTags.forEach(function(t){
+      html += '<span class="hlcard-tag" style="cursor:pointer" onclick="setHLVSearch(\''+esc(t)+'\')">#'+esc(t)+'</span>';
+    });
+  }
+  html += '</div></div>';
+  html += '<div id="hlvlist"></div>';
+  c.innerHTML = html;
+  renderHLList();
+}
+
+function setHLVSearch(tag){
+  var s = document.getElementById('hlvsearch');
+  if (s){ s.value=tag; renderHLList(); }
+}
+
+function renderHLList(){
+  var el = document.getElementById('hlvlist');
+  if (!el) return;
+  var sv = document.getElementById('hlvsearch');
+  var q = (sv ? sv.value : '').trim().toLowerCase();
+
+  // Group by chapter
+  var byChap = {};
+  highlights.forEach(function(h){
+    var key = h.chapterId||('idx_'+h.chIdx);
+    if (!byChap[key]) byChap[key] = {chapterId:key,chIdx:h.chIdx,chNum:h.chNum,chHead:h.chHead,items:[]};
+    byChap[key].items.push(h);
+  });
+
+  var html = '';
+  Object.keys(byChap)
+    .sort(function(a,b){ return parseInt(byChap[a].chNum)-parseInt(byChap[b].chNum)||a-b; })
+    .forEach(function(key){
+      var grp = byChap[key];
+      var items = q
+        ? grp.items.filter(function(h){
+            return h.text.toLowerCase().includes(q)||
+                   h.tags.some(function(t){return t.includes(q);})||
+                   (h.note||'').toLowerCase().includes(q)||
+                   (h.chHead||'').toLowerCase().includes(q);
+          })
+        : grp.items;
+      if (!items.length) return;
+
+      html += '<div class="card" style="margin-bottom:12px;">';
+      html += '<div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;">'+
+               '<span class="tag ta">Ch.'+esc(String(grp.chNum))+'</span>'+esc(grp.chHead)+'</div>';
+      items.forEach(function(h){
+        var solid = HL_SOLID[h.color]||'#ccc';
+        var bg    = HL_BG[h.color]||HL_BG.yellow;
+        html += '<div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--bd);margin-bottom:8px;cursor:pointer" onclick="jumpToHL(\''+h.id+'\','+h.chIdx+')">';
+        html += '<div style="width:5px;background:'+solid+';flex-shrink:0"></div>';
+        html += '<div style="flex:1;padding:10px 12px">';
+        html += '<div style="font-size:13px;line-height:1.7;background:'+bg+';border-radius:4px;padding:4px 8px;margin-bottom:5px">'+esc(h.text)+'</div>';
+        if (h.note) html += '<div style="font-size:11px;color:var(--t2);font-style:italic;margin-bottom:4px">'+esc(h.note)+'</div>';
+        html += '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">';
+        h.tags.forEach(function(t){ html += '<span class="hlcard-tag">#'+esc(t)+'</span>'; });
+        html += '<span style="margin-left:auto;font-size:10px;color:var(--t3)">'+new Date(h.ts).toLocaleDateString()+'</span>';
+        html += '</div></div>';
+        html += '<button style="padding:0 10px;background:transparent;border:none;border-left:1px solid var(--bd);color:var(--t3);cursor:pointer;font-size:11px" onclick="event.stopPropagation();openHLEdit(\''+h.id+'\')">Edit</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+  el.innerHTML = html || '<div style="padding:20px;text-align:center;font-size:12px;color:var(--t3)">No highlights match.</div>';
+}
+
+function jumpToHL(id, chIdx){
+  readIdx = chIdx;
+  showView('read');
+  setTimeout(function(){ scrollToHL(id); }, 200);
+}
+
+function openHLEdit(id){
+  var h = highlights.find(function(x){ return x.id===id; });
+  if (!h) return;
+  closeModal();
+  var colorBtns = Object.keys(HL_SOLID).map(function(c){
+    var s = HL_SOLID[c];
+    return '<button onclick="this.parentNode.querySelectorAll(\'button\').forEach(function(b){b.style.outline=\'\'});this.style.outline=\'3px solid '+s+'\';this._hlc=\''+c+'\'" '+
+      'style="width:26px;height:26px;border-radius:50%;border:none;background:'+s+';cursor:pointer;'+(h.color===c?'outline:3px solid '+s+';':'')+'" data-c="'+c+'" id="hlcb-'+c+'"></button>';
+  }).join('');
+
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo">';
+  html += '<div class="mot">Edit Highlight</div>';
+  html += '<div style="background:'+HL_BG[h.color]+';border-left:3px solid '+HL_SOLID[h.color]+';border-radius:6px;padding:10px 14px;font-size:13px;line-height:1.7;margin-bottom:16px">'+esc(h.text)+'</div>';
+  html += '<div class="fg"><label class="fl">Color</label><div id="hlcbgroup" style="display:flex;gap:8px;align-items:center">'+colorBtns+'</div></div>';
+  html += '<div class="fg"><label class="fl">Tags</label><input class="fi2" id="hled-tags" value="'+esc(h.tags.join(', '))+'"></div>';
+  html += '<div class="fg"><label class="fl">Note</label><textarea class="fi2" id="hled-note" placeholder="Add a note…">'+esc(h.note||'')+'</textarea></div>';
+  html += '<div class="mof">'+
+    '<button class="btn bs" style="color:var(--err);border-color:var(--err);margin-right:auto" onclick="deleteHL(\''+h.id+'\');closeModal()">Delete</button>'+
+    '<button class="btn bs" onclick="closeModal()">Cancel</button>'+
+    '<button class="btn ba" onclick="saveHLEdit(\''+h.id+'\')">Update</button>'+
+    '</div></div></div>';
+  document.getElementById('mr').innerHTML = html;
+  // Pre-select the current color button
+  var cb = document.getElementById('hlcb-'+h.color);
+  if (cb) cb.style.outline = '3px solid '+HL_SOLID[h.color];
+}
+
+function saveHLEdit(id){
+  var h = highlights.find(function(x){ return x.id===id; });
+  if (!h) return;
+  // Get selected color
+  var grp = document.getElementById('hlcbgroup');
+  if (grp){
+    var btns = grp.querySelectorAll('button');
+    btns.forEach(function(b){
+      if (b.style.outline && b.style.outline !== '') h.color = b.getAttribute('data-c');
+    });
+  }
+  var tr = (document.getElementById('hled-tags').value||'').trim();
+  h.tags = tr ? tr.split(/[,;]+/).map(function(t){ return t.trim().toLowerCase(); }).filter(Boolean) : [];
+  h.note = (document.getElementById('hled-note').value||'').trim();
+  closeModal();
+  // Re-render prose if in read view
+  if (curView==='read'){
+    var readable = readableEvents();
+    var prose = document.getElementById('rproseEl');
+    if (prose && readable[readIdx]){
+      var _re=readable[readIdx]; prose.innerHTML = buildProseHTML(_re.fullText||'', _re.fullText?_re.fullText.substring(0,80):('idx_'+readIdx));
+      prose.removeEventListener('mouseup', onProseSelect);
+      prose.addEventListener('mouseup', onProseSelect);
+    }
+    renderRRPanel();
+  }
+  toast('Updated','ok');
+}
+
+function exportHLCSV(){
+  var rows=[['Chapter','Heading','Text','Color','Tags','Note','Date']];
+  highlights.forEach(function(h){
+    rows.push([h.chNum,h.chHead,h.text,h.color,h.tags.join('; '),h.note||'',new Date(h.ts).toLocaleDateString()]);
+  });
+  var csv = rows.map(function(r){
+    return r.map(function(c){ return '"'+String(c||'').replace(/"/g,'""')+'"'; }).join(',');
+  }).join('\n');
+  var blob = new Blob([csv],{type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='highlights.csv'; a.click();
+  URL.revokeObjectURL(url); toast('CSV exported','ok');
+}
+
+// ── COMPARE VIEW ─────────────────────────────────
+function renderCompare(c){
+  ensureEventIds(); // re-derive chapterIds from chIdx in case of stale data
+  c.className = 'read-mode';
+  document.getElementById('tbr').innerHTML = '<button class="btn bs bsm" onclick="showView(\'read\')">← Back to Read</button>';
+  var readable = readableEvents();
+  if (readable.length < 2){
+    c.className='';
+    c.innerHTML='<div class="card"><div class="es"><p style="font-weight:600;color:var(--t1)">Need at least 2 chapters to compare</p></div></div>';
+    return;
+  }
+  var li = Math.max(0, readIdx>0?readIdx-1:0);
+  var ri = Math.min(readable.length-1, li+1);
+  if (li===ri) ri = Math.min(readable.length-1, li+1);
+
+  function opts(sel){
+    return readable.map(function(e,i){
+      var cnt = highlights.filter(function(h){ return h.chapterId===(e.fullText?e.fullText.substring(0,80):('idx_'+i)); }).length;
+      var label = esc(e.heading || e.event || 'Chapter '+e.chapter);
+      return '<option value="'+i+'"'+(i===sel?' selected':'')+'>'+label+(cnt?' ('+cnt+'🖊)':'')+'</option>';
+    }).join('');
+  }
+
+  c.innerHTML =
+    '<div class="cmpgrid">'+
+    '<div class="cmppane" id="cmpl">'+
+      '<div class="cmphead"><select class="cmpsel" id="cmplsel" onchange="updateCmpPane(\'l\',parseInt(this.value))">'+opts(li)+'</select>'+
+        '<span id="cmpl-cnt"></span></div>'+
+      '<div class="cmp-legend" id="cmpl-legend"></div>'+
+      '<div class="cmpbody" id="cmplbody"></div>'+
+    '</div>'+
+    '<div class="cmppane" id="cmpr">'+
+      '<div class="cmphead"><select class="cmpsel" id="cmprsel" onchange="updateCmpPane(\'r\',parseInt(this.value))">'+opts(ri)+'</select>'+
+        '<span id="cmpr-cnt"></span></div>'+
+      '<div class="cmp-legend" id="cmpr-legend"></div>'+
+      '<div class="cmpbody" id="cmprbody"></div>'+
+    '</div>'+
+    '</div>';
+
+  setCmpPane('l', li);
+  setCmpPane('r', ri);
+}
+
+function setCmpPane(side, idx){
+  var readable = readableEvents();
+  var e = readable[idx];
+  if (!e) return;
+
+  var bodyEl   = document.getElementById('cmp'+side+'body');
+  var cntEl    = document.getElementById('cmp'+side+'-cnt');
+  var legendEl = document.getElementById('cmp'+side+'-legend');
+
+  // Render prose with highlights baked in
+  var stableId = e.fullText ? e.fullText.substring(0,80) : ('idx_'+idx);
+  if (bodyEl) bodyEl.innerHTML = buildProseHTML(e.fullText||'', stableId);
+
+  // Count and badge
+  var chHls = highlights.filter(function(h){ return h.chapterId===stableId; });
+  if (cntEl){
+    cntEl.innerHTML = chHls.length
+      ? '<span style="font-size:11px;color:var(--ac);font-weight:600;">🖊 '+chHls.length+' highlight'+(chHls.length!==1?'s':'')+'</span>'
+      : '<span style="font-size:11px;color:var(--t3);">no highlights</span>';
+  }
+
+  // Legend: show unique colors + tags used in this chapter's highlights
+  if (legendEl){
+    if (!chHls.length){
+      legendEl.style.display='none';
+    } else {
+      legendEl.style.display='flex';
+      // Collect unique colors and all tags
+      var colorsSeen = {};
+      var allTags = [];
+      chHls.forEach(function(h){
+        colorsSeen[h.color] = true;
+        h.tags.forEach(function(t){ if(allTags.indexOf(t)<0) allTags.push(t); });
+      });
+      var html = '';
+      Object.keys(colorsSeen).forEach(function(col){
+        html += '<span class="cmp-legend-item"><span class="cmp-legend-dot" style="background:'+HL_SOLID[col]+'"></span>'+col+'</span>';
+      });
+      allTags.forEach(function(t){
+        html += '<span class="cmp-legend-item" style="cursor:pointer" onclick="cmpScrollTag(\''+esc(t)+'\',\''+side+'\')"><span style="color:var(--ac)">#</span>'+esc(t)+'</span>';
+      });
+      legendEl.innerHTML = html;
+    }
+  }
+}
+
+function updateCmpPane(side, idx){ setCmpPane(side, idx); }
+
+// Click a tag in the compare legend to scroll to first match in that pane
+function cmpScrollTag(tag, side){
+  var body = document.getElementById('cmp'+side+'body');
+  if (!body) return;
+  var spans = body.querySelectorAll('.hspan');
+  for (var i=0;i<spans.length;i++){
+    var title = spans[i].getAttribute('title')||'';
+    if (title.indexOf('#'+tag)>-1){
+      spans[i].scrollIntoView({behavior:'smooth',block:'center'});
+      spans[i].style.boxShadow='0 0 0 3px '+HL_SOLID.yellow;
+      var s=spans[i]; setTimeout(function(){ s.style.boxShadow=''; },1800);
+      break;
+    }
+  }
+}
+
+function jumpCh(i){
+  var readable = readableEvents();
+  if (i < 0 || i >= readable.length) return;
+  readIdx = i;
+  hlTagFilt = '';
+  renderRead(document.getElementById('content'));
+  var rb = document.getElementById('rbody');
+  if (rb) rb.scrollTop = 0;
+}
+
+// ── INIT ─────────────────────────────────────────
+
+// ── CHARACTERS VIEW ──────────────────────────────
+function renderChars(c){
+  document.getElementById('tbr').innerHTML = '<button class="btn ba bsm" onclick="openAddChar()"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add Character</button>';
+  var cn = allCharNames();
+  if (cn.size===0){
+    c.innerHTML = '<div class="card"><div class="es"><div style="font-size:28px;opacity:0.3;">👤</div><p style="font-weight:600;color:var(--t1);margin-bottom:6px;">No characters yet</p><button class="btn ba" style="margin-top:14px;" onclick="openAddChar()">+ Add Character</button></div></div>';
+    return;
+  }
+  var counts = {}; events.forEach(function(e){ if(e.characters) e.characters.split(',').forEach(function(n){ var t=n.trim(); if(t) counts[t]=(counts[t]||0)+1; }); });
+  var tm = threadMap();
+  var html = '';
+  Array.from(cn).sort().forEach(function(name){
+    var rec = chars.find(function(ch){ return ch.name===name; });
+    var count = counts[name]||0;
+    var chapSet = tm.map[name]||new Set();
+    html += '<div class="chcard">';
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">';
+    html += '<div><div class="chn">'+hl(name,srch)+'</div>'+(rec&&rec.role?'<span class="tag">'+esc(rec.role)+'</span>':'')+'</div>';
+    html += '<div style="display:flex;gap:6px;align-items:center;"><span class="tag ta">'+count+' scene'+(count!==1?'s':'')+'</span>';
+    html += '<button class="btn bs bxs" onclick="openEditChar(\''+esc(name)+'\')">Edit</button>';
+    if (hasAI()) html += '<button class="btn ba bxs" onclick="checkCharacterArc(\''+esc(name)+'\')">✦ Arc</button>';
+    if(rec) html += '<button class="dbt" onclick="delChar(\''+rec.id+'\')"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>';
+    html += '</div></div>';
+    if (rec&&rec.bio) html += '<div class="chb">'+hl(rec.bio,srch)+'</div>';
+    if (tm.allCh.length>0){
+      html += '<div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:10px;">';
+      tm.allCh.forEach(function(ch){ html += '<span class="tcp'+(chapSet.has(ch)?' on':'')+'">'+esc(ch)+'</span>'; });
+      html += '</div>';
+    }
+    if (rec&&rec.activity&&rec.activity.length){
+      html += '<div><div class="act-t">Chapter Activity</div>';
+      rec.activity.forEach(function(a){ if(a.note||a.chapter){ html += '<div class="act-r">'+(a.chapter?'<span class="act-c">Ch.'+esc(String(a.chapter))+'</span>':'')+'<span style="color:var(--t2)">'+hl(a.note||'—',srch)+'</span></div>'; } });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  c.innerHTML = html;
+}
+
+// ── LOCATIONS VIEW ───────────────────────────────
+function renderLocs(c){
+  document.getElementById('tbr').innerHTML = '<button class="btn ba bsm" onclick="openAddLoc()"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add Location</button>';
+  var ln = allLocNames();
+  if (ln.size===0){
+    c.innerHTML = '<div class="card"><div class="es"><div style="font-size:28px;opacity:0.3;">📍</div><p style="font-weight:600;color:var(--t1);margin-bottom:6px;">No locations yet</p><button class="btn ba" style="margin-top:14px;" onclick="openAddLoc()">+ Add Location</button></div></div>';
+    return;
+  }
+  var counts = {}; events.forEach(function(e){ if(e.location&&e.location.trim()) counts[e.location.trim()]=(counts[e.location.trim()]||0)+1; });
+  var html = '';
+  Array.from(ln).sort().forEach(function(name){
+    var rec = locs.find(function(l){ return l.name===name; });
+    var count = counts[name]||0;
+    html += '<div class="chcard">';
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">';
+    html += '<div style="font-size:14px;font-weight:600;">'+hl(name,srch)+'</div>';
+    html += '<div style="display:flex;gap:6px;align-items:center;"><span class="tag">'+count+' scene'+(count!==1?'s':'')+'</span>';
+    html += '<button class="btn bs bxs" onclick="openEditLoc(\''+esc(name)+'\')">Edit</button>';
+    if(rec) html += '<button class="dbt" onclick="delLoc(\''+rec.id+'\')"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>';
+    html += '</div></div>';
+    if (rec&&rec.description) html += '<div class="chb">'+hl(rec.description,srch)+'</div>';
+    if (rec&&rec.assoc&&rec.assoc.length){
+      html += '<div><div class="act-t">Associated Characters</div><div class="cr">';
+      rec.assoc.forEach(function(a){ html += '<span class="chip">'+hl(a,srch)+'</span>'; });
+      html += '</div></div>';
+    }
+    html += '</div>';
+  });
+  c.innerHTML = html;
+}
+
+// ── EVENT CRUD ───────────────────────────────────
+function addEvent(){ events.push({id:uid(),chapter:'',event:'',characters:'',location:'',notes:''}); showView('timeline'); updateBadges(); toast('Event added','ok'); }
+function upEv(i,k,v){ events[i][k]=v; updateBadges(); }
+function delEv(i){ events.splice(i,1); renderView(); updateBadges(); toast('Deleted','in'); }
+
+// ── BADGES ───────────────────────────────────────
+function updateBadges(){
+  document.getElementById('bdg-event').textContent = events.length;
+  document.getElementById('bdg-read').textContent  = readableEvents().length;
+  document.getElementById('bdg-char').textContent  = allCharNames().size;
+  document.getElementById('bdg-loc').textContent   = allLocNames().size;
+  var bhl = document.getElementById('bdg-hl');
+  if (bhl) bhl.textContent = highlights.length;
+}
+
+// ── SAVE / LOAD / EXPORT ─────────────────────────
+function saveP(){ localStorage.setItem('dref5',JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights})); toast('Saved','ok'); }
+function loadP(){
+  try{
+    var d = JSON.parse(localStorage.getItem('dref5'));
+    if (!d){ toast('No saved project','er'); return; }
+    events=d.events||[]; chars=d.chars||[]; locs=d.locs||[]; highlights=d.highlights||[];
+    // Ensure every event has a stable id
+    ensureEventIds();
+    renderView(); updateBadges();
+    toast('Loaded '+events.length+' events','ok');
+  } catch(e){ toast('Load failed','er'); }
+}
+function exportJ(){
+  var blob = new Blob([JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights},null,2)],{type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='dre-flow.json'; a.click();
+  URL.revokeObjectURL(url); toast('Exported','ok');
+}
+
+// Assign stable ids to any events missing them, and fix any highlights
+// whose chapterId was saved as undefined/null by migrating them to idx-based ids
+function ensureEventIds(){
+  // Always re-derive chapterId from chIdx using fullText key
+  // This fixes any stale/wrong chapterId from previous saves
+  var rd = readableEvents();
+  highlights.forEach(function(h){
+    var ev = rd[h.chIdx];
+    if(ev && ev.fullText){
+      h.chapterId = ev.fullText.substring(0,80);
+    } else if(!h.chapterId){
+      h.chapterId = 'idx_'+h.chIdx;
+    }
+  });
+}
+
+// ── CHARACTER FORMS ──────────────────────────────
+function openAddChar(pre){ pre=pre||''; closeModal();
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()">';
+  html += '<div class="mo"><div class="mot">Add Character</div><div class="mos">All fields except name are optional.</div>';
+  html += '<div class="fg"><label class="fl">Name *</label><input class="fi2" id="cn" value="'+esc(pre)+'" placeholder="Full name"></div>';
+  html += '<div class="fg"><label class="fl">Role</label><select class="fsel" id="cr"><option value="">— select —</option><option>Protagonist</option><option>Antagonist</option><option>Supporting</option><option>Minor</option><option>Narrator</option></select></div>';
+  html += '<div class="fg"><label class="fl">Bio / Description</label><textarea class="fi2" id="cb" placeholder="Background, motivation…"></textarea></div>';
+  html += '<div class="fg"><label class="fl">Chapter Activity</label><div id="actrows"><div class="ae"><input class="fi2" placeholder="Ch. #" style="width:80px;flex-shrink:0"><input class="fi2" placeholder="What are they doing?"></div></div>';
+  html += '<button class="btn bg bsm" style="margin-top:8px;width:100%;justify-content:center;" onclick="addActRow()">+ Add Row</button></div>';
+  html += '<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" onclick="saveChar()">Save</button></div>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+}
+function openEditChar(name){ closeModal();
+  var rec = chars.find(function(c){ return c.name===name; });
+  if (!rec){ openAddChar(name); return; }
+  var roles = ['Protagonist','Antagonist','Supporting','Minor','Narrator'];
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo">';
+  html += '<div class="mot">Edit Character</div>';
+  html += '<div class="fg"><label class="fl">Name *</label><input class="fi2" id="cn" value="'+esc(rec.name)+'"></div>';
+  html += '<div class="fg"><label class="fl">Role</label><select class="fsel" id="cr"><option value="">— select —</option>';
+  roles.forEach(function(r){ html += '<option'+(rec.role===r?' selected':'')+'>'+r+'</option>'; });
+  html += '</select></div>';
+  html += '<div class="fg"><label class="fl">Bio</label><textarea class="fi2" id="cb">'+esc(rec.bio||'')+'</textarea></div>';
+  html += '<div class="fg"><label class="fl">Chapter Activity</label><div id="actrows">';
+  var acts = rec.activity||[];
+  if (!acts.length) acts = [{chapter:'',note:''}];
+  acts.forEach(function(a){ html += '<div class="ae"><input class="fi2" value="'+esc(String(a.chapter||''))+'" placeholder="Ch. #" style="width:80px;flex-shrink:0"><input class="fi2" value="'+esc(a.note||'')+'" placeholder="What are they doing?"></div>'; });
+  html += '</div><button class="btn bg bsm" style="margin-top:8px;width:100%;justify-content:center;" onclick="addActRow()">+ Add Row</button></div>';
+  html += '<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" onclick="saveChar(\''+rec.id+'\')">Update</button></div>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+}
+function addActRow(){ var rows=document.getElementById('actrows'); if(!rows)return; var d=document.createElement('div'); d.className='ae'; d.innerHTML='<input class="fi2" placeholder="Ch. #" style="width:80px;flex-shrink:0"><input class="fi2" placeholder="What are they doing?">'; rows.appendChild(d); }
+function saveChar(eid){
+  var name=(document.getElementById('cn').value||'').trim();
+  if(!name){toast('Name required','er');return;}
+  var role=document.getElementById('cr').value||'';
+  var bio=(document.getElementById('cb').value||'').trim();
+  var act=[]; document.querySelectorAll('#actrows .ae').forEach(function(row){ var ins=row.querySelectorAll('input'); var ch=(ins[0]&&ins[0].value||'').trim(); var nt=(ins[1]&&ins[1].value||'').trim(); if(ch||nt) act.push({chapter:ch,note:nt}); });
+  if(eid){ var idx=chars.findIndex(function(c){return c.id===eid;}); if(idx>-1) chars[idx]=Object.assign({},chars[idx],{name:name,role:role,bio:bio,activity:act}); toast('"'+name+'" updated','ok'); }
+  else { chars.push({id:uid(),name:name,role:role,bio:bio,activity:act}); toast('"'+name+'" added','ok'); }
+  closeModal(); renderView(); updateBadges();
+}
+function delChar(id){ chars=chars.filter(function(c){return c.id!==id;}); renderView(); updateBadges(); toast('Removed','in'); }
+
+// ── LOCATION FORMS ───────────────────────────────
+function openAddLoc(pre){ pre=pre||''; closeModal();
+  var cn = Array.from(allCharNames()).sort();
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo">';
+  html += '<div class="mot">Add Location</div>';
+  html += '<div class="fg"><label class="fl">Name *</label><input class="fi2" id="ln" value="'+esc(pre)+'" placeholder="Location name"></div>';
+  html += '<div class="fg"><label class="fl">Description</label><textarea class="fi2" id="ld" placeholder="What is this place?"></textarea></div>';
+  html += '<div class="fg"><label class="fl">Associated Characters</label><div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;border:1px solid var(--bd);border-radius:var(--r1);min-height:42px;background:var(--bg);" id="lcc">';
+  if (cn.length===0) html += '<span style="font-size:12px;color:var(--t3)">Add characters first.</span>';
+  cn.forEach(function(n){ html += '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;padding:3px 8px;border-radius:var(--rp);border:1px solid var(--bd);background:var(--surface);"><input type="checkbox" value="'+esc(n)+'" style="accent-color:var(--ac)"> '+esc(n)+'</label>'; });
+  html += '</div></div>';
+  html += '<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" onclick="saveLoc()">Save</button></div>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+}
+function openEditLoc(name){ closeModal();
+  var rec = locs.find(function(l){return l.name===name;});
+  if (!rec){ openAddLoc(name); return; }
+  var cn = Array.from(allCharNames()).sort();
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo">';
+  html += '<div class="mot">Edit Location</div>';
+  html += '<div class="fg"><label class="fl">Name *</label><input class="fi2" id="ln" value="'+esc(rec.name)+'"></div>';
+  html += '<div class="fg"><label class="fl">Description</label><textarea class="fi2" id="ld">'+esc(rec.description||'')+'</textarea></div>';
+  html += '<div class="fg"><label class="fl">Associated Characters</label><div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;border:1px solid var(--bd);border-radius:var(--r1);min-height:42px;background:var(--bg);" id="lcc">';
+  cn.forEach(function(n){ html += '<label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;padding:3px 8px;border-radius:var(--rp);border:1px solid var(--bd);background:var(--surface);"><input type="checkbox" value="'+esc(n)+'"'+((rec.assoc&&rec.assoc.indexOf(n)>-1)?' checked':'')+' style="accent-color:var(--ac)"> '+esc(n)+'</label>'; });
+  html += '</div></div>';
+  html += '<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" onclick="saveLoc(\''+rec.id+'\')">Update</button></div>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+}
+function saveLoc(eid){
+  var name=(document.getElementById('ln').value||'').trim();
+  if(!name){toast('Name required','er');return;}
+  var desc=(document.getElementById('ld').value||'').trim();
+  var assoc=[]; document.querySelectorAll('#lcc input[type="checkbox"]:checked').forEach(function(cb){ assoc.push(cb.value); });
+  if(eid){ var idx=locs.findIndex(function(l){return l.id===eid;}); if(idx>-1) locs[idx]=Object.assign({},locs[idx],{name:name,description:desc,assoc:assoc}); toast('"'+name+'" updated','ok'); }
+  else { locs.push({id:uid(),name:name,description:desc,assoc:assoc}); toast('"'+name+'" added','ok'); }
+  closeModal(); renderView(); updateBadges();
+}
+function delLoc(id){ locs=locs.filter(function(l){return l.id!==id;}); renderView(); updateBadges(); toast('Removed','in'); }
+function closeModal(){ document.getElementById('mr').innerHTML=''; }
+
+// ── AI SETTINGS ──────────────────────────────────
+var PROVS = {claude:{label:'Claude (Anthropic)',color:'#D97706'},openai:{label:'ChatGPT (OpenAI)',color:'#10A37F'},gemini:{label:'Gemini (Google)',color:'#4285F4'},deepseek:{label:'DeepSeek',color:'#6366F1'}};
+function getAI(){ try{ return JSON.parse(localStorage.getItem('dref_ai'))||{p:'claude',k:''}; } catch(e){ return {p:'claude',k:''}; } }
+function hasAI(){ var ai=getAI(); return !!(ai&&ai.k); }
+
+function openSettings(){
+  var s=getAI();
+  var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:560px">';
+  html+='<div class="mot">AI Settings</div>';
+  html+='<div class="mos">Your API key is stored only in this browser and never sent anywhere except the AI provider you choose.</div>';
+
+  html+='<div style="background:var(--acs);border:1px solid rgba(91,124,221,.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">';
+  html+='<div style="font-size:12px;font-weight:600;color:var(--ac);margin-bottom:8px;">✦ What AI can do in DRE Flow</div>';
+  html+='<div style="font-size:12px;color:var(--t2);line-height:1.7;">';
+  html+='<b style="color:var(--t1)">On Import</b> — Auto-fills chapter summaries, characters, and locations when you import a manuscript.<br>';
+  html+='<b style="color:var(--t1)">Ask Chapter</b> — Ask any question about the current chapter (Read view → Ask AI button).<br>';
+  html+='<b style="color:var(--t1)">Timeline Check</b> — Scans all chapters for continuity errors, contradictions, and timeline gaps (Timeline view → Check button).<br>';
+  html+='<b style="color:var(--t1)">Analyze Highlights</b> — Summarizes and finds patterns across your saved highlights (Highlights view → Analyze button).<br>';
+  html+='<b style="color:var(--t1)">Character Arc</b> — Reviews a character\'s journey across all chapters for consistency (Characters view → Arc button).';
+  html+='</div></div>';
+
+  html+='<div class="fg"><label class="fl">Provider</label><div class="pg">';
+  Object.entries(PROVS).forEach(function(entry){ var k=entry[0],p=entry[1]; html+='<button class="pb'+(s.p===k?' on':'')+'" id="pb-'+k+'" onclick="selProv(\''+k+'\')"><span class="pd" style="background:'+p.color+'"></span>'+p.label+'</button>'; });
+  html+='</div></div>';
+  html+='<div class="fg"><label class="fl">API Key</label><input class="fi2" type="password" id="aik" value="'+(s.k||'')+'" placeholder="Paste your API key here…"></div>';
+  html+='<div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:14px;">Don\'t have a key? Get one free at anthropic.com, platform.openai.com, aistudio.google.com, or deepseek.com</div>';
+  html+='<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" onclick="saveAI()">Save Key</button></div>';
+  html+='</div></div>';
+  document.getElementById('mr').innerHTML=html;
+}
+function selProv(k){ document.querySelectorAll('.pb').forEach(function(b){b.classList.remove('on');}); var el=document.getElementById('pb-'+k); if(el)el.classList.add('on'); }
+function saveAI(){
+  var sel=document.querySelector('.pb.on'); if(!sel){toast('Select provider','er');return;}
+  var k=(document.getElementById('aik').value||'').trim(); if(!k){toast('Key required','er');return;}
+  localStorage.setItem('dref_ai',JSON.stringify({p:sel.id.replace('pb-',''),k:k}));
+  closeModal(); toast('AI settings saved','ok');
+}
+
+// ── AI ANALYSIS ──────────────────────────────────
+async function analyzeChapter(body, num){
+  var sys = 'You are a story analyst. Respond ONLY with valid JSON, no markdown.\nReturn: {"summary":"one sentence max 15 words","characters":["Name"],"location":"place or empty"}\nOnly proper character names.';
+  var msg = 'Chapter '+num+':\n\n'+body.substring(0,1500);
+  var text = await callAI(sys, msg, 200);
+  return JSON.parse(text.replace(/```json|```/g,'').trim());
+}
+
+async function callAI(sys, msg, maxTokens){
+  var ai = getAI();
+  maxTokens = maxTokens || 1000;
+  var r, d;
+  if (ai.p==='claude'){
+    r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ai.k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTokens,system:sys,messages:[{role:'user',content:msg}]})});
+    d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return (d.content[0].text||'').trim();
+  } else if (ai.p==='openai'||ai.p==='deepseek'){
+    var ep = ai.p==='openai'?'https://api.openai.com/v1/chat/completions':'https://api.deepseek.com/v1/chat/completions';
+    var model = ai.p==='openai'?'gpt-4o-mini':'deepseek-chat';
+    r = await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ai.k},body:JSON.stringify({model:model,max_tokens:maxTokens,messages:[{role:'system',content:sys},{role:'user',content:msg}]})});
+    d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return (d.choices[0].message.content||'').trim();
+  } else if (ai.p==='gemini'){
+    r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+ai.k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{parts:[{text:msg}]}],generationConfig:{maxOutputTokens:maxTokens}})});
+    d = await r.json(); if(d.error) throw new Error(d.error.message);
+    return (d.candidates[0].content.parts[0].text||'').trim();
+  }
+  throw new Error('Unknown provider');
+}
+
+// ── AI: ASK CHAPTER ──────────────────────────────
+function openAskChapter(){
+  if (!hasAI()){ toast('Set your AI key in AI Settings first','er'); return; }
+  var readable = readableEvents();
+  var cur = readable[readIdx];
+  if (!cur){ toast('No chapter loaded','er'); return; }
+  closeModal();
+  var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:600px">';
+  html+='<div class="mot">Ask AI about this Chapter</div>';
+  html+='<div class="mos">Chapter: <strong>'+esc(cur.heading||'Chapter '+cur.chapter)+'</strong></div>';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">';
+  var prompts=['Summarize the key events','Who appears in this chapter?','What is the mood and tone?','List any timeline clues (dates, times, durations)','What foreshadowing is present?','What conflicts arise or resolve?'];
+  prompts.forEach(function(p){ html+='<span style="padding:4px 10px;border-radius:99px;border:1px solid var(--bd);font-size:11px;cursor:pointer;background:var(--bg)" onclick="document.getElementById(\'aiq\').value=\''+p+'\'">'+p+'</span>'; });
+  html+='</div>';
+  html+='<div class="fg"><label class="fl">Your question</label><input class="fi2" id="aiq" placeholder="Ask anything about this chapter…" onkeydown="if(event.key===\'Enter\')submitAskChapter()"></div>';
+  html+='<div id="ai-answer" style="display:none;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;color:var(--t1);white-space:pre-wrap;max-height:320px;overflow-y:auto;margin-top:4px;"></div>';
+  html+='<div class="mof"><button class="btn bs" onclick="closeModal()">Close</button><button class="btn ba" id="ai-ask-btn" onclick="submitAskChapter()">Ask AI</button></div>';
+  html+='</div></div>';
+  document.getElementById('mr').innerHTML=html;
+  setTimeout(function(){ var f=document.getElementById('aiq'); if(f) f.focus(); },100);
+}
+
+async function submitAskChapter(){
+  var q=(document.getElementById('aiq').value||'').trim();
+  if(!q){toast('Enter a question','er');return;}
+  var readable=readableEvents();
+  var cur=readable[readIdx];
+  if(!cur) return;
+  var btn=document.getElementById('ai-ask-btn');
+  var ans=document.getElementById('ai-answer');
+  if(btn) btn.disabled=true, btn.textContent='Thinking…';
+  if(ans) ans.style.display='block', ans.textContent='…';
+  try{
+    var sys='You are a precise story analyst. Answer the user\'s question about the provided chapter excerpt. Be concise and specific. If the answer is not in the text, say so.';
+    var msg='Chapter: '+esc(cur.heading||'Chapter '+cur.chapter)+'\n\n'+cur.fullText.substring(0,3000)+'\n\n---\nQuestion: '+q;
+    var result = await callAI(sys, msg, 600);
+    if(ans) ans.textContent=result;
+  } catch(e){
+    if(ans) ans.textContent='Error: '+e.message;
+    toast('AI error: '+e.message,'er');
+  }
+  if(btn) btn.disabled=false, btn.textContent='Ask AI';
+}
+
+// ── AI: TIMELINE CONSISTENCY CHECK ───────────────
+async function runTimelineCheck(){
+  if (!hasAI()){ toast('Set your AI key in AI Settings first','er'); return; }
+  if (!events.length){ toast('No timeline events to check','er'); return; }
+  closeModal();
+  var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:640px">';
+  html+='<div class="mot">AI Timeline Consistency Check</div>';
+  html+='<div class="mos">AI will scan your timeline for contradictions, gaps, and continuity errors.</div>';
+  html+='<div id="tlcheck-body" style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:var(--t1);min-height:120px;max-height:400px;overflow-y:auto;white-space:pre-wrap;">Analyzing your timeline…</div>';
+  html+='<div class="mof"><button class="btn bs" onclick="closeModal()">Close</button></div>';
+  html+='</div></div>';
+  document.getElementById('mr').innerHTML=html;
+  var body=document.getElementById('tlcheck-body');
+  try{
+    var summary=events.map(function(e,i){
+      return 'Ch.'+e.chapter+': '+e.event+(e.characters?' | Characters: '+e.characters:'')+(e.location?' | Location: '+e.location:'')+(e.notes?' | Notes: '+e.notes.substring(0,100):'');
+    }).join('\n');
+    var sys='You are a professional story editor and continuity expert. Analyze the following story timeline and identify:\n1. Continuity errors (character in two places, impossible timing, etc.)\n2. Timeline contradictions (events out of order, impossible gaps)\n3. Missing scenes or unexplained jumps\n4. Characters appearing/disappearing without explanation\n5. Location inconsistencies\n\nBe specific — cite chapter numbers. If everything looks consistent, say so. Format your response clearly with numbered issues.';
+    var msg='Story Timeline:\n\n'+summary;
+    var result=await callAI(sys, msg, 1200);
+    if(body) body.textContent=result;
+  } catch(e){
+    if(body) body.textContent='Error: '+e.message;
+    toast('AI error','er');
+  }
+}
+
+// ── AI: ANALYZE HIGHLIGHTS ───────────────────────
+async function analyzeHighlights(){
+  if (!hasAI()){ toast('Set your AI key in AI Settings first','er'); return; }
+  if (!highlights.length){ toast('No highlights to analyze','er'); return; }
+  closeModal();
+  var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:640px">';
+  html+='<div class="mot">AI Highlight Analysis</div>';
+  html+='<div class="mos">AI will find patterns, themes, and connections across all your saved highlights.</div>';
+  html+='<div id="hlai-body" style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:var(--t1);min-height:120px;max-height:400px;overflow-y:auto;white-space:pre-wrap;">Analyzing your highlights…</div>';
+  html+='<div class="mof"><button class="btn bs" onclick="closeModal()">Close</button></div>';
+  html+='</div></div>';
+  document.getElementById('mr').innerHTML=html;
+  var body=document.getElementById('hlai-body');
+  try{
+    var hlSummary=highlights.map(function(h){
+      return 'Ch.'+h.chNum+' ['+h.color+(h.tags.length?' #'+h.tags.join(' #'):'')+']:\n"'+h.text+'"'+(h.note?'\nNote: '+h.note:'');
+    }).join('\n\n');
+    var sys='You are a story analyst. The user has highlighted passages in their manuscript and tagged them. Analyze the highlights and:\n1. Identify recurring themes or patterns\n2. Note which tags appear most and what they suggest\n3. Flag any highlights that seem contradictory to each other\n4. Point out timeline implications of the highlighted passages\n5. Suggest what the highlights reveal about the story structure\n\nBe specific and cite chapter numbers and tags.';
+    var msg='Manuscript Highlights ('+highlights.length+' total):\n\n'+hlSummary;
+    var result=await callAI(sys, msg, 1000);
+    if(body) body.textContent=result;
+  } catch(e){
+    if(body) body.textContent='Error: '+e.message;
+    toast('AI error','er');
+  }
+}
+
+// ── AI: CHARACTER ARC CHECK ───────────────────────
+async function checkCharacterArc(name){
+  if (!hasAI()){ toast('Set your AI key in AI Settings first','er'); return; }
+  closeModal();
+  var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:640px">';
+  html+='<div class="mot">Character Arc: '+esc(name)+'</div>';
+  html+='<div class="mos">AI will review this character\'s journey across all chapters for consistency and arc quality.</div>';
+  html+='<div id="arc-body" style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:var(--t1);min-height:120px;max-height:400px;overflow-y:auto;white-space:pre-wrap;">Analyzing character arc…</div>';
+  html+='<div class="mof"><button class="btn bs" onclick="closeModal()">Close</button></div>';
+  html+='</div></div>';
+  document.getElementById('mr').innerHTML=html;
+  var body=document.getElementById('arc-body');
+  try{
+    var rec=chars.find(function(c){return c.name===name;});
+    var appearances=events.filter(function(e){
+      return e.characters && e.characters.split(',').map(function(x){return x.trim().toLowerCase();}).indexOf(name.toLowerCase())>-1;
+    });
+    var arcData='Character: '+name+(rec&&rec.role?' ('+rec.role+')':'')+(rec&&rec.bio?'\nBio: '+rec.bio:'')+'\n\nAppearances:\n';
+    arcData+=appearances.map(function(e){
+      return 'Ch.'+e.chapter+': '+e.event+(e.location?' @ '+e.location:'')+(e.notes?'\n  Notes: '+e.notes.substring(0,150):'');
+    }).join('\n');
+    if(rec&&rec.activity&&rec.activity.length){
+      arcData+='\n\nCharacter Notes:\n'+rec.activity.map(function(a){return 'Ch.'+a.chapter+': '+a.note;}).join('\n');
+    }
+    var sys='You are a story editor specializing in character development. Analyze this character\'s arc and:\n1. Summarize their journey through the story\n2. Identify any consistency problems (personality shifts without cause, disappearances, contradictions)\n3. Evaluate whether the arc feels complete and motivated\n4. Flag any chapters where something important may be missing\n5. Note any timeline issues specific to this character\n\nCite chapter numbers specifically.';
+    var result=await callAI(sys, arcData, 1000);
+    if(body) body.textContent=result;
+  } catch(e){
+    if(body) body.textContent='Error: '+e.message;
+    toast('AI error','er');
+  }
+}
+
+
+// ── BUILT-IN DOCX EXTRACTOR (no CDN, handles DEFLATE) ──────
+async function extractDocxText(arrayBuffer){
+  var bytes = new Uint8Array(arrayBuffer);
+
+  // Find End of Central Directory
+  var eocd = -1;
+  for (var i = bytes.length-22; i >= 0; i--){
+    if (bytes[i]===0x50&&bytes[i+1]===0x4B&&bytes[i+2]===0x05&&bytes[i+3]===0x06){ eocd=i; break; }
+  }
+  if (eocd < 0) throw new Error('Not a valid ZIP/DOCX');
+
+  var cdOff  = readU32(bytes, eocd+16);
+  var cdSize = readU32(bytes, eocd+12);
+
+  // Parse central directory, find word/document.xml
+  var pos = cdOff;
+  while (pos < cdOff + cdSize){
+    if (bytes[pos]!==0x50||bytes[pos+1]!==0x4B||bytes[pos+2]!==0x01||bytes[pos+3]!==0x02) break;
+    var compression = readU16(bytes, pos+10);
+    var compSize    = readU32(bytes, pos+20);
+    var fnLen       = readU16(bytes, pos+28);
+    var extraLen    = readU16(bytes, pos+30);
+    var cmtLen      = readU16(bytes, pos+32);
+    var lhOff       = readU32(bytes, pos+42);
+    var fname       = bytesToStr(bytes.slice(pos+46, pos+46+fnLen));
+
+    if (fname === 'word/document.xml'){
+      var lFnLen    = readU16(bytes, lhOff+26);
+      var lExtraLen = readU16(bytes, lhOff+28);
+      var dataStart = lhOff + 30 + lFnLen + lExtraLen;
+      var compressed = bytes.slice(dataStart, dataStart + compSize);
+
+      var xml;
+      if (compression === 0){
+        // Stored
+        xml = bytesToStr(compressed);
+      } else if (compression === 8){
+        // DEFLATE — use DecompressionStream
+        xml = await inflateRaw(compressed);
+      } else {
+        throw new Error('Unsupported compression: '+compression);
+      }
+      return parseDocXml(xml);
+    }
+    pos += 46 + fnLen + extraLen + cmtLen;
+  }
+  throw new Error('word/document.xml not found in DOCX');
+}
+
+async function inflateRaw(data){
+  var ds = new DecompressionStream('deflate-raw');
+  var writer = ds.writable.getWriter();
+  var reader = ds.readable.getReader();
+  writer.write(data);
+  writer.close();
+  var chunks = [];
+  while (true){
+    var res = await reader.read();
+    if (res.done) break;
+    chunks.push(res.value);
+  }
+  var totalLen = chunks.reduce(function(a,b){ return a+b.length; },0);
+  var out = new Uint8Array(totalLen);
+  var offset = 0;
+  chunks.forEach(function(ch){ out.set(ch, offset); offset+=ch.length; });
+  return new TextDecoder('utf-8').decode(out);
+}
+
+function readU16(b,o){ return b[o]|(b[o+1]<<8); }
+function readU32(b,o){ return (b[o]|(b[o+1]<<8)|(b[o+2]<<16)|(b[o+3]<<24))>>>0; }
+function bytesToStr(b){
+  var s=''; for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return s;
+}
+
+function parseDocXml(xml){
+  var lines = [];
+  var paras = xml.split(/<w:p[ >\/]/);
+  paras.forEach(function(para){
+    var runs = '';
+    var re = /<w:t[^>]*>([^<]*)<\/w:t>/g;
+    var m;
+    while ((m = re.exec(para)) !== null){ runs += m[1]; }
+    var line = runs.trim();
+    if (line) lines.push(line);
+  });
+  return lines.join('\n');
+}
+
+
+// ── PASTE MODAL ───────────────────────────────────
+function openPasteModal(){
+  document.getElementById('mr').innerHTML =
+    '<div class="mov" onclick="if(event.target===this)closeModal()">' +
+    '<div class="mo" style="width:680px;max-width:95vw;">' +
+    '<div class="mot">Paste Your Manuscript</div>' +
+    '<div class="mos">Copy all text from your document (Ctrl+A, Ctrl+C) and paste it below. Works with any format.</div>' +
+    '<textarea id="paste-area" class="fi2" style="min-height:320px;font-family:\'DM Mono\',monospace;font-size:12px;line-height:1.6;" placeholder="Paste your full manuscript here...\n\nTip: In Word or Google Docs, press Ctrl+A to select all, then Ctrl+C to copy, then click here and press Ctrl+V"></textarea>' +
+    '<div style="font-size:11px;color:var(--t3);margin-top:8px;">DRE Flow will detect chapters automatically (Prologue, Chapter 1, Chapter One, etc.)</div>' +
+    '<div class="mof">' +
+    '<button class="btn bs" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn ba" onclick="importPasted()">Import &amp; Analyze</button>' +
+    '</div></div></div>';
+  setTimeout(function(){ var ta=document.getElementById('paste-area'); if(ta) ta.focus(); }, 100);
+}
+
+function importPasted(){
+  var ta = document.getElementById('paste-area');
+  var text = ta ? ta.value.trim() : '';
+  if (!text){ toast('Nothing to import — paste your manuscript first','er'); return; }
+  closeModal();
+  parseImport(text, 'manuscript.txt');
+}
+
+// ── FILE IMPORT ──────────────────────────────────
+document.getElementById('fileInput').addEventListener('change', function(){
+  var file = this.files[0];
+  if (!file) return;
+  var name = file.name.toLowerCase();
+  toast('Reading file…','in');
+  if (name.endsWith('.docx')){
+    var r = new FileReader();
+    r.onload = function(e){
+      // Try mammoth if available (external CDN), otherwise use built-in XML fallback
+      if (typeof mammoth !== 'undefined') {
+        mammoth.extractRawText({arrayBuffer: e.target.result})
+          .then(function(res){ parseImport(res.value, file.name); })
+          .catch(function(err){ toast('DOCX error: '+err.message,'er'); });
+      } else {
+        // Built-in async DOCX extractor — no CDN needed
+        extractDocxText(e.target.result)
+          .then(function(text){ parseImport(text, file.name); })
+          .catch(function(err){ toast('DOCX read error: '+err.message,'er'); });
+      }
+    };
+    r.readAsArrayBuffer(file);
+  } else if (name.endsWith('.txt')){
+    var r2 = new FileReader();
+    r2.onload = function(e){ parseImport(e.target.result, file.name); };
+    r2.readAsText(file);
+  } else {
+    toast('Use .txt or .docx','er');
+  }
+  this.value = '';
+});
+
+async function parseImport(text, filename){
+  var chRe = /^((?:prologue|epilogue|chapter\s+[\divxlcdmIVXLCDM\w]+)[^\n]*)/gim;
+  var matches = Array.from(text.matchAll(chRe));
+  var parts   = text.split(chRe);
+
+  if (events.length > 0){
+    if (!confirm('You have '+events.length+' existing events.\n\nOK = Replace all   Cancel = Append')){}
+    else events = [];
+  }
+
+  var chapters = [];
+  if (matches.length === 0){
+    chapters.push({num:1, heading:filename.replace(/\.[^.]+$/,''), body:text});
+  } else {
+    matches.forEach(function(m, i){
+      var clean = m[0].replace(/\s*[\u2013\u2014\-]+\s*$/,'').replace(/\s+/g,' ').trim();
+      chapters.push({num:i+1, heading:clean, body:parts[i*2+2]||''});
+    });
+  }
+
+  var start = events.length;
+  chapters.forEach(function(ch){
+    events.push({
+      id:       uid(),
+      chapter:  ch.num,
+      heading:  ch.heading,
+      event:    'Analyzing…',
+      characters: '',
+      location: '',
+      notes:    ch.body.substring(0,400).replace(/\s+/g,' ').trim(),
+      fullText: ch.body
+    });
+  });
+
+  showView('timeline');
+  renderView();
+  ensureEventIds();
+  toast(chapters.length+' chapter'+(chapters.length!==1?'s':'')+' imported','in');
+
+  var ai = getAI();
+  if (!ai.k){
+    chapters.forEach(function(ch,i){
+      events[start+i].event = ch.body.trim().split(/[.!?\n]/)[0].trim().substring(0,80) || ch.heading;
+    });
+    renderView(); updateBadges();
+    toast('No AI key — used first sentence. Set key in AI Settings.','in');
+    return;
+  }
+
+  var ind=document.getElementById('ai-ind'),bar=document.getElementById('ai-bar'),lbl=document.getElementById('ai-lbl'),ctr=document.getElementById('ai-ctr');
+  ind.style.display='block';
+  var done=0;
+  for (var i=0; i<chapters.length; i++){
+    var ch=chapters[i];
+    lbl.textContent='Chapter '+ch.num+' of '+chapters.length;
+    ctr.textContent=(i+1)+' / '+chapters.length;
+    bar.style.width=Math.round((i/chapters.length)*100)+'%';
+    try{
+      var res = await analyzeChapter(ch.body, ch.num);
+      var idx = start+i;
+      events[idx].event      = res.summary || ch.heading;
+      events[idx].characters = Array.isArray(res.characters) ? res.characters.join(', ') : (res.characters||'');
+      events[idx].location   = res.location||'';
+      done++;
+      if (curView==='timeline') renderView();
+    } catch(err){
+      events[start+i].event = ch.body.trim().split(/[.!?\n]/)[0].trim().substring(0,80)||ch.heading;
+      toast('Ch.'+ch.num+' AI error: '+err.message,'er');
+    }
+  }
+  bar.style.width='100%'; lbl.textContent='Done'; ctr.textContent=done+'/'+chapters.length+' succeeded';
+  setTimeout(function(){ ind.style.display='none'; }, 3500);
+  renderView(); updateBadges();
+  toast(done+' chapter'+(done!==1?'s':'')+' analyzed','ok');
+}
+
+// drag-drop
+var upz=document.getElementById('upz');
+upz.addEventListener('dragover',function(e){e.preventDefault();upz.classList.add('drag');});
+upz.addEventListener('dragleave',function(){upz.classList.remove('drag');});
+upz.addEventListener('drop',function(e){
+  e.preventDefault();upz.classList.remove('drag');
+  var file=e.dataTransfer.files[0];
+  if(file){var dt=new DataTransfer();dt.items.add(file);document.getElementById('fileInput').files=dt.files;document.getElementById('fileInput').dispatchEvent(new Event('change'));}
+});
+
+// ── TOAST ────────────────────────────────────────
+function toast(msg, type){
+  type=type||'in';
+  var el=document.createElement('div'); el.className='toast '+type; el.textContent=msg;
+  document.getElementById('tc').appendChild(el);
+  setTimeout(function(){ el.style.animation='so 0.3s ease forwards'; setTimeout(function(){el.remove();},300); },3200);
+}
+
+// ── SETTINGS VIEW ────────────────────────────────
+function renderSettings(c){
+  document.getElementById('tbr').innerHTML = '';
+  var ai  = getAI();
+  var cfg = getGoogCfg();
+  var theme = localStorage.getItem('dref_theme')||'light';
+
+  var html = '';
+
+  // ── APPEARANCE ──────────────────────────────────
+  html += '<div class="card">';
+  html += '<div class="ey">Appearance</div>';
+  html += '<div class="ct" style="margin-bottom:16px;">Theme</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">';
+
+  // Light
+  html += '<div class="theme-card'+(theme==='light'?' theme-on':'')+'" onclick="setTheme(\'light\')" id="tc-light">';
+  html += '<div style="height:52px;background:#F4F5F7;border-radius:6px;margin-bottom:8px;border:1px solid rgba(0,0,0,0.08);display:flex;gap:6px;padding:8px;align-items:flex-start;">';
+  html += '<div style="width:28px;height:100%;background:#1F2328;border-radius:4px;"></div>';
+  html += '<div style="flex:1;display:flex;flex-direction:column;gap:4px;"><div style="height:8px;background:#fff;border-radius:3px;"></div><div style="height:5px;background:#E8ECF2;border-radius:3px;width:70%;"></div><div style="height:5px;background:#E8ECF2;border-radius:3px;width:50%;"></div></div>';
+  html += '</div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;">';
+  html += '<div style="font-size:13px;font-weight:500;">☀️ Light</div>';
+  html += '<div class="theme-check" id="tck-light">'+(theme==='light'?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="var(--ac)"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>';
+  html += '</div></div>';
+
+  // Dark
+  html += '<div class="theme-card'+(theme==='dark'?' theme-on':'')+'" onclick="setTheme(\'dark\')" id="tc-dark">';
+  html += '<div style="height:52px;background:#0F1117;border-radius:6px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.08);display:flex;gap:6px;padding:8px;align-items:flex-start;">';
+  html += '<div style="width:28px;height:100%;background:#0A0D12;border-radius:4px;"></div>';
+  html += '<div style="flex:1;display:flex;flex-direction:column;gap:4px;"><div style="height:8px;background:#181C23;border-radius:3px;"></div><div style="height:5px;background:#1F2530;border-radius:3px;width:70%;"></div><div style="height:5px;background:#1F2530;border-radius:3px;width:50%;"></div></div>';
+  html += '</div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;">';
+  html += '<div style="font-size:13px;font-weight:500;">🌙 Dark</div>';
+  html += '<div class="theme-check" id="tck-dark">'+(theme==='dark'?'<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="var(--ac)"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>';
+  html += '</div></div>';
+
+  html += '</div></div>'; // end grid + card
+
+  // ── AI PROVIDER ────────────────────────────────
+  html += '<div class="card">';
+  html += '<div class="ey">AI Configuration</div>';
+  html += '<div class="ct" style="margin-bottom:4px;">AI Provider &amp; API Key</div>';
+  html += '<div style="font-size:12px;color:var(--t2);margin-bottom:16px;">Your key is stored only in this browser. Used for chapter analysis, timeline checks, and character arcs.</div>';
+
+  html += '<div class="fg"><label class="fl">Provider</label><div class="pg">';
+  Object.entries(PROVS).forEach(function(entry){
+    var k=entry[0], p=entry[1];
+    html += '<button class="pb'+(ai.p===k?' on':'')+'" id="spb-'+k+'" onclick="selSettingsProv(\''+k+'\')"><span class="pd" style="background:'+p.color+'"></span>'+p.label+'</button>';
+  });
+  html += '</div></div>';
+
+  html += '<div class="fg"><label class="fl">API Key</label>';
+  html += '<div style="display:flex;gap:8px;">';
+  html += '<input class="fi2" type="password" id="s-aik" value="'+(ai.k||'')+'" placeholder="Paste your API key…" style="flex:1">';
+  html += '<button class="btn ba bsm" onclick="saveSettingsAI()">Save Key</button>';
+  html += '</div></div>';
+
+  var provLinks = {claude:'anthropic.com/api',openai:'platform.openai.com',gemini:'aistudio.google.com',deepseek:'platform.deepseek.com'};
+  html += '<div style="font-size:11px;color:var(--t3);">Get a free key at <a href="https://'+provLinks[ai.p||'claude']+'" target="_blank" style="color:var(--ac);text-decoration:none;" id="s-provlink">'+provLinks[ai.p||'claude']+'</a></div>';
+
+  if (ai.k){
+    html += '<div style="margin-top:12px;padding:10px 14px;background:var(--oks);border:1px solid var(--ok);border-radius:8px;font-size:12px;color:var(--ok);">✓ AI key configured — all AI features active</div>';
+  } else {
+    html += '<div style="margin-top:12px;padding:10px 14px;background:var(--warns);border:1px solid var(--warn);border-radius:8px;font-size:12px;color:var(--warn);">⚠ No AI key — import analysis and AI features are disabled</div>';
+  }
+  html += '</div>';
+
+  // ── GOOGLE DOCS ────────────────────────────────
+  html += '<div class="card">';
+  html += '<div class="ey">Integrations</div>';
+  html += '<div class="ct" style="margin-bottom:4px;">Google Docs</div>';
+  html += '<div style="font-size:12px;color:var(--t2);margin-bottom:16px;">Connect your Google account to open manuscripts directly from Google Drive.</div>';
+
+  // Status
+  if (_gToken){
+    html += '<div style="padding:10px 14px;background:var(--oks);border:1px solid var(--ok);border-radius:8px;font-size:12px;color:var(--ok);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">✓ Connected to Google<button class="btn bs bsm" onclick="gSignOut();renderView()" style="font-size:11px;">Sign Out</button></div>';
+  } else {
+    html += '<div style="padding:10px 14px;background:var(--neus);border:1px solid var(--neu);border-radius:8px;font-size:12px;color:var(--t2);margin-bottom:14px;">Not connected</div>';
+  }
+
+  html += '<div class="fg"><label class="fl">OAuth 2.0 Client ID</label>';
+  html += '<div style="display:flex;gap:8px;">';
+  html += '<input class="fi2" type="text" id="s-gcid" value="'+esc(cfg.clientId||'')+'" placeholder="xxxx.apps.googleusercontent.com" style="flex:1">';
+  html += '<button class="btn ba bsm" onclick="saveSettingsGoogle()">Save</button>';
+  html += '</div></div>';
+
+  html += '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--t2);line-height:1.8;">';
+  html += '<b style="color:var(--t1);">Setup instructions:</b><br>';
+  html += '1. Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--ac);text-decoration:none;">console.cloud.google.com</a> → New Project<br>';
+  html += '2. APIs &amp; Services → Enable <b>Google Docs API</b> + <b>Google Drive API</b><br>';
+  html += '3. Credentials → Create → OAuth 2.0 Client ID → Web application<br>';
+  html += '4. Add <b>'+window.location.origin+'</b> to Authorized JavaScript origins<br>';
+  html += '5. Paste the Client ID above and click Save';
+  html += '</div>';
+
+  if (cfg.clientId && !_gToken){
+    html += '<button class="btn ba" style="margin-top:12px;width:100%;justify-content:center;" onclick="window._gSignInCb=function(){renderView();};gSignIn(null);">Connect Google Account</button>';
+  }
+  html += '</div>';
+
+  // ── DATA ────────────────────────────────────────
+  html += '<div class="card">';
+  html += '<div class="ey">Data</div>';
+  html += '<div class="ct" style="margin-bottom:4px;">Project Storage</div>';
+  html += '<div style="font-size:12px;color:var(--t2);margin-bottom:16px;">Your project is stored in your browser\'s localStorage. Use Export to back it up.</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">';
+  html += '<button class="btn bs" onclick="saveP()" style="justify-content:center;font-size:12px;">💾 Save</button>';
+  html += '<button class="btn bs" onclick="loadP()" style="justify-content:center;font-size:12px;">📂 Load</button>';
+  html += '<button class="btn bs" onclick="exportJ()" style="justify-content:center;font-size:12px;">📤 Export JSON</button>';
+  html += '</div>';
+
+  var dataSize = JSON.stringify({events,chars,locs,highlights}).length;
+  html += '<div style="margin-top:12px;font-size:11px;color:var(--t3);">Project size: ~'+(dataSize/1024).toFixed(1)+' KB &nbsp;·&nbsp; '+events.length+' events &nbsp;·&nbsp; '+highlights.length+' highlights</div>';
+  html += '</div>';
+
+  c.innerHTML = html;
+}
+
+function selSettingsProv(k){
+  document.querySelectorAll('[id^="spb-"]').forEach(function(b){ b.classList.remove('on'); });
+  var el = document.getElementById('spb-'+k);
+  if (el) el.classList.add('on');
+  var links = {claude:'anthropic.com/api',openai:'platform.openai.com',gemini:'aistudio.google.com',deepseek:'platform.deepseek.com'};
+  var lnk = document.getElementById('s-provlink');
+  if (lnk){ lnk.href='https://'+links[k]; lnk.textContent=links[k]; }
+}
+
+function saveSettingsAI(){
+  var sel = document.querySelector('[id^="spb-"].on');
+  var prov = sel ? sel.id.replace('spb-','') : getAI().p || 'claude';
+  var k = (document.getElementById('s-aik').value||'').trim();
+  if (!k){ toast('Enter an API key','er'); return; }
+  localStorage.setItem('dref_ai', JSON.stringify({p:prov, k:k}));
+  toast('AI settings saved','ok');
+  renderView();
+}
+
+function saveSettingsGoogle(){
+  var id = (document.getElementById('s-gcid').value||'').trim();
+  if (!id){ toast('Enter a Client ID','er'); return; }
+  saveGoogCfg({clientId:id});
+  toast('Google Client ID saved','ok');
+  renderView();
+}
+
+function setTheme(t){
+  localStorage.setItem('dref_theme', t);
+  applyTheme(t);
+  // Update cards in place without full re-render
+  ['light','dark'].forEach(function(name){
+    var card = document.getElementById('tc-'+name);
+    var check = document.getElementById('tck-'+name);
+    if (card){
+      if (name===t) card.classList.add('theme-on'); else card.classList.remove('theme-on');
+    }
+    if (check){
+      check.innerHTML = name===t ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" fill="var(--ac)"/><path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+    }
+  });
+}
+
+function applyTheme(t){
+  if (t==='dark') document.body.classList.add('dark');
+  else document.body.classList.remove('dark');
+}
+
+// ── GOOGLE DOCS INTEGRATION ──────────────────────
+// Uses Google Identity Services (GIS) + Google Drive export API
+// Client ID is set by the user — stored in localStorage as 'dref_goog'
+
+var GDOC_SCOPES = 'https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/drive.readonly';
+var _gToken = null;
+
+function getGoogCfg(){ try{ return JSON.parse(localStorage.getItem('dref_goog'))||{}; } catch(e){ return {}; } }
+function saveGoogCfg(obj){ localStorage.setItem('dref_goog', JSON.stringify(obj)); }
+
+function openGoogleSettings(){
+  var cfg = getGoogCfg();
+  closeModal();
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:560px">';
+  html += '<div class="mot">Google Docs Settings</div>';
+  html += '<div class="mos">You need a Google Cloud OAuth 2.0 Client ID. This is free and takes about 5 minutes.</div>';
+  html += '<div style="background:var(--acs);border:1px solid rgba(91,124,221,.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:12px;color:var(--t2);line-height:1.8;">';
+  html += '<b style="color:var(--t1)">One-time setup:</b><br>';
+  html += '1. Go to <b>console.cloud.google.com</b> → New Project<br>';
+  html += '2. APIs &amp; Services → Enable <b>Google Docs API</b> + <b>Google Drive API</b><br>';
+  html += '3. Credentials → Create → <b>OAuth 2.0 Client ID</b> → Web application<br>';
+  html += '4. Add this page\'s URL to <b>Authorized JavaScript origins</b><br>';
+  html += '5. Copy the Client ID and paste below';
+  html += '</div>';
+  html += '<div class="fg"><label class="fl">OAuth Client ID</label><input class="fi2" id="gcid" value="'+esc(cfg.clientId||'')+'" placeholder="xxxx.apps.googleusercontent.com"></div>';
+  if (_gToken){
+    html += '<div style="padding:10px 14px;background:var(--oks);border:1px solid var(--ok);border-radius:8px;font-size:12px;color:var(--ok);margin-bottom:14px;">✓ Currently signed in to Google</div>';
+  }
+  html += '<div class="mof">';
+  if (_gToken) html += '<button class="btn bs" onclick="gSignOut()">Sign Out</button>';
+  html += '<button class="btn bs" onclick="closeModal()">Cancel</button>';
+  html += '<button class="btn ba" onclick="saveGoogClientId()">Save &amp; Connect</button>';
+  html += '</div></div></div>';
+  document.getElementById('mr').innerHTML = html;
+}
+
+function saveGoogClientId(){
+  var id = (document.getElementById('gcid').value||'').trim();
+  if (!id){ toast('Client ID required','er'); return; }
+  saveGoogCfg({clientId:id});
+  closeModal();
+  toast('Client ID saved','ok');
+  // Show the sign-in modal — user must click the button themselves
+  window._gSignInCb = function(){ _showGDocOptions(); };
+  gSignIn(null);
+}
+
+function gSignOut(){
+  _gToken = null;
+  updateGDocBtn();
+  closeModal();
+  toast('Signed out of Google','in');
+}
+
+function updateGDocBtn(){
+  var lbl = document.getElementById('gdoc-btn-label');
+  if (lbl) lbl.textContent = _gToken ? 'Google Docs ✓' : 'Open from Google Docs';
+  var btn = document.getElementById('gdoc-btn');
+  if (btn) btn.style.borderColor = _gToken ? 'rgba(76,175,130,.5)' : 'rgba(255,255,255,0.15)';
+}
+
+function loadGIS(cb){
+  if (window.google && window.google.accounts){ cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://accounts.google.com/gsi/client';
+  s.onload = cb;
+  s.onerror = function(){ toast('Could not load Google sign-in library','er'); };
+  document.head.appendChild(s);
+}
+
+function loadPickerAPI(cb){
+  if (window.google && window.google.picker){ cb(); return; }
+  if (!window.gapi){
+    var s = document.createElement('script');
+    s.src = 'https://apis.google.com/js/api.js';
+    s.onload = function(){ gapi.load('picker', cb); };
+    s.onerror = function(){ toast('Could not load Google Picker','er'); };
+    document.head.appendChild(s);
+  } else {
+    gapi.load('picker', cb);
+  }
+}
+
+function gSignIn(cb){
+  var cfg = getGoogCfg();
+  if (!cfg.clientId){ openGoogleSettings(); return; }
+
+  // Show a modal with a real button — popup must be triggered by direct user click
+  // Auto-triggered popups are blocked by browsers
+  closeModal();
+  var html = '<div class="mov"><div class="mo" style="max-width:420px;text-align:center;">';
+  html += '<div style="font-size:28px;margin-bottom:12px;">🔐</div>';
+  html += '<div class="mot">Connect to Google</div>';
+  html += '<div class="mos" style="margin-bottom:20px;">Click the button below to open the Google sign-in window. If a popup blocker warning appears, click "Allow".</div>';
+  html += '<button class="btn ba" style="width:100%;justify-content:center;font-size:14px;padding:12px;" onclick="_doGSignIn(function(){ '+(cb ? '_gSignInCb()' : 'updateGDocBtn();_showGDocOptions()')+' })">';
+  html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>';
+  html += ' Sign in with Google</button>';
+  html += '<div id="gsignin-status" style="margin-top:12px;font-size:12px;color:var(--t2);min-height:20px;"></div>';
+  html += '<button class="btn bs" style="width:100%;justify-content:center;margin-top:8px;" onclick="closeModal()">Cancel</button>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+
+  // Store callback for after sign-in
+  window._gSignInCb = cb || function(){ updateGDocBtn(); _showGDocOptions(); };
+}
+
+function _doGSignIn(cb){
+  var cfg = getGoogCfg();
+  var status = document.getElementById('gsignin-status');
+  if (status) status.textContent = 'Opening Google sign-in…';
+
+  loadGIS(function(){
+    try {
+      var client = google.accounts.oauth2.initTokenClient({
+        client_id: cfg.clientId,
+        scope: 'https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/drive.readonly',
+        callback: function(resp){
+          if (resp.error){
+            var msg = resp.error === 'popup_closed_by_user'
+              ? 'Sign-in window was closed. Try again.'
+              : 'Sign-in failed: '+resp.error;
+            toast(msg, 'er');
+            if (status) status.textContent = msg;
+            return;
+          }
+          _gToken = resp.access_token;
+          updateGDocBtn();
+          closeModal();
+          toast('Connected to Google ✓','ok');
+          if (window._gSignInCb) window._gSignInCb();
+        }
+      });
+      client.requestAccessToken({prompt:'select_account'});
+    } catch(e){
+      var msg = 'Error: '+e.message;
+      toast(msg,'er');
+      if (status) status.textContent = msg;
+    }
+  });
+}
+
+function openGDocsModal(){
+  var cfg = getGoogCfg();
+  if (!cfg.clientId){ openGoogleSettings(); return; }
+  if (!_gToken){
+    // Set callback then show sign-in modal
+    window._gSignInCb = function(){ _showGDocOptions(); };
+    gSignIn(null);
+    return;
+  }
+  _showGDocOptions();
+}
+
+function _showGDocOptions(){
+  closeModal();
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:480px">';
+  html += '<div class="mot">Open from Google Docs</div>';
+  html += '<div class="mos">Choose how to find your document.</div>';
+
+  html += '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">';
+
+  // Option 1: Browse with Picker
+  html += '<div style="padding:16px;border:1px solid var(--bd);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;" onclick="closeModal();_openPicker()" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.background=\'var(--acs)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.background=\'\'">'+
+    '<div style="font-size:13px;font-weight:600;margin-bottom:3px;">📂 Browse Google Drive</div>'+
+    '<div style="font-size:12px;color:var(--t2)">Open a file picker to browse and select your document</div></div>';
+
+  // Option 2: Paste URL
+  html += '<div style="padding:16px;border:1px solid var(--bd);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;" onclick="closeModal();_openDocByUrl()" onmouseover="this.style.borderColor=\'var(--ac)\';this.style.background=\'var(--acs)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.background=\'\'">'+
+    '<div style="font-size:13px;font-weight:600;margin-bottom:3px;">🔗 Paste a Google Docs URL</div>'+
+    '<div style="font-size:12px;color:var(--t2)">Import directly from a link if you have the document URL</div></div>';
+  html += '</div>';
+
+  html += '<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn bs" onclick="gSignOut();closeModal()">Sign Out</button></div>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+}
+
+function _openPicker(){
+  loadPickerAPI(function(){
+    try {
+      var view = new google.picker.DocsView()
+        .setMimeTypes('application/vnd.google-apps.document')
+        .setSelectFolderEnabled(false);
+      var picker = new google.picker.PickerBuilder()
+        .addView(view)
+        .setOAuthToken(_gToken)
+        .setTitle('Choose a Google Doc to import')
+        .setCallback(function(data){
+          if (data.action === google.picker.Action.PICKED){
+            var doc = data.docs[0];
+            fetchGDoc(doc.id, doc.name);
+          }
+        })
+        .build();
+      picker.setVisible(true);
+    } catch(e){
+      toast('Picker failed: '+e.message,'er');
+      // Fallback to URL input
+      _openDocByUrl();
+    }
+  });
+}
+
+function _openDocByUrl(){
+  closeModal();
+  var html = '<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:500px">';
+  html += '<div class="mot">Open Google Doc by URL</div>';
+  html += '<div class="mos">Paste the URL of any Google Doc you have view access to.</div>';
+  html += '<div class="fg"><label class="fl">Google Doc URL</label>';
+  html += '<input class="fi2" id="gdocurl" placeholder="https://docs.google.com/document/d/…" oninput="_previewDocUrl(this.value)" onkeydown="if(event.key===\'Enter\')_importDocByUrl()"></div>';
+  html += '<div id="gdoc-url-hint" style="font-size:12px;color:var(--t2);margin-top:-8px;margin-bottom:12px;min-height:18px;"></div>';
+  html += '<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" id="gdoc-url-go" onclick="_importDocByUrl()" disabled>Import</button></div>';
+  html += '</div></div>';
+  document.getElementById('mr').innerHTML = html;
+  setTimeout(function(){ var f=document.getElementById('gdocurl'); if(f) f.focus(); },100);
+}
+
+function _previewDocUrl(val){
+  var hint = document.getElementById('gdoc-url-hint');
+  var btn  = document.getElementById('gdoc-url-go');
+  var m = val.match(/\/document\/d\/([\w-]+)/);
+  if (m){
+    if (hint) hint.innerHTML = '<span style="color:var(--ok)">✓ Valid URL — Doc ID: <code style="font-family:\'DM Mono\',monospace">'+m[1].substring(0,20)+'…</code></span>';
+    if (btn) btn.disabled = false;
+  } else {
+    if (hint) hint.textContent = val.length > 5 ? 'Not a valid Google Docs URL' : '';
+    if (btn) btn.disabled = true;
+  }
+}
+
+async function _importDocByUrl(){
+  var input = document.getElementById('gdocurl');
+  var val = input ? input.value : '';
+  var m = val.match(/\/document\/d\/([\w-]+)/);
+  if (!m){ toast('Invalid URL','er'); return; }
+  closeModal();
+  await fetchGDoc(m[1], 'Google Doc');
+}
+
+async function fetchGDoc(docId, docName){
+  if (!_gToken){ toast('Not signed in to Google','er'); return; }
+  toast('Fetching "'+docName+'"…','in');
+  try {
+    // Use Drive API to export as plain text — most reliable for manuscript text
+    var resp = await fetch(
+      'https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(docId)+'/export?mimeType=text%2Fplain',
+      { headers: { 'Authorization': 'Bearer '+_gToken } }
+    );
+
+    if (resp.status === 401){
+      _gToken = null;
+      updateGDocBtn();
+      toast('Session expired — please reconnect','er');
+      gSignIn(function(){ fetchGDoc(docId, docName); });
+      return;
+    }
+    if (resp.status === 403){
+      toast('Access denied — make sure you have view permission for this document','er');
+      return;
+    }
+    if (!resp.ok){
+      var errText = await resp.text().catch(function(){ return 'Unknown error'; });
+      throw new Error('HTTP '+resp.status+': '+errText.substring(0,120));
+    }
+
+    var text = await resp.text();
+    if (!text || !text.trim()){ toast('"'+docName+'" appears to be empty','er'); return; }
+
+    // Hand directly to existing parseImport — zero changes to that pipeline
+    parseImport(text, docName);
+
+  } catch(e){
+    toast('Import failed: '+e.message,'er');
+  }
+}
+
+// ── INIT ─────────────────────────────────────────
+(function(){
+  try{
+    var d = JSON.parse(localStorage.getItem('dref5'));
+    if(d){ events=d.events||[]; chars=d.chars||[]; locs=d.locs||[]; highlights=d.highlights||[]; }
+  } catch(e){}
+  ensureEventIds();
+  applyTheme(localStorage.getItem('dref_theme')||'light');
+  showView('dashboard');
+})();
+</script>
+</body>
+</html>
