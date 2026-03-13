@@ -2050,6 +2050,13 @@ function renderSettings(c){
   html += '<button class="btn ba bsm" onclick="saveSettingsGoogle()">Save</button>';
   html += '</div></div>';
 
+  html += '<div class="fg"><label class="fl">API Key <span style="font-size:11px;color:var(--t3);font-weight:400;">(required for Browse Drive)</span></label>';
+  html += '<div style="display:flex;gap:8px;">';
+  html += '<input class="fi2" type="text" id="s-gkey" value="'+esc(cfg.apiKey||'')+'" placeholder="AIza…" style="flex:1">';
+  html += '</div>';
+  html += '<div style="font-size:11px;color:var(--t3);margin-top:4px;">Google Cloud Console → Credentials → Create → API Key. Restrict it to <b>Google Picker API</b>.</div>';
+  html += '</div>';
+
   html += '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--t2);line-height:1.8;">';
   html += '<b style="color:var(--t1);">Setup instructions:</b><br>';
   html += '1. Go to <a href="https://console.cloud.google.com" target="_blank" style="color:var(--ac);text-decoration:none;">console.cloud.google.com</a> → New Project<br>';
@@ -2102,10 +2109,11 @@ function saveSettingsAI(){
 }
 
 function saveSettingsGoogle(){
-  var id = (document.getElementById('s-gcid').value||'').trim();
+  var id  = (document.getElementById('s-gcid').value||'').trim();
+  var key = (document.getElementById('s-gkey').value||'').trim();
   if (!id){ toast('Enter a Client ID','er'); return; }
-  saveGoogCfg({clientId:id});
-  toast('Google Client ID saved','ok');
+  saveGoogCfg({clientId:id, apiKey:key});
+  toast('Google settings saved','ok');
   renderView();
 }
 
@@ -2308,12 +2316,13 @@ function _showGDocOptions(){
 }
 
 function _openPicker(){
+  var cfg = getGoogCfg();
   loadPickerAPI(function(){
     try {
       var view = new google.picker.DocsView()
         .setMimeTypes('application/vnd.google-apps.document')
         .setSelectFolderEnabled(false);
-      var picker = new google.picker.PickerBuilder()
+      var builder = new google.picker.PickerBuilder()
         .addView(view)
         .setOAuthToken(_gToken)
         .setTitle('Choose a Google Doc to import')
@@ -2322,12 +2331,15 @@ function _openPicker(){
             var doc = data.docs[0];
             fetchGDoc(doc.id, doc.name);
           }
-        })
-        .build();
-      picker.setVisible(true);
+          if (data.action === google.picker.Action.CANCEL){
+            // do nothing
+          }
+        });
+      // Developer key required for Picker to work
+      if (cfg.apiKey) builder.setDeveloperKey(cfg.apiKey);
+      builder.build().setVisible(true);
     } catch(e){
-      toast('Picker failed: '+e.message,'er');
-      // Fallback to URL input
+      toast('Picker error: '+e.message+' — try Paste URL instead','er');
       _openDocByUrl();
     }
   });
@@ -2373,33 +2385,43 @@ async function fetchGDoc(docId, docName){
   if (!_gToken){ toast('Not signed in to Google','er'); return; }
   toast('Fetching "'+docName+'"…','in');
   try {
-    // Use Drive API to export as plain text — most reliable for manuscript text
-    var resp = await fetch(
-      'https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(docId)+'/export?mimeType=text%2Fplain',
-      { headers: { 'Authorization': 'Bearer '+_gToken } }
-    );
+    // Drive API export — docId must NOT be encoded
+    var url = 'https://www.googleapis.com/drive/v3/files/'+docId+'/export?mimeType=text/plain';
+    var resp = await fetch(url, { headers: { 'Authorization': 'Bearer '+_gToken } });
 
     if (resp.status === 401){
       _gToken = null;
       updateGDocBtn();
-      toast('Session expired — please reconnect','er');
-      gSignIn(function(){ fetchGDoc(docId, docName); });
+      window._gSignInCb = function(){ fetchGDoc(docId, docName); };
+      gSignIn(null);
       return;
     }
     if (resp.status === 403){
-      toast('Access denied — make sure you have view permission for this document','er');
+      // Try to get the actual error message from Google
+      var errBody = await resp.json().catch(function(){ return {}; });
+      var errMsg = (errBody.error && errBody.error.message) || 'Access denied';
+      // Common cause: token granted but Drive scope not accepted — force re-consent
+      toast('Access denied: '+errMsg+' — try reconnecting','er');
+      _gToken = null;
+      updateGDocBtn();
+      window._gSignInCb = function(){ fetchGDoc(docId, docName); };
+      gSignIn(null);
+      return;
+    }
+    if (resp.status === 404){
+      toast('Document not found. Make sure sharing is set to "Anyone with link can view".','er');
       return;
     }
     if (!resp.ok){
       var errText = await resp.text().catch(function(){ return 'Unknown error'; });
-      throw new Error('HTTP '+resp.status+': '+errText.substring(0,120));
+      throw new Error('HTTP '+resp.status+': '+errText.substring(0,200));
     }
 
     var text = await resp.text();
     if (!text || !text.trim()){ toast('"'+docName+'" appears to be empty','er'); return; }
 
-    // Hand directly to existing parseImport — zero changes to that pipeline
     parseImport(text, docName);
+    toast('"'+docName+'" imported successfully','ok');
 
   } catch(e){
     toast('Import failed: '+e.message,'er');
