@@ -636,18 +636,49 @@
   .setting-item:last-child { margin-bottom: 0; }
   .setting-desc { font-size: 11px; color: var(--green-dim); margin-top: 4px; line-height: 1.5; }
   .data-preview { background: #000; border: 1px solid var(--green-dark); padding: 12px; font-size: 11px; color: var(--green-dim); white-space: pre-wrap; max-height: 200px; overflow-y: auto; margin-top: 8px; }
+
+  /* EXPORT */
+  .export-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .btn-export {
+    background: transparent;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    padding: 7px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 120px;
+  }
+  .btn-export:hover { background: rgba(255,179,0,0.12); box-shadow: 0 0 10px rgba(255,179,0,0.2); }
+  .btn-export:disabled { opacity: 0.35; cursor: not-allowed; }
+  .export-confirm {
+    font-size: 11px;
+    color: var(--green);
+    min-height: 16px;
+    margin-top: 6px;
+    letter-spacing: 1px;
+    display: none;
+  }
+  .export-confirm.show { display: block; }
+
 </style>
 </head>
 <body class="screen-flicker">
 
-<!-- Splash -->
 <div id="splash">
   <div class="splash-logo">LOAN SHARK</div>
   <div class="splash-sub">YOUR PAYCHECK SURVIVAL TOOL</div>
   <div class="splash-bar"><div class="splash-bar-fill"></div></div>
 </div>
 
-<!-- Header -->
 <div class="header">
   <div class="logo">LOAN<span>SHARK</span></div>
   <div class="status-bar">
@@ -656,7 +687,6 @@
   </div>
 </div>
 
-<!-- Tabs -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('setup')">[ MY INFO ]</button>
   <button class="tab" onclick="switchTab('simulation')">[ MY PLAN ]</button>
@@ -666,11 +696,9 @@
   <button class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS ]</button>
 </div>
 
-<!-- ═══════════════ TAB: SETUP ═══════════════ -->
 <div id="tab-setup" class="tab-content active">
 <div class="main">
 
-  <!-- INCOME PANEL -->
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> YOUR INCOME & BILLS</div>
 
@@ -707,7 +735,6 @@
     </select>
   </div>
 
-  <!-- LOANS PANEL -->
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> YOUR LOAN APPS</div>
     <div class="loan-list" id="loan-list"></div>
@@ -715,7 +742,6 @@
     <button class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD EXAMPLE DATA</button>
   </div>
 
-  <!-- RUN BUTTON - full width -->
   <div class="panel full-panel" style="text-align:center; padding:16px;">
     <button class="btn btn-run" onclick="runFullSimulation()">▶ RUN MY PLAN</button>
   </div>
@@ -723,7 +749,6 @@
 </div>
 </div>
 
-<!-- ═══════════════ TAB: SIMULATION ═══════════════ -->
 <div id="tab-simulation" class="tab-content">
 <div class="main">
 
@@ -732,6 +757,12 @@
     <div class="terminal-output" id="output">
 <span class="out-dim">// Set up your loans above, then hit "Run My Plan" to see your step-by-step paycheck strategy.</span>
     </div>
+    <div class="export-bar" style="margin-top:10px">
+      <button class="btn-export" id="btn-export-txt" onclick="exportTXT()" disabled>&#8681; EXPORT SUMMARY (.TXT)</button>
+      <button class="btn-export" id="btn-export-csv" onclick="exportCSV()" disabled>&#8681; EXPORT LOANS (.CSV)</button>
+      <button class="btn-export" id="btn-export-json" onclick="exportJSON()" disabled>&#8681; EXPORT ALL DATA (.JSON)</button>
+    </div>
+    <div class="export-confirm" id="export-confirm">&#10003; File downloaded — open it in any app</div>
   </div>
 
   <div class="panel">
@@ -763,7 +794,6 @@
 </div>
 </div>
 
-<!-- ═══════════════ TAB: STRATEGY ═══════════════ -->
 <div id="tab-strategy" class="tab-content">
 <div class="tab-page">
 <div class="main">
@@ -807,7 +837,6 @@
 </div>
 </div>
 
-<!-- ═══════════════ TAB: CYCLE TRACKER ═══════════════ -->
 <div id="tab-tracker" class="tab-content">
 <div class="tab-page">
 <div class="main">
@@ -883,6 +912,11 @@ function init() {
   loadPreset();
   updateClock();
   setInterval(updateClock, 1000);
+  // Restore saved provider and rebuild model dropdown
+  var savedProvider = sessionStorage.getItem('ls_provider') || 'anthropic';
+  var provEl = document.getElementById('ai-provider');
+  if (provEl) provEl.value = savedProvider;
+  onProviderChange();
 }
 
 function updateClock() {
@@ -1053,8 +1087,9 @@ function runFullSimulation() {
           if (cycleCounts[loan.name] > 3) { damageScore += 15; }
         }
       } else {
-        addLine(`  ✗ ${loan.name} — you only have $${balance.toFixed(2)} but owe $${loan.owed.toFixed(2)}. This will be late.`, 'out-danger');
-        loanResults[loan.name] = 'Could not pay';
+        addLine(`  ✗ ${loan.name} — you only have $${balance.toFixed(2)} but owe $${loan.owed.toFixed(2)}.`, 'out-danger');
+        addLine(`    ⚠ WARNING: This pulls before payday. With insufficient cash, it will be late or overdraft unless you "pre-fund" by borrowing elsewhere first.`, 'out-warn');
+        loanResults[loan.name] = 'Could not pay (Late/Overdraft risk)';
         damageScore += 25;
       }
     }
@@ -1173,6 +1208,11 @@ function runFullSimulation() {
 
   lastSimResult = { income, cashOnHand, bills, simLoans, balance, damageScore, isRecovery, failed, loanResults };
   document.getElementById('mode-display').textContent = `STATUS: ${isRecovery ? 'EMERGENCY MODE' : 'PLAN READY'}`;
+  // Enable export buttons now that we have data
+  ['btn-export-txt','btn-export-csv','btn-export-json'].forEach(function(id) {
+    var btn = document.getElementById(id);
+    if (btn) btn.disabled = false;
+  });
 }
 
 // ═══════════════════════════════════════════════
@@ -1442,7 +1482,7 @@ function switchTab(id) {
   const tabs = {setup:0,simulation:1,strategy:2,tracker:3,chat:4,settings:5};
   document.querySelectorAll('.tab')[tabs[id]]?.classList.add('active');
   if (id === 'chat') updateChatContextBar();
-  if (id === 'settings') refreshDataPreview();
+  if (id === 'settings') { onProviderChange(); refreshDataPreview(); }
 }
 
 // ═══ API KEY ═══
@@ -1453,7 +1493,8 @@ function getApiKey() {
 
 function getProvider() {
   var el = document.getElementById('ai-provider');
-  return el ? el.value : 'anthropic';
+  if (el) return el.value;
+  return sessionStorage.getItem('ls_provider') || 'anthropic';
 }
 
 function getDefaultModel(provider) {
@@ -1513,15 +1554,19 @@ var PROVIDER_CONFIG = {
     keyLabel: 'DeepSeek API Key',
     placeholder: 'sk-...',
     keyHint: 'Get your key at platform.deepseek.com',
+    corsBlocked: true,
+    corsNote: 'If you see errors, try switching the model to deepseek-chat or deepseek-coder. The working endpoint is api.deepseek.com/chat/completions (no /v1/).',
     models: [
-      {v:'deepseek-chat', t:'DeepSeek V3 (Recommended)'},
-      {v:'deepseek-reasoner', t:'DeepSeek R1 (Deep Reasoning)'}
+      {v:'deepseek-chat', t:'DeepSeek V3 / deepseek-chat (Recommended)'},
+      {v:'deepseek-coder', t:'DeepSeek Coder / deepseek-coder'},
+      {v:'deepseek-reasoner', t:'DeepSeek R1 / deepseek-reasoner (Reasoning)'}
     ]
   }
 };
 
 function onProviderChange() {
   var provider = getProvider();
+  sessionStorage.setItem('ls_provider', provider);
   var cfg = PROVIDER_CONFIG[provider];
   if (!cfg) return;
   var keyLabel = document.getElementById('api-key-label');
@@ -1543,7 +1588,21 @@ function onProviderChange() {
       modelSel.appendChild(opt);
     }
   }
-  if (st) { st.textContent = 'No key saved yet for ' + cfg.label + '.'; st.className = 'api-status info'; }
+  if (st) {
+    var existingKey = sessionStorage.getItem('ls_api_key_' + provider) || '';
+    if (existingKey.length > 10) {
+      st.textContent = cfg.label + ' key loaded. Ready to use.';
+      st.className = 'api-status ok';
+    } else if (cfg.corsBlocked) {
+      st.innerHTML = '<strong>&#9888; NOTE:</strong> ' + cfg.corsNote;
+      st.className = 'api-status error';
+    } else {
+      st.textContent = 'No key saved yet for ' + cfg.label + '. Enter your key above.';
+      st.className = 'api-status info';
+    }
+  }
+  var corsWarn = document.getElementById('cors-warning');
+  if (corsWarn) corsWarn.style.display = cfg.corsBlocked ? 'block' : 'none';
   updateApiIndicator();
 }
 
@@ -1587,15 +1646,19 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
     return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
   }
   if (provider === 'deepseek') {
-    var dsMsgs = [{role:'system', content: systemPrompt}].concat(messages);
-    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-      body: JSON.stringify({ model: model || 'deepseek-chat', max_tokens: maxTokens, messages: dsMsgs })
-    });
-    var data = await res.json();
-    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'DeepSeek error' };
-    return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
+    try {
+      var dsMsgs = [{role:'system', content: systemPrompt}].concat(messages);
+      var res = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify({ model: model || 'deepseek-chat', max_tokens: maxTokens, stream: false, messages: dsMsgs })
+      });
+      var data = await res.json();
+      if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'DeepSeek API error' };
+      return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
+    } catch(corsErr) {
+      return { ok: false, error: 'DeepSeek is blocked by your browser\'s security policy (CORS). Switch to Anthropic, OpenAI, Google, or Groq in Settings -- they all work directly from the browser.' };
+    }
   }
   // Default: Anthropic
   var res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1611,17 +1674,19 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
 function onApiKeyInput() {
   var val = document.getElementById('api-key-input').value.trim();
   var provider = document.getElementById('ai-provider') ? document.getElementById('ai-provider').value : 'anthropic';
+  var cfg = PROVIDER_CONFIG[provider];
+  var provLabel = cfg ? cfg.label : provider;
   sessionStorage.setItem('ls_api_key_' + provider, val);
   updateApiIndicator();
   var st = document.getElementById('api-key-status');
   if (val.length > 10) {
-    st.textContent = 'Key saved for this session.';
+    st.textContent = provLabel + ' key saved. Click TEST CONNECTION to verify, then go to ASK AI tab.';
     st.className = 'api-status ok';
   } else if (val.length > 0) {
-    st.textContent = 'Key looks too short. Double-check it.';
+    st.textContent = 'Key looks too short. Double-check it from your provider dashboard.';
     st.className = 'api-status error';
   } else {
-    st.textContent = 'No key saved yet. Stored only in this browser session.';
+    st.textContent = 'No key entered yet. Your key is stored only in this browser session.';
     st.className = 'api-status info';
   }
 }
@@ -1652,14 +1717,18 @@ function updateApiIndicator() {
 async function testApiKey() {
   var key = getApiKey();
   var provider = getProvider();
+  var cfg = PROVIDER_CONFIG[provider];
+  var provLabel = cfg ? cfg.label : provider;
   var st = document.getElementById('api-key-status');
   if (!key) { st.textContent = 'Please enter an API key first.'; st.className = 'api-status error'; return; }
-  st.textContent = 'Testing connection to ' + provider + '...'; st.className = 'api-status info';
+  st.textContent = 'Testing connection to ' + provLabel + '...'; st.className = 'api-status info';
   try {
     var testResult = await callAI(provider, key, 'claude-haiku-4-5-20251001', 'You are a test assistant.', [{role:'user',content:'Say OK'}], 10);
     if (testResult.ok) {
-      st.textContent = 'Connection successful! ' + provider + ' is ready.';
+      st.textContent = provLabel + ' connected and working. You can now use the AI chat.';
       st.className = 'api-status ok';
+      var indEl = document.getElementById('api-indicator');
+      if (indEl) { indEl.textContent = provLabel + ' connected'; indEl.style.color = 'var(--green)'; }
     } else {
       st.textContent = 'Error: ' + testResult.error;
       st.className = 'api-status error';
@@ -1749,6 +1818,11 @@ async function sendChat() {
   var tone   = toneEl ? (toneMap[toneEl.value] || toneMap.friendly) : toneMap.friendly;
   var modelEl = document.getElementById('ai-model');
   var model   = modelEl ? modelEl.value : getDefaultModel(provider);
+  // Safety: if selected model doesn't match provider, use provider default
+  if (provider === 'deepseek' && model && model.indexOf('claude') >= 0) { model = 'deepseek-chat'; }
+  if (provider === 'openai'   && model && model.indexOf('claude') >= 0) { model = 'gpt-4o'; }
+  if (provider === 'google'   && model && model.indexOf('claude') >= 0) { model = 'gemini-1.5-flash'; }
+  if (provider === 'groq'     && model && model.indexOf('claude') >= 0) { model = 'llama-3.3-70b-versatile'; }
   var context = buildContextSummary();
   var systemPrompt = 'You are a financial advisor in the Loan Shark app, which helps people manage loan app cycles (Earnin, CashApp, Genie, Klover, Grant, etc.) until they break free. ' + tone + ' You have the user financial data: ' + context + '. Give specific personalized advice using their actual numbers. Be practical and on their side.';
   try {
@@ -1770,12 +1844,147 @@ async function sendChat() {
   input.focus();
 }
 
+// ═══════════════════════════════════════════════
+// EXPORT FUNCTIONS
+// ═══════════════════════════════════════════════
+function triggerDownload(filename, content, mimeType) {
+  var blob = new Blob([content], { type: mimeType });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  var confirm = document.getElementById('export-confirm');
+  if (confirm) { confirm.classList.add('show'); setTimeout(function(){ confirm.classList.remove('show'); }, 3000); }
+}
+
+function exportTXT() {
+  if (!lastSimResult) return;
+  var r = lastSimResult;
+  var d = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  var lines = [];
+  lines.push('LOAN SHARK — PAYCHECK PLAN EXPORT');
+  lines.push('Generated: ' + d);
+  lines.push('Built by andremethod.com');
+  lines.push('');
+  lines.push('=== YOUR NUMBERS ===');
+  lines.push('Paycheck:          $' + r.income.toFixed(2));
+  lines.push('Cash on hand:      $' + r.cashOnHand.toFixed(2));
+  lines.push('Monthly bills:     $' + r.bills.toFixed(2));
+  lines.push('Total owed:        $' + r.simLoans.reduce(function(s,l){ return s+l.owed; },0).toFixed(2));
+  lines.push('Ending balance:    $' + r.balance.toFixed(2));
+  lines.push('Cycle stress:      ' + r.damageScore + '/100');
+  lines.push('Mode:              ' + (r.isRecovery ? 'EMERGENCY — no borrowing available' : 'Normal'));
+  lines.push('');
+  lines.push('=== YOUR LOAN APPS ===');
+  r.simLoans.forEach(function(l) {
+    lines.push(l.name + ':');
+    lines.push('  Amount you owe:   $' + l.owed.toFixed(2));
+    lines.push('  Can re-borrow:    $' + l.max.toFixed(2));
+    lines.push('  Reuse type:       ' + (l.reuse === 'instant' ? 'Can borrow again right away' : 'Must wait before borrowing again'));
+    lines.push('  Due before pay:   ' + (l.dueBeforePayday ? 'Yes' : 'No'));
+    lines.push('  Result:           ' + (r.loanResults[l.name] || 'N/A'));
+    lines.push('');
+  });
+  lines.push('=== PAYMENT ORDER (follow this sequence) ===');
+  var seq = 1;
+  var dueB = r.simLoans.filter(function(l){ return l.dueBeforePayday; });
+  var dueA = r.simLoans.filter(function(l){ return !l.dueBeforePayday; });
+  if (dueB.length) {
+    lines.push('BEFORE YOUR PAYCHECK:');
+    dueB.forEach(function(l) { lines.push('  ' + seq++ + '. ' + l.name + ' — $' + l.owed.toFixed(2) + (l.reuse==='instant' ? ' (can re-borrow $'+l.max.toFixed(2)+' right after)' : '')); });
+    lines.push('');
+  }
+  lines.push('WHEN YOUR PAYCHECK ARRIVES:');
+  dueA.forEach(function(l) { lines.push('  ' + seq++ + '. ' + l.name + ' — $' + l.owed.toFixed(2) + (l.reuse==='instant' ? ' (can re-borrow $'+l.max.toFixed(2)+' right after)' : '')); });
+  lines.push('');
+  if (r.failed && r.failed.length) {
+    lines.push('=== SKIPPED THIS CYCLE (handle next paycheck) ===');
+    r.failed.forEach(function(l) { lines.push('  - ' + l.name + ' $' + l.owed.toFixed(2)); });
+    lines.push('');
+  }
+  lines.push('=== CYCLE HISTORY (reuse counts) ===');
+  var ck = Object.keys(cycleCounts);
+  if (ck.length) { ck.forEach(function(n){ lines.push('  ' + n + ': borrowed ' + cycleCounts[n] + ' time(s)'); }); }
+  else { lines.push('  No history logged yet.'); }
+  lines.push('');
+  lines.push('--- End of export ---');
+  var fname = 'loansharK_plan_' + new Date().toISOString().slice(0,10) + '.txt';
+  triggerDownload(fname, lines.join('\n'), 'text/plain');
+}
+
+function exportCSV() {
+  if (!lastSimResult) return;
+  var r = lastSimResult;
+  var rows = [];
+  rows.push(['App Name','Amount Owed','Can Re-Borrow','Reuse Type','Due Before Payday','Result','Times Used'].join(','));
+  r.simLoans.forEach(function(l) {
+    rows.push([
+      '"' + l.name + '"',
+      l.owed.toFixed(2),
+      l.max.toFixed(2),
+      '"' + (l.reuse === 'instant' ? 'Can borrow right away' : 'Waiting period') + '"',
+      l.dueBeforePayday ? 'Yes' : 'No',
+      '"' + (r.loanResults[l.name] || 'N/A') + '"',
+      cycleCounts[l.name] || 0
+    ].join(','));
+  });
+  rows.push('');
+  rows.push(['SUMMARY',''].join(','));
+  rows.push(['Paycheck','$' + r.income.toFixed(2)].join(','));
+  rows.push(['Cash on hand','$' + r.cashOnHand.toFixed(2)].join(','));
+  rows.push(['Monthly bills','$' + r.bills.toFixed(2)].join(','));
+  rows.push(['Ending balance','$' + r.balance.toFixed(2)].join(','));
+  rows.push(['Cycle stress score',r.damageScore + '/100'].join(','));
+  rows.push(['Status',r.isRecovery ? 'EMERGENCY MODE' : 'Normal'].join(','));
+  rows.push(['Generated',new Date().toLocaleDateString()].join(','));
+  var fname = 'loanshark_loans_' + new Date().toISOString().slice(0,10) + '.csv';
+  triggerDownload(fname, rows.join('\n'), 'text/csv');
+}
+
+function exportJSON() {
+  if (!lastSimResult) return;
+  var r = lastSimResult;
+  var payload = {
+    exported: new Date().toISOString(),
+    source: 'Loan Shark — andremethod.com',
+    summary: {
+      paycheck:      r.income,
+      cashOnHand:    r.cashOnHand,
+      bills:         r.bills,
+      totalOwed:     r.simLoans.reduce(function(s,l){ return s+l.owed; },0),
+      endingBalance: r.balance,
+      stressScore:   r.damageScore,
+      emergencyMode: r.isRecovery,
+      loansSkipped:  r.failed ? r.failed.length : 0
+    },
+    loans: r.simLoans.map(function(l) {
+      return {
+        name:            l.name,
+        amountOwed:      l.owed,
+        canReBorrow:     l.max,
+        reuseType:       l.reuse,
+        dueBeforePayday: l.dueBeforePayday,
+        result:          r.loanResults[l.name] || 'N/A',
+        timesUsed:       cycleCounts[l.name] || 0
+      };
+    }),
+    skippedLoans: r.failed ? r.failed.map(function(l){ return { name: l.name, amountOwed: l.owed }; }) : [],
+    cycleHistory: cycleCounts,
+    cycleLog: cycleLog
+  };
+  var fname = 'loanshark_data_' + new Date().toISOString().slice(0,10) + '.json';
+  triggerDownload(fname, JSON.stringify(payload, null, 2), 'application/json');
+}
+
 // INIT
 window.addEventListener('DOMContentLoaded', init);
 </script>
 
 
-<!-- ═══════════════ TAB: CHAT ═══════════════ -->
 <div id="tab-chat" class="tab-content">
 <div class="chat-wrap">
   <div class="chat-context-bar">
@@ -1798,7 +2007,6 @@ window.addEventListener('DOMContentLoaded', init);
 </div>
 </div>
 
-<!-- ═══════════════ TAB: SETTINGS ═══════════════ -->
 <div id="tab-settings" class="tab-content">
 <div class="settings-wrap">
   <div class="settings-section">
@@ -1846,6 +2054,14 @@ window.addEventListener('DOMContentLoaded', init);
       </div>
     </div>
     <button class="btn" onclick="testApiKey()" style="margin-top:4px">&#9654; TEST CONNECTION</button>
+    <div id="cors-warning" style="display:none;margin-top:12px;border:1px solid var(--amber);padding:10px;font-size:11px;line-height:1.8;color:var(--amber)">
+      <strong>&#9888; DEEPSEEK TROUBLESHOOTING</strong><br>
+      If you see a &quot;model doesn't exist&quot; error, try these fixes:<br><br>
+      <strong>1. Use model name: deepseek-chat or deepseek-coder</strong> (most reliable)<br>
+      <strong>2. The endpoint used is:</strong> api.deepseek.com/chat/completions<br>
+      <strong>3. Make sure your key starts with sk-</strong> from platform.deepseek.com<br><br>
+      If it still fails, use <strong>Groq</strong> &mdash; free tier, runs Llama 3.3 70B, works from any browser with zero restrictions.
+    </div>
   </div>
   <div class="settings-section">
     <div class="panel-title"><div class="dot"></div> WHAT THE AI CAN SEE</div>
