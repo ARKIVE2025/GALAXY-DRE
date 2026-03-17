@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOAN SHARK // SURVIVAL ENGINE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --green: #00ff41;
+    --green-dim: #00aa2a;
+    --green-dark: #003a0f;
+    --green-glow: rgba(0,255,65,0.15);
+    --amber: #ffb300;
+    --red: #ff3c3c;
+    --bg: #000000;
+    --panel: #030f05;
+    --border: #00ff41;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .screen-flicker {
+    animation: flicker 8s infinite;
+  }
+
+  @keyframes flicker {
+    0%,100% { opacity:1 }
+    97% { opacity:1 }
+    97.5% { opacity:0.85 }
+    98% { opacity:1 }
+    99% { opacity:0.9 }
+    99.5% { opacity:1 }
+  }
+
+  /* HEADER */
+  .header {
+    border-bottom: 2px solid var(--green);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px var(--green);
+  }
+
+  .logo span { color: var(--amber); }
+
+  .status-bar {
+    font-size: 11px;
+    color: var(--green-dim);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  #clock { color: var(--green); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--green-dim);
+    background: var(--panel);
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 10px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    border: none;
+    background: none;
+    color: var(--green-dim);
+    font-family: 'Share Tech Mono', monospace;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .tab:hover { color: var(--green); }
+  .tab.active {
+    color: var(--green);
+    border-bottom: 2px solid var(--green);
+    background: var(--green-glow);
+    text-shadow: 0 0 8px var(--green);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    border-right: 1px solid var(--green-dark);
+    border-bottom: 1px solid var(--green-dark);
+    padding: 16px;
+  }
+
+  .panel:nth-child(even) { border-right: none; }
+
+  .panel-title {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--green);
+    border-bottom: 1px solid var(--green-dark);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-title .dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity:1 }
+    50% { opacity:0.3 }
+  }
+
+  /* FORM ELEMENTS */
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--green-dim);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  input[type="date"],
+  select {
+    width: 100%;
+    background: #000;
+    color: var(--green);
+    border: 1px solid var(--green-dim);
+    padding: 8px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 10px var(--green-glow);
+  }
+
+  select option { background: #000; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .field-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* LOAN CARDS */
+  .loan-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+  .loan-card {
+    background: var(--panel);
+    border: 1px solid var(--green-dark);
+    padding: 10px 12px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .loan-card:hover { border-color: var(--green-dim); }
+
+  .loan-card .loan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .loan-name {
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+    letter-spacing: 2px;
+  }
+
+  .reuse-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border: 1px solid;
+    letter-spacing: 1px;
+  }
+
+  .reuse-instant { border-color: var(--green); color: var(--green); }
+  .reuse-delayed { border-color: var(--amber); color: var(--amber); }
+
+  .loan-card .loan-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 6px;
+    align-items: end;
+  }
+
+  .loan-card label { margin-bottom: 2px; }
+
+  .loan-card input, .loan-card select {
+    margin-bottom: 0;
+    padding: 5px 8px;
+    font-size: 13px;
+  }
+
+  .btn-remove {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    padding: 5px 10px;
+    line-height: 1;
+    transition: background 0.2s;
+  }
+
+  .btn-remove:hover { background: rgba(255,60,60,0.15); }
+
+  /* BUTTONS */
+  .btn {
+    background: transparent;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 10px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .btn:hover {
+    background: var(--green-glow);
+    box-shadow: 0 0 15px var(--green-glow);
+    text-shadow: 0 0 8px var(--green);
+  }
+
+  .btn-secondary {
+    border-color: var(--green-dim);
+    color: var(--green-dim);
+    font-size: 12px;
+    padding: 7px;
+  }
+
+  .btn-run {
+    border-color: var(--green);
+    background: var(--green-glow);
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+    letter-spacing: 4px;
+    padding: 12px;
+    box-shadow: 0 0 20px var(--green-glow);
+  }
+
+  .btn-run:hover {
+    background: rgba(0,255,65,0.25);
+    box-shadow: 0 0 30px rgba(0,255,65,0.4);
+  }
+
+  /* OUTPUT TERMINAL */
+  .terminal-output {
+    background: #000;
+    border: 1px solid var(--green-dim);
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 200px;
+    max-height: 60vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
+  .terminal-output::-webkit-scrollbar { width: 4px; }
+  .terminal-output::-webkit-scrollbar-track { background: #000; }
+  .terminal-output::-webkit-scrollbar-thumb { background: var(--green-dim); }
+
+  .out-header { color: var(--green); font-size: 15px; }
+  .out-ok { color: var(--green); }
+  .out-warn { color: var(--amber); }
+  .out-danger { color: var(--red); }
+  .out-info { color: #00ccff; }
+  .out-dim { color: var(--green-dim); }
+  .out-section {
+    color: var(--green);
+    border-top: 1px solid var(--green-dark);
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+
+  /* DAMAGE METER */
+  .damage-meter {
+    margin: 12px 0;
+    border: 1px solid var(--green-dark);
+    padding: 10px;
+  }
+
+  .damage-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .meter-track {
+    height: 10px;
+    background: #001a05;
+    border: 1px solid var(--green-dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    transition: width 0.6s ease, background 0.6s;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    margin: 8px 0;
+    font-size: 12px;
+  }
+
+  .tl-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 8px;
+    margin-bottom: 3px;
+    align-items: center;
+  }
+
+  .tl-date { color: var(--green-dim); font-size: 11px; }
+
+  .tl-bar-wrap {
+    background: #001a05;
+    height: 18px;
+    position: relative;
+    border: 1px solid var(--green-dark);
+  }
+
+  .tl-bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+    font-size: 10px;
+    transition: width 0.4s;
+  }
+
+  .tl-income { background: rgba(0,255,65,0.25); color: var(--green); }
+  .tl-debt { background: rgba(255,60,60,0.2); color: var(--red); }
+  .tl-borrow { background: rgba(0,204,255,0.2); color: #00ccff; }
+
+  /* STRATEGY CARDS */
+  .strategy-cards { display: flex; flex-direction: column; gap: 8px; }
+
+  .strategy-card {
+    border: 1px solid var(--green-dark);
+    padding: 10px;
+    background: var(--panel);
+  }
+
+  .strategy-card .s-title {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .strategy-card .s-steps {
+    font-size: 12px;
+    color: var(--green-dim);
+    line-height: 1.7;
+  }
+
+  .s-title-ok { color: var(--green); }
+  .s-title-warn { color: var(--amber); }
+  .s-title-danger { color: var(--red); }
+
+  /* FULL WIDTH PANEL */
+  .full-panel {
+    grid-column: 1 / -1;
+    border-right: none;
+  }
+
+  /* HIDDEN TABS */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .tab-page {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* MODAL / OVERLAY */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--bg);
+    border: 2px solid var(--green);
+    padding: 24px;
+    max-width: 500px;
+    width: 92%;
+    box-shadow: 0 0 40px var(--green-glow);
+    position: relative;
+  }
+
+  .modal-title {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    color: var(--green);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: none;
+    border: 1px solid var(--green-dim);
+    color: var(--green-dim);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 2px 8px;
+  }
+
+  /* CYCLE TRACKER */
+  .cycle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .cycle-item {
+    border: 1px solid var(--green-dark);
+    padding: 8px;
+    text-align: center;
+    background: var(--panel);
+    font-size: 11px;
+  }
+
+  .cycle-count {
+    font-family: 'VT323', monospace;
+    font-size: 32px;
+    line-height: 1;
+    margin: 4px 0;
+  }
+
+  .cycle-ok { color: var(--green); }
+  .cycle-warn { color: var(--amber); }
+  .cycle-danger { color: var(--red); }
+
+  /* INTRO splash */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    animation: splashOut 0.4s 2.5s forwards;
+  }
+
+  @keyframes splashOut {
+    to { opacity:0; pointer-events:none; }
+  }
+
+  .splash-logo {
+    font-size: 60px;
+    color: var(--green);
+    text-shadow: 0 0 40px var(--green);
+    letter-spacing: 10px;
+    animation: glitch 1.5s infinite;
+  }
+
+  .splash-sub {
+    font-size: 20px;
+    color: var(--green-dim);
+    letter-spacing: 5px;
+    margin-top: 12px;
+  }
+
+  .splash-bar {
+    width: 300px;
+    height: 3px;
+    background: var(--green-dark);
+    margin-top: 30px;
+    overflow: hidden;
+  }
+
+  .splash-bar-fill {
+    height: 100%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: load 2s ease forwards;
+  }
+
+  @keyframes load { from { width:0 } to { width:100% } }
+
+  @keyframes glitch {
+    0%,95%,100% { text-shadow: 0 0 40px var(--green); }
+    96% { text-shadow: -2px 0 var(--amber), 2px 0 var(--red), 0 0 40px var(--green); transform: skewX(1deg); }
+    97% { text-shadow: 0 0 40px var(--green); transform: skewX(0); }
+    98% { text-shadow: 2px 0 var(--amber), -2px 0 var(--red); }
+    99% { text-shadow: 0 0 40px var(--green); }
+  }
+
+  @media (max-width: 600px) {
+    .loan-card .loan-fields {
+      grid-template-columns: 1fr 1fr;
+    }
+    .field-row-3 { grid-template-columns: 1fr 1fr; }
+    .logo { font-size: 20px; }
+    .splash-logo { font-size: 40px; }
+  }
+</style>
+</head>
+<body class="screen-flicker">
+
+<!-- Splash -->
+<div id="splash">
+  <div class="splash-logo">LOAN SHARK</div>
+  <div class="splash-sub">SURVIVAL ENGINE v2.0</div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">LOAN<span>SHARK</span></div>
+  <div class="status-bar">
+    <div id="clock">--:--:--</div>
+    <div id="mode-display">MODE: STANDBY</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('setup')">[ SETUP ]</button>
+  <button class="tab" onclick="switchTab('simulation')">[ SIMULATION ]</button>
+  <button class="tab" onclick="switchTab('strategy')">[ STRATEGY ]</button>
+  <button class="tab" onclick="switchTab('tracker')">[ CYCLE TRACKER ]</button>
+</div>
+
+<!-- ═══════════════ TAB: SETUP ═══════════════ -->
+<div id="tab-setup" class="tab-content active">
+<div class="main">
+
+  <!-- INCOME PANEL -->
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> INCOME CONFIG</div>
+
+    <label>Payday Amount ($)</label>
+    <input type="number" id="income" value="310" step="0.01">
+
+    <label>Payday Date</label>
+    <input type="date" id="payday">
+
+    <label>Pay Frequency</label>
+    <select id="pay-freq">
+      <option value="biweekly">Bi-Weekly</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="semimonthly">Semi-Monthly (1st & 15th)</option>
+    </select>
+
+    <label>Current Cash On Hand ($)</label>
+    <input type="number" id="cash-on-hand" value="0" step="0.01">
+
+    <label>Fixed Monthly Bills ($) <span style="color:var(--green-dim);font-size:10px">(rent, utilities, etc)</span></label>
+    <input type="number" id="bills" value="0" step="0.01">
+
+    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> SURVIVAL GOAL</div>
+
+    <label>Target Exit Months (0 = not set)</label>
+    <input type="number" id="exit-months" value="0" min="0">
+
+    <label>Priority Mode</label>
+    <select id="priority-mode">
+      <option value="liquidity">Liquidity First (rebuild borrow power)</option>
+      <option value="debt">Debt Reduction First</option>
+      <option value="survival">Pure Survival (smallest nodes)</option>
+    </select>
+  </div>
+
+  <!-- LOANS PANEL -->
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> LOAN NODES</div>
+    <div class="loan-list" id="loan-list"></div>
+    <button class="btn btn-secondary" onclick="addLoan()">+ ADD LOAN NODE</button>
+    <button class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD PRESET DATA</button>
+  </div>
+
+  <!-- RUN BUTTON - full width -->
+  <div class="panel full-panel" style="text-align:center; padding:16px;">
+    <button class="btn btn-run" onclick="runFullSimulation()">▶ EXECUTE SIMULATION</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ TAB: SIMULATION ═══════════════ -->
+<div id="tab-simulation" class="tab-content">
+<div class="main">
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> SEQUENCE OUTPUT</div>
+    <div class="terminal-output" id="output">
+<span class="out-dim">// AWAITING INPUT — CONFIGURE SETUP TAB AND EXECUTE</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> DAMAGE SCORE</div>
+    <div class="damage-meter">
+      <div class="damage-label">
+        <span>SYSTEM STABILITY</span>
+        <span id="damage-val">--</span>
+      </div>
+      <div class="meter-track">
+        <div class="meter-fill" id="damage-bar" style="width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--green-dim);margin-top:4px">
+        <span>STABLE</span><span>CRITICAL</span>
+      </div>
+    </div>
+
+    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> CASH FLOW TIMELINE</div>
+    <div class="timeline" id="timeline">
+      <span class="out-dim" style="font-size:12px">// Run simulation to generate timeline</span>
+    </div>
+
+    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> LOAN STATUS POST-RUN</div>
+    <div id="loan-status" style="font-size:12px;line-height:2">
+      <span class="out-dim">// Run simulation to see status</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ TAB: STRATEGY ═══════════════ -->
+<div id="tab-strategy" class="tab-content">
+<div class="tab-page">
+<div class="main">
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> GENERATED STRATEGIES</div>
+    <div class="strategy-cards" id="strategy-cards">
+      <div class="out-dim" style="font-size:12px;padding:8px">// Run simulation first to generate strategy options</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> DECISION GATE</div>
+    <div style="margin-bottom:12px;font-size:12px;color:var(--green-dim)">// CHECK BEFORE YOU BORROW</div>
+
+    <label>I want to borrow ($)</label>
+    <input type="number" id="gate-amount" value="100" step="0.01">
+
+    <label>From which app</label>
+    <input type="text" id="gate-app" placeholder="Earnin, CashApp, etc.">
+
+    <label>Repayment in (days)</label>
+    <input type="number" id="gate-days" value="14">
+
+    <button class="btn" onclick="runDecisionGate()">▶ ANALYZE IMPACT</button>
+
+    <div class="terminal-output" id="gate-output" style="min-height:120px">
+      <span class="out-dim">// Decision gate output will appear here</span>
+    </div>
+  </div>
+
+  <div class="panel full-panel">
+    <div class="panel-title"><div class="dot"></div> RECOVERY MODE PROTOCOL</div>
+    <div id="recovery-output" style="font-size:13px;line-height:1.8;color:var(--green-dim);padding:8px">
+      // Recovery mode activates when total available borrow = 0<br>
+      // Run simulation to evaluate recovery status
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- ═══════════════ TAB: CYCLE TRACKER ═══════════════ -->
+<div id="tab-tracker" class="tab-content">
+<div class="tab-page">
+<div class="main">
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> REUSE CYCLE COUNTS</div>
+    <div style="font-size:11px;color:var(--green-dim);margin-bottom:10px">Track how many times each loan has been cycled. High counts = danger.</div>
+    <div class="cycle-grid" id="cycle-grid">
+      <span class="out-dim" style="font-size:12px">// Load loans to see cycle tracker</span>
+    </div>
+    <button class="btn btn-secondary" onclick="updateCycleTrackerUI()">⟳ REFRESH COUNTS</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><div class="dot"></div> LOG A CYCLE</div>
+
+    <label>Select Loan</label>
+    <select id="cycle-loan-select"></select>
+
+    <label>Action</label>
+    <select id="cycle-action">
+      <option value="paid">PAID (repaid loan)</option>
+      <option value="reborrowed">REBORROWED (took advance)</option>
+      <option value="partial">PARTIAL PAYMENT</option>
+      <option value="missed">MISSED PAYMENT</option>
+    </select>
+
+    <label>Amount ($)</label>
+    <input type="number" id="cycle-amount" value="0" step="0.01">
+
+    <label>Notes</label>
+    <input type="text" id="cycle-notes" placeholder="Optional note...">
+
+    <button class="btn" onclick="logCycleEvent()">▶ LOG EVENT</button>
+  </div>
+
+  <div class="panel full-panel">
+    <div class="panel-title"><div class="dot"></div> CYCLE LOG</div>
+    <div class="terminal-output" id="cycle-log" style="max-height:250px">
+      <span class="out-dim">// No events logged yet</span>
+    </div>
+    <button class="btn btn-secondary" onclick="clearCycleLog()" style="margin-top:8px">✕ CLEAR LOG</button>
+  </div>
+
+</div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let loans = [];
+let cycleCounts = {};
+let cycleLog = [];
+let lastSimResult = null;
+
+const APPS = [
+  { name:'Earnin',  owed:203.97, max:200,   reuse:'instant', dueBeforePayday:true  },
+  { name:'Genie',   owed:114.99, max:0,     reuse:'delayed', dueBeforePayday:true  },
+  { name:'Klover',  owed:50,     max:50,    reuse:'instant', dueBeforePayday:false },
+  { name:'Grant',   owed:200,    max:200,   reuse:'instant', dueBeforePayday:false },
+  { name:'CashApp', owed:200,    max:124.75,reuse:'instant', dueBeforePayday:false },
+];
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+function init() {
+  // Set today's payday as default
+  const today = new Date();
+  document.getElementById('payday').value = today.toISOString().split('T')[0];
+  loadPreset();
+  updateClock();
+  setInterval(updateClock, 1000);
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-US',{hour12:false});
+}
+
+function loadPreset() {
+  loans = APPS.map(a => ({...a}));
+  renderLoans();
+  updateCycleTrackerUI();
+}
+
+// ═══════════════════════════════════════════════
+// LOAN MANAGEMENT
+// ═══════════════════════════════════════════════
+function addLoan(data={}) {
+  loans.push({
+    name: data.name || 'New App',
+    owed: data.owed || 0,
+    max: data.max || 0,
+    reuse: data.reuse || 'instant',
+    dueBeforePayday: data.dueBeforePayday || false
+  });
+  renderLoans();
+}
+
+function removeLoan(i) {
+  loans.splice(i,1);
+  renderLoans();
+}
+
+function renderLoans() {
+  const container = document.getElementById('loan-list');
+  container.innerHTML = '';
+
+  loans.forEach((loan, i) => {
+    const card = document.createElement('div');
+    card.className = 'loan-card';
+    card.innerHTML = `
+      <div class="loan-header">
+        <span class="loan-name">${loan.name}</span>
+        <span class="reuse-badge reuse-${loan.reuse}">${loan.reuse.toUpperCase()}</span>
+      </div>
+      <div class="loan-fields">
+        <div>
+          <label>App Name</label>
+          <input type="text" value="${loan.name}" onchange="loans[${i}].name=this.value;renderLoans()">
+        </div>
+        <div>
+          <label>Owed ($)</label>
+          <input type="number" value="${loan.owed}" step="0.01" onchange="loans[${i}].owed=parseFloat(this.value)||0">
+        </div>
+        <div>
+          <label>Reborrow Max ($)</label>
+          <input type="number" value="${loan.max}" step="0.01" onchange="loans[${i}].max=parseFloat(this.value)||0">
+        </div>
+        <button class="btn-remove" onclick="removeLoan(${i})">✕</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:11px">
+        <label style="display:flex;align-items:center;gap:5px;margin:0;cursor:pointer">
+          <input type="checkbox" ${loan.dueBeforePayday?'checked':''} onchange="loans[${i}].dueBeforePayday=this.checked" style="width:auto;margin:0">
+          DUE BEFORE PAYDAY
+        </label>
+        <select style="flex:1;margin:0;padding:4px 6px;font-size:11px" onchange="loans[${i}].reuse=this.value;renderLoans()">
+          <option value="instant" ${loan.reuse==='instant'?'selected':''}>INSTANT REUSE</option>
+          <option value="delayed" ${loan.reuse==='delayed'?'selected':''}>DELAYED REUSE</option>
+        </select>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  updateCycleSelectList();
+}
+
+function updateCycleSelectList() {
+  const sel = document.getElementById('cycle-loan-select');
+  sel.innerHTML = loans.map(l=>`<option value="${l.name}">${l.name}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// CORE SIMULATION ENGINE
+// ═══════════════════════════════════════════════
+function runFullSimulation() {
+  const income     = parseFloat(document.getElementById('income').value) || 0;
+  const cashOnHand = parseFloat(document.getElementById('cash-on-hand').value) || 0;
+  const bills      = parseFloat(document.getElementById('bills').value) || 0;
+  const mode       = document.getElementById('priority-mode').value;
+
+  if (!loans.length) { alert('Add at least one loan node.'); return; }
+
+  document.getElementById('mode-display').textContent = 'MODE: RUNNING...';
+  switchTab('simulation');
+
+  // Clone loans for simulation
+  const simLoans = loans.map(l => ({...l, reuseTimes: cycleCounts[l.name] || 0}));
+
+  const totalOwed = simLoans.reduce((s,l) => s + l.owed, 0);
+  const dueBeforePayday = simLoans.filter(l => l.dueBeforePayday);
+  const dueOnPayday     = simLoans.filter(l => !l.dueBeforePayday);
+  const totalDueBefore  = dueBeforePayday.reduce((s,l) => s + l.owed, 0);
+  const totalAvailBorrow = simLoans.reduce((s,l) => l.reuse==='instant'?s+l.max:s, 0);
+
+  const isRecovery = totalAvailBorrow === 0 && cashOnHand < totalDueBefore;
+
+  // Sort by priority mode
+  function sortLoans(arr) {
+    if (mode === 'liquidity') {
+      return arr.sort((a,b) => {
+        if(a.reuse==='instant' && b.reuse!=='instant') return -1;
+        if(a.reuse!=='instant' && b.reuse==='instant') return 1;
+        return a.owed - b.owed;
+      });
+    } else if (mode === 'debt') {
+      return arr.sort((a,b) => a.owed - b.owed);
+    } else { // survival
+      return arr.sort((a,b) => a.owed - b.owed);
+    }
+  }
+
+  // — Run the sequence —
+  let balance = cashOnHand;
+  let liquidityPool = 0;
+  let damageScore = 0;
+  const log = [];
+  const loanResults = {};
+
+  const addLine = (text, cls='out-ok') => log.push({text, cls});
+
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
+  addLine('  LOAN SHARK ENGINE v2.0', 'out-header');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
+  addLine(`  INCOME:       $${income.toFixed(2)}`, 'out-info');
+  addLine(`  CASH ON HAND: $${cashOnHand.toFixed(2)}`, 'out-info');
+  addLine(`  TOTAL OWED:   $${totalOwed.toFixed(2)}`, balance < totalOwed ? 'out-danger' : 'out-ok');
+  addLine(`  BILLS:        $${bills.toFixed(2)}`, 'out-warn');
+  addLine(`  MODE:         ${mode.toUpperCase()}`, 'out-dim');
+  addLine(`  BORROW AVAIL: $${totalAvailBorrow.toFixed(2)}`, 'out-info');
+  addLine('', 'out-dim');
+
+  if (isRecovery) {
+    addLine('⚠ RECOVERY MODE ACTIVATED', 'out-danger');
+    addLine('  No liquidity. Managed failure protocol.', 'out-warn');
+    addLine('', 'out-dim');
+    damageScore += 40;
+  }
+
+  // PRE-PAYDAY PHASE
+  addLine('── PRE-PAYDAY PHASE ──', 'out-section');
+  if (dueBeforePayday.length === 0) {
+    addLine('  No obligations due before payday.', 'out-dim');
+  } else {
+    const sortedBefore = sortLoans([...dueBeforePayday]);
+    for (const loan of sortedBefore) {
+      if (balance >= loan.owed) {
+        balance -= loan.owed;
+        addLine(`  ✓ PAID: ${loan.name} ($${loan.owed.toFixed(2)})  REMAINING: $${balance.toFixed(2)}`, 'out-ok');
+        loanResults[loan.name] = 'PAID';
+        if (loan.reuse === 'instant') {
+          balance += loan.max;
+          liquidityPool += loan.max;
+          addLine(`    ↺ REBORROW UNLOCKED: ${loan.name} +$${loan.max.toFixed(2)}  BALANCE: $${balance.toFixed(2)}`, 'out-info');
+          cycleCounts[loan.name] = (cycleCounts[loan.name]||0) + 1;
+          if (cycleCounts[loan.name] > 3) { damageScore += 15; }
+        }
+      } else {
+        addLine(`  ✗ CANNOT PAY: ${loan.name} (need $${loan.owed.toFixed(2)}, have $${balance.toFixed(2)})`, 'out-danger');
+        loanResults[loan.name] = 'FAILED';
+        damageScore += 25;
+      }
+    }
+  }
+
+  // PAYDAY
+  addLine('', 'out-dim');
+  addLine('── PAYDAY ARRIVES ──', 'out-section');
+  balance += income;
+  balance -= bills;
+  addLine(`  + INCOME:  $${income.toFixed(2)}`, 'out-ok');
+  if (bills > 0) addLine(`  - BILLS:   $${bills.toFixed(2)}`, 'out-warn');
+  addLine(`  BALANCE: $${balance.toFixed(2)}`, 'out-info');
+  addLine('', 'out-dim');
+
+  // POST-PAYDAY PHASE
+  addLine('── POST-PAYDAY SEQUENCING ──', 'out-section');
+  const sortedAfter = sortLoans([...dueOnPayday]);
+
+  const failed = [];
+  for (const loan of sortedAfter) {
+    if (balance >= loan.owed) {
+      balance -= loan.owed;
+      addLine(`  ✓ PAID: ${loan.name} ($${loan.owed.toFixed(2)})  REMAINING: $${balance.toFixed(2)}`, 'out-ok');
+      loanResults[loan.name] = 'PAID';
+      if (loan.reuse === 'instant') {
+        balance += loan.max;
+        liquidityPool += loan.max;
+        addLine(`    ↺ REBORROW UNLOCKED: ${loan.name} +$${loan.max.toFixed(2)}  BALANCE: $${balance.toFixed(2)}`, 'out-info');
+        cycleCounts[loan.name] = (cycleCounts[loan.name]||0) + 1;
+        if (cycleCounts[loan.name] > 3) { damageScore += 15; }
+      } else {
+        addLine(`    ⏳ DELAYED REUSE: ${loan.name} — no immediate reborrow`, 'out-warn');
+        damageScore += 10;
+      }
+    } else if (balance > 0) {
+      addLine(`  ~ PARTIAL: ${loan.name} — applying $${balance.toFixed(2)} of $${loan.owed.toFixed(2)}`, 'out-warn');
+      loanResults[loan.name] = `PARTIAL ($${balance.toFixed(2)})`;
+      balance = 0;
+      damageScore += 15;
+      failed.push(loan);
+    } else {
+      addLine(`  ✗ DEFERRED: ${loan.name} ($${loan.owed.toFixed(2)}) — no funds`, 'out-danger');
+      loanResults[loan.name] = 'DEFERRED';
+      damageScore += 20;
+      failed.push(loan);
+    }
+  }
+
+  // SUMMARY
+  addLine('', 'out-dim');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
+  addLine('  END OF CYCLE SUMMARY', 'out-header');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
+  addLine(`  ENDING BALANCE:  $${balance.toFixed(2)}`, balance >= 0 ? 'out-ok' : 'out-danger');
+  addLine(`  LIQUIDITY GAINED: $${liquidityPool.toFixed(2)}`, 'out-info');
+  addLine(`  DEFERRED LOANS:   ${failed.length}`, failed.length ? 'out-danger' : 'out-ok');
+
+  const net = income - totalOwed;
+  if (net < 0) {
+    addLine(`  CYCLE DEFICIT:   $${Math.abs(net).toFixed(2)} short`, 'out-danger');
+    damageScore += 20;
+  } else {
+    addLine(`  CYCLE SURPLUS:   $${net.toFixed(2)}`, 'out-ok');
+    damageScore = Math.max(0, damageScore - 10);
+  }
+
+  damageScore = Math.min(100, Math.max(0, damageScore));
+  addLine(`  DAMAGE SCORE:    ${damageScore}/100`, damageScore > 60 ? 'out-danger' : damageScore > 30 ? 'out-warn' : 'out-ok');
+
+  if (failed.length === 0) {
+    addLine('', 'out-dim');
+    addLine('  ✓ FULL CYCLE COMPLETE — STABLE', 'out-ok');
+  } else {
+    addLine('', 'out-dim');
+    addLine('  ⚠ INCOMPLETE CYCLE — REVIEW STRATEGY', 'out-warn');
+  }
+
+  // RENDER OUTPUT
+  const outputEl = document.getElementById('output');
+  outputEl.innerHTML = log.map(l => `<span class="${l.cls}">${l.text}</span>`).join('\n');
+  outputEl.scrollTop = outputEl.scrollHeight;
+
+  // DAMAGE METER
+  const bar = document.getElementById('damage-bar');
+  document.getElementById('damage-val').textContent = `${damageScore}/100`;
+  bar.style.width = damageScore + '%';
+  bar.style.background = damageScore > 60 ? 'var(--red)' : damageScore > 30 ? 'var(--amber)' : 'var(--green)';
+  bar.style.color = bar.style.background;
+
+  // LOAN STATUS
+  const statusEl = document.getElementById('loan-status');
+  statusEl.innerHTML = Object.entries(loanResults).map(([name, status]) => {
+    const cls = status === 'PAID' ? 'out-ok' : status.startsWith('PARTIAL') ? 'out-warn' : 'out-danger';
+    return `<div class="${cls}">${name.padEnd(12)} → ${status}</div>`;
+  }).join('');
+
+  // TIMELINE
+  renderTimeline(income, cashOnHand, bills, simLoans, dueBeforePayday, dueOnPayday);
+
+  // STRATEGIES
+  generateStrategies(income, cashOnHand, bills, simLoans, isRecovery, failed, damageScore);
+
+  // RECOVERY
+  renderRecovery(isRecovery, failed, simLoans, balance);
+
+  // UPDATE TRACKER
+  updateCycleTrackerUI();
+
+  lastSimResult = { income, cashOnHand, bills, simLoans, balance, damageScore, isRecovery, failed, loanResults };
+  document.getElementById('mode-display').textContent = `MODE: ${isRecovery ? 'RECOVERY' : 'ACTIVE'}`;
+}
+
+// ═══════════════════════════════════════════════
+// TIMELINE RENDER
+// ═══════════════════════════════════════════════
+function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) {
+  const el = document.getElementById('timeline');
+  const maxVal = Math.max(income, ...allLoans.map(l=>l.owed), 50);
+  const bar = (val, cls, label) => {
+    const pct = Math.min(100, (val/maxVal)*100);
+    return `<div class="tl-bar-wrap"><div class="tl-bar ${cls}" style="width:${pct}%">${label} $${val.toFixed(0)}</div></div>`;
+  };
+
+  let html = '';
+  html += `<div class="tl-row"><div class="tl-date">NOW</div>${bar(cash,'tl-income','CASH')}</div>`;
+
+  beforeLoans.forEach(l => {
+    html += `<div class="tl-row"><div class="tl-date">PRE-PAY</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
+  });
+
+  html += `<div class="tl-row"><div class="tl-date">PAYDAY</div>${bar(income,'tl-income','INCOME')}</div>`;
+  if (bills > 0) html += `<div class="tl-row"><div class="tl-date">BILLS</div>${bar(bills,'tl-debt','BILLS')}</div>`;
+
+  afterLoans.forEach(l => {
+    html += `<div class="tl-row"><div class="tl-date">POST-PAY</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
+  });
+
+  const reborrows = allLoans.filter(l=>l.reuse==='instant');
+  reborrows.forEach(l => {
+    if (l.max > 0)
+      html += `<div class="tl-row"><div class="tl-date">REBORROW</div>${bar(l.max,'tl-borrow',l.name)}</div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// STRATEGY GENERATOR
+// ═══════════════════════════════════════════════
+function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, damage) {
+  const container = document.getElementById('strategy-cards');
+  const cards = [];
+
+  const net = income - bills - allLoans.reduce((s,l)=>s+l.owed,0);
+  const instantLoans = allLoans.filter(l=>l.reuse==='instant');
+  const delayedLoans = allLoans.filter(l=>l.reuse==='delayed');
+  const totalInstantReborrow = instantLoans.reduce((s,l)=>s+l.max,0);
+
+  // Strategy A: Liquidity Cycling
+  if (instantLoans.length > 0) {
+    const steps = instantLoans.sort((a,b)=>a.owed-b.owed).map((l,i) =>
+      `${i+1}. PAY ${l.name} ($${l.owed.toFixed(2)}) → REBORROW $${l.max.toFixed(2)}`
+    ).join('\n');
+    cards.push({
+      title: 'LIQUIDITY CYCLE STRATEGY',
+      cls: net < 0 ? 's-title-warn' : 's-title-ok',
+      steps: steps + `\n\nREBORROW POOL RESTORED: $${totalInstantReborrow.toFixed(2)}\nUSE REBORROWS TO COVER DELAYED LOANS.`
+    });
+  }
+
+  // Strategy B: Triage / Damage Control
+  if (damage > 30 || failed.length > 0) {
+    const prioritized = [...allLoans].sort((a,b)=>a.owed-b.owed);
+    const steps = prioritized.map((l,i) =>
+      `${i+1}. ${l.reuse==='instant'?'[LIQUIDITY]':'[DEBT ONLY]'} ${l.name} — $${l.owed.toFixed(2)}`
+    ).join('\n');
+    cards.push({
+      title: 'TRIAGE SEQUENCE',
+      cls: 's-title-warn',
+      steps: steps + '\n\nFOCUS: REDUCE NODE COUNT FIRST.\nSMALLEST BALANCES CLEARED = FEWER OBLIGATIONS.'
+    });
+  }
+
+  // Strategy C: Recovery Mode
+  if (isRecovery) {
+    const smallest = [...allLoans].sort((a,b)=>a.owed-b.owed).slice(0,2);
+    cards.push({
+      title: 'RECOVERY PROTOCOL',
+      cls: 's-title-danger',
+      steps: `ZERO BORROW AVAILABILITY DETECTED.\n\n` +
+        `STEP 1: ACCEPT PRE-PAYDAY FAILURES — DO NOT OVERDRAFT\n` +
+        `STEP 2 (PAYDAY): CLEAR SMALLEST FIRST\n` +
+        smallest.map((l,i) => `  → ${l.name} ($${l.owed.toFixed(2)})`).join('\n') +
+        `\nSTEP 3: APPLY REMAINDER TO LARGEST ACTIVE DEBT\nSTEP 4: DEFER REMAINING — RESET NEXT CYCLE\n\nDO NOT ATTEMPT FULL RECOVERY IN ONE CYCLE.`
+    });
+  }
+
+  // Strategy D: Exit Path
+  const exitMonths = parseInt(document.getElementById('exit-months').value) || 0;
+  if (exitMonths > 0 && net > 0) {
+    const monthlyReduction = (allLoans.reduce((s,l)=>s+l.owed,0) / exitMonths).toFixed(2);
+    cards.push({
+      title: `${exitMonths}-MONTH EXIT PATH`,
+      cls: 's-title-ok',
+      steps: `TARGET: DEBT-FREE IN ${exitMonths} MONTHS\n\nREQUIRED MONTHLY REDUCTION: $${monthlyReduction}\nCURRENT CYCLE NET: $${net.toFixed(2)}\n\n` +
+        (net >= parseFloat(monthlyReduction)
+          ? '✓ ACHIEVABLE AT CURRENT INCOME'
+          : `⚠ GAP: NEED $${(parseFloat(monthlyReduction)-net).toFixed(2)} MORE PER CYCLE\n  CONSIDER: REDUCE BILLS, INCREASE INCOME, OR EXTEND TIMELINE`)
+    });
+  }
+
+  container.innerHTML = cards.length
+    ? cards.map(c => `
+        <div class="strategy-card">
+          <div class="s-title ${c.cls}">${c.title}</div>
+          <div class="s-steps">${c.steps.replace(/\n/g,'<br>')}</div>
+        </div>`).join('')
+    : '<div class="out-dim" style="font-size:12px;padding:8px">// No strategy data — run simulation</div>';
+}
+
+// ═══════════════════════════════════════════════
+// RECOVERY OUTPUT
+// ═══════════════════════════════════════════════
+function renderRecovery(isRecovery, failed, allLoans, endBalance) {
+  const el = document.getElementById('recovery-output');
+  if (!isRecovery && failed.length === 0) {
+    el.innerHTML = '<span class="out-ok">✓ RECOVERY MODE NOT TRIGGERED — SYSTEM STABLE</span>';
+    return;
+  }
+
+  const sorted = [...allLoans].sort((a,b)=>a.owed-b.owed);
+  let html = '';
+
+  if (isRecovery) {
+    html += '<span class="out-danger">⚠ RECOVERY MODE: ZERO LIQUIDITY</span><br><br>';
+    html += '<span class="out-warn">CONTROLLED FAILURE SEQUENCE:</span><br>';
+    html += '<span class="out-dim">Before payday — accept what cannot be paid. Do not overdraft.</span><br><br>';
+    html += '<span class="out-warn">PAYDAY RECOVERY ORDER:</span><br>';
+    sorted.forEach((l,i) => {
+      html += `<span class="out-ok">${i+1}. ${l.name} — $${l.owed.toFixed(2)} ${l.reuse==='instant'?'[RECOVERS LIQUIDITY]':''}</span><br>`;
+    });
+  } else if (failed.length > 0) {
+    html += '<span class="out-warn">⚠ PARTIAL FAILURE — DEFERRED LOANS:</span><br>';
+    failed.forEach(l => {
+      html += `<span class="out-danger">→ ${l.name} ($${l.owed.toFixed(2)}) — SCHEDULE NEXT CYCLE</span><br>`;
+    });
+  }
+
+  html += `<br><span class="out-dim">END BALANCE: $${endBalance.toFixed(2)}</span>`;
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// DECISION GATE
+// ═══════════════════════════════════════════════
+function runDecisionGate() {
+  const amount  = parseFloat(document.getElementById('gate-amount').value) || 0;
+  const appName = document.getElementById('gate-app').value || 'unknown';
+  const days    = parseInt(document.getElementById('gate-days').value) || 14;
+  const income  = parseFloat(document.getElementById('income').value) || 0;
+  const bills   = parseFloat(document.getElementById('bills').value) || 0;
+
+  const totalOwed = loans.reduce((s,l) => s + l.owed, 0);
+  const projectedBalance = income - bills - totalOwed - amount;
+  const cyclesExtended = amount > 50 ? 1 : 0;
+
+  let out = '';
+  out += `<span class="out-section">── DECISION GATE ──</span>\n`;
+  out += `<span class="out-info">BORROW REQUEST: $${amount.toFixed(2)} from ${appName}</span>\n`;
+  out += `<span class="out-dim">REPAYMENT DUE:  ${days} days</span>\n\n`;
+
+  if (projectedBalance >= 0) {
+    out += `<span class="out-ok">✓ FEASIBLE — projected post-repayment balance: $${projectedBalance.toFixed(2)}</span>\n`;
+  } else {
+    out += `<span class="out-danger">✗ RISK — you will be short $${Math.abs(projectedBalance).toFixed(2)} after repayment</span>\n`;
+    out += `<span class="out-warn">  This borrowing creates a deficit in ${days} days.</span>\n`;
+  }
+
+  if (cyclesExtended) {
+    out += `<span class="out-warn">⚠ This extends your cycle by ~${cyclesExtended} pay period(s)</span>\n`;
+  }
+
+  const matchingLoan = loans.find(l => l.name.toLowerCase().includes(appName.toLowerCase()));
+  if (matchingLoan && matchingLoan.reuse === 'instant') {
+    out += `<span class="out-info">→ ${appName} is INSTANT REUSE — reborrow available after repayment</span>\n`;
+  } else if (matchingLoan && matchingLoan.reuse === 'delayed') {
+    out += `<span class="out-warn">→ ${appName} is DELAYED REUSE — no immediate reborrow after repayment</span>\n`;
+  }
+
+  out += `\n<span class="out-dim">SYSTEM RECOMMENDATION:</span>\n`;
+  if (projectedBalance >= 0 && (!matchingLoan || matchingLoan.reuse === 'instant')) {
+    out += `<span class="out-ok">PROCEED — manageable with instant reuse recovery</span>`;
+  } else if (projectedBalance >= 0) {
+    out += `<span class="out-warn">PROCEED WITH CAUTION — no reborrow available post-repayment</span>`;
+  } else {
+    out += `<span class="out-danger">DO NOT BORROW — deficit will compound next cycle</span>`;
+  }
+
+  document.getElementById('gate-output').innerHTML = out;
+}
+
+// ═══════════════════════════════════════════════
+// CYCLE TRACKER
+// ═══════════════════════════════════════════════
+function updateCycleTrackerUI() {
+  const grid = document.getElementById('cycle-grid');
+  if (!loans.length) {
+    grid.innerHTML = '<span class="out-dim" style="font-size:12px">// No loans configured</span>';
+    return;
+  }
+
+  grid.innerHTML = loans.map(l => {
+    const count = cycleCounts[l.name] || 0;
+    const cls = count > 5 ? 'cycle-danger' : count > 3 ? 'cycle-warn' : 'cycle-ok';
+    return `
+      <div class="cycle-item">
+        <div style="font-size:11px;color:var(--green-dim)">${l.name}</div>
+        <div class="cycle-count ${cls}">${count}</div>
+        <div style="font-size:10px;color:var(--green-dim)">${l.reuse.toUpperCase()}</div>
+        <div style="font-size:10px;color:${cls === 'cycle-danger'?'var(--red)':cls==='cycle-warn'?'var(--amber)':'var(--green-dim)'}">
+          ${count > 5 ? 'DANGER' : count > 3 ? 'ELEVATED' : 'OK'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function logCycleEvent() {
+  const loanName = document.getElementById('cycle-loan-select').value;
+  const action   = document.getElementById('cycle-action').value;
+  const amount   = parseFloat(document.getElementById('cycle-amount').value) || 0;
+  const notes    = document.getElementById('cycle-notes').value;
+
+  if (action === 'reborrowed') {
+    cycleCounts[loanName] = (cycleCounts[loanName] || 0) + 1;
+  }
+
+  const ts = new Date().toLocaleTimeString('en-US',{hour12:false});
+  cycleLog.unshift({ ts, loanName, action, amount, notes });
+
+  renderCycleLog();
+  updateCycleTrackerUI();
+
+  document.getElementById('cycle-amount').value = '0';
+  document.getElementById('cycle-notes').value = '';
+}
+
+function renderCycleLog() {
+  const el = document.getElementById('cycle-log');
+  if (!cycleLog.length) {
+    el.innerHTML = '<span class="out-dim">// No events logged yet</span>';
+    return;
+  }
+  el.innerHTML = cycleLog.map(e => {
+    const cls = e.action === 'paid' ? 'out-ok' : e.action === 'reborrowed' ? 'out-info' : e.action === 'missed' ? 'out-danger' : 'out-warn';
+    return `<span class="${cls}">[${e.ts}] ${e.loanName} — ${e.action.toUpperCase()} $${e.amount.toFixed(2)}${e.notes?' // '+e.notes:''}</span>`;
+  }).join('\n');
+}
+
+function clearCycleLog() {
+  cycleLog = [];
+  renderCycleLog();
+}
+
+// ═══════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const tabs = {setup:0,simulation:1,strategy:2,tracker:3};
+  document.querySelectorAll('.tab')[tabs[id]]?.classList.add('active');
+}
+
+// INIT
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div style="border-top:1px solid #003a0f;padding:14px 16px;text-align:center;background:#030f05;font-family:'Share Tech Mono',monospace;font-size:12px;color:#00aa2a;letter-spacing:2px;">
+  BUILT BY <a href="https://www.andremethod.com" target="_blank" style="color:#00ff41;text-decoration:none;text-shadow:0 0 8px #00ff41;">ANDREMETHOD.COM</a>
+</div>
+</body>
+</html>
