@@ -599,7 +599,7 @@
 <!-- Splash -->
 <div id="splash">
   <div class="splash-logo">LOAN SHARK</div>
-  <div class="splash-sub">SURVIVAL ENGINE v2.0</div>
+  <div class="splash-sub">YOUR PAYCHECK SURVIVAL TOOL</div>
   <div class="splash-bar"><div class="splash-bar-fill"></div></div>
 </div>
 
@@ -608,16 +608,16 @@
   <div class="logo">LOAN<span>SHARK</span></div>
   <div class="status-bar">
     <div id="clock">--:--:--</div>
-    <div id="mode-display">MODE: STANDBY</div>
+    <div id="mode-display">STATUS: READY</div>
   </div>
 </div>
 
 <!-- Tabs -->
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('setup')">[ SETUP ]</button>
-  <button class="tab" onclick="switchTab('simulation')">[ SIMULATION ]</button>
-  <button class="tab" onclick="switchTab('strategy')">[ STRATEGY ]</button>
-  <button class="tab" onclick="switchTab('tracker')">[ CYCLE TRACKER ]</button>
+  <button class="tab active" onclick="switchTab('setup')">[ MY INFO ]</button>
+  <button class="tab" onclick="switchTab('simulation')">[ MY PLAN ]</button>
+  <button class="tab" onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
+  <button class="tab" onclick="switchTab('tracker')">[ MY HISTORY ]</button>
 </div>
 
 <!-- ═══════════════ TAB: SETUP ═══════════════ -->
@@ -626,52 +626,52 @@
 
   <!-- INCOME PANEL -->
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> INCOME CONFIG</div>
+    <div class="panel-title"><div class="dot"></div> YOUR INCOME & BILLS</div>
 
-    <label>Payday Amount ($)</label>
+    <label>How much is your paycheck? ($)</label>
     <input type="number" id="income" value="310" step="0.01">
 
-    <label>Payday Date</label>
+    <label>When do you get paid?</label>
     <input type="date" id="payday">
 
-    <label>Pay Frequency</label>
+    <label>How often do you get paid?</label>
     <select id="pay-freq">
-      <option value="biweekly">Bi-Weekly</option>
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
-      <option value="semimonthly">Semi-Monthly (1st & 15th)</option>
+      <option value="biweekly">Every 2 Weeks</option>
+      <option value="weekly">Every Week</option>
+      <option value="monthly">Once a Month</option>
+      <option value="semimonthly">Twice a Month (1st & 15th)</option>
     </select>
 
-    <label>Current Cash On Hand ($)</label>
+    <label>How much cash do you have right now? ($)</label>
     <input type="number" id="cash-on-hand" value="0" step="0.01">
 
-    <label>Fixed Monthly Bills ($) <span style="color:var(--green-dim);font-size:10px">(rent, utilities, etc)</span></label>
+    <label>Total monthly bills (rent, utilities, food, etc.) ($)</label>
     <input type="number" id="bills" value="0" step="0.01">
 
-    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> SURVIVAL GOAL</div>
+    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> YOUR GOAL</div>
 
-    <label>Target Exit Months (0 = not set)</label>
+    <label>How many months until you want to be loan-app-free? (enter 0 to skip)</label>
     <input type="number" id="exit-months" value="0" min="0">
 
-    <label>Priority Mode</label>
+    <label>How should the system prioritize your payments?</label>
     <select id="priority-mode">
-      <option value="liquidity">Liquidity First (rebuild borrow power)</option>
-      <option value="debt">Debt Reduction First</option>
-      <option value="survival">Pure Survival (smallest nodes)</option>
+      <option value="liquidity">Keep cash flowing (pay apps I can borrow from again first)</option>
+      <option value="debt">Reduce what I owe (pay smallest balances first)</option>
+      <option value="survival">Pure survival (clear as many loans as possible)</option>
     </select>
   </div>
 
   <!-- LOANS PANEL -->
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> LOAN NODES</div>
+    <div class="panel-title"><div class="dot"></div> YOUR LOAN APPS</div>
     <div class="loan-list" id="loan-list"></div>
-    <button class="btn btn-secondary" onclick="addLoan()">+ ADD LOAN NODE</button>
-    <button class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD PRESET DATA</button>
+    <button class="btn btn-secondary" onclick="addLoan()">+ ADD ANOTHER APP</button>
+    <button class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD EXAMPLE DATA</button>
   </div>
 
   <!-- RUN BUTTON - full width -->
   <div class="panel full-panel" style="text-align:center; padding:16px;">
-    <button class="btn btn-run" onclick="runFullSimulation()">▶ EXECUTE SIMULATION</button>
+    <button class="btn btn-run" onclick="runFullSimulation()">▶ RUN MY PLAN</button>
   </div>
 
 </div>
@@ -682,35 +682,35 @@
 <div class="main">
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> SEQUENCE OUTPUT</div>
+    <div class="panel-title"><div class="dot"></div> YOUR STEP-BY-STEP PLAN</div>
     <div class="terminal-output" id="output">
-<span class="out-dim">// AWAITING INPUT — CONFIGURE SETUP TAB AND EXECUTE</span>
+<span class="out-dim">// Set up your loans above, then hit "Run My Plan" to see your step-by-step paycheck strategy.</span>
     </div>
   </div>
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> DAMAGE SCORE</div>
+    <div class="panel-title"><div class="dot"></div> HOW STRESSED IS YOUR CYCLE?</div>
     <div class="damage-meter">
       <div class="damage-label">
-        <span>SYSTEM STABILITY</span>
+        <span>Cycle Stress Level</span>
         <span id="damage-val">--</span>
       </div>
       <div class="meter-track">
         <div class="meter-fill" id="damage-bar" style="width:0%"></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--green-dim);margin-top:4px">
-        <span>STABLE</span><span>CRITICAL</span>
+        <span>UNDER CONTROL</span><span>HIGH STRESS</span>
       </div>
     </div>
 
-    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> CASH FLOW TIMELINE</div>
+    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> MONEY COMING IN AND GOING OUT</div>
     <div class="timeline" id="timeline">
       <span class="out-dim" style="font-size:12px">// Run simulation to generate timeline</span>
     </div>
 
-    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> LOAN STATUS POST-RUN</div>
+    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> WHERE EACH LOAN ENDED UP</div>
     <div id="loan-status" style="font-size:12px;line-height:2">
-      <span class="out-dim">// Run simulation to see status</span>
+      <span class="out-dim">// Run your plan to see each loan's outcome</span>
     </div>
   </div>
 
@@ -723,37 +723,37 @@
 <div class="main">
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> GENERATED STRATEGIES</div>
+    <div class="panel-title"><div class="dot"></div> YOUR OPTIONS — WHAT TO DO NEXT</div>
     <div class="strategy-cards" id="strategy-cards">
-      <div class="out-dim" style="font-size:12px;padding:8px">// Run simulation first to generate strategy options</div>
+      <div class="out-dim" style="font-size:12px;padding:8px">// Run your plan first, then come here to see your options.</div>
     </div>
   </div>
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> DECISION GATE</div>
-    <div style="margin-bottom:12px;font-size:12px;color:var(--green-dim)">// CHECK BEFORE YOU BORROW</div>
+    <div class="panel-title"><div class="dot"></div> SHOULD I BORROW RIGHT NOW?</div>
+    <div style="margin-bottom:12px;font-size:12px;color:var(--green-dim)">// Check this BEFORE opening any loan app</div>
 
-    <label>I want to borrow ($)</label>
+    <label>How much do you want to borrow? ($)</label>
     <input type="number" id="gate-amount" value="100" step="0.01">
 
-    <label>From which app</label>
-    <input type="text" id="gate-app" placeholder="Earnin, CashApp, etc.">
+    <label>Which app are you borrowing from?</label>
+    <input type="text" id="gate-app" placeholder="e.g. Earnin, CashApp...">
 
-    <label>Repayment in (days)</label>
+    <label>How many days until you have to pay it back?</label>
     <input type="number" id="gate-days" value="14">
 
-    <button class="btn" onclick="runDecisionGate()">▶ ANALYZE IMPACT</button>
+    <button class="btn" onclick="runDecisionGate()">▶ CHECK IF THIS IS A GOOD IDEA</button>
 
     <div class="terminal-output" id="gate-output" style="min-height:120px">
-      <span class="out-dim">// Decision gate output will appear here</span>
+      <span class="out-dim">// The answer will appear here after you check</span>
     </div>
   </div>
 
   <div class="panel full-panel">
-    <div class="panel-title"><div class="dot"></div> RECOVERY MODE PROTOCOL</div>
+    <div class="panel-title"><div class="dot"></div> EMERGENCY PLAN — WHEN YOU HAVE NOTHING LEFT TO BORROW</div>
     <div id="recovery-output" style="font-size:13px;line-height:1.8;color:var(--green-dim);padding:8px">
-      // Recovery mode activates when total available borrow = 0<br>
-      // Run simulation to evaluate recovery status
+      // This section activates when you have no borrowing power left anywhere.<br>
+      // Run your plan to see if this applies to you.
     </div>
   </div>
 
@@ -767,41 +767,41 @@
 <div class="main">
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> REUSE CYCLE COUNTS</div>
-    <div style="font-size:11px;color:var(--green-dim);margin-bottom:10px">Track how many times each loan has been cycled. High counts = danger.</div>
+    <div class="panel-title"><div class="dot"></div> HOW MANY TIMES HAVE YOU USED EACH APP?</div>
+    <div style="font-size:11px;color:var(--green-dim);margin-bottom:10px">The more times you reborrow from the same app, the harder it gets to break free. Watch these numbers.</div>
     <div class="cycle-grid" id="cycle-grid">
-      <span class="out-dim" style="font-size:12px">// Load loans to see cycle tracker</span>
+      <span class="out-dim" style="font-size:12px">// Add your loans to see this tracker</span>
     </div>
-    <button class="btn btn-secondary" onclick="updateCycleTrackerUI()">⟳ REFRESH COUNTS</button>
+    <button class="btn btn-secondary" onclick="updateCycleTrackerUI()">⟳ REFRESH</button>
   </div>
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> LOG A CYCLE</div>
+    <div class="panel-title"><div class="dot"></div> RECORD WHAT JUST HAPPENED</div>
 
-    <label>Select Loan</label>
+    <label>Which app?</label>
     <select id="cycle-loan-select"></select>
 
-    <label>Action</label>
+    <label>What did you do?</label>
     <select id="cycle-action">
-      <option value="paid">PAID (repaid loan)</option>
-      <option value="reborrowed">REBORROWED (took advance)</option>
-      <option value="partial">PARTIAL PAYMENT</option>
-      <option value="missed">MISSED PAYMENT</option>
+      <option value="paid">I paid it back</option>
+      <option value="reborrowed">I borrowed from it again</option>
+      <option value="partial">I made a partial payment</option>
+      <option value="missed">I missed the payment</option>
     </select>
 
     <label>Amount ($)</label>
     <input type="number" id="cycle-amount" value="0" step="0.01">
 
-    <label>Notes</label>
-    <input type="text" id="cycle-notes" placeholder="Optional note...">
+    <label>Any notes? (optional)</label>
+    <input type="text" id="cycle-notes" placeholder="e.g. paid late, contacted support...">
 
-    <button class="btn" onclick="logCycleEvent()">▶ LOG EVENT</button>
+    <button class="btn" onclick="logCycleEvent()">▶ SAVE THIS EVENT</button>
   </div>
 
   <div class="panel full-panel">
-    <div class="panel-title"><div class="dot"></div> CYCLE LOG</div>
+    <div class="panel-title"><div class="dot"></div> YOUR ACTIVITY LOG</div>
     <div class="terminal-output" id="cycle-log" style="max-height:250px">
-      <span class="out-dim">// No events logged yet</span>
+      <span class="out-dim">// Nothing logged yet — record your first event above</span>
     </div>
     <button class="btn btn-secondary" onclick="clearCycleLog()" style="margin-top:8px">✕ CLEAR LOG</button>
   </div>
@@ -880,7 +880,7 @@ function renderLoans() {
     card.innerHTML = `
       <div class="loan-header">
         <span class="loan-name">${loan.name}</span>
-        <span class="reuse-badge reuse-${loan.reuse}">${loan.reuse.toUpperCase()}</span>
+        <span class="reuse-badge reuse-${loan.reuse}">${loan.reuse === 'instant' ? 'RE-BORROW ANYTIME' : 'WAITING PERIOD'}</span>
       </div>
       <div class="loan-fields">
         <div>
@@ -888,11 +888,11 @@ function renderLoans() {
           <input type="text" value="${loan.name}" onchange="loans[${i}].name=this.value;renderLoans()">
         </div>
         <div>
-          <label>Owed ($)</label>
+          <label>Amount you owe ($)</label>
           <input type="number" value="${loan.owed}" step="0.01" onchange="loans[${i}].owed=parseFloat(this.value)||0">
         </div>
         <div>
-          <label>Reborrow Max ($)</label>
+          <label>Can borrow again up to ($)</label>
           <input type="number" value="${loan.max}" step="0.01" onchange="loans[${i}].max=parseFloat(this.value)||0">
         </div>
         <button class="btn-remove" onclick="removeLoan(${i})">✕</button>
@@ -900,11 +900,11 @@ function renderLoans() {
       <div style="display:flex;gap:12px;margin-top:8px;font-size:11px">
         <label style="display:flex;align-items:center;gap:5px;margin:0;cursor:pointer">
           <input type="checkbox" ${loan.dueBeforePayday?'checked':''} onchange="loans[${i}].dueBeforePayday=this.checked" style="width:auto;margin:0">
-          DUE BEFORE PAYDAY
+          PULLS BEFORE PAYDAY
         </label>
         <select style="flex:1;margin:0;padding:4px 6px;font-size:11px" onchange="loans[${i}].reuse=this.value;renderLoans()">
-          <option value="instant" ${loan.reuse==='instant'?'selected':''}>INSTANT REUSE</option>
-          <option value="delayed" ${loan.reuse==='delayed'?'selected':''}>DELAYED REUSE</option>
+          <option value="instant" ${loan.reuse==='instant'?'selected':''}>Can borrow again right away</option>
+          <option value="delayed" ${loan.reuse==='delayed'?'selected':''}>Must wait before borrowing again</option>
         </select>
       </div>
     `;
@@ -930,7 +930,7 @@ function runFullSimulation() {
 
   if (!loans.length) { alert('Add at least one loan node.'); return; }
 
-  document.getElementById('mode-display').textContent = 'MODE: RUNNING...';
+  document.getElementById('mode-display').textContent = 'STATUS: CALCULATING...';
   switchTab('simulation');
 
   // Clone loans for simulation
@@ -969,44 +969,46 @@ function runFullSimulation() {
   const addLine = (text, cls='out-ok') => log.push({text, cls});
 
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
-  addLine('  LOAN SHARK ENGINE v2.0', 'out-header');
+  addLine('  YOUR PAYCHECK PLAN', 'out-header');
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
-  addLine(`  INCOME:       $${income.toFixed(2)}`, 'out-info');
-  addLine(`  CASH ON HAND: $${cashOnHand.toFixed(2)}`, 'out-info');
-  addLine(`  TOTAL OWED:   $${totalOwed.toFixed(2)}`, balance < totalOwed ? 'out-danger' : 'out-ok');
-  addLine(`  BILLS:        $${bills.toFixed(2)}`, 'out-warn');
-  addLine(`  MODE:         ${mode.toUpperCase()}`, 'out-dim');
-  addLine(`  BORROW AVAIL: $${totalAvailBorrow.toFixed(2)}`, 'out-info');
+  addLine(`  Your paycheck:             $${income.toFixed(2)}`, 'out-info');
+  addLine(`  Cash you have right now:   $${cashOnHand.toFixed(2)}`, 'out-info');
+  addLine(`  Total you owe across apps: $${totalOwed.toFixed(2)}`, balance < totalOwed ? 'out-danger' : 'out-ok');
+  if (bills > 0) addLine(`  Monthly bills:             $${bills.toFixed(2)}`, 'out-warn');
+  addLine(`  Can re-borrow from apps:   $${totalAvailBorrow.toFixed(2)}`, 'out-info');
   addLine('', 'out-dim');
 
   if (isRecovery) {
-    addLine('⚠ RECOVERY MODE ACTIVATED', 'out-danger');
-    addLine('  No liquidity. Managed failure protocol.', 'out-warn');
+    addLine('⚠ IMPORTANT — YOU HAVE NOTHING LEFT TO BORROW', 'out-danger');
+    addLine('  Some payments will be late this cycle. That is okay.', 'out-warn');
+    addLine('  Follow the plan below to limit the damage.', 'out-warn');
     addLine('', 'out-dim');
     damageScore += 40;
   }
 
   // PRE-PAYDAY PHASE
-  addLine('── PRE-PAYDAY PHASE ──', 'out-section');
+  addLine('── BEFORE YOUR PAYCHECK ──', 'out-section');
   if (dueBeforePayday.length === 0) {
-    addLine('  No obligations due before payday.', 'out-dim');
+    addLine('  Nothing is due before your paycheck arrives. You are clear.', 'out-dim');
   } else {
+    addLine('  These apps will pull money before you get paid:', 'out-dim');
     const sortedBefore = sortLoans([...dueBeforePayday]);
     for (const loan of sortedBefore) {
       if (balance >= loan.owed) {
         balance -= loan.owed;
-        addLine(`  ✓ PAID: ${loan.name} ($${loan.owed.toFixed(2)})  REMAINING: $${balance.toFixed(2)}`, 'out-ok');
-        loanResults[loan.name] = 'PAID';
+        addLine(`  ✓ ${loan.name} paid — $${loan.owed.toFixed(2)} taken out. You have $${balance.toFixed(2)} left.`, 'out-ok');
+        loanResults[loan.name] = 'Paid';
         if (loan.reuse === 'instant') {
           balance += loan.max;
           liquidityPool += loan.max;
-          addLine(`    ↺ REBORROW UNLOCKED: ${loan.name} +$${loan.max.toFixed(2)}  BALANCE: $${balance.toFixed(2)}`, 'out-info');
+          addLine(`    → Good news: you can borrow $${loan.max.toFixed(2)} from ${loan.name} again right away.`, 'out-info');
+          addLine(`      Your available balance is now $${balance.toFixed(2)}.`, 'out-info');
           cycleCounts[loan.name] = (cycleCounts[loan.name]||0) + 1;
           if (cycleCounts[loan.name] > 3) { damageScore += 15; }
         }
       } else {
-        addLine(`  ✗ CANNOT PAY: ${loan.name} (need $${loan.owed.toFixed(2)}, have $${balance.toFixed(2)})`, 'out-danger');
-        loanResults[loan.name] = 'FAILED';
+        addLine(`  ✗ ${loan.name} — you only have $${balance.toFixed(2)} but owe $${loan.owed.toFixed(2)}. This will be late.`, 'out-danger');
+        loanResults[loan.name] = 'Could not pay';
         damageScore += 25;
       }
     }
@@ -1014,43 +1016,47 @@ function runFullSimulation() {
 
   // PAYDAY
   addLine('', 'out-dim');
-  addLine('── PAYDAY ARRIVES ──', 'out-section');
+  addLine('── YOUR PAYCHECK ARRIVES ──', 'out-section');
   balance += income;
   balance -= bills;
-  addLine(`  + INCOME:  $${income.toFixed(2)}`, 'out-ok');
-  if (bills > 0) addLine(`  - BILLS:   $${bills.toFixed(2)}`, 'out-warn');
-  addLine(`  BALANCE: $${balance.toFixed(2)}`, 'out-info');
+  addLine(`  + Paycheck deposited:       $${income.toFixed(2)}`, 'out-ok');
+  if (bills > 0) addLine(`  - Bills taken out:          $${bills.toFixed(2)}`, 'out-warn');
+  addLine(`  What you have to work with: $${balance.toFixed(2)}`, 'out-info');
   addLine('', 'out-dim');
 
   // POST-PAYDAY PHASE
-  addLine('── POST-PAYDAY SEQUENCING ──', 'out-section');
+  addLine('── PAY THESE IN THIS ORDER ──', 'out-section');
+  addLine('  Follow this sequence to get the most out of your check:', 'out-dim');
   const sortedAfter = sortLoans([...dueOnPayday]);
 
   const failed = [];
   for (const loan of sortedAfter) {
     if (balance >= loan.owed) {
       balance -= loan.owed;
-      addLine(`  ✓ PAID: ${loan.name} ($${loan.owed.toFixed(2)})  REMAINING: $${balance.toFixed(2)}`, 'out-ok');
-      loanResults[loan.name] = 'PAID';
+      addLine(`  ✓ Pay ${loan.name}: $${loan.owed.toFixed(2)}  —  $${balance.toFixed(2)} left after this`, 'out-ok');
+      loanResults[loan.name] = 'Paid';
       if (loan.reuse === 'instant') {
         balance += loan.max;
         liquidityPool += loan.max;
-        addLine(`    ↺ REBORROW UNLOCKED: ${loan.name} +$${loan.max.toFixed(2)}  BALANCE: $${balance.toFixed(2)}`, 'out-info');
+        addLine(`    → Once paid, you can borrow $${loan.max.toFixed(2)} from ${loan.name} again right away.`, 'out-info');
+        addLine(`      Running total you have access to: $${balance.toFixed(2)}`, 'out-info');
         cycleCounts[loan.name] = (cycleCounts[loan.name]||0) + 1;
         if (cycleCounts[loan.name] > 3) { damageScore += 15; }
       } else {
-        addLine(`    ⏳ DELAYED REUSE: ${loan.name} — no immediate reborrow`, 'out-warn');
+        addLine(`    → Note: ${loan.name} has a waiting period before you can borrow again.`, 'out-warn');
         damageScore += 10;
       }
     } else if (balance > 0) {
-      addLine(`  ~ PARTIAL: ${loan.name} — applying $${balance.toFixed(2)} of $${loan.owed.toFixed(2)}`, 'out-warn');
-      loanResults[loan.name] = `PARTIAL ($${balance.toFixed(2)})`;
+      addLine(`  ~ ${loan.name}: you can only pay $${balance.toFixed(2)} of the $${loan.owed.toFixed(2)} you owe.`, 'out-warn');
+      addLine(`    Pay what you can. Handle the rest next paycheck.`, 'out-warn');
+      loanResults[loan.name] = `Partial — paid $${balance.toFixed(2)}`;
       balance = 0;
       damageScore += 15;
       failed.push(loan);
     } else {
-      addLine(`  ✗ DEFERRED: ${loan.name} ($${loan.owed.toFixed(2)}) — no funds`, 'out-danger');
-      loanResults[loan.name] = 'DEFERRED';
+      addLine(`  ✗ ${loan.name} ($${loan.owed.toFixed(2)}) — no money left for this one right now.`, 'out-danger');
+      addLine(`    Skip it this cycle. Come back to it next paycheck.`, 'out-danger');
+      loanResults[loan.name] = 'Skipped — handle next paycheck';
       damageScore += 20;
       failed.push(loan);
     }
@@ -1059,30 +1065,33 @@ function runFullSimulation() {
   // SUMMARY
   addLine('', 'out-dim');
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
-  addLine('  END OF CYCLE SUMMARY', 'out-header');
+  addLine('  HOW THIS CYCLE ENDS', 'out-header');
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'out-section');
-  addLine(`  ENDING BALANCE:  $${balance.toFixed(2)}`, balance >= 0 ? 'out-ok' : 'out-danger');
-  addLine(`  LIQUIDITY GAINED: $${liquidityPool.toFixed(2)}`, 'out-info');
-  addLine(`  DEFERRED LOANS:   ${failed.length}`, failed.length ? 'out-danger' : 'out-ok');
+  addLine(`  Money left after everything:      $${balance.toFixed(2)}`, balance >= 0 ? 'out-ok' : 'out-danger');
+  addLine(`  Borrow power you got back:        $${liquidityPool.toFixed(2)}`, 'out-info');
+  addLine(`  Loans you had to skip:            ${failed.length}`, failed.length ? 'out-danger' : 'out-ok');
 
   const net = income - totalOwed;
   if (net < 0) {
-    addLine(`  CYCLE DEFICIT:   $${Math.abs(net).toFixed(2)} short`, 'out-danger');
+    addLine(`  You are $${Math.abs(net).toFixed(2)} short of covering everything.`, 'out-danger');
+    addLine(`  That is a tough spot — check the Strategy tab for your next move.`, 'out-warn');
     damageScore += 20;
   } else {
-    addLine(`  CYCLE SURPLUS:   $${net.toFixed(2)}`, 'out-ok');
+    addLine(`  You came out $${net.toFixed(2)} ahead this cycle. Good.`, 'out-ok');
     damageScore = Math.max(0, damageScore - 10);
   }
 
   damageScore = Math.min(100, Math.max(0, damageScore));
-  addLine(`  DAMAGE SCORE:    ${damageScore}/100`, damageScore > 60 ? 'out-danger' : damageScore > 30 ? 'out-warn' : 'out-ok');
+  const stressLabel = damageScore > 60 ? 'HIGH STRESS — act on the Strategy tab' : damageScore > 30 ? 'SOME PRESSURE — manageable with the right steps' : 'UNDER CONTROL — keep going';
+  addLine(`  Overall stress level: ${stressLabel}`, damageScore > 60 ? 'out-danger' : damageScore > 30 ? 'out-warn' : 'out-ok');
 
   if (failed.length === 0) {
     addLine('', 'out-dim');
-    addLine('  ✓ FULL CYCLE COMPLETE — STABLE', 'out-ok');
+    addLine('  ✓ You covered every loan this cycle. Solid work.', 'out-ok');
   } else {
     addLine('', 'out-dim');
-    addLine('  ⚠ INCOMPLETE CYCLE — REVIEW STRATEGY', 'out-warn');
+    addLine('  ⚠ Some loans were skipped. Go to the Strategy tab', 'out-warn');
+    addLine('    to see exactly what to do about them. You can handle this.', 'out-warn');
   }
 
   // RENDER OUTPUT
@@ -1092,7 +1101,7 @@ function runFullSimulation() {
 
   // DAMAGE METER
   const bar = document.getElementById('damage-bar');
-  document.getElementById('damage-val').textContent = `${damageScore}/100`;
+  document.getElementById('damage-val').textContent = `${damageScore}/100 — ${stressLabel.split('—')[0].trim()}`;
   bar.style.width = damageScore + '%';
   bar.style.background = damageScore > 60 ? 'var(--red)' : damageScore > 30 ? 'var(--amber)' : 'var(--green)';
   bar.style.color = bar.style.background;
@@ -1100,8 +1109,8 @@ function runFullSimulation() {
   // LOAN STATUS
   const statusEl = document.getElementById('loan-status');
   statusEl.innerHTML = Object.entries(loanResults).map(([name, status]) => {
-    const cls = status === 'PAID' ? 'out-ok' : status.startsWith('PARTIAL') ? 'out-warn' : 'out-danger';
-    return `<div class="${cls}">${name.padEnd(12)} → ${status}</div>`;
+    const cls = status === 'Paid' ? 'out-ok' : status.startsWith('Partial') ? 'out-warn' : 'out-danger';
+    return `<div class="${cls}">${name} → ${status}</div>`;
   }).join('');
 
   // TIMELINE
@@ -1117,7 +1126,7 @@ function runFullSimulation() {
   updateCycleTrackerUI();
 
   lastSimResult = { income, cashOnHand, bills, simLoans, balance, damageScore, isRecovery, failed, loanResults };
-  document.getElementById('mode-display').textContent = `MODE: ${isRecovery ? 'RECOVERY' : 'ACTIVE'}`;
+  document.getElementById('mode-display').textContent = `STATUS: ${isRecovery ? 'EMERGENCY MODE' : 'PLAN READY'}`;
 }
 
 // ═══════════════════════════════════════════════
@@ -1132,23 +1141,23 @@ function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) 
   };
 
   let html = '';
-  html += `<div class="tl-row"><div class="tl-date">NOW</div>${bar(cash,'tl-income','CASH')}</div>`;
+  html += `<div class="tl-row"><div class="tl-date">NOW</div>${bar(cash,'tl-income','On Hand')}</div>`;
 
   beforeLoans.forEach(l => {
-    html += `<div class="tl-row"><div class="tl-date">PRE-PAY</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
+    html += `<div class="tl-row"><div class="tl-date">Pre-Pay</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
   });
 
-  html += `<div class="tl-row"><div class="tl-date">PAYDAY</div>${bar(income,'tl-income','INCOME')}</div>`;
-  if (bills > 0) html += `<div class="tl-row"><div class="tl-date">BILLS</div>${bar(bills,'tl-debt','BILLS')}</div>`;
+  html += `<div class="tl-row"><div class="tl-date">Payday</div>${bar(income,'tl-income','Paycheck')}</div>`;
+  if (bills > 0) html += `<div class="tl-row"><div class="tl-date">Bills</div>${bar(bills,'tl-debt','Bills')}</div>`;
 
   afterLoans.forEach(l => {
-    html += `<div class="tl-row"><div class="tl-date">POST-PAY</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
+    html += `<div class="tl-row"><div class="tl-date">Pay Off</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
   });
 
   const reborrows = allLoans.filter(l=>l.reuse==='instant');
   reborrows.forEach(l => {
     if (l.max > 0)
-      html += `<div class="tl-row"><div class="tl-date">REBORROW</div>${bar(l.max,'tl-borrow',l.name)}</div>`;
+      html += `<div class="tl-row"><div class="tl-date">Borrow</div>${bar(l.max,'tl-borrow',l.name + ' again')}</div>`;
   });
 
   el.innerHTML = html;
@@ -1166,42 +1175,42 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
   const delayedLoans = allLoans.filter(l=>l.reuse==='delayed');
   const totalInstantReborrow = instantLoans.reduce((s,l)=>s+l.max,0);
 
-  // Strategy A: Liquidity Cycling
+  // Strategy A: Pay apps you can borrow from again first
   if (instantLoans.length > 0) {
     const steps = instantLoans.sort((a,b)=>a.owed-b.owed).map((l,i) =>
-      `${i+1}. PAY ${l.name} ($${l.owed.toFixed(2)}) → REBORROW $${l.max.toFixed(2)}`
+      `${i+1}. Pay ${l.name} ($${l.owed.toFixed(2)}) — then borrow $${l.max.toFixed(2)} right back from them`
     ).join('\n');
     cards.push({
-      title: 'LIQUIDITY CYCLE STRATEGY',
+      title: 'BEST USE OF YOUR MONEY',
       cls: net < 0 ? 's-title-warn' : 's-title-ok',
-      steps: steps + `\n\nREBORROW POOL RESTORED: $${totalInstantReborrow.toFixed(2)}\nUSE REBORROWS TO COVER DELAYED LOANS.`
+      steps: steps + `\n\nAfter following these steps, you will have $${totalInstantReborrow.toFixed(2)} available to borrow again.\nUse that to cover any remaining apps that have a waiting period.`
     });
   }
 
-  // Strategy B: Triage / Damage Control
+  // Strategy B: Triage
   if (damage > 30 || failed.length > 0) {
     const prioritized = [...allLoans].sort((a,b)=>a.owed-b.owed);
     const steps = prioritized.map((l,i) =>
-      `${i+1}. ${l.reuse==='instant'?'[LIQUIDITY]':'[DEBT ONLY]'} ${l.name} — $${l.owed.toFixed(2)}`
+      `${i+1}. ${l.reuse==='instant'?'[Can re-borrow]':'[One-time payoff]'} ${l.name} — $${l.owed.toFixed(2)}`
     ).join('\n');
     cards.push({
-      title: 'TRIAGE SEQUENCE',
+      title: 'REDUCE YOUR LOAN COUNT',
       cls: 's-title-warn',
-      steps: steps + '\n\nFOCUS: REDUCE NODE COUNT FIRST.\nSMALLEST BALANCES CLEARED = FEWER OBLIGATIONS.'
+      steps: steps + '\n\nFocus on clearing the smallest amounts first.\nFewer active loans = less pressure every paycheck.'
     });
   }
 
-  // Strategy C: Recovery Mode
+  // Strategy C: Recovery
   if (isRecovery) {
     const smallest = [...allLoans].sort((a,b)=>a.owed-b.owed).slice(0,2);
     cards.push({
-      title: 'RECOVERY PROTOCOL',
+      title: 'EMERGENCY PLAN — ZERO BORROWING AVAILABLE',
       cls: 's-title-danger',
-      steps: `ZERO BORROW AVAILABILITY DETECTED.\n\n` +
-        `STEP 1: ACCEPT PRE-PAYDAY FAILURES — DO NOT OVERDRAFT\n` +
-        `STEP 2 (PAYDAY): CLEAR SMALLEST FIRST\n` +
-        smallest.map((l,i) => `  → ${l.name} ($${l.owed.toFixed(2)})`).join('\n') +
-        `\nSTEP 3: APPLY REMAINDER TO LARGEST ACTIVE DEBT\nSTEP 4: DEFER REMAINING — RESET NEXT CYCLE\n\nDO NOT ATTEMPT FULL RECOVERY IN ONE CYCLE.`
+      steps: `You have nothing left to borrow. Some payments will be late. That is okay.\n\n` +
+        `BEFORE PAYDAY:\nDo not try to overdraft or find quick money. Just wait.\n\n` +
+        `WHEN YOUR CHECK ARRIVES — do this in order:\n` +
+        smallest.map((l,i) => `  ${i+1}. Pay off ${l.name} first ($${l.owed.toFixed(2)})`).join('\n') +
+        `\n  3. Put whatever is left toward your biggest remaining balance.\n  4. Leave the rest for next cycle.\n\nDo not try to fix everything at once. One step at a time.`
     });
   }
 
@@ -1210,12 +1219,12 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
   if (exitMonths > 0 && net > 0) {
     const monthlyReduction = (allLoans.reduce((s,l)=>s+l.owed,0) / exitMonths).toFixed(2);
     cards.push({
-      title: `${exitMonths}-MONTH EXIT PATH`,
+      title: `YOUR ${exitMonths}-MONTH FREEDOM PLAN`,
       cls: 's-title-ok',
-      steps: `TARGET: DEBT-FREE IN ${exitMonths} MONTHS\n\nREQUIRED MONTHLY REDUCTION: $${monthlyReduction}\nCURRENT CYCLE NET: $${net.toFixed(2)}\n\n` +
+      steps: `Goal: Be loan-app-free in ${exitMonths} months.\n\nYou need to reduce what you owe by $${monthlyReduction} each month.\nYou currently have $${net.toFixed(2)} left over each cycle.\n\n` +
         (net >= parseFloat(monthlyReduction)
-          ? '✓ ACHIEVABLE AT CURRENT INCOME'
-          : `⚠ GAP: NEED $${(parseFloat(monthlyReduction)-net).toFixed(2)} MORE PER CYCLE\n  CONSIDER: REDUCE BILLS, INCREASE INCOME, OR EXTEND TIMELINE`)
+          ? `✓ You can do this at your current income. Stay consistent.`
+          : `You are $${(parseFloat(monthlyReduction)-net).toFixed(2)} short of what you need per cycle.\n  Options: reduce a bill, pick up extra income, or extend your timeline a few months.\n  Either way — you are moving in the right direction.`)
     });
   }
 
@@ -1225,7 +1234,7 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
           <div class="s-title ${c.cls}">${c.title}</div>
           <div class="s-steps">${c.steps.replace(/\n/g,'<br>')}</div>
         </div>`).join('')
-    : '<div class="out-dim" style="font-size:12px;padding:8px">// No strategy data — run simulation</div>';
+    : '<div class="out-dim" style="font-size:12px;padding:8px">// Run your plan first to see your options here.</div>';
 }
 
 // ═══════════════════════════════════════════════
@@ -1234,7 +1243,7 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
 function renderRecovery(isRecovery, failed, allLoans, endBalance) {
   const el = document.getElementById('recovery-output');
   if (!isRecovery && failed.length === 0) {
-    el.innerHTML = '<span class="out-ok">✓ RECOVERY MODE NOT TRIGGERED — SYSTEM STABLE</span>';
+    el.innerHTML = '<span class="out-ok">✓ Good news — you are not in an emergency situation this cycle. Keep following the plan.</span>';
     return;
   }
 
@@ -1242,21 +1251,24 @@ function renderRecovery(isRecovery, failed, allLoans, endBalance) {
   let html = '';
 
   if (isRecovery) {
-    html += '<span class="out-danger">⚠ RECOVERY MODE: ZERO LIQUIDITY</span><br><br>';
-    html += '<span class="out-warn">CONTROLLED FAILURE SEQUENCE:</span><br>';
-    html += '<span class="out-dim">Before payday — accept what cannot be paid. Do not overdraft.</span><br><br>';
-    html += '<span class="out-warn">PAYDAY RECOVERY ORDER:</span><br>';
+    html += '<span class="out-danger">⚠ YOU HAVE NOTHING LEFT TO BORROW</span><br><br>';
+    html += '<span class="out-warn">This is stressful, but it is manageable. Here is what to do:</span><br><br>';
+    html += '<span class="out-ok">BEFORE YOUR PAYCHECK:</span><br>';
+    html += '<span class="out-dim">Some payments will be late. Do not overdraft trying to cover them — that makes it worse. Just wait.</span><br><br>';
+    html += '<span class="out-ok">WHEN YOUR CHECK ARRIVES — pay in this order:</span><br>';
     sorted.forEach((l,i) => {
-      html += `<span class="out-ok">${i+1}. ${l.name} — $${l.owed.toFixed(2)} ${l.reuse==='instant'?'[RECOVERS LIQUIDITY]':''}</span><br>`;
+      html += `<span class="out-ok">${i+1}. ${l.name} — $${l.owed.toFixed(2)} ${l.reuse==='instant'?' (you can borrow from them again right after)':''}</span><br>`;
     });
+    html += `<br><span class="out-dim">Do not try to fix everything this cycle. Steady progress is better than trying to catch up all at once.</span>`;
   } else if (failed.length > 0) {
-    html += '<span class="out-warn">⚠ PARTIAL FAILURE — DEFERRED LOANS:</span><br>';
+    html += '<span class="out-warn">⚠ SOME LOANS WERE SKIPPED — here is what to do:</span><br><br>';
     failed.forEach(l => {
-      html += `<span class="out-danger">→ ${l.name} ($${l.owed.toFixed(2)}) — SCHEDULE NEXT CYCLE</span><br>`;
+      html += `<span class="out-danger">→ ${l.name} ($${l.owed.toFixed(2)}) — put this at the top of your list next paycheck</span><br>`;
     });
+    html += `<br><span class="out-dim">Skipping a loan is not the end of the world. Just address it as soon as your next check comes in.</span>`;
   }
 
-  html += `<br><span class="out-dim">END BALANCE: $${endBalance.toFixed(2)}</span>`;
+  html += `<br><br><span class="out-dim">Money you have left: $${endBalance.toFixed(2)}</span>`;
   el.innerHTML = html;
 }
 
@@ -1275,35 +1287,35 @@ function runDecisionGate() {
   const cyclesExtended = amount > 50 ? 1 : 0;
 
   let out = '';
-  out += `<span class="out-section">── DECISION GATE ──</span>\n`;
-  out += `<span class="out-info">BORROW REQUEST: $${amount.toFixed(2)} from ${appName}</span>\n`;
-  out += `<span class="out-dim">REPAYMENT DUE:  ${days} days</span>\n\n`;
+  out += `<span class="out-section">── CHECKING YOUR BORROW REQUEST ──</span>\n`;
+  out += `<span class="out-info">You want to borrow $${amount.toFixed(2)} from ${appName}</span>\n`;
+  out += `<span class="out-dim">You would need to pay it back in ${days} days.</span>\n\n`;
 
   if (projectedBalance >= 0) {
-    out += `<span class="out-ok">✓ FEASIBLE — projected post-repayment balance: $${projectedBalance.toFixed(2)}</span>\n`;
+    out += `<span class="out-ok">✓ You should be able to handle this. After paying it back, you would have about $${projectedBalance.toFixed(2)} left.</span>\n`;
   } else {
-    out += `<span class="out-danger">✗ RISK — you will be short $${Math.abs(projectedBalance).toFixed(2)} after repayment</span>\n`;
-    out += `<span class="out-warn">  This borrowing creates a deficit in ${days} days.</span>\n`;
+    out += `<span class="out-danger">✗ Warning: after paying this back, you would be $${Math.abs(projectedBalance).toFixed(2)} short.</span>\n`;
+    out += `<span class="out-warn">  That means you would need to borrow again just to survive — making the cycle worse.</span>\n`;
   }
 
   if (cyclesExtended) {
-    out += `<span class="out-warn">⚠ This extends your cycle by ~${cyclesExtended} pay period(s)</span>\n`;
+    out += `<span class="out-warn">⚠ This will likely push your paycheck cycle about ${cyclesExtended} pay period(s) longer.</span>\n`;
   }
 
   const matchingLoan = loans.find(l => l.name.toLowerCase().includes(appName.toLowerCase()));
   if (matchingLoan && matchingLoan.reuse === 'instant') {
-    out += `<span class="out-info">→ ${appName} is INSTANT REUSE — reborrow available after repayment</span>\n`;
+    out += `<span class="out-info">→ ${appName} lets you borrow again right after you pay — that helps keep you flexible.</span>\n`;
   } else if (matchingLoan && matchingLoan.reuse === 'delayed') {
-    out += `<span class="out-warn">→ ${appName} is DELAYED REUSE — no immediate reborrow after repayment</span>\n`;
+    out += `<span class="out-warn">→ ${appName} has a waiting period after repayment — once you pay it back, you cannot borrow from them again right away.</span>\n`;
   }
 
-  out += `\n<span class="out-dim">SYSTEM RECOMMENDATION:</span>\n`;
+  out += `\n<span class="out-dim">RECOMMENDATION:</span>\n`;
   if (projectedBalance >= 0 && (!matchingLoan || matchingLoan.reuse === 'instant')) {
-    out += `<span class="out-ok">PROCEED — manageable with instant reuse recovery</span>`;
+    out += `<span class="out-ok">GO AHEAD — this borrow looks manageable and you can recover from it quickly.</span>`;
   } else if (projectedBalance >= 0) {
-    out += `<span class="out-warn">PROCEED WITH CAUTION — no reborrow available post-repayment</span>`;
+    out += `<span class="out-warn">BE CAREFUL — you can technically cover it, but you will not be able to borrow from this app again right away.</span>`;
   } else {
-    out += `<span class="out-danger">DO NOT BORROW — deficit will compound next cycle</span>`;
+    out += `<span class="out-danger">DO NOT BORROW RIGHT NOW — this will make your next paycheck even harder. Wait if you can.</span>`;
   }
 
   document.getElementById('gate-output').innerHTML = out;
@@ -1315,20 +1327,21 @@ function runDecisionGate() {
 function updateCycleTrackerUI() {
   const grid = document.getElementById('cycle-grid');
   if (!loans.length) {
-    grid.innerHTML = '<span class="out-dim" style="font-size:12px">// No loans configured</span>';
+    grid.innerHTML = '<span class="out-dim" style="font-size:12px">// Add your loan apps in the My Info tab to see this tracker</span>';
     return;
   }
 
   grid.innerHTML = loans.map(l => {
     const count = cycleCounts[l.name] || 0;
     const cls = count > 5 ? 'cycle-danger' : count > 3 ? 'cycle-warn' : 'cycle-ok';
+    const statusText = count > 5 ? 'WATCH OUT' : count > 3 ? 'GETTING HIGH' : 'LOOKS GOOD';
     return `
       <div class="cycle-item">
         <div style="font-size:11px;color:var(--green-dim)">${l.name}</div>
         <div class="cycle-count ${cls}">${count}</div>
-        <div style="font-size:10px;color:var(--green-dim)">${l.reuse.toUpperCase()}</div>
+        <div style="font-size:10px;color:var(--green-dim)">${l.reuse === 'instant' ? 'Can re-borrow' : 'Waiting period'}</div>
         <div style="font-size:10px;color:${cls === 'cycle-danger'?'var(--red)':cls==='cycle-warn'?'var(--amber)':'var(--green-dim)'}">
-          ${count > 5 ? 'DANGER' : count > 3 ? 'ELEVATED' : 'OK'}
+          ${statusText}
         </div>
       </div>`;
   }).join('');
@@ -1357,12 +1370,14 @@ function logCycleEvent() {
 function renderCycleLog() {
   const el = document.getElementById('cycle-log');
   if (!cycleLog.length) {
-    el.innerHTML = '<span class="out-dim">// No events logged yet</span>';
+    el.innerHTML = '<span class="out-dim">// Nothing recorded yet — use the form above to log your first event</span>';
     return;
   }
+  const actionLabels = { paid: 'Paid back', reborrowed: 'Borrowed again from', partial: 'Partial payment to', missed: 'Missed payment on' };
   el.innerHTML = cycleLog.map(e => {
     const cls = e.action === 'paid' ? 'out-ok' : e.action === 'reborrowed' ? 'out-info' : e.action === 'missed' ? 'out-danger' : 'out-warn';
-    return `<span class="${cls}">[${e.ts}] ${e.loanName} — ${e.action.toUpperCase()} $${e.amount.toFixed(2)}${e.notes?' // '+e.notes:''}</span>`;
+    const label = actionLabels[e.action] || e.action;
+    return `<span class="${cls}">[${e.ts}] ${label} ${e.loanName} — $${e.amount.toFixed(2)}${e.notes ? '  // ' + e.notes : ''}</span>`;
   }).join('\n');
 }
 
