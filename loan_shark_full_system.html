@@ -592,6 +592,50 @@
     .logo { font-size: 20px; }
     .splash-logo { font-size: 40px; }
   }
+  /* CHAT + SETTINGS TABS */
+  .tab-chat { color: #00ccff !important; }
+  .tab-chat.active { border-bottom: 2px solid #00ccff !important; color: #00ccff !important; text-shadow: 0 0 8px #00ccff !important; background: rgba(0,204,255,0.08) !important; }
+  .tab-settings { color: var(--amber) !important; }
+  .tab-settings.active { border-bottom: 2px solid var(--amber) !important; color: var(--amber) !important; text-shadow: 0 0 8px var(--amber) !important; background: rgba(255,179,0,0.08) !important; }
+  .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto; padding: 16px; }
+  .chat-context-bar { background: var(--panel); border: 1px solid var(--green-dark); padding: 8px 14px; font-size: 11px; color: var(--green-dim); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ctx-pill { background: var(--green-dark); color: var(--green); padding: 2px 8px; font-size: 10px; letter-spacing: 1px; }
+  .chat-messages { flex: 1; overflow-y: auto; background: #000; border: 1px solid var(--green-dark); padding: 14px; margin-bottom: 10px; scroll-behavior: smooth; }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: #000; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--green-dim); }
+  .chat-msg { margin-bottom: 14px; line-height: 1.7; font-size: 13px; animation: msgIn 0.2s ease; }
+  @keyframes msgIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+  .chat-msg .msg-label { font-size: 10px; letter-spacing: 2px; margin-bottom: 3px; }
+  .chat-msg.user .msg-label { color: var(--green-dim); }
+  .chat-msg.user .msg-body  { color: var(--green); }
+  .chat-msg.ai .msg-label   { color: #00ccff; opacity: 0.7; }
+  .chat-msg.ai .msg-body    { color: #ccffee; white-space: pre-wrap; word-break: break-word; }
+  .chat-msg.system .msg-body { color: var(--green-dim); font-size: 11px; font-style: italic; }
+  .chat-input-row { display: flex; gap: 8px; }
+  .chat-input-row input { flex: 1; margin: 0; font-size: 14px; padding: 10px 12px; border-color: #00ccff44; }
+  .chat-input-row input:focus { border-color: #00ccff; box-shadow: 0 0 10px rgba(0,204,255,0.15); }
+  .btn-send { background: transparent; border: 1px solid #00ccff; color: #00ccff; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 10px 18px; cursor: pointer; letter-spacing: 2px; white-space: nowrap; transition: all 0.2s; }
+  .btn-send:hover { background: rgba(0,204,255,0.12); box-shadow: 0 0 12px rgba(0,204,255,0.2); }
+  .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+  .typing-indicator { color: #00ccff; font-size: 12px; opacity: 0.7; display: none; margin-bottom: 8px; }
+  .typing-indicator.visible { display: block; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:0.7} 50%{opacity:0.2} }
+  .settings-wrap { max-width: 700px; margin: 0 auto; padding: 24px 16px; }
+  .settings-section { border: 1px solid var(--green-dark); background: var(--panel); padding: 20px; margin-bottom: 20px; }
+  .settings-section .panel-title { margin-bottom: 16px; border-bottom-color: var(--green-dark); }
+  .api-key-wrap { position: relative; }
+  .api-key-wrap input { padding-right: 80px; }
+  .btn-show-key { position: absolute; right: 4px; top: 50%; transform: translateY(-60%); background: transparent; border: 1px solid var(--green-dim); color: var(--green-dim); font-family: 'Share Tech Mono', monospace; font-size: 10px; padding: 3px 8px; cursor: pointer; letter-spacing: 1px; }
+  .api-status { font-size: 11px; margin-top: 6px; min-height: 16px; letter-spacing: 1px; }
+  .api-status.ok    { color: var(--green); }
+  .api-status.error { color: var(--red); }
+  .api-status.info  { color: var(--amber); }
+  .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .setting-item { margin-bottom: 14px; }
+  .setting-item:last-child { margin-bottom: 0; }
+  .setting-desc { font-size: 11px; color: var(--green-dim); margin-top: 4px; line-height: 1.5; }
+  .data-preview { background: #000; border: 1px solid var(--green-dark); padding: 12px; font-size: 11px; color: var(--green-dim); white-space: pre-wrap; max-height: 200px; overflow-y: auto; margin-top: 8px; }
 </style>
 </head>
 <body class="screen-flicker">
@@ -618,6 +662,8 @@
   <button class="tab" onclick="switchTab('simulation')">[ MY PLAN ]</button>
   <button class="tab" onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
   <button class="tab" onclick="switchTab('tracker')">[ MY HISTORY ]</button>
+  <button class="tab tab-chat" onclick="switchTab('chat')">[ ASK AI ]</button>
+  <button class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS ]</button>
 </div>
 
 <!-- ═══════════════ TAB: SETUP ═══════════════ -->
@@ -1393,13 +1439,432 @@ function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  const tabs = {setup:0,simulation:1,strategy:2,tracker:3};
+  const tabs = {setup:0,simulation:1,strategy:2,tracker:3,chat:4,settings:5};
   document.querySelectorAll('.tab')[tabs[id]]?.classList.add('active');
+  if (id === 'chat') updateChatContextBar();
+  if (id === 'settings') refreshDataPreview();
+}
+
+// ═══ API KEY ═══
+function getApiKey() {
+  var provider = getProvider();
+  return sessionStorage.getItem('ls_api_key_' + provider) || '';
+}
+
+function getProvider() {
+  var el = document.getElementById('ai-provider');
+  return el ? el.value : 'anthropic';
+}
+
+function getDefaultModel(provider) {
+  if (provider === 'openai')  return 'gpt-4o';
+  if (provider === 'google')  return 'gemini-1.5-flash';
+  if (provider === 'groq')    return 'llama-3.3-70b-versatile';
+  return 'claude-sonnet-4-20250514';
+}
+
+var PROVIDER_CONFIG = {
+  anthropic: {
+    label: 'Anthropic (Claude)',
+    keyLabel: 'Anthropic API Key',
+    placeholder: 'sk-ant-...',
+    keyHint: 'Get your key at console.anthropic.com',
+    models: [
+      {v:'claude-sonnet-4-20250514', t:'Claude Sonnet 4 (Recommended)'},
+      {v:'claude-haiku-4-5-20251001', t:'Claude Haiku 4.5 (Faster / Cheaper)'},
+      {v:'claude-opus-4-20250514', t:'Claude Opus 4 (Most Powerful)'}
+    ]
+  },
+  openai: {
+    label: 'OpenAI (ChatGPT)',
+    keyLabel: 'OpenAI API Key',
+    placeholder: 'sk-...',
+    keyHint: 'Get your key at platform.openai.com',
+    models: [
+      {v:'gpt-4o', t:'GPT-4o (Recommended)'},
+      {v:'gpt-4o-mini', t:'GPT-4o Mini (Faster / Cheaper)'},
+      {v:'gpt-4-turbo', t:'GPT-4 Turbo'}
+    ]
+  },
+  google: {
+    label: 'Google (Gemini)',
+    keyLabel: 'Google AI API Key',
+    placeholder: 'AIza...',
+    keyHint: 'Get your key at aistudio.google.com',
+    models: [
+      {v:'gemini-1.5-flash', t:'Gemini 1.5 Flash (Recommended)'},
+      {v:'gemini-1.5-pro', t:'Gemini 1.5 Pro (More Powerful)'},
+      {v:'gemini-2.0-flash', t:'Gemini 2.0 Flash (Latest)'}
+    ]
+  },
+  groq: {
+    label: 'Groq',
+    keyLabel: 'Groq API Key',
+    placeholder: 'gsk_...',
+    keyHint: 'Free tier available at console.groq.com',
+    models: [
+      {v:'llama-3.3-70b-versatile', t:'Llama 3.3 70B (Recommended)'},
+      {v:'llama-3.1-8b-instant', t:'Llama 3.1 8B (Fastest)'},
+      {v:'mixtral-8x7b-32768', t:'Mixtral 8x7B'}
+    ]
+  },
+  deepseek: {
+    label: 'DeepSeek',
+    keyLabel: 'DeepSeek API Key',
+    placeholder: 'sk-...',
+    keyHint: 'Get your key at platform.deepseek.com',
+    models: [
+      {v:'deepseek-chat', t:'DeepSeek V3 (Recommended)'},
+      {v:'deepseek-reasoner', t:'DeepSeek R1 (Deep Reasoning)'}
+    ]
+  }
+};
+
+function onProviderChange() {
+  var provider = getProvider();
+  var cfg = PROVIDER_CONFIG[provider];
+  if (!cfg) return;
+  var keyLabel = document.getElementById('api-key-label');
+  var keyInput = document.getElementById('api-key-input');
+  var provDesc = document.getElementById('provider-desc');
+  var modelDesc = document.getElementById('model-desc');
+  var modelSel = document.getElementById('ai-model');
+  var st = document.getElementById('api-key-status');
+  if (keyLabel) keyLabel.textContent = cfg.keyLabel;
+  if (keyInput) { keyInput.placeholder = cfg.placeholder; keyInput.value = sessionStorage.getItem('ls_api_key_' + provider) || ''; }
+  if (provDesc) provDesc.textContent = cfg.keyHint;
+  if (modelDesc) modelDesc.textContent = 'Choose the model for this provider.';
+  if (modelSel) {
+    modelSel.innerHTML = '';
+    for (var i=0; i<cfg.models.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = cfg.models[i].v;
+      opt.textContent = cfg.models[i].t;
+      modelSel.appendChild(opt);
+    }
+  }
+  if (st) { st.textContent = 'No key saved yet for ' + cfg.label + '.'; st.className = 'api-status info'; }
+  updateApiIndicator();
+}
+
+async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
+  if (provider === 'openai') {
+    var oaiMsgs = [{role:'system', content: systemPrompt}].concat(messages);
+    var res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: model, max_tokens: maxTokens, messages: oaiMsgs })
+    });
+    var data = await res.json();
+    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'OpenAI error' };
+    return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
+  }
+  if (provider === 'google') {
+    var geminiModel = model || 'gemini-1.5-flash';
+    var geminiParts = messages.map(function(m) {
+      return { role: m.role === 'assistant' ? 'model' : 'user', parts: [{text: m.content}] };
+    });
+    var geminiBody = { system_instruction: { parts: [{text: systemPrompt}] }, contents: geminiParts, generationConfig: { maxOutputTokens: maxTokens } };
+    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + geminiModel + ':generateContent?key=' + key, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(geminiBody)
+    });
+    var data = await res.json();
+    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'Google API error' };
+    var text = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts ? data.candidates[0].content.parts[0].text : '(no response)';
+    return { ok: true, text: text };
+  }
+  if (provider === 'groq') {
+    var groqMsgs = [{role:'system', content: systemPrompt}].concat(messages);
+    var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: model, max_tokens: maxTokens, messages: groqMsgs })
+    });
+    var data = await res.json();
+    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'Groq error' };
+    return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
+  }
+  if (provider === 'deepseek') {
+    var dsMsgs = [{role:'system', content: systemPrompt}].concat(messages);
+    var res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: model || 'deepseek-chat', max_tokens: maxTokens, messages: dsMsgs })
+    });
+    var data = await res.json();
+    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'DeepSeek error' };
+    return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
+  }
+  // Default: Anthropic
+  var res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: model || 'claude-sonnet-4-20250514', max_tokens: maxTokens, system: systemPrompt, messages: messages })
+  });
+  var data = await res.json();
+  if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'Anthropic error' };
+  return { ok: true, text: data.content && data.content[0] ? data.content[0].text : '(no response)' };
+}
+
+function onApiKeyInput() {
+  var val = document.getElementById('api-key-input').value.trim();
+  var provider = document.getElementById('ai-provider') ? document.getElementById('ai-provider').value : 'anthropic';
+  sessionStorage.setItem('ls_api_key_' + provider, val);
+  updateApiIndicator();
+  var st = document.getElementById('api-key-status');
+  if (val.length > 10) {
+    st.textContent = 'Key saved for this session.';
+    st.className = 'api-status ok';
+  } else if (val.length > 0) {
+    st.textContent = 'Key looks too short. Double-check it.';
+    st.className = 'api-status error';
+  } else {
+    st.textContent = 'No key saved yet. Stored only in this browser session.';
+    st.className = 'api-status info';
+  }
+}
+
+function toggleKeyVisibility() {
+  const inp = document.getElementById('api-key-input');
+  const btn = document.querySelector('.btn-show-key');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'HIDE'; }
+  else { inp.type = 'password'; btn.textContent = 'SHOW'; }
+}
+
+function updateApiIndicator() {
+  var el = document.getElementById('api-indicator');
+  if (!el) return;
+  var key = getApiKey();
+  var provider = getProvider();
+  var cfg = PROVIDER_CONFIG[provider];
+  var provLabel = cfg ? cfg.label : provider;
+  if (key && key.length > 10) {
+    el.textContent = provLabel + ' connected';
+    el.style.color = 'var(--green)';
+  } else {
+    el.textContent = 'No API key -- add one in Settings';
+    el.style.color = 'var(--amber)';
+  }
+}
+
+async function testApiKey() {
+  var key = getApiKey();
+  var provider = getProvider();
+  var st = document.getElementById('api-key-status');
+  if (!key) { st.textContent = 'Please enter an API key first.'; st.className = 'api-status error'; return; }
+  st.textContent = 'Testing connection to ' + provider + '...'; st.className = 'api-status info';
+  try {
+    var testResult = await callAI(provider, key, 'claude-haiku-4-5-20251001', 'You are a test assistant.', [{role:'user',content:'Say OK'}], 10);
+    if (testResult.ok) {
+      st.textContent = 'Connection successful! ' + provider + ' is ready.';
+      st.className = 'api-status ok';
+    } else {
+      st.textContent = 'Error: ' + testResult.error;
+      st.className = 'api-status error';
+    }
+  } catch(e) {
+    st.textContent = 'Could not connect. Check your key and internet.';
+    st.className = 'api-status error';
+  }
+}
+
+// ═══ DATA CONTEXT ═══
+function buildContextSummary() {
+  const income     = parseFloat(document.getElementById('income') ? document.getElementById('income').value : 0) || 0;
+  const cash       = parseFloat(document.getElementById('cash-on-hand') ? document.getElementById('cash-on-hand').value : 0) || 0;
+  const bills      = parseFloat(document.getElementById('bills') ? document.getElementById('bills').value : 0) || 0;
+  const exitMonths = parseInt(document.getElementById('exit-months') ? document.getElementById('exit-months').value : 0) || 0;
+  const modeEl     = document.getElementById('priority-mode');
+  const mode       = modeEl ? modeEl.value : '';
+  const totalOwed  = loans.reduce(function(s,l){ return s + l.owed; }, 0);
+  const totalBorrow= loans.reduce(function(s,l){ return l.reuse==='instant' ? s+l.max : s; }, 0);
+  var loanLines = [];
+  for (var i=0; i<loans.length; i++) {
+    var l = loans[i];
+    loanLines.push('  - ' + l.name + ': owes $' + l.owed.toFixed(2) + ', can re-borrow $' + l.max.toFixed(2) + ' (' + (l.reuse === 'instant' ? 'immediately' : 'after waiting period') + ')' + (l.dueBeforePayday ? ' [due BEFORE payday]' : ''));
+  }
+  var loanList = loanLines.length ? loanLines.join('; ') : '(none entered)';
+  var simSummary = '';
+  if (lastSimResult) {
+    simSummary = ' | Last plan: balance $' + lastSimResult.balance.toFixed(2) + ', stress ' + lastSimResult.damageScore + '/100, skipped ' + lastSimResult.failed.length;
+  }
+  var cycleLines = [];
+  var ck = Object.keys(cycleCounts);
+  for (var j=0; j<ck.length; j++) { cycleLines.push(ck[j] + ': ' + cycleCounts[ck[j]] + 'x'); }
+  var cycleSummary = cycleLines.length ? ' | Reuse counts: ' + cycleLines.join(', ') : '';
+  return "USER FINANCIAL DATA: paycheck=$" + income.toFixed(2) + ", cash=$" + cash.toFixed(2) + ", bills=$" + bills.toFixed(2) + ", total owed=$" + totalOwed.toFixed(2) + ", can reborrow=$" + totalBorrow.toFixed(2) + ", priority=" + mode + ", goal=" + (exitMonths > 0 ? exitMonths + ' months to freedom' : 'not set') + " | Loans: " + loanList + simSummary + cycleSummary;
+}
+
+function refreshDataPreview() {
+  var el = document.getElementById('data-preview');
+  if (el) el.textContent = buildContextSummary();
+}
+
+function updateChatContextBar() {
+  var income = parseFloat(document.getElementById('income') ? document.getElementById('income').value : 0) || 0;
+  var totalOwed = loans.reduce(function(s,l){ return s + l.owed; }, 0);
+  var p1 = document.getElementById('ctx-income-pill');
+  var p2 = document.getElementById('ctx-loans-pill');
+  var p3 = document.getElementById('ctx-balance-pill');
+  if (p1) p1.textContent = 'INCOME: $' + income.toFixed(0);
+  if (p2) p2.textContent = 'LOANS: ' + loans.length + ' apps / $' + totalOwed.toFixed(0) + ' owed';
+  if (p3) p3.textContent = lastSimResult ? 'LAST BALANCE: $' + lastSimResult.balance.toFixed(2) : 'not run yet';
+  updateApiIndicator();
+}
+
+// ═══ CHAT ENGINE ═══
+var chatHistory = [];
+
+function appendMessage(role, text) {
+  var container = document.getElementById('chat-messages');
+  var div = document.createElement('div');
+  div.className = 'chat-msg ' + (role === 'user' ? 'user' : role === 'system' ? 'system' : 'ai');
+  var label = role === 'user' ? 'YOU' : (role === 'system' ? '' : 'AI ADVISOR');
+  var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  div.innerHTML = (label ? '<div class="msg-label">' + label + '</div>' : '') + '<div class="msg-body">' + safe + '</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendChat() {
+  var input   = document.getElementById('chat-input');
+  var sendBtn = document.getElementById('btn-send');
+  var userMsg = input.value.trim();
+  if (!userMsg) return;
+  var key = getApiKey();
+  var provider = getProvider();
+  if (!key || key.length < 10) {
+    appendMessage('system', 'No API key found. Go to the Settings tab, choose your AI provider, and add your key.');
+    return;
+  }
+  appendMessage('user', userMsg);
+  input.value = '';
+  sendBtn.disabled = true;
+  document.getElementById('typing-indicator').classList.add('visible');
+  chatHistory.push({ role: 'user', content: userMsg });
+  var toneMap = { friendly: 'You are warm and use simple everyday language. Avoid jargon.', direct: 'You are direct and concise. Give clear action steps.', coach: 'You are an encouraging financial coach. Be motivating and practical.' };
+  var toneEl = document.getElementById('ai-tone');
+  var tone   = toneEl ? (toneMap[toneEl.value] || toneMap.friendly) : toneMap.friendly;
+  var modelEl = document.getElementById('ai-model');
+  var model   = modelEl ? modelEl.value : getDefaultModel(provider);
+  var context = buildContextSummary();
+  var systemPrompt = 'You are a financial advisor in the Loan Shark app, which helps people manage loan app cycles (Earnin, CashApp, Genie, Klover, Grant, etc.) until they break free. ' + tone + ' You have the user financial data: ' + context + '. Give specific personalized advice using their actual numbers. Be practical and on their side.';
+  try {
+    var result = await callAI(provider, key, model, systemPrompt, chatHistory, 1000);
+    document.getElementById('typing-indicator').classList.remove('visible');
+    if (!result.ok) {
+      appendMessage('system', 'Error from ' + provider + ': ' + result.error);
+      chatHistory.pop();
+    } else {
+      appendMessage('ai', result.text);
+      chatHistory.push({ role: 'assistant', content: result.text });
+    }
+  } catch(e) {
+    document.getElementById('typing-indicator').classList.remove('visible');
+    appendMessage('system', 'Could not reach the AI. Check your internet and try again.');
+    chatHistory.pop();
+  }
+  sendBtn.disabled = false;
+  input.focus();
 }
 
 // INIT
 window.addEventListener('DOMContentLoaded', init);
 </script>
+
+
+<!-- ═══════════════ TAB: CHAT ═══════════════ -->
+<div id="tab-chat" class="tab-content">
+<div class="chat-wrap">
+  <div class="chat-context-bar">
+    <span style="color:var(--green);letter-spacing:1px">AI ADVISOR</span>
+    <span class="ctx-pill" id="ctx-income-pill">INCOME: --</span>
+    <span class="ctx-pill" id="ctx-loans-pill">LOANS: --</span>
+    <span class="ctx-pill" id="ctx-balance-pill">LAST BALANCE: --</span>
+    <span style="margin-left:auto;font-size:10px" id="api-indicator">No API key &mdash; add one in Settings</span>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-msg system">
+      <div class="msg-body">// Welcome. I know your loan situation and can help you think through decisions, explain what the plan means, or walk you through next steps.<br><br>// Add your Anthropic API key in the Settings tab to activate me.</div>
+    </div>
+  </div>
+  <div class="typing-indicator" id="typing-indicator">&#9679; AI is thinking...</div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Ask something... e.g. Which loan should I pay first?" onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="btn-send" id="btn-send" onclick="sendChat()">SEND &#9654;</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ TAB: SETTINGS ═══════════════ -->
+<div id="tab-settings" class="tab-content">
+<div class="settings-wrap">
+  <div class="settings-section">
+    <div class="panel-title"><div class="dot"></div> AI ADVISOR SETUP</div>
+
+    <div class="setting-item">
+      <label>AI Provider</label>
+      <select id="ai-provider" onchange="onProviderChange()">
+        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="openai">OpenAI (ChatGPT)</option>
+        <option value="google">Google (Gemini)</option>
+        <option value="groq">Groq (Llama / Mixtral &mdash; Free Tier)</option>
+        <option value="deepseek">DeepSeek (V3 / R1 Reasoning)</option>
+      </select>
+      <div class="setting-desc" id="provider-desc">Use Claude models. Get your key at console.anthropic.com</div>
+    </div>
+
+    <div class="setting-item">
+      <label id="api-key-label">Your Anthropic API Key</label>
+      <div class="api-key-wrap">
+        <input type="password" id="api-key-input" placeholder="sk-ant-..." oninput="onApiKeyInput()">
+        <button class="btn-show-key" onclick="toggleKeyVisibility()">SHOW</button>
+      </div>
+      <div class="api-status info" id="api-key-status">No key saved yet. Stored only in this browser session.</div>
+    </div>
+
+    <div class="settings-row">
+      <div class="setting-item">
+        <label>AI Model</label>
+        <select id="ai-model">
+          <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Recommended)</option>
+          <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (Faster)</option>
+          <option value="claude-opus-4-20250514">Claude Opus 4 (Most Powerful)</option>
+        </select>
+        <div class="setting-desc" id="model-desc">Sonnet gives the best balance of speed and quality.</div>
+      </div>
+      <div class="setting-item">
+        <label>AI Tone</label>
+        <select id="ai-tone">
+          <option value="friendly">Friendly &amp; Simple</option>
+          <option value="direct">Direct &amp; No Fluff</option>
+          <option value="coach">Coach / Motivating</option>
+        </select>
+        <div class="setting-desc">How you want the AI to talk to you.</div>
+      </div>
+    </div>
+    <button class="btn" onclick="testApiKey()" style="margin-top:4px">&#9654; TEST CONNECTION</button>
+  </div>
+  <div class="settings-section">
+    <div class="panel-title"><div class="dot"></div> WHAT THE AI CAN SEE</div>
+    <div style="font-size:12px;color:var(--green-dim);margin-bottom:8px">When you chat, the AI receives this data from your session so it can give specific advice &mdash; not generic tips.</div>
+    <button class="btn btn-secondary" onclick="refreshDataPreview()">&#9263; REFRESH PREVIEW</button>
+    <div class="data-preview" id="data-preview">// Click refresh to see what data the AI will receive</div>
+  </div>
+  <div class="settings-section">
+    <div class="panel-title"><div class="dot"></div> PRIVACY &amp; DATA</div>
+    <div style="font-size:12px;color:var(--green-dim);line-height:1.8">
+      <span class="out-ok">&#10003;</span> API key stored only in your browser session.<br>
+      <span class="out-ok">&#10003;</span> No data saved to any server by this tool.<br>
+      <span class="out-ok">&#10003;</span> When you chat, your loan data is sent to Anthropic to generate a response.<br>
+      <span class="out-warn">&#9888;</span> Do not share your API key with anyone.<br>
+      <span class="out-warn">&#9888;</span> Closing or refreshing this page clears all session data.
+    </div>
+  </div>
+</div>
+</div>
 
 <div style="border-top:1px solid #003a0f;padding:14px 16px;text-align:center;background:#030f05;font-family:'Share Tech Mono',monospace;font-size:12px;color:#00aa2a;letter-spacing:2px;">
   BUILT BY <a href="https://www.andremethod.com" target="_blank" style="color:#00ff41;text-decoration:none;text-shadow:0 0 8px #00ff41;">ANDREMETHOD.COM</a>
