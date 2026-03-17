@@ -359,7 +359,7 @@
     <div id="dataDisplay">
         <div class="data-line">→ TRACKING REVENUE VECTORS</div>
         <div class="data-line">→ 90-DAY GOAL: ACTIVE</div>
-        <div class="data-line">→ NODES ONLINE: 13</div>
+        <div class="data-line">→ NODES ONLINE: 14</div>
         <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
     </div>
     
@@ -401,6 +401,9 @@
             </button>
             <button class="portal-btn" style="background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;" onclick="window.location.href='Coming_Soon_DreCode.html'">
                 OPEN DRE CODE
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;" onclick="window.location.href='loan_shark_full_system.html'">
+                OPEN LOAN SHARK
             </button>
         </div>
 
@@ -621,6 +624,21 @@
                 portalFile: "Coming_Soon_DreCode.html",
                 portalLabel: "OPEN DRE CODE",
                 portalStyle: "background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;"
+            },
+
+            // LOAN SHARK
+            {
+                id: "LOAN_SHARK", x: 100, y: -90, z: 20,
+                name: "Loan Shark",
+                category: "Financial Engine",
+                desc: "[FOUNDER] Payday loan survival and sequence calculator. Maps out exact repayment/reborrow steps to survive a pay period and eventually exit debt cycles.",
+                protocol: "Input: Income, Bills, Active Nodes (Earnin, CashApp, etc.) → Output: Sequenced survival path.",
+                public_desc: "Trapped in the payday loan cycle? Loan Shark is a survival engine that calculates the exact sequence of payments and reborrows needed to survive your next payday without defaulting.\n\n✅ Maps out your cash flow timeline\n✅ Generates survival and exit strategies\n✅ Tracks reborrow danger levels",
+                public_protocol: "Action: Open Loan Shark → Input Loans → Run Simulation",
+                isPortal: true,
+                portalFile: "loan_shark_full_system.html",
+                portalLabel: "OPEN LOAN SHARK",
+                portalStyle: "background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000; font-family: 'Share Tech Mono', monospace;"
             }
         ];
 
@@ -639,7 +657,8 @@
             "DRE_EXTRACTOR":    0xFF8C00,
             "DRE_OS":           0x00C853,
             "REPRIZAL":         0x7C3AED,
-            "DRE_CODE":         0xff4800
+            "DRE_CODE":         0xff4800,
+            "LOAN_SHARK":       0x00ff41
         };
 
         // --- SCENE SETUP ---
@@ -848,6 +867,7 @@
                         'ATS_Config_Pro_v_3_0.html': 'background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;',
                         'ZIP_tool.html':             'background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;',
                         'Coming_Soon_DreCode.html':  'background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;',
+                        'loan_shark_full_system.html': 'background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;',
                     };
                     btn.style.cssText = styleMap[data.portalFile] || '';
                 }
@@ -863,6 +883,7 @@
                         'ATS_Config_Pro_v_3_0.html': 'OPEN REPRIZAL AI',
                         'ZIP_tool.html':             'OPEN ZIP TOOL',
                         'Coming_Soon_DreCode.html':  'OPEN DRE CODE',
+                        'loan_shark_full_system.html': 'OPEN LOAN SHARK'
                     };
                     btn.textContent = labelMap[data.portalFile] || 'OPEN TOOL';
                 }
