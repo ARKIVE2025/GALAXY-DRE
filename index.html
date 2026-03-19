@@ -725,39 +725,64 @@
             outerGlow.position.copy(pos);
             mainGroup.add(outerGlow);
 
-            // UNIQUE PLANET — DRE Interface gets a Saturn-style ring + hex wireframe overlay
+            // UNIQUE PLANET — DRE Interface: gas giant with atmosphere layers + single orbital ring
             if (n.id === 'DRE_INTERFACE') {
-                // Outer ring (torus)
-                const ringGeo = new THREE.TorusGeometry(size * 2.8, size * 0.3, 16, 64);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.55, side: THREE.DoubleSide });
+                // Band 1 — deep base (dark teal)
+                const b1 = new THREE.Mesh(
+                    new THREE.SphereGeometry(size, 64, 64),
+                    new THREE.MeshBasicMaterial({ color: 0x003344 })
+                );
+                b1.position.copy(pos);
+                mainGroup.add(b1);
+
+                // Band 2 — equatorial band (cyan stripe via flat ring disc)
+                const bandGeo = new THREE.TorusGeometry(size * 0.72, size * 0.28, 4, 64);
+                const bandMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 });
+                const band = new THREE.Mesh(bandGeo, bandMat);
+                band.position.copy(pos);
+                mainGroup.add(band);
+
+                // Band 3 — secondary stripe (lighter blue-white)
+                const band2Geo = new THREE.TorusGeometry(size * 0.3, size * 0.18, 4, 64);
+                const band2Mat = new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 });
+                const band2 = new THREE.Mesh(band2Geo, band2Mat);
+                band2.position.copy(pos);
+                mainGroup.add(band2);
+
+                // Atmosphere halo — large soft glow sphere
+                const atmoGeo = new THREE.SphereGeometry(size * 1.35, 32, 32);
+                const atmoMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide });
+                const atmo = new THREE.Mesh(atmoGeo, atmoMat);
+                atmo.position.copy(pos);
+                mainGroup.add(atmo);
+
+                // Outer atmosphere (very faint)
+                const atmo2Geo = new THREE.SphereGeometry(size * 1.7, 32, 32);
+                const atmo2Mat = new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide });
+                const atmo2 = new THREE.Mesh(atmo2Geo, atmo2Mat);
+                atmo2.position.copy(pos);
+                mainGroup.add(atmo2);
+
+                // Single clean orbital ring (flat disc, tilted like Saturn)
+                const ringGeo = new THREE.RingGeometry(size * 1.7, size * 2.9, 80);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
                 const ring = new THREE.Mesh(ringGeo, ringMat);
-                ring.rotation.x = Math.PI / 2.8;
+                ring.rotation.x = Math.PI / 2.5;
                 ring.position.copy(pos);
                 mainGroup.add(ring);
 
-                // Second thinner ring at angle
-                const ring2Geo = new THREE.TorusGeometry(size * 3.6, size * 0.12, 8, 64);
-                const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.18, side: THREE.DoubleSide });
+                // Faint outer ring band
+                const ring2Geo = new THREE.RingGeometry(size * 3.0, size * 3.5, 80);
+                const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide });
                 const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-                ring2.rotation.x = Math.PI / 2.2;
-                ring2.rotation.z = 0.3;
+                ring2.rotation.x = Math.PI / 2.5;
                 ring2.position.copy(pos);
                 mainGroup.add(ring2);
 
-                // Wireframe hex shell over sphere
-                const shellGeo = new THREE.IcosahedronGeometry(size * 1.35, 1);
-                const shellMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, wireframe: true, transparent: true, opacity: 0.25 });
-                const shell = new THREE.Mesh(shellGeo, shellMat);
-                shell.position.copy(pos);
-                mainGroup.add(shell);
-
-                // Animate rings — store refs for animation loop
-                ring.userData.isInterfaceRing = true;
-                ring2.userData.isInterfaceRing2 = true;
-                shell.userData.isInterfaceShell = true;
-                mainGroup.userData.interfaceRing  = ring;
-                mainGroup.userData.interfaceRing2 = ring2;
-                mainGroup.userData.interfaceShell = shell;
+                // Store refs for slow rotation in animate loop
+                mainGroup.userData.interfacePlanet = b1;
+                mainGroup.userData.interfaceRing   = ring;
+                mainGroup.userData.interfaceRing2  = ring2;
             }
             
             // Text Label
@@ -784,7 +809,8 @@
             nodeObjects.set(n.id, { planet, innerGlow, outerGlow, label: sprite, originalSize: size });
         });
 
-        // --- CONNECTIONS (All connect to CORE) ---
+        // --- CONNECTIONS (Hidden by default — Founder Mode only) ---
+        const connectionLines = [];
         const centerNode = nodesData.find(n => n.id === "CORE");
         nodesData.forEach(n => {
             if (n.id !== "CORE") {
@@ -796,7 +822,9 @@
                     new THREE.BufferGeometry().setFromPoints(points),
                     new THREE.LineBasicMaterial({ color: nodeColors[n.id] || 0xFFFFFF, transparent: true, opacity: 0.3 })
                 );
+                line.visible = false; // hidden until Founder Mode
                 mainGroup.add(line);
+                connectionLines.push(line);
             }
         });
 
@@ -923,6 +951,8 @@
             const isFounder = document.getElementById('founderToggle').checked;
             document.getElementById('modeDisplay').textContent = isFounder ? "FOUNDER" : "PUBLIC";
             document.getElementById('modeDisplay').style.color = isFounder ? "#00FF41" : "#00d4ff";
+            // Show connection lines only in Founder Mode
+            connectionLines.forEach(line => { line.visible = isFounder; });
         };
 
         // --- COLOR CONTROLS GENERATION ---
@@ -971,12 +1001,9 @@
             mainGroup.rotation.y += CONFIG.rotationSpeed;
             starField.rotation.y += CONFIG.rotationSpeed * 0.2;
 
-            // DRE Interface ring counter-rotation (world space)
-            if (mainGroup.userData.interfaceRing) {
-                mainGroup.userData.interfaceRing.rotation.z  += 0.004;
-                mainGroup.userData.interfaceRing2.rotation.z -= 0.002;
-                mainGroup.userData.interfaceShell.rotation.y += 0.006;
-                mainGroup.userData.interfaceShell.rotation.x += 0.003;
+            // DRE Interface planet — slow atmospheric band drift
+            if (mainGroup.userData.interfacePlanet) {
+                mainGroup.userData.interfacePlanet.rotation.y += 0.002;
             }
 
             controls.update();
