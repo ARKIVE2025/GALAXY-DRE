@@ -685,12 +685,12 @@
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('setup')">[ MY INFO ]</button>
-  <button class="tab" onclick="switchTab('simulation')">[ MY PLAN ]</button>
-  <button class="tab" onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
-  <button class="tab" onclick="switchTab('tracker')">[ MY HISTORY ]</button>
-  <button class="tab tab-chat" onclick="switchTab('chat')">[ ASK AI ]</button>
-  <button class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS & SAVE ]</button>
+  <button type="button" class="tab active" onclick="switchTab('setup')">[ MY INFO ]</button>
+  <button type="button" class="tab" onclick="switchTab('simulation')">[ MY PLAN ]</button>
+  <button type="button" class="tab" onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
+  <button type="button" class="tab" onclick="switchTab('tracker')">[ MY HISTORY ]</button>
+  <button type="button" class="tab tab-chat" onclick="switchTab('chat')">[ ASK AI ]</button>
+  <button type="button" class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS & SAVE ]</button>
 </div>
 
 <div id="tab-setup" class="tab-content active">
@@ -740,12 +740,12 @@
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> YOUR LOAN APPS</div>
     <div class="loan-list" id="loan-list"></div>
-    <button class="btn btn-secondary" onclick="addLoan()">+ ADD ANOTHER APP</button>
-    <button class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD EXAMPLE DATA</button>
+    <button type="button" class="btn btn-secondary" onclick="addLoan()">+ ADD ANOTHER APP</button>
+    <button type="button" class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD EXAMPLE DATA</button>
   </div>
 
   <div class="panel full-panel" style="text-align:center; padding:16px;">
-    <button class="btn btn-run" onclick="runMultiCycleSimulation()">▶ RUN MULTI-CYCLE FORECAST</button>
+    <button type="button" class="btn btn-run" onclick="runMultiCycleSimulation()">▶ RUN MULTI-CYCLE FORECAST</button>
   </div>
 
 </div>
@@ -760,8 +760,8 @@
 <span class="out-dim">// Set up your loans above, then hit "Run Multi-Cycle Forecast" to see the true cost of your loan loop.</span>
     </div>
     <div class="export-bar" style="margin-top:10px">
-      <button class="btn-export" id="btn-export-txt" onclick="exportTXT()" disabled>&#8681; EXPORT SUMMARY (.TXT)</button>
-      <button class="btn-export" id="btn-export-csv" onclick="exportCSV()" disabled>&#8681; EXPORT LOANS (.CSV)</button>
+      <button type="button" class="btn-export" id="btn-export-txt" onclick="exportTXT()" disabled>&#8681; EXPORT SUMMARY (.TXT)</button>
+      <button type="button" class="btn-export" id="btn-export-csv" onclick="exportCSV()" disabled>&#8681; EXPORT LOANS (.CSV)</button>
     </div>
     <div class="export-confirm" id="export-confirm">&#10003; File downloaded — open it in any app</div>
   </div>
@@ -819,7 +819,7 @@
     <label>How many days until you have to pay it back?</label>
     <input type="number" id="gate-days" value="14">
 
-    <button class="btn" onclick="runDecisionGate()">▶ CHECK IF THIS IS A GOOD IDEA</button>
+    <button type="button" class="btn" onclick="runDecisionGate()">▶ CHECK IF THIS IS A GOOD IDEA</button>
 
     <div class="terminal-output" id="gate-output" style="min-height:120px">
       <span class="out-dim">// The answer will appear here after you check</span>
@@ -848,7 +848,7 @@
     <div class="cycle-grid" id="cycle-grid">
       <span class="out-dim" style="font-size:12px">// Add your loans to see this tracker</span>
     </div>
-    <button class="btn btn-secondary" onclick="updateCycleTrackerUI()">⟳ REFRESH</button>
+    <button type="button" class="btn btn-secondary" onclick="updateCycleTrackerUI()">⟳ REFRESH</button>
   </div>
 
   <div class="panel">
@@ -871,7 +871,7 @@
     <label>Any notes? (optional)</label>
     <input type="text" id="cycle-notes" placeholder="e.g. paid late, contacted support...">
 
-    <button class="btn" onclick="logCycleEvent()">▶ SAVE THIS EVENT</button>
+    <button type="button" class="btn" onclick="logCycleEvent()">▶ SAVE THIS EVENT</button>
   </div>
 
   <div class="panel full-panel">
@@ -879,7 +879,7 @@
     <div class="terminal-output" id="cycle-log" style="max-height:250px">
       <span class="out-dim">// Nothing logged yet — record your first event above</span>
     </div>
-    <button class="btn btn-secondary" onclick="clearCycleLog()" style="margin-top:8px">✕ CLEAR LOG</button>
+    <button type="button" class="btn btn-secondary" onclick="clearCycleLog()" style="margin-top:8px">✕ CLEAR LOG</button>
   </div>
 
 </div>
@@ -902,8 +902,8 @@
   </div>
   <div class="typing-indicator" id="typing-indicator">&#9679; AI is thinking...</div>
   <div class="chat-input-row">
-    <input type="text" id="chat-input" placeholder="Ask something... e.g. Which loan should I pay first?" onkeydown="if(event.key==='Enter')sendChat()">
-    <button class="btn-send" id="btn-send" onclick="sendChat()">SEND &#9654;</button>
+    <input type="text" id="chat-input" placeholder="Ask something... e.g. Which loan should I pay first?" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat();}">
+    <button type="button" class="btn-send" id="btn-send" onclick="sendChat()">SEND &#9654;</button>
   </div>
 </div>
 </div>
@@ -916,8 +916,8 @@
       Your data automatically saves to this browser. To back it up to Google Drive, click <strong>EXPORT TO DRIVE</strong> below, and save the file to your Google Drive synced folder. Use <strong>IMPORT DATA</strong> to load it back anytime.
     </div>
     <div class="export-bar" style="margin-top:0">
-      <button class="btn-export" onclick="exportJSON()" style="color:var(--green);border-color:var(--green)">&#8681; EXPORT TO DRIVE (.JSON)</button>
-      <button class="btn-export" onclick="document.getElementById('import-file').click()" style="color:#00ccff;border-color:#00ccff">&#8679; IMPORT DATA (.JSON)</button>
+      <button type="button" class="btn-export" onclick="exportJSON()" style="color:var(--green);border-color:var(--green)">&#8681; EXPORT TO DRIVE (.JSON)</button>
+      <button type="button" class="btn-export" onclick="document.getElementById('import-file').click()" style="color:#00ccff;border-color:#00ccff">&#8679; IMPORT DATA (.JSON)</button>
       <input type="file" id="import-file" style="display:none" accept=".json" onchange="importJSON(event)">
     </div>
     <div class="export-confirm" id="import-confirm" style="color:#00ccff">&#10003; Data loaded successfully</div>
@@ -940,7 +940,7 @@
       <label id="api-key-label">Your Anthropic API Key</label>
       <div class="api-key-wrap">
         <input type="password" id="api-key-input" placeholder="sk-ant-..." oninput="onApiKeyInput()">
-        <button class="btn-show-key" onclick="toggleKeyVisibility()">SHOW</button>
+        <button type="button" class="btn-show-key" onclick="toggleKeyVisibility()">SHOW</button>
       </div>
       <div class="api-status info" id="api-key-status">No key saved yet. Stored only in this browser session.</div>
     </div>
@@ -964,12 +964,12 @@
         <div class="setting-desc">How you want the AI to talk to you.</div>
       </div>
     </div>
-    <button class="btn" onclick="testApiKey()" style="margin-top:4px">&#9654; TEST CONNECTION</button>
+    <button type="button" class="btn" onclick="testApiKey()" style="margin-top:4px">&#9654; TEST CONNECTION</button>
   </div>
   <div class="settings-section">
     <div class="panel-title"><div class="dot"></div> WHAT THE AI CAN SEE</div>
     <div style="font-size:12px;color:var(--green-dim);margin-bottom:8px">When you chat, the AI receives this data from your session so it can give specific advice &mdash; not generic tips.</div>
-    <button class="btn btn-secondary" onclick="refreshDataPreview()">&#9263; REFRESH PREVIEW</button>
+    <button type="button" class="btn btn-secondary" onclick="refreshDataPreview()">&#9263; REFRESH PREVIEW</button>
     <div class="data-preview" id="data-preview">// Click refresh to see what data the AI will receive</div>
   </div>
 </div>
@@ -981,7 +981,7 @@
 
 <script>
 // ═══════════════════════════════════════════════
-// Version 2.7 - AI Context Bills Arrays Fix
+// Version 2.8 - Default Browser Behaviors Blocked
 // STATE
 // ═══════════════════════════════════════════════
 let loans = [];
@@ -1157,7 +1157,7 @@ function renderLoans() {
           <label>Fee/Borrow ($)</label>
           <input type="number" value="${loan.fee}" step="0.01" onchange="loans[${i}].fee=parseFloat(this.value)||0;saveDataLocally()">
         </div>
-        <button class="btn-remove" onclick="removeLoan(${i})">✕</button>
+        <button type="button" class="btn-remove" onclick="removeLoan(${i})">✕</button>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;flex-wrap:wrap">
         <select style="flex:1;min-width:120px;margin:0;padding:4px 6px;font-size:11px" onchange="loans[${i}].dueCycle=parseInt(this.value);saveDataLocally();renderLoans()">
@@ -1500,7 +1500,6 @@ function runDecisionGate() {
   const appName = document.getElementById('gate-app').value || 'unknown';
   const days    = parseInt(document.getElementById('gate-days').value) || 14;
   
-  // Use Cycle 1 inputs for gate context
   const income  = parseFloat(document.getElementById('income-c1').value) || 0;
   const bills   = parseFloat(document.getElementById('bills-c1').value) || 0;
 
