@@ -29,6 +29,7 @@
     overflow-x: hidden;
   }
 
+  /* Scanline overlay */
   body::before {
     content: '';
     position: fixed;
@@ -57,6 +58,7 @@
     99.5% { opacity:1 }
   }
 
+  /* HEADER */
   .header {
     border-bottom: 2px solid var(--green);
     padding: 12px 16px;
@@ -88,6 +90,7 @@
 
   #clock { color: var(--green); }
 
+  /* TABS */
   .tabs {
     display: flex;
     border-bottom: 1px solid var(--green-dim);
@@ -116,6 +119,7 @@
     text-shadow: 0 0 8px var(--green);
   }
 
+  /* MAIN LAYOUT */
   .main {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -162,6 +166,7 @@
     50% { opacity:0.3 }
   }
 
+  /* FORM ELEMENTS */
   label {
     display: block;
     font-size: 11px;
@@ -195,12 +200,19 @@
 
   select option { background: #000; }
 
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
   .field-row-3 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
   }
 
+  /* LOAN CARDS */
   .loan-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 
   .loan-card {
@@ -265,6 +277,7 @@
 
   .btn-remove:hover { background: rgba(255,60,60,0.15); }
 
+  /* BUTTONS */
   .btn {
     background: transparent;
     color: var(--green);
@@ -308,6 +321,7 @@
     box-shadow: 0 0 30px rgba(0,255,65,0.4);
   }
 
+  /* OUTPUT TERMINAL */
   .terminal-output {
     background: #000;
     border: 1px solid var(--green-dim);
@@ -340,6 +354,7 @@
     padding-top: 4px;
   }
 
+  /* DAMAGE METER */
   .damage-meter {
     margin: 12px 0;
     border: 1px solid var(--green-dark);
@@ -367,6 +382,7 @@
     box-shadow: 0 0 8px currentColor;
   }
 
+  /* TIMELINE */
   .timeline {
     margin: 8px 0;
     font-size: 12px;
@@ -402,6 +418,7 @@
   .tl-debt { background: rgba(255,60,60,0.2); color: var(--red); }
   .tl-borrow { background: rgba(0,204,255,0.2); color: #00ccff; }
 
+  /* STRATEGY CARDS */
   .strategy-cards { display: flex; flex-direction: column; gap: 8px; }
 
   .strategy-card {
@@ -426,12 +443,15 @@
   .s-title-ok { color: var(--green); }
   .s-title-warn { color: var(--amber); }
   .s-title-danger { color: var(--red); }
+  .s-title-info { color: #00ccff; }
 
+  /* FULL WIDTH PANEL */
   .full-panel {
     grid-column: 1 / -1;
     border-right: none;
   }
 
+  /* HIDDEN TABS */
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
@@ -440,6 +460,49 @@
     margin: 0 auto;
   }
 
+  /* MODAL / OVERLAY */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--bg);
+    border: 2px solid var(--green);
+    padding: 24px;
+    max-width: 500px;
+    width: 92%;
+    box-shadow: 0 0 40px var(--green-glow);
+    position: relative;
+  }
+
+  .modal-title {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    color: var(--green);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: none;
+    border: 1px solid var(--green-dim);
+    color: var(--green-dim);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 2px 8px;
+  }
+
+  /* CYCLE TRACKER */
   .cycle-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -466,6 +529,7 @@
   .cycle-warn { color: var(--amber); }
   .cycle-danger { color: var(--red); }
 
+  /* INTRO splash */
   #splash {
     position: fixed;
     inset: 0;
@@ -523,6 +587,7 @@
     .splash-logo { font-size: 40px; }
   }
 
+  /* CHAT + SETTINGS TABS */
   .tab-chat { color: #00ccff !important; }
   .tab-chat.active { border-bottom: 2px solid #00ccff !important; color: #00ccff !important; text-shadow: 0 0 8px #00ccff !important; background: rgba(0,204,255,0.08) !important; }
   .tab-settings { color: var(--amber) !important; }
@@ -916,7 +981,7 @@
 
 <script>
 // ═══════════════════════════════════════════════
-// Version 2.4 - Variable Income/Bills & Fees
+// Version 2.6 - Liquidity Shuffle Strategy
 // STATE
 // ═══════════════════════════════════════════════
 let loans = [];
@@ -993,7 +1058,6 @@ function loadDataLocally() {
     const data = JSON.parse(localStorage.getItem('loanSharkData'));
     if (!data) return;
     
-    // Support legacy save files that only had one income/bill
     document.getElementById('income-c1').value = data.incomeC1 || data.income || '310';
     document.getElementById('income-c2').value = data.incomeC2 || data.income || '310';
     document.getElementById('income-c3').value = data.incomeC3 || data.income || '310';
@@ -1240,9 +1304,9 @@ function runMultiCycleSimulation() {
     for (let app of availableApps) {
       if (simBalance < 0) {
         let need = Math.abs(simBalance);
-        let canBorrow = Math.min(need + app.fee, app.max); // Must borrow enough to cover need AND the fee
+        let canBorrow = Math.min(need + app.fee, app.max); 
         if (canBorrow > 0) {
-          let received = Math.max(0, canBorrow - app.fee); // Cash received after fee deducted
+          let received = Math.max(0, canBorrow - app.fee); 
           simBalance += received;
           app.currentOwed += canBorrow; 
           addLine(`  ⚠ TRAP: Re-borrowed $${canBorrow.toFixed(2)} from ${app.name} (Fee: $${app.fee.toFixed(2)}). Received $${received.toFixed(2)}. Debt added to next cycle.`, 'out-info');
@@ -1270,7 +1334,7 @@ function runMultiCycleSimulation() {
       renderTimeline(incomes[0], cashOnHand, billsArr[0], activeDebts.filter(l=>l.dueCycle === 1), preLoans, postLoans);
       
       const isRecoveryCycle1 = simBalance < 0;
-      generateStrategies(incomes[0], cashOnHand, billsArr[0], activeDebts.filter(l=>l.dueCycle === 1), isRecoveryCycle1, failedThisCycle, totalDamage);
+      generateStrategies(incomes[0], cashOnHand, billsArr[0], loans, isRecoveryCycle1, failedThisCycle, totalDamage);
     }
 
     let totalRemainingDebt = activeDebts.reduce((sum, d) => sum + d.currentOwed, 0);
@@ -1350,26 +1414,52 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
   const container = document.getElementById('strategy-cards');
   const cards = [];
 
-  const net = income - bills - allLoans.reduce((s,l)=>s+l.currentOwed,0);
+  const net = income - bills - allLoans.reduce((s,l)=>s+l.owed,0);
   const instantLoans = allLoans.filter(l=>l.reuse==='instant');
   const delayedLoans = allLoans.filter(l=>l.reuse==='delayed');
   const totalInstantReborrow = instantLoans.reduce((s,l)=>s+l.max,0);
 
+  // ADVANCED: LIQUIDITY SHUFFLE
+  if (instantLoans.length > 1) {
+    let sortedByMax = [...instantLoans].sort((a,b) => b.max - a.max);
+    let hubApp = sortedByMax[0];
+    let smallInstants = sortedByMax.slice(1);
+    let targetApps = allLoans.filter(l => l.name !== hubApp.name && (l.fee > 0 || l.reuse === 'delayed' || l.owed >= 50));
+
+    if (hubApp.max > 50) {
+      let steps = `1. Pay ${hubApp.name} first ($${hubApp.owed.toFixed(2)}) to unlock its maximum limit ($${hubApp.max.toFixed(2)}).\n`;
+      if (smallInstants.length > 0) {
+          steps += `2. Pay smaller flexible apps (${smallInstants.map(l=>l.name).join(', ')}) and reborrow them ONLY if needed.\n`;
+      }
+      steps += `3. QUICKLY borrow from ${hubApp.name} to clear high-fee or rigid apps`;
+      if (targetApps.length > 0) steps += ` (${targetApps.map(l=>l.name).join(', ')})`;
+      steps += `.\n4. STOP. Do not max out ${hubApp.name}. Leave the remaining balance as your emergency liquid reserve.\n\n`;
+      steps += `Why? By funneling money through your largest flexible app, you can clear expensive apps while keeping a liquid safety net open instead of maxing everything out.`;
+
+      cards.push({
+        title: 'ADVANCED: THE LIQUIDITY SHUFFLE',
+        cls: 's-title-info',
+        steps: steps
+      });
+    }
+  }
+
+  // STANDARD LOOP
   if (instantLoans.length > 0) {
-    const steps = instantLoans.sort((a,b)=>a.currentOwed-b.currentOwed).map((l,i) =>
-      `${i+1}. Pay ${l.name} ($${l.currentOwed.toFixed(2)}) — then borrow $${l.max.toFixed(2)} right back from them`
+    const steps = instantLoans.sort((a,b)=>a.owed-b.owed).map((l,i) =>
+      `${i+1}. Pay ${l.name} ($${l.owed.toFixed(2)}) — then borrow $${l.max.toFixed(2)} right back`
     ).join('\n');
     cards.push({
-      title: 'BEST USE OF YOUR MONEY',
+      title: 'STANDARD RE-BORROW LOOP',
       cls: net < 0 ? 's-title-warn' : 's-title-ok',
-      steps: steps + `\n\nAfter following these steps, you will have $${totalInstantReborrow.toFixed(2)} available to borrow again.\nUse that to cover any remaining apps that have a waiting period.`
+      steps: steps + `\n\nIf you cannot use the Liquidity Shuffle, use this standard loop. You will have $${totalInstantReborrow.toFixed(2)} available to borrow again.`
     });
   }
 
   if (damage > 30 || failed.length > 0) {
-    const prioritized = [...allLoans].sort((a,b)=>a.currentOwed-b.currentOwed);
+    const prioritized = [...allLoans].sort((a,b)=>a.owed-b.owed);
     const steps = prioritized.map((l,i) =>
-      `${i+1}. ${l.reuse==='instant'?'[Can re-borrow]':'[One-time payoff]'} ${l.name} — $${l.currentOwed.toFixed(2)}`
+      `${i+1}. ${l.reuse==='instant'?'[Can re-borrow]':'[One-time payoff]'} ${l.name} — $${l.owed.toFixed(2)}`
     ).join('\n');
     cards.push({
       title: 'REDUCE YOUR LOAN COUNT',
@@ -1379,14 +1469,14 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
   }
 
   if (isRecovery) {
-    const smallest = [...allLoans].sort((a,b)=>a.currentOwed-b.currentOwed).slice(0,2);
+    const smallest = [...allLoans].sort((a,b)=>a.owed-b.owed).slice(0,2);
     cards.push({
       title: 'EMERGENCY PLAN — ZERO BORROWING AVAILABLE',
       cls: 's-title-danger',
       steps: `You have nothing left to borrow. Some payments will be late. That is okay.\n\n` +
         `BEFORE PAYDAY:\nDo not try to overdraft or find quick money. Just wait.\n\n` +
         `WHEN YOUR CHECK ARRIVES — do this in order:\n` +
-        smallest.map((l,i) => `  ${i+1}. Pay off ${l.name} first ($${l.currentOwed.toFixed(2)})`).join('\n') +
+        smallest.map((l,i) => `  ${i+1}. Pay off ${l.name} first ($${l.owed.toFixed(2)})`).join('\n') +
         `\n  3. Put whatever is left toward your biggest remaining balance.\n  4. Leave the rest for next cycle.\n\nDo not try to fix everything at once. One step at a time.`
     });
   }
@@ -1408,7 +1498,6 @@ function runDecisionGate() {
   const appName = document.getElementById('gate-app').value || 'unknown';
   const days    = parseInt(document.getElementById('gate-days').value) || 14;
   
-  // Use Cycle 1 inputs for gate context
   const income  = parseFloat(document.getElementById('income-c1').value) || 0;
   const bills   = parseFloat(document.getElementById('bills-c1').value) || 0;
 
