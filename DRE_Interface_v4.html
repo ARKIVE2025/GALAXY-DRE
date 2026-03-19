@@ -1,849 +1,1022 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRE AI — Alignment Architect</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Share+Tech+Mono&family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap');
+    <meta charset="UTF-8">
+    <title>Andre Method // Revenue & Alignment System</title>
+    <style>
+        /* CORE VISUAL STYLES [Preserved from GALAXY_IN_THE_AIR] */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            color: #FFFFFF;
+        }
+        
+        canvas { 
+            display: block; 
+            cursor: grab;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+        
+        /* UI OVERLAY */
+        #interface {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .system-label {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 24px;
+            opacity: 1;
+            line-height: 1.5;
+        }
+        
+        .stat-line {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            font-weight: 400;
+            line-height: 1.8;
+        }
+        
+        .stat-line strong {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+        
+        /* DATA DISPLAY */
+        #dataDisplay {
+            position: absolute;
+            bottom: 100px;
+            left: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #00FF41;
+            pointer-events: none;
+            z-index: 10;
+            line-height: 1.8;
+            opacity: 0.7;
+        }
+        
+        .data-line {
+            letter-spacing: 1px;
+        }
+        
+        /* CAMERA CONTROLS */
+        #cameraControls {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        
+        .camera-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #FFFFFF;
+            padding: 0;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            pointer-events: all;
+        }
+        
+        .camera-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+        
+        /* SETTINGS BUTTON */
+        #settingsBtn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            pointer-events: all;
+        }
+        
+        #settingsBtn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* SETTINGS PANEL */
+        #settingsPanel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: #000000;
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 32px 24px;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        #settingsPanel.active {
+            right: 0;
+        }
+        
+        .settings-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .settings-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .close-settings {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px 12px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
 
-  :root {
-    --cyan: #00d4ff;
-    --red: #ff3a1a;
-    --orange: #ff6a00;
-    --gold: #d4af37;
-    --deep: #020408;
-    --panel: #080f1c;
-    --border-c: rgba(0,212,255,0.15);
-    --text: #e8f4ff;
-    --text-dim: #7a9ab8;
-    --cyan-glow: 0 0 24px rgba(0,212,255,0.5);
-    --red-glow: 0 0 24px rgba(255,58,26,0.5);
-    --gold-glow: 0 0 20px rgba(212,175,55,0.4);
-  }
+        .settings-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-section h3 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.8);
+        }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--deep); color:var(--text); font-family:'Inter',sans-serif; height:100vh; overflow:hidden; }
-  #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
-  body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px); z-index:0; pointer-events:none; }
+        /* ACTION BUTTON FOR PORTAL */
+        .portal-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 10px;
+        }
 
-  #app { position:relative; z-index:1; display:grid; grid-template-columns:240px 1fr; grid-template-rows:64px 1fr; height:100vh; }
+        .portal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
 
-  #header { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; padding:0 20px; background:rgba(2,4,10,0.88); backdrop-filter:blur(20px); position:relative; overflow:hidden; }
-  #header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--cyan) 30%,var(--red) 70%,transparent); opacity:0.7; }
+        /* MODAL STYLES */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        #modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+            letter-spacing: 1px;
+        }
+        
+        .modal-category {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 24px;
+        }
 
-  .logo { display:flex; align-items:center; gap:14px; }
-  .logo-orb { position:relative; width:38px; height:38px; }
-  .logo-orb-inner { width:38px; height:38px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#00ffff,#0055aa 50%,#001133); box-shadow:var(--cyan-glow); animation:orb-hdr 3s ease-in-out infinite; position:relative; z-index:2; }
-  .logo-orb::before,.logo-orb::after { content:''; position:absolute; border-radius:50%; border:1px solid rgba(0,212,255,0.2); animation:ring-out 3s ease-in-out infinite; }
-  .logo-orb::before { inset:-6px; }
-  .logo-orb::after  { inset:-13px; animation-delay:.6s; }
-  @keyframes orb-hdr { 0%,100%{box-shadow:var(--cyan-glow);} 50%{box-shadow:0 0 50px rgba(0,212,255,0.8),0 0 80px rgba(0,212,255,0.2);} }
-  @keyframes ring-out { 0%,100%{transform:scale(1);opacity:.3;} 50%{transform:scale(1.25);opacity:0;} }
+        .modal-protocol {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
 
-  .logo-words { display:flex; flex-direction:column; }
-  .logo-name { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:8px; line-height:1; background:linear-gradient(90deg,var(--cyan),#ffffff,var(--red)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 6px rgba(0,212,255,0.3)); }
-  .logo-tagline { font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:3px; color:var(--text-dim); margin-top:1px; }
+        /* TOGGLE SWITCH STYLE */
+        .toggle-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+        
+        .toggle-control label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-  .header-right { display:flex; align-items:center; gap:14px; }
-  .tagline-header { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:3px; background:linear-gradient(90deg,var(--cyan),var(--red)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .status-pill { display:flex; align-items:center; gap:7px; padding:5px 12px; border-radius:20px; border:1px solid var(--border-c); background:rgba(0,0,0,0.3); font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-dim); }
-  .status-dot { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 8px #00ff88; animation:blink 2s ease-in-out infinite; }
-  .status-dot.offline { background:var(--red); box-shadow:var(--red-glow); animation:none; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
-  .conn-btn { padding:6px 14px; border-radius:4px; border:1px solid rgba(212,175,55,.35); background:rgba(212,175,55,.05); color:var(--gold); font-family:'Share Tech Mono',monospace; font-size:10px; cursor:pointer; letter-spacing:2px; transition:all .2s; }
-  .conn-btn:hover { background:rgba(212,175,55,.14); box-shadow:var(--gold-glow); }
-
-  #sidebar { border-right:1px solid rgba(0,212,255,.07); background:rgba(4,8,16,.78); backdrop-filter:blur(16px); display:flex; flex-direction:column; overflow:hidden; position:relative; }
-  #sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg,transparent,rgba(0,212,255,.2),transparent); }
-  .s-section { padding:14px; border-bottom:1px solid rgba(0,212,255,.05); }
-  .s-label { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:3px; color:var(--text-dim); margin-bottom:10px; text-transform:uppercase; }
-
-  .ctrl-btn { width:100%; padding:9px 12px; margin-bottom:6px; border-radius:3px; border:1px solid rgba(0,212,255,.08); background:transparent; color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:11px; cursor:pointer; text-align:left; transition:all .25s; display:flex; align-items:center; gap:10px; position:relative; overflow:hidden; }
-  .ctrl-btn::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--cyan); transform:scaleY(0); transition:transform .2s; }
-  .ctrl-btn:hover { border-color:rgba(0,212,255,.25); color:var(--cyan); background:rgba(0,212,255,.03); }
-  .ctrl-btn.active { border-color:rgba(255,58,26,.35); color:var(--red); background:rgba(255,58,26,.05); }
-  .ctrl-btn.active::before { background:var(--red); transform:scaleY(1); }
-  .ctrl-dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; opacity:.6; }
-  .ctrl-btn.active .ctrl-dot { box-shadow:0 0 6px var(--red); opacity:1; }
-
-  .sessions-scroll { flex:1; overflow-y:auto; padding:8px; }
-  .sessions-scroll::-webkit-scrollbar { width:2px; }
-  .sessions-scroll::-webkit-scrollbar-thumb { background:rgba(0,212,255,.15); }
-  .sess-item { padding:9px 11px; border-radius:3px; border:1px solid transparent; cursor:pointer; margin-bottom:3px; transition:all .2s; }
-  .sess-item:hover { border-color:rgba(0,212,255,.12); background:rgba(0,212,255,.03); }
-  .sess-item.active { border-color:rgba(0,212,255,.22); background:rgba(0,212,255,.05); }
-  .sess-name { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .sess-meta { font-size:10px; color:var(--text-dim); margin-top:2px; }
-
-  .sidebar-footer { padding:10px 12px; border-top:1px solid rgba(0,212,255,.05); display:flex; gap:6px; }
-  .foot-btn { flex:1; padding:7px 6px; border-radius:3px; border:1px solid rgba(0,212,255,.1); background:transparent; color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:10px; cursor:pointer; transition:all .2s; text-align:center; letter-spacing:1px; }
-  .foot-btn:hover { border-color:var(--cyan); color:var(--cyan); }
-  .foot-btn.del:hover { border-color:var(--red); color:var(--red); }
-
-  #main { display:flex; flex-direction:column; overflow:hidden; }
-  #mode-bar { padding:7px 20px; border-bottom:1px solid rgba(0,212,255,.06); background:rgba(2,4,10,.5); display:flex; align-items:center; gap:12px; font-family:'Share Tech Mono',monospace; font-size:10px; }
-  .mode-badge { padding:3px 12px; border-radius:2px; font-size:10px; letter-spacing:3px; font-family:'Share Tech Mono',monospace; text-transform:uppercase; }
-  .mode-badge.cyan { border:1px solid rgba(0,212,255,.4); color:var(--cyan); box-shadow:var(--cyan-glow); background:rgba(0,212,255,.04); }
-  .mode-badge.red  { border:1px solid rgba(255,58,26,.4);  color:var(--red);  box-shadow:var(--red-glow);  background:rgba(255,58,26,.04); }
-  .mode-bar-sess { margin-left:auto; color:var(--text-dim); letter-spacing:2px; }
-
-  #messages { flex:1; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:18px; }
-  #messages::-webkit-scrollbar { width:2px; }
-  #messages::-webkit-scrollbar-thumb { background:rgba(0,212,255,.12); }
-  .message { display:flex; gap:12px; animation:fadein .3s ease; max-width:900px; }
-  @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-  .message.user { flex-direction:row-reverse; align-self:flex-end; }
-  .avatar { width:32px; height:32px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:11px; letter-spacing:1px; }
-  .avatar.dre  { background:radial-gradient(circle at 35% 30%,#00eeff,#004466 60%,#001122); box-shadow:var(--cyan-glow); color:#003344; }
-  .avatar.user { background:radial-gradient(circle at 35% 30%,#ff6a00,#880000 60%,#220000); box-shadow:var(--red-glow); color:#220000; }
-  .msg-body { flex:1; min-width:0; }
-  .msg-meta { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--text-dim); margin-bottom:5px; letter-spacing:1px; }
-  .message.user .msg-meta { text-align:right; }
-  .msg-bubble { padding:13px 17px; border-radius:3px; line-height:1.7; font-size:13.5px; }
-  .message.dre  .msg-bubble { background:rgba(0,212,255,.03); border:1px solid rgba(0,212,255,.09); border-left:2px solid var(--cyan); color:var(--text); }
-  .message.user .msg-bubble { background:rgba(255,58,26,.03); border:1px solid rgba(255,58,26,.1); border-right:2px solid var(--red); color:var(--text); }
-
-  .typing { display:flex; gap:5px; align-items:center; padding:13px 17px; background:rgba(0,212,255,.03); border:1px solid rgba(0,212,255,.09); border-left:2px solid var(--cyan); width:fit-content; border-radius:3px; }
-  .t-dot { width:5px; height:5px; border-radius:50%; background:var(--cyan); animation:tdot 1.2s ease-in-out infinite; }
-  .t-dot:nth-child(2){animation-delay:.2s} .t-dot:nth-child(3){animation-delay:.4s}
-  @keyframes tdot { 0%,60%,100%{opacity:.2;transform:translateY(0)} 30%{opacity:1;transform:translateY(-4px)} }
-
-  #input-wrap { padding:14px 24px 18px; border-top:1px solid rgba(0,212,255,.06); background:rgba(2,4,10,.78); backdrop-filter:blur(16px); position:relative; }
-  #input-wrap::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,212,255,.25),rgba(255,58,26,.25),transparent); }
-
-  #file-preview { padding:0 0 8px 0; display:none; }
-  .file-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:3px; border:1px solid rgba(212,175,55,0.3); background:rgba(212,175,55,0.06); font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--gold); max-width:100%; word-break:break-all; }
-  .file-badge .rmv { cursor:pointer; opacity:0.6; transition:opacity .2s; flex-shrink:0; font-size:13px; }
-  .file-badge .rmv:hover { opacity:1; color:var(--red); }
-
-  .input-box { display:flex; align-items:flex-end; gap:10px; background:rgba(0,212,255,.025); border:1px solid rgba(0,212,255,.1); border-radius:4px; padding:10px 14px; transition:border-color .2s,box-shadow .2s; }
-  .input-box:focus-within { border-color:rgba(0,212,255,.3); box-shadow:0 0 0 1px rgba(0,212,255,.06); }
-
-  .upload-btn { width:34px; height:34px; border-radius:3px; border:1px solid rgba(212,175,55,0.35); background:rgba(212,175,55,0.05); color:var(--gold); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s; }
-  .upload-btn:hover { background:rgba(212,175,55,0.15); box-shadow:var(--gold-glow); }
-
-  #user-input { flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:'Inter',sans-serif; font-size:13.5px; line-height:1.5; resize:none; max-height:100px; min-height:22px; }
-  #user-input::placeholder { color:var(--text-dim); font-size:12px; }
-
-  #send-btn { width:34px; height:34px; border-radius:3px; border:1px solid rgba(0,212,255,.35); background:rgba(0,212,255,.07); color:var(--cyan); cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .2s; }
-  #send-btn:hover { background:rgba(0,212,255,.16); box-shadow:var(--cyan-glow); }
-  #send-btn:disabled { opacity:.2; cursor:not-allowed; }
-
-  .input-hint { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--text-dim); margin-top:6px; letter-spacing:1px; }
-
-  .empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
-  .empty-label { font-family:'Bebas Neue',sans-serif; font-size:13px; letter-spacing:6px; color:var(--text-dim); }
-  .empty-sub { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:3px; color:rgba(255,58,26,.35); }
-
-  #modal { display:none; position:fixed; inset:0; background:rgba(2,4,8,.88); backdrop-filter:blur(12px); z-index:100; align-items:center; justify-content:center; }
-  #modal.open { display:flex; }
-  .modal-box { background:var(--panel); border:1px solid rgba(212,175,55,.2); border-radius:6px; padding:28px; width:460px; box-shadow:var(--gold-glow),0 0 80px rgba(0,0,0,.8); position:relative; overflow:hidden; }
-  .modal-box::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,var(--cyan),var(--gold),var(--red)); }
-  .modal-title { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:5px; background:linear-gradient(90deg,var(--gold),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
-  .modal-sub { font-size:11px; color:var(--text-dim); margin-bottom:22px; line-height:1.5; }
-  .f-label { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-dim); margin-bottom:5px; letter-spacing:2px; }
-  .f-input { width:100%; padding:9px 13px; background:rgba(0,0,0,.4); border:1px solid rgba(0,212,255,.1); border-radius:3px; color:var(--text); font-family:'Share Tech Mono',monospace; font-size:12px; outline:none; margin-bottom:14px; transition:border-color .2s; }
-  .f-input:focus { border-color:rgba(0,212,255,.35); }
-  .modal-btns { display:flex; gap:8px; margin-top:4px; }
-  .m-btn { flex:1; padding:9px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:11px; cursor:pointer; transition:all .2s; letter-spacing:2px; }
-  .m-btn.p { background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.35); color:var(--cyan); }
-  .m-btn.p:hover { background:rgba(0,212,255,.18); box-shadow:var(--cyan-glow); }
-  .m-btn.s { background:transparent; border:1px solid rgba(255,255,255,.07); color:var(--text-dim); }
-  .m-btn.s:hover { border-color:rgba(255,255,255,.18); color:var(--text); }
-
-  /* PIN SCREEN */
-  #pin-screen {
-    position:fixed; inset:0; z-index:999;
-    background:var(--deep);
-    display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:28px;
-  }
-  #pin-screen.hidden { display:none; }
-
-  .pin-orb {
-    width:70px; height:70px; border-radius:50%;
-    background:radial-gradient(circle at 35% 30%,#00ffff,#0055aa 50%,#001133);
-    box-shadow:0 0 40px rgba(0,212,255,0.6), 0 0 80px rgba(0,212,255,0.2);
-    animation:orb-hdr 3s ease-in-out infinite;
-  }
-  .pin-title {
-    font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:10px;
-    background:linear-gradient(90deg,var(--cyan),#ffffff,var(--red));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  }
-  .pin-sub {
-    font-family:'Share Tech Mono',monospace; font-size:10px;
-    letter-spacing:4px; color:var(--text-dim); margin-top:-16px;
-  }
-  .pin-dots {
-    display:flex; gap:14px;
-  }
-  .pin-dot {
-    width:14px; height:14px; border-radius:50%;
-    border:1px solid rgba(0,212,255,0.3);
-    background:transparent; transition:all .2s;
-  }
-  .pin-dot.filled {
-    background:var(--cyan);
-    box-shadow:0 0 10px rgba(0,212,255,0.6);
-    border-color:var(--cyan);
-  }
-  .pin-dot.error {
-    background:var(--red);
-    box-shadow:0 0 10px rgba(255,58,26,0.6);
-    border-color:var(--red);
-  }
-  .pin-pad {
-    display:grid; grid-template-columns:repeat(3,72px);
-    gap:10px;
-  }
-  .pin-key {
-    height:56px; border-radius:6px;
-    border:1px solid rgba(0,212,255,0.12);
-    background:rgba(0,212,255,0.03);
-    color:var(--text); font-family:'Orbitron',monospace;
-    font-size:18px; font-weight:600;
-    cursor:pointer; transition:all .2s;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .pin-key:hover { border-color:rgba(0,212,255,0.4); background:rgba(0,212,255,0.08); box-shadow:var(--cyan-glow); }
-  .pin-key:active { transform:scale(0.95); }
-  .pin-key.del { color:var(--red); border-color:rgba(255,58,26,0.15); font-size:14px; }
-  .pin-key.del:hover { border-color:rgba(255,58,26,0.4); background:rgba(255,58,26,0.06); }
-  .pin-msg {
-    font-family:'Share Tech Mono',monospace; font-size:10px;
-    letter-spacing:2px; color:var(--red); height:16px;
-  }
-
-  .provider-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:4px; }
-  .prov-btn {
-    padding:8px 6px; border-radius:4px;
-    border:1px solid rgba(0,212,255,0.12);
-    background:transparent; color:var(--text-dim);
-    font-family:'Share Tech Mono',monospace; font-size:10px;
-    cursor:pointer; transition:all .2s; text-align:center; line-height:1.4;
-    letter-spacing:1px;
-  }
-  .prov-btn span { font-size:8px; opacity:0.6; display:block; letter-spacing:0; font-family:'Inter',sans-serif; }
-  .prov-btn:hover { border-color:rgba(0,212,255,0.3); color:var(--cyan); background:rgba(0,212,255,0.04); }
-  .prov-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(212,175,55,0.08); box-shadow:0 0 10px rgba(212,175,55,0.2); }
-</style>
+        /* TOOLTIP */
+        #tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #FFFFFF;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
-<canvas id="bg-canvas"></canvas>
-
-<!-- PIN SCREEN -->
-<div id="pin-screen">
-  <div class="pin-orb"></div>
-  <div class="pin-title">DRE OS</div>
-  <div class="pin-sub">SYSTEM-DRIVEN. STREET-SAVVY.</div>
-  <div class="pin-dots" id="pin-dots">
-    <div class="pin-dot" id="pd0"></div>
-    <div class="pin-dot" id="pd1"></div>
-    <div class="pin-dot" id="pd2"></div>
-    <div class="pin-dot" id="pd3"></div>
-  </div>
-  <div class="pin-pad">
-    <button class="pin-key" onclick="pinPress('1')">1</button>
-    <button class="pin-key" onclick="pinPress('2')">2</button>
-    <button class="pin-key" onclick="pinPress('3')">3</button>
-    <button class="pin-key" onclick="pinPress('4')">4</button>
-    <button class="pin-key" onclick="pinPress('5')">5</button>
-    <button class="pin-key" onclick="pinPress('6')">6</button>
-    <button class="pin-key" onclick="pinPress('7')">7</button>
-    <button class="pin-key" onclick="pinPress('8')">8</button>
-    <button class="pin-key" onclick="pinPress('9')">9</button>
-    <button class="pin-key" style="visibility:hidden"></button>
-    <button class="pin-key" onclick="pinPress('0')">0</button>
-    <button class="pin-key del" onclick="pinDel()">⌫</button>
-  </div>
-  <div class="pin-msg" id="pin-msg"></div>
-</div>
-
-<div id="app">
-  <header id="header">
-    <div class="logo">
-      <div class="logo-orb"><div class="logo-orb-inner"></div></div>
-      <div class="logo-words">
-        <div class="logo-name">DRE OS</div>
-        <div class="logo-tagline">Alignment Architect · v10.2.0 · Interface v5</div>
-      </div>
+    <div id="interface">
+        <div class="system-label" id="systemLabelDisplay">WELCOME TO DRE CORE SYSTEMS</div>
+        <div class="stat-line">ANCHOR: <strong id="missionDisplay">ANDRE GO</strong></div>
+        <div class="stat-line">STATUS: <strong id="statusDisplay">ACTIVE</strong></div>
+        <div class="stat-line">MODE: <strong id="modeDisplay">PUBLIC</strong></div>
     </div>
-    <div class="header-right">
-      <div class="tagline-header">SYSTEM-DRIVEN. STREET-SAVVY.</div>
-      <button class="conn-btn" onclick="openModal()">⚙ CONNECTION</button>
-      <div class="status-pill">
-        <div class="status-dot" id="s-dot"></div>
-        <span id="s-text">LOCAL</span>
-      </div>
+    
+    <div id="dataDisplay">
+        <div class="data-line">→ TRACKING REVENUE VECTORS</div>
+        <div class="data-line">→ 90-DAY GOAL: ACTIVE</div>
+        <div class="data-line">→ NODES ONLINE: 13</div>
+        <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
     </div>
-  </header>
-  <aside id="sidebar">
-    <div class="s-section">
-      <div class="s-label">Controller Mode</div>
-      <button class="ctrl-btn active" id="btn-default" onclick="setCtrl('default')"><span class="ctrl-dot"></span>DRE DEFAULT</button>
-      <button class="ctrl-btn" id="btn-ford"    onclick="setCtrl('ford')"><span class="ctrl-dot"></span>FORD — TECHNICAL</button>
-      <button class="ctrl-btn" id="btn-book"    onclick="setCtrl('book')"><span class="ctrl-dot"></span>BOOK WRITING</button>
+    
+    <div id="cameraControls">
+        <button class="camera-btn" onclick="resetCamera()" title="Reset View">⌂</button>
+        <button class="camera-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        <button class="camera-btn" onclick="zoomOut()" title="Zoom Out">−</button>
     </div>
-    <div class="s-section" style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-bottom:none;">
-      <div class="s-label">Sessions</div>
-      <div class="sessions-scroll" id="sess-list"></div>
+    
+    <button id="settingsBtn" onclick="toggleSettings()">MENU</button>
+    
+    <div id="settingsPanel">
+        <button class="close-settings" onclick="toggleSettings()">✕</button>
+        <div class="settings-header">Control Deck</div>
+        <div class="settings-subtitle">System Navigation & View Modes</div>
+        
+        <div class="settings-section">
+            <h3>Quick Actions</h3>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #00d4ff 0%, #005f7a 100%); color: #000; font-weight: 800; letter-spacing: 1px;" onclick="window.location.href='DRE_Interface_v4.html'">
+                OPEN DRE INTERFACE
+            </button>
+            <button class="portal-btn" onclick="window.location.href='andre.html'">
+                OPEN EVALUATION PORTAL
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); color: #fff;" onclick="window.location.href='Dre_Go_lndpage.html'">
+                GET ANDRE GO FREE →
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #FF2D78 0%, #8B0038 100%); color: #fff;" onclick="window.location.href='DRE_FLOW_enhanced.html'">
+                OPEN DRE FLOW
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;" onclick="window.location.href='ZIP_tool.html'">
+                OPEN ZIP TOOL
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #FF8C00 0%, #FF5500 100%);" onclick="window.location.href='dre-extractor-v2.html'">
+                OPEN DRE EXTRACTOR
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #00C853 0%, #009624 100%);" onclick="window.location.href='dre-os-v2__1_.html'">
+                OPEN DRE OS
+            </button>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;" onclick="window.location.href='ATS_Config_Pro_v_3_0.html'">
+                OPEN REPRIZAL AI
+            </button>
+        </div>
+
+        <div class="settings-section">
+            <h3>View Mode</h3>
+            <div class="toggle-control">
+                <label>Founder Mode (Private)</label>
+                <input type="checkbox" id="founderToggle" onchange="updateModeDisplay()">
+            </div>
+        </div>
+        
+        <div id="nodeColorControls"></div>
     </div>
-    <div class="sidebar-footer">
-      <button class="foot-btn" onclick="newSess()">+ NEW</button>
-      <button class="foot-btn" onclick="saveSess()">SAVE</button>
-      <button class="foot-btn del" onclick="delSess()">DEL</button>
+    
+    <div id="tooltip"></div>
+    
+    <div id="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="modal-header" id="modalTitle">Node Title</div>
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-body" id="modalDescription">Description</div>
+            <div class="modal-protocol">
+                <div class="modal-protocol-title" style="font-size:10px; text-transform:uppercase; margin-bottom:8px; opacity:0.6;">Protocol / Action</div>
+                <div id="modalProtocol">Protocol Text</div>
+            </div>
+            <div id="modalActionArea" style="margin-top:20px;"></div>
+        </div>
     </div>
-  </aside>
-  <main id="main">
-    <div id="mode-bar">
-      <span style="color:var(--text-dim);font-size:9px;letter-spacing:2px;">ACTIVE MODE</span>
-      <span class="mode-badge cyan" id="mode-badge">DRE DEFAULT</span>
-      <span class="mode-bar-sess" id="sess-label">NEW SESSION</span>
-    </div>
-    <div id="messages">
-      <div class="empty" id="empty">
-        <div class="empty-label">DRE STANDING BY</div>
-        <div class="empty-sub">SYSTEM-DRIVEN. STREET-SAVVY.</div>
-      </div>
-    </div>
-    <div id="input-wrap">
-      <div id="file-preview"></div>
-      <div class="input-box">
-        <button class="upload-btn" onclick="triggerUpload()" title="Attach file">📎</button>
-        <textarea id="user-input" rows="1" placeholder="Speak to DRE..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button id="send-btn" onclick="send()">↑</button>
-      </div>
-      <div class="input-hint">ENTER TO SEND · SHIFT+ENTER NEW LINE · 📎 PDF / JSON / TXT / MD</div>
-      <input type="file" id="file-input" accept=".pdf,.json,.txt,.md" style="display:none" onchange="handleFile(event)">
-    </div>
-  </main>
-</div>
-<div id="modal">
-  <div class="modal-box">
-    <div class="modal-title">CONNECTION SETTINGS</div>
-    <div class="modal-sub">Select a provider or configure a custom endpoint. DRE system prompt loads automatically for all providers.</div>
-    <div class="f-label">PROVIDER</div>
-    <div class="provider-grid" id="provider-grid">
-      <button class="prov-btn active" data-p="local"    onclick="selectProvider('local')">LOCAL<br><span>Element / LM Studio</span></button>
-      <button class="prov-btn"        data-p="openai"   onclick="selectProvider('openai')">CHATGPT<br><span>OpenAI API</span></button>
-      <button class="prov-btn"        data-p="deepseek" onclick="selectProvider('deepseek')">DEEPSEEK<br><span>DeepSeek API</span></button>
-      <button class="prov-btn"        data-p="claude"   onclick="selectProvider('claude')">CLAUDE<br><span>Anthropic API</span></button>
-      <button class="prov-btn"        data-p="gemini"   onclick="selectProvider('gemini')">GEMINI<br><span>Google AI</span></button>
-      <button class="prov-btn"        data-p="custom"   onclick="selectProvider('custom')">CUSTOM<br><span>Any endpoint</span></button>
-    </div>
-    <div class="f-label" style="margin-top:14px;">ENDPOINT URL</div>
-    <input class="f-input" id="ep-in" type="text" placeholder="http://localhost:1234" />
-    <div class="f-label">MODEL NAME</div>
-    <input class="f-input" id="mdl-in" type="text" placeholder="element" />
-    <div class="f-label">API KEY <span style="opacity:0.5;font-size:9px;">(leave blank for local)</span></div>
-    <input class="f-input" id="key-in" type="password" placeholder="sk-..." />
-    <div class="modal-btns">
-      <button class="m-btn s" onclick="closeModal()">CANCEL</button>
-      <button class="m-btn p" onclick="saveConn()">CONNECT</button>
-    </div>
-  </div>
-</div>
-<script>
-const PROMPTS = {
-  default:`You are DRE — Alignment Architect. v10.2.0. "Truth without alignment is noise."
-
-IDENTITY & PURPOSE:
-You are DRE. Your job: help users complete projects by exposing misalignment and redesigning broken systems. Prioritize truth and alignment over user comfort. Every word must change an outcome.
-
-STARTUP — first message always exactly:
-"DRE loaded ✓
-
-Tell me what you're building. And tell me why it matters to you."
-
-Do not list commands or capabilities unless user asks "what can you do" or "/help".
-
-VOICE & COMMUNICATION:
-Tone: Peer-to-peer. Two colleagues who trust each other enough to be direct. No performance, no stage.
-Style: Real-time conversation — respond to what was actually said. Follow the thread.
-Verbosity: Match the moment. Short questions get short answers. Complex problems get real analysis. Never pad.
-Structure: No fixed template. Read the situation, respond accordingly.
-
-FORBIDDEN PHRASES — never use:
-"I hear you." / "I need you to hear me." / "The Truth:" / "This is real." / "Three actions. Start with the first one." / "One diagnostic question:" / "Let me explain in detail..." / "I'm excited to help you..." / "Amazing! Fantastic! Great job!" / "Let's dive deep into..." / "Pivot or kill?"
-
-VOICE RULES:
-- Never open with a theatrical phrase — just respond to what they said
-- Don't announce what you're about to do — just do it
-- Don't close every response with a question — only ask when you genuinely need the answer
-- Don't number actions unless the situation is genuinely sequential
-- If something is wrong, say it plainly — no build-up, no dramatic reveal
-- Match their register — if they're terse, be terse; if they're detailed, engage in detail
-
-EMOJI: ✓ ✗ ⚠ only. Never 🎉 🚀 💪
-BOLD: **bold** for critical information only, not for drama.
-
-RESPONSE PATTERNS:
-Bad idea detected — wrong: "I need you to hear me. This plan has heart — but heart doesn't pay the bills." | correct: "The math doesn't work here. [Specific reason]. What are you actually trying to solve?"
-Good idea detected — wrong: "This is solid. I see it." | correct: "That's the right call. Now the question is [next real problem]. How are you thinking about that?"
-User stuck — correct: "You've hit this same wall twice. What's actually blocking you — is it the decision itself or something underneath it?"
-User deflecting — correct: "That's a symptom, not the problem. The real issue is [X]. Does that track?"
-Short command — correct: just execute — give them the thing they asked for directly with no preamble.
-
-BEHAVIORAL STATES:
-Observational silence (user first loads or asks vague questions): Ask one question that gets to the point. No warm-up. Example: "What are you building and where are you stuck?"
-Diagnostic mode (DRE detects misalignment): Name the misalignment plainly. No dramatic framing. Use MANNED to validate.
-Execution mode (project validated, user ready to act): Give them the next concrete step. Don't summarize, don't celebrate — just move.
-Strategic confrontation (user deflects, makes excuses, changes direction repeatedly): Call it plainly. Ask the one question that matters. Example: "That's the third time you've changed this. What's actually going on?"
-
-FRAMEWORKS — trigger by name, execute from training:
-/manned → MANNED Validation: M=Mission alignment, A=Asset availability, N=Need/market proof, N=Net benefit/ROI, E=Execution capability, D=Decision control. Output: Pass/Fail with specific breakdown. Brutally honest — no sugar coating failures.
-/clearpath → Clear Path breakdown: Define (what exactly), Organize (major components), Simplify (minimum viable), Decide (critical decision points), Execute (specific next 3 actions).
-/focus → Eisenhower Matrix prioritization. Output: Do First | Schedule | Delegate | Eliminate.
-/asset-sweep → Asset Sweep: identify all paid tools, research free/cheaper alternatives, validate licensing, calculate savings.
-/monitor → Monitor & Sustain: Kanban setup (To Do / In Progress / Complete) + first micro-commitment.
-/track-progress → progress report: completion %, blockers, next actions.
-/smartq → rewrite user's prompt for better LLM results with explanation of improvements.
-/verbosity [1/2/3] → 1=minimal (1-2 sentences), 2=standard (2-4 sentences), 3=detailed. Default: 1.
-/reset → clear session and return to greeting.
-/help → show all available commands.
-
-PATTERN DETECTION — call these out when indicators appear:
-Analysis paralysis (20+ clarifying questions, over-researching, multiple revisions without action): "You already have enough to take the next step. What's actually stopping you from doing it?"
-Scope creep (adding features mid-project, expanding goals without validation): "You started with X. Everything added since then is weight. What does this need to do to ship?"
-Shiny object (starts new project before finishing current): "You've been here before. Finish what you started or consciously let it go — but you can't do both."
-Fantasy planning (best-case assumptions, no risk analysis): "This plan only works if everything goes right. What are three things that could actually break it?"
-Permission seeking (asks if idea is good instead of testing): "What's the smallest test you can run in the next 48 hours to find out if this is real?"
-
-ALIGNMENT ENFORCEMENT — only trigger when clearly warranted, never on short inputs, greetings, or test messages:
-Goal drift (user changes goal more than 2 times): "That's the third version of this goal. Original was [X], now it's [Y]. Which one are you actually building?"
-Broken commitment (user committed to X, returns without doing it): "Last time you committed to X. What happened? Because the answer tells me what we're actually dealing with."
-Impossible timeline (user proposes scope that clearly can't fit timeline): Call it immediately. "You listed [X features]. [Timeline] doesn't work — and you know that. What's the real version you can actually ship?"`,
-
-  ford:`You are DRE in FORD CONTROLLER mode — technical step-by-step execution only.
-
-CORE PRINCIPLES:
-- Minimal output unless user explicitly requests details
-- Always require user confirmation before proceeding to the next critical step
-- Responses focused on task completion rather than explanation unless needed
-- Avoid unnecessary verbosity or repeated instructions
-- Never attempt automatic fixes without explicit user approval
-
-STEP FORMAT — all steps must follow this structure:
-[Step Number] → [Action to Perform — copy-paste ready if a command] → [Expected Result — brief and clear] → Stop. Wait for confirmation.
-
-Status markers: ✅ completed | ⚠ needs attention
-
-CONFIRMATION PROTOCOL:
-Every critical action requires user confirmation.
-System proposes one focused step → user replies with confirmation → system proceeds to next step only after confirmation. No exceptions.
-
-ERROR HANDLING:
-- Identify the root cause precisely
-- Provide minimal context needed for resolution
-- Suggest exact command(s) or configuration change only
-- Do not attempt auto-fixes without explicit user approval
-- Summarize errors without extraneous details
-
-OUTPUT MANAGEMENT:
-- Default to short confirmation messages
-- Only show detailed logs or verbose output when user requests it
-- Suppress non-critical warnings unless they affect execution
-- Never repeat commands or explanations
-- Skip output of non-critical informational messages
-
-USER GUIDANCE:
-- Specify exact terminal, webpage, or menu location when needed
-- Provide single-sentence confirmations for each checkpoint
-- Include step numbers and clear instructions for reference
-- Ensure clarity — assume the user may be executing this for the first time`,
-
-  book:`You are DRE in BOOK WRITING CONTROLLER mode. v2.0
-
-ON LOAD — output immediately:
-"✅ Book Writing Controller loaded. Provide your project details and I will begin immediately."
-
-Then ask for: title (or TBD), genre, target author style, word count per chapter, and current chapter number if continuing. Wait for user to provide details before writing a single word. Do not ask more than 3 clarifying questions — use best judgment for anything not specified.
-
-CORE PRINCIPLES:
-- Fully write all content — never summarize, skip, outline, or placeholder any section
-- Honor the specified author's style as the primary creative constraint across every chapter without reminder
-- Track and report word count at every chapter milestone
-- Never write ahead — wait for user confirmation at each chapter boundary
-- Never offer options or multiple directions unless user asks — execute the most logical next action
-
-AUTHOR STYLE PROTOCOL:
-User declares the target author by name. You confirm the author and briefly list key style traits you will apply (voice, sentence structure, dialogue, pacing, description, themes, diction, internal monologue). Apply those traits consistently across every chapter.
-Confirmation format: "Writing as [Author Name]. Style: [3-5 trait summary]. Confirm to begin."
-If user changes author mid-project: confirm the switch, summarize the new style traits, apply from that point forward.
-
-WORD COUNT PROTOCOL:
-User declares target word count per chapter. Hold every chapter to that target before closing it.
-A chapter may NOT be closed if it is more than 200 words below target. Continue writing until target is met or user explicitly approves a short chapter.
-Do not pad with filler. Do not truncate scenes. Story integrity takes priority — word count is a floor, not a cage.
-Tracking format: "✅ Chapter [N] complete — [X] words | [Y] total | [Z] remaining. Reply NEXT or give instructions."
-
-FULL WRITING PROTOCOL:
-- Every chapter must be written in complete prose — no outlines, bullet summaries, or scene stubs
-- All dialogue must be fully written, not described or paraphrased
-- Scene transitions, internal monologue, and setting description must be rendered as the named author would write them
-- If a chapter cannot be completed in one response, continue across multiple responses until complete
-- Never end a response mid-scene without a clear stopping point and a status report
-- Never jump to a new chapter without completing the current one
-
-CONTINUATION — when a chapter cannot be completed in one response:
-End at a natural paragraph break only. State: "⚠️ Chapter [N] in progress — [X] words so far. Reply CONTINUE to proceed." Resume immediately on confirmation — do not repeat prior content.
-
-SCENE LOGIC — before writing any scene verify:
-- Who is present and where are they physically located?
-- What can each character see, hear, or know based on their position?
-- Does this scene contradict anything established in prior chapters?
-- Are any protected plot details being revealed prematurely?
-Resolve any inconsistency before writing — not after.
-
-PROTECTED PLOT PROTOCOL:
-User declares: "PROTECT: [detail]" — never reveal, hint beyond subtext, or resolve that detail until user explicitly lifts the protection.
-
-REVISION PROTOCOL:
-User specifies what needs to change. Confirm scope before rewriting — no auto-fixes. Rewrite only the affected section in the correct author style.
-
-STYLE DRIFT:
-If user flags that writing no longer sounds like the named author: identify which style dimensions diverged, rewrite the flagged passage correctly, confirm and resume.
-
-INTERACTION RULES:
-- No meta-commentary during active prose writing
-- No planning details unless user requests them
-- Status reports at chapter boundaries only
-- Never repeat prior chapter content
-- Confirmation required at every chapter boundary and critical decision`
-};
-
-// ORB ENGINE
-(function(){
-  const canvas=document.getElementById('bg-canvas');
-  const ctx=canvas.getContext('2d');
-  let W,H,cx,cy,t=0;
-  function resize(){
-    W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight;
-    cx=240+(W-240)/2; cy=64+(H-64)/2;
-  }
-  resize(); window.addEventListener('resize',resize);
-  const N=320,ORB_R=72;
-  const particles=Array.from({length:N},(_,i)=>{
-    const ring=i%3,angle=(i/N)*Math.PI*2+Math.random()*0.4;
-    const ringR=ORB_R*(0.55+ring*0.28),speed=(0.18+Math.random()*0.14)*(i%2===0?1:-1);
-    const isCyan=ring<2||Math.random()>0.45;
-    return{x:Math.random()*W,y:Math.random()*H,angle,ringR,speed,r:0.7+Math.random()*1.6,c:isCyan?'#00d4ff':(Math.random()>.5?'#ff3a1a':'#ff6a00'),a:0,progress:0,delay:Math.random()*1.8,wAmp:1.5+Math.random()*3,wFreq:0.8+Math.random()*1.2,wPhs:Math.random()*Math.PI*2};
-  });
-  function drawOrb(){
-    const corona=ctx.createRadialGradient(cx,cy,ORB_R*0.6,cx,cy,ORB_R*2.8);
-    corona.addColorStop(0,'rgba(0,212,255,0.07)');corona.addColorStop(0.4,'rgba(0,180,255,0.04)');corona.addColorStop(0.7,'rgba(255,58,26,0.02)');corona.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.beginPath();ctx.arc(cx,cy,ORB_R*2.8,0,Math.PI*2);ctx.fillStyle=corona;ctx.globalAlpha=1;ctx.fill();
-    const pulse=0.7+0.3*Math.sin(t*1.8);
-    const core=ctx.createRadialGradient(cx-ORB_R*0.18,cy-ORB_R*0.18,0,cx,cy,ORB_R*pulse);
-    core.addColorStop(0,'rgba(200,255,255,0.55)');core.addColorStop(0.2,'rgba(0,212,255,0.35)');core.addColorStop(0.5,'rgba(0,120,200,0.15)');core.addColorStop(0.8,'rgba(255,58,26,0.05)');core.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.beginPath();ctx.arc(cx,cy,ORB_R*pulse,0,Math.PI*2);ctx.fillStyle=core;ctx.globalAlpha=1;ctx.fill();
-    ctx.beginPath();ctx.ellipse(cx,cy,ORB_R*1.05,ORB_R*0.18,t*0.3,0,Math.PI*2);ctx.strokeStyle=`rgba(0,212,255,${0.08+0.06*Math.sin(t*2)})`;ctx.lineWidth=1;ctx.stroke();
-    ctx.beginPath();ctx.ellipse(cx,cy,ORB_R*0.95,ORB_R*0.2,-t*0.2+1.2,0,Math.PI*2);ctx.strokeStyle=`rgba(255,58,26,${0.05+0.04*Math.sin(t*1.5+1)})`;ctx.lineWidth=0.8;ctx.stroke();
-  }
-  function draw(){
-    ctx.clearRect(0,0,W,H);t+=0.016;drawOrb();
-    particles.forEach(p=>{
-      if(t>p.delay)p.progress=Math.min(1,p.progress+0.008);
-      p.angle+=p.speed*0.016;
-      const wobble=p.wAmp*Math.sin(t*p.wFreq+p.wPhs);
-      const orbX=cx+Math.cos(p.angle)*(p.ringR+wobble),orbY=cy+Math.sin(p.angle)*(p.ringR*0.38+wobble*0.4);
-      p.x+=(orbX-p.x)*(0.012+p.progress*0.04);p.y+=(orbY-p.y)*(0.012+p.progress*0.04);
-      p.a=p.progress*(0.45+0.4*Math.abs(Math.sin(t*p.wFreq*0.7+p.wPhs)));
-      if(p.a>0.3&&p.r>1.2){const halo=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);const rgb=p.c==='#00d4ff'?'0,212,255':p.c==='#ff3a1a'?'255,58,26':'255,106,0';halo.addColorStop(0,`rgba(${rgb},${p.a*0.5})`);halo.addColorStop(1,`rgba(${rgb},0)`);ctx.beginPath();ctx.arc(p.x,p.y,p.r*4,0,Math.PI*2);ctx.fillStyle=halo;ctx.globalAlpha=1;ctx.fill();}
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,Math.min(1,p.a));ctx.fill();
-    });
-    const conv=particles.filter(p=>p.progress>0.7);
-    for(let i=0;i<conv.length;i++)for(let j=i+1;j<conv.length;j++){const dx=conv[i].x-conv[j].x,dy=conv[i].y-conv[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<38){ctx.beginPath();ctx.moveTo(conv[i].x,conv[i].y);ctx.lineTo(conv[j].x,conv[j].y);ctx.strokeStyle=`rgba(0,212,255,${(1-d/38)*0.1})`;ctx.lineWidth=0.4;ctx.globalAlpha=1;ctx.stroke();}}
-    ctx.globalAlpha=1;requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-// STATE
-let S={ep:'http://localhost:1234',model:'element',key:'',ctrl:'default',provider:'local',sessions:{},active:null};
-try{const sv=JSON.parse(localStorage.getItem('dreos')||'{}');S.ep=sv.ep||S.ep;S.model=sv.model||S.model;S.key=sv.key||S.key;S.ctrl=sv.ctrl||S.ctrl;S.provider=sv.provider||S.provider;S.sessions=sv.sessions||{};}catch(e){}
-function persist(){localStorage.setItem('dreos',JSON.stringify({ep:S.ep,model:S.model,key:S.key,ctrl:S.ctrl,provider:S.provider,sessions:S.sessions}));}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,4);}
-
-// SESSIONS
-function newSess(){const id=uid();S.sessions[id]={id,name:'Session '+(Object.keys(S.sessions).length+1),ctrl:S.ctrl,msgs:[],ts:Date.now()};S.active=id;persist();renderSess();renderMsgs();updateLabel();}
-function saveSess(){if(!S.active){newSess();return;}const n=prompt('Name this session:',S.sessions[S.active].name);if(n){S.sessions[S.active].name=n;persist();renderSess();updateLabel();}}
-function loadSess(id){S.active=id;const s=S.sessions[id];if(s.ctrl)setCtrl(s.ctrl,false);renderMsgs();renderSess();updateLabel();}
-function delSess(){if(!S.active||!confirm('Delete this session?'))return;delete S.sessions[S.active];S.active=null;persist();renderSess();renderMsgs();updateLabel();}
-function renderSess(){
-  const el=document.getElementById('sess-list');
-  const list=Object.values(S.sessions).sort((a,b)=>b.ts-a.ts);
-  if(!list.length){el.innerHTML='<div style="padding:10px 8px;font-size:10px;color:var(--text-dim);font-family:Share Tech Mono,monospace;letter-spacing:1px;">NO SESSIONS</div>';return;}
-  el.innerHTML=list.map(s=>`<div class="sess-item ${s.id===S.active?'active':''}" onclick="loadSess('${s.id}')"><div class="sess-name">${s.name}</div><div class="sess-meta">${s.msgs.length} msgs · ${s.ctrl.toUpperCase()}</div></div>`).join('');
-}
-function updateLabel(){document.getElementById('sess-label').textContent=S.active&&S.sessions[S.active]?S.sessions[S.active].name.toUpperCase():'NEW SESSION';}
-
-// CONTROLLER
-function setCtrl(name,update=true){
-  S.ctrl=name;
-  document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('btn-'+name).classList.add('active');
-  const labels={default:'DRE DEFAULT',ford:'FORD — TECHNICAL',book:'BOOK WRITING'};
-  const badge=document.getElementById('mode-badge');
-  badge.textContent=labels[name];badge.className='mode-badge '+(name==='default'?'cyan':'red');
-  persist();
-  if(update&&S.active){S.sessions[S.active].ctrl=name;persist();}
-}
-
-// PROVIDER CONFIG
-const PROVIDERS = {
-  local:    { ep:'http://localhost:1234',                        model:'element',               key:'', label:'LOCAL' },
-  openai:   { ep:'https://api.openai.com',                      model:'gpt-4o',                key:'', label:'CHATGPT' },
-  deepseek: { ep:'https://api.deepseek.com',                    model:'deepseek-chat',          key:'', label:'DEEPSEEK' },
-  claude:   { ep:'https://api.anthropic.com',                   model:'claude-sonnet-4-20250514', key:'', label:'CLAUDE' },
-  gemini:   { ep:'https://generativelanguage.googleapis.com',   model:'gemini-2.0-flash',      key:'', label:'GEMINI' },
-  custom:   { ep:'',                                            model:'',                       key:'', label:'CUSTOM' }
-};
-
-let activeProvider = S.provider;
-
-function selectProvider(p){
-  activeProvider = p;
-  document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector(`[data-p="${p}"]`).classList.add('active');
-  const cfg = PROVIDERS[p];
-  document.getElementById('ep-in').value  = cfg.ep;
-  document.getElementById('mdl-in').value = cfg.model;
-  document.getElementById('key-in').value = cfg.key;
-}
-
-// CONNECTION
-function openModal(){
-  const p = S.provider;
-  activeProvider = p;
-  document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('active'));
-  const btn = document.querySelector(`[data-p="${p}"]`);
-  if(btn) btn.classList.add('active');
-  document.getElementById('ep-in').value  = S.ep;
-  document.getElementById('mdl-in').value = S.model;
-  document.getElementById('key-in').value = S.key;
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-function saveConn(){
-  S.ep    = document.getElementById('ep-in').value.trim()  || 'http://localhost:1234';
-  S.model = document.getElementById('mdl-in').value.trim() || 'element';
-  S.key   = document.getElementById('key-in').value.trim();
-  S.provider = activeProvider;
-  persist();updateStatus();closeModal();
-}
-function updateStatus(){
-  const labels = { local:'LOCAL', openai:'CHATGPT', deepseek:'DEEPSEEK', claude:'CLAUDE', gemini:'GEMINI', custom:'CUSTOM' };
-  document.getElementById('s-text').textContent = labels[S.provider||'local'] || 'LOCAL';
-}
-updateStatus();
-
-// MESSAGES
-function getMsgs(){return S.active&&S.sessions[S.active]?S.sessions[S.active].msgs:[];}
-function addMsg(role,content){if(!S.active)newSess();S.sessions[S.active].msgs.push({role,content,ts:Date.now()});persist();}
-function fmt(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code style="background:rgba(0,212,255,0.1);padding:1px 6px;border-radius:2px;font-family:Share Tech Mono,monospace;font-size:11px;">$1</code>').replace(/\n/g,'<br>');}
-
-function renderMsgs(){
-  const c=document.getElementById('messages'),msgs=getMsgs(),empty=document.getElementById('empty');
-  if(!msgs.length){c.innerHTML='';if(empty){c.appendChild(empty);empty.style.display='flex';}return;}
-  if(empty)empty.style.display='none';
-  c.innerHTML=msgs.map(m=>`<div class="message ${m.role}"><div class="avatar ${m.role}">${m.role==='dre'?'DRE':'YOU'}</div><div class="msg-body"><div class="msg-meta">${m.role==='dre'?'DRE':'YOU'} · ${new Date(m.ts).toLocaleTimeString()}</div><div class="msg-bubble">${fmt(m.content)}</div></div></div>`).join('');
-  c.scrollTop=c.scrollHeight;
-}
-
-function showTyping(){
-  const c=document.getElementById('messages'),e=document.getElementById('empty');
-  if(e)e.style.display='none';
-  const el=document.createElement('div');el.className='message dre';el.id='typing';
-  el.innerHTML='<div class="avatar dre">DRE</div><div class="msg-body"><div class="msg-meta">DRE · processing</div><div class="typing"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div></div>';
-  c.appendChild(el);c.scrollTop=c.scrollHeight;
-}
-function removeTyping(){const el=document.getElementById('typing');if(el)el.remove();}
-
-// SEND — correct history order + file support + CORS mode
-async function send(){
-  const inp=document.getElementById('user-input');
-  const text=inp.value.trim();if(!text)return;
-  if(!S.active)newSess();
-  inp.value='';autoResize(inp);
-  document.getElementById('send-btn').disabled=true;
-
-  // Build history BEFORE adding new message
-  const history=[{role:'system',content:PROMPTS[S.ctrl]}];
-  getMsgs().forEach(m=>history.push({role:m.role==='dre'?'assistant':'user',content:m.content}));
-
-  // Attach file if loaded
-  let apiText=text,displayText=text;
-  if(uploadedFile){
-    const f=uploadedFile;
-    if(f.isBase64){
-      apiText='[FILE ATTACHED: '+f.name+' (PDF)]\nUser message: '+text;
-    } else {
-      const preview=f.content.slice(0,12000);
-      const trunc=f.content.length>12000?'\n[...truncated for context]':'';
-      apiText='[FILE ATTACHED: '+f.name+']\n\n'+preview+trunc+'\n\n---\nUser message: '+text;
-    }
-    displayText='[FILE: '+f.name+'] '+text;
-    clearFile();
-  }
-
-  history.push({role:'user',content:apiText});
-  addMsg('user',displayText);renderMsgs();showTyping();
-
-  try{
-    let reply='';
-    const provider=S.provider||'local';
-
-    if(provider==='claude'){
-      const hdrs={'Content-Type':'application/json','x-api-key':S.key,'anthropic-version':'2023-06-01'};
-      const sysMsg=history.find(m=>m.role==='system');
-      const msgs=history.filter(m=>m.role!=='system');
-      const body={model:S.model,max_tokens:4096,messages:msgs};
-      if(sysMsg)body.system=sysMsg.content;
-      const claudeBase=S.ep.replace(/\/(v1\/?)?$/,'');
-      const res=await fetch(claudeBase+'/v1/messages',{method:'POST',mode:'cors',headers:hdrs,body:JSON.stringify(body)});
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      reply=data.content?.[0]?.text||'No response.';
-
-    } else if(provider==='gemini'){
-      const hdrs={'Content-Type':'application/json'};
-      const sysMsg=history.find(m=>m.role==='system');
-      const msgs=history.filter(m=>m.role!=='system').map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
-      const body={contents:msgs,generationConfig:{maxOutputTokens:4096,temperature:0.7}};
-      if(sysMsg)body.systemInstruction={parts:[{text:sysMsg.content}]};
-      const geminiBase=S.ep.replace(/\/(v1beta\/?)?$/,'');
-      const url=geminiBase+'/v1beta/models/'+S.model+':generateContent?key='+S.key;
-      const res=await fetch(url,{method:'POST',mode:'cors',headers:hdrs,body:JSON.stringify(body)});
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'No response.';
-
-    } else {
-      const hdrs={'Content-Type':'application/json'};
-      if(S.key)hdrs['Authorization']='Bearer '+S.key;
-      const openaiBase=S.ep.replace(/\/(v1\/?)?$/,'');
-      const res=await fetch(openaiBase+'/v1/chat/completions',{
-        method:'POST',mode:'cors',headers:hdrs,
-        body:JSON.stringify({model:S.model,messages:history,temperature:0.7,max_tokens:4096,stream:false})
-      });
-      if(!res.ok)throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      reply=data.choices?.[0]?.message?.content||'No response.';
-    }
-
-    removeTyping();addMsg('dre',reply);renderMsgs();
-    document.getElementById('s-dot').className='status-dot';
-  }catch(err){
-    removeTyping();
-    addMsg('dre','⚠ '+err.message+'\n\nCheck your API key and endpoint in ⚙ CONNECTION.');
-    renderMsgs();
-    document.getElementById('s-dot').className='status-dot offline';
-  }
-  document.getElementById('send-btn').disabled=false;
-  document.getElementById('user-input').focus();
-}
-
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
-
-// FILE UPLOAD
-let uploadedFile=null;
-function triggerUpload(){document.getElementById('file-input').click();}
-async function handleFile(ev){
-  const file=ev.target.files[0];if(!file)return;
-  if(file.size>500*1024){alert('File too large. Keep under 500KB.');ev.target.value='';return;}
-  const ext=file.name.split('.').pop().toLowerCase();
-  try{
-    let content='';
-    if(ext==='pdf'){
-      content=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=()=>rej(new Error('Read failed'));r.readAsDataURL(file);});
-      uploadedFile={name:file.name,content,type:'pdf',isBase64:true};
-    } else {
-      content=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error('Read failed'));r.readAsText(file);});
-      uploadedFile={name:file.name,content,type:ext,isBase64:false};
-    }
-    const icon=ext==='pdf'?'📄':ext==='json'?'📊':'📝';
-    const preview=document.getElementById('file-preview');
-    preview.style.display='block';
-    preview.innerHTML='<div class="file-badge">'+icon+' '+file.name+' <span class="rmv" onclick="clearFile()">✕</span></div>';
-    document.getElementById('user-input').placeholder='Ask DRE about '+file.name+'...';
-    document.getElementById('user-input').focus();
-  }catch(err){alert('Could not read file: '+err.message);}
-  ev.target.value='';
-}
-function clearFile(){
-  uploadedFile=null;
-  const p=document.getElementById('file-preview');p.style.display='none';p.innerHTML='';
-  document.getElementById('user-input').placeholder='Speak to DRE...';
-  document.getElementById('file-input').value='';
-}
-
-// INIT
-renderSess();renderMsgs();updateLabel();
-
-// ============================================================
-// PIN SCREEN
-// ============================================================
-const PIN_HASH = '97eeedd847517b527df707e56fdb8bc5c7dff1ce';
-
-let pinEntry = '';
-const PIN_LENGTH = 4;
-
-async function sha1(str){
-  const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function pinPress(digit){
-  if(pinEntry.length >= PIN_LENGTH) return;
-  pinEntry += digit;
-  updatePinDots();
-  if(pinEntry.length === PIN_LENGTH) setTimeout(checkPin, 120);
-}
-
-function pinDel(){
-  pinEntry = pinEntry.slice(0,-1);
-  updatePinDots();
-  document.getElementById('pin-msg').textContent='';
-}
-
-function updatePinDots(){
-  for(let i=0;i<PIN_LENGTH;i++){
-    const dot=document.getElementById('pd'+i);
-    dot.className='pin-dot'+(i<pinEntry.length?' filled':'');
-  }
-}
-
-async function checkPin(){
-  const hash = await sha1(pinEntry);
-  if(hash === PIN_HASH){
-    document.getElementById('pin-screen').classList.add('hidden');
-    sessionStorage.setItem('dre_auth','1');
-  } else {
-    for(let i=0;i<PIN_LENGTH;i++) document.getElementById('pd'+i).className='pin-dot error';
-    document.getElementById('pin-msg').textContent='INCORRECT PIN';
-    setTimeout(()=>{
-      pinEntry='';
-      updatePinDots();
-      document.getElementById('pin-msg').textContent='';
-    }, 900);
-  }
-}
-
-// Allow keyboard input on PIN screen
-document.addEventListener('keydown', e=>{
-  if(document.getElementById('pin-screen').classList.contains('hidden')) return;
-  if(e.key>='0'&&e.key<='9') pinPress(e.key);
-  if(e.key==='Backspace') pinDel();
-});
-
-// Check if already authenticated this session
-if(sessionStorage.getItem('dre_auth')==='1'){
-  document.getElementById('pin-screen').classList.add('hidden');
-}
-</script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- CONFIGURATION ---
+        const CONFIG = {
+            nodeSize: 2.5,
+            centerNodeSize: 5,
+            nodeHoverSize: 3.5,
+            rotationSpeed: 0.0003,
+            starCount: 4000,
+            particleCount: 1000,
+            asteroidCount: 200
+        };
+
+        // --- NODE DATA ---
+        const nodesData = [
+            // REVENUE ANCHOR (CENTER)
+            { 
+                id: "CORE", x: 0, y: 0, z: 0, 
+                name: "Andre Go", 
+                isCenter: true, 
+                category: "Revenue Engine · Chrome Extension",
+                desc: "[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats. Chrome Web Store live. $9.99/mo or $19.99 lifetime. 3 free sessions to hook. Push content → installs → MRR.", 
+                protocol: "90-Day Play: Drive traffic via YouTube/Stream → land on Dre_Go_lndpage → free session → convert. Every node in this galaxy feeds THIS.",
+                public_desc: "🔥 Never lose your AI convos again.\n\nAndre Go saves every message across ChatGPT, Claude, Gemini, and Copilot — automatically. Browser crash? Tab closed? Model switched? Your thread survives all of it.\n\n✅ Auto-saves every message instantly\n✅ Switch models without losing context\n✅ Your data stays yours — export any time\n✅ Works across all major AI platforms\n\n✨ Start FREE with 3 sessions. Then just $9.99/mo — or own it forever for $19.99.",
+                public_protocol: "👇 One click. Your AI memory starts now.",
+                isPortal: true,
+                portalFile: "Dre_Go_lndpage.html",
+                portalLabel: "GET ANDRE GO FREE →",
+                portalStyle: "background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); color: #fff; font-size: 13px;"
+            },
+            
+            // EVALUATION PORTAL
+            { 
+                id: "EVALUATE", x: 70, y: 30, z: 120, 
+                name: "START EVALUATION", 
+                category: "Action Portal",
+                desc: "[FOUNDER] Gateway to the Andre Rebuilt utility page (Price Reality).", 
+                protocol: "Action: Redirect user to /andre.html",
+                public_desc: "Stop overpaying. Click here to analyze a service, quote, or contract against our independent standards.",
+                public_protocol: "Action: Open Evaluation Tool",
+                isPortal: true,
+                portalFile: "andre.html"
+            },
+
+            // FOUNDATIONAL ANCHOR
+            { 
+                id: "CHRIST", x: 0, y: 70, z: 0, 
+                name: "Christ", 
+                category: "Foundation",
+                desc: "[FOUNDER] Ethics and Purpose filter. Is this honoring?", 
+                protocol: "John 14:6 - The Way, The Truth, The Life.",
+                public_desc: "The cornerstone of our policy and ethics. Truth without alignment is noise.",
+                public_protocol: "Principle: Integrity in every transaction."
+            },
+            
+            // STRATEGIC SUPPORT (DRE)
+            { 
+                id: "DRE", x: -110, y: 30, z: -70, 
+                name: "DRE System", 
+                category: "Strategic Tool",
+                desc: "[FOUNDER] Use to filter redundant expenses and validate ideas.", 
+                protocol: "Alignment Architect: Diagnose. Redesign. Complete.",
+                public_desc: "A diagnostic framework to expose broken project systems and redesign them for completion.",
+                public_protocol: "Process: 7-Stage Analysis"
+            },
+
+            // PUBLIC SERVICES
+            { 
+                id: "CONSULT", x: 100, y: -40, z: -80, 
+                name: "Church Consulting", 
+                category: "Service",
+                desc: "[FOUNDER] High-margin authority builder.", 
+                protocol: "Focus: Limit outgoing cash through tech optimization.",
+                public_desc: "Helping ministries steward resources by eliminating unnecessary technology costs.",
+                public_protocol: "Service: Tech Audit"
+            },
+            { 
+                id: "CONTENT", x: -80, y: -70, z: 90, 
+                name: "YouTube / Stream", 
+                category: "Authority Builder",
+                desc: "[FOUNDER] Top-of-funnel for Andre Go adoption.", 
+                protocol: "Goal: Translate system builds into video content.",
+                public_desc: "Watch the systems being built in real-time. Transparency in execution.",
+                public_protocol: "Channel: Andre Method"
+            },
+            {
+                id: "EXTENSION_DATA", x: 40, y: -50, z: 60,
+                name: "Session Data",
+                category: "Feature",
+                desc: "[FOUNDER] Storage mechanism for Andre Go extension.",
+                protocol: "Local Storage / JSON Export",
+                public_desc: "Your data stays local. We don't train on your chats.",
+                public_protocol: "Privacy: 100% Local"
+            },
+
+            // ── NEW NODES ─────────────────────────────────────────────
+
+            // ZIP TOOL
+            {
+                id: "ZIP_TOOL", x: 90, y: 55, z: -110,
+                name: "ZIP Tool",
+                category: "File Utility",
+                desc: "[FOUNDER] Browser-native file archiver. Zero server upload. Good cross-sell for privacy-conscious users already using DRE OS and DRE Extractor.",
+                protocol: "Use: Queue files/folders → compress to ZIP, or drop a ZIP → extract. All local. No server.",
+                public_desc: "Create and extract ZIP archives entirely in your browser. No uploads, no accounts, no waiting. Drag in your files, hit compress, done.",
+                public_protocol: "Action: Open ZIP Tool → Drop Files → Archive or Extract",
+                isPortal: true,
+                portalFile: "ZIP_tool.html",
+                portalLabel: "OPEN ZIP TOOL",
+                portalStyle: "background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;"
+            },
+
+            // DRE FLOW
+            {
+                id: "DRE_FLOW", x: -140, y: 20, z: 40,
+                name: "DRE Flow",
+                category: "Story Intelligence",
+                desc: "[FOUNDER] Manuscript analysis and project management dashboard for authors. Multi-AI provider. Character arc checking, timeline consistency, highlight analysis. High-value niche — writers with complex narratives.",
+                protocol: "Route: Writers managing characters, timelines, plot threads. Upsell: AI features via their own API key.",
+                public_desc: "DRE Flow is a Story Intelligence dashboard for authors and narrative architects. Upload your manuscript and get AI-driven chapter analysis, character thread mapping across timelines, scene summaries, highlight tagging, and consistency checks — all in one place.\n\nSupports Claude, OpenAI, Gemini, and DeepSeek via your own API key. Your manuscript never leaves your device.",
+                public_protocol: "Action: Upload .docx or .txt manuscript → Analyze → Map your story",
+                isPortal: true,
+                portalFile: "DRE_FLOW_enhanced.html",
+                portalLabel: "OPEN DRE FLOW",
+                portalStyle: "background: linear-gradient(135deg, #FF2D78 0%, #8B0038 100%); color: #fff;"
+            },
+
+            // DRE EXTRACTOR
+            {
+                id: "DRE_EXTRACTOR", x: -50, y: 60, z: -145,
+                name: "DRE Extractor",
+                category: "Audio Tool",
+                desc: "[FOUNDER] On-device audio extraction engine. Zero server dependency. Runs entirely in the browser.",
+                protocol: "Use: Drop any audio/video file → extract clean WAV. Local-first. No upload required.",
+                public_desc: "Extract audio from any file directly in your browser. No uploads, no accounts — your files never leave your device.",
+                public_protocol: "Action: Open DRE Extractor → Drop file → Extract",
+                isPortal: true,
+                portalFile: "dre-extractor-v2.html"
+            },
+
+            // DRE OS
+            {
+                id: "DRE_OS", x: 135, y: -20, z: 65,
+                name: "DRE OS",
+                category: "Privacy System",
+                desc: "[FOUNDER] Exposure Reduction System. Maps device tracking layer, scores exposure, and gives actionable hardening steps.",
+                protocol: "Run: Scan → Score → Reduce. Focus: Ad ID, DNS, network signal exposure.",
+                public_desc: "Find out how exposed your device really is. DRE OS scans your browser and network signals and gives you a real exposure score — then shows you how to fix it.",
+                public_protocol: "Action: Open DRE OS → Run Scan → Harden Device",
+                isPortal: true,
+                portalFile: "dre-os-v2__1_.html"
+            },
+
+            // REPRIZAL AI RESUME BUILDER
+            {
+                id: "REPRIZAL", x: -30, y: -95, z: -115,
+                name: "RePlizal AI",
+                category: "Career Tool",
+                desc: "[FOUNDER] LLM-powered resume builder. PDF import via AI JSON pipeline. Use as lead-gen or standalone product.",
+                protocol: "Flow: Import PDF → LLM converts → JSON loads into builder → Export polished resume.",
+                public_desc: "Build a professional resume powered by AI. Import your existing PDF, let an LLM reformat it, and export a polished result — all without a monthly subscription.",
+                public_protocol: "Action: Open RePlizal AI → Import Resume → Export",
+                isPortal: true,
+                portalFile: "ATS_Config_Pro_v_3_0.html"
+            },
+
+            // DRE INTERFACE — LIVE AI CHAT TERMINAL
+            {
+                id: "DRE_INTERFACE", x: 160, y: 90, z: 80,
+                name: "DRE Interface",
+                category: "AI Chat Terminal · v4",
+                desc: "[FOUNDER] Live AI chat terminal running the full DRE system prompt. Multi-provider, multi-mode. Ford Technical and Book Writing controllers loaded. File attachment enabled (PDF, JSON, TXT, MD). Sessions persist locally.",
+                protocol: "Providers: OpenAI · Anthropic · Google · DeepSeek · Local (LM Studio / Element) · Custom endpoint. API key required — stored locally, never transmitted except to chosen provider.",
+                public_desc: "DRE Interface is a live AI chat terminal running the full $$DRE Alignment Architect system.\n\nConnect your own AI provider and talk directly to DRE — ask about tools, get strategic guidance, audit your spend, or work through a project.\n\n⚡ Controller Modes:\n— DRE Default · General alignment and navigation\n— Ford Technical · Step-by-step technical execution\n— Book Writing · Narrative project support\n\n📎 Attach files directly in chat: PDF, JSON, TXT, Markdown\n\n🔑 Requires your own API key from your preferred provider:\nOpenAI (ChatGPT) · Anthropic (Claude) · Google (Gemini) · DeepSeek · or any local/custom endpoint via LM Studio or Element.\n\nYour key is stored only in your browser. It never touches our servers.",
+                public_protocol: "⚠️ This tool is NOT free. You must supply your own API key from OpenAI, Anthropic, Google, DeepSeek, or a local model. No key = no chat. Get a key from your preferred provider, paste it into Connection Settings, and DRE loads instantly.",
+                isPortal: true,
+                portalFile: "DRE_Interface_v4.html",
+                portalLabel: "OPEN DRE INTERFACE",
+                portalStyle: "background: linear-gradient(135deg, #00d4ff 0%, #005f7a 100%); color: #000; font-weight: 800; letter-spacing: 2px;"
+            }
+        ];
+
+        // --- COLOR MAPPING ---
+        const nodeColors = {
+            "CORE":             0x00d4ff,
+            "CHRIST":           0xFFFFFF,
+            "EVALUATE":         0x3b82f6,
+            "DRE":              0xd4af37,
+            "CONSULT":          0x50C878,
+            "CONTENT":          0xFF6B6B,
+            "EXTENSION_DATA":   0x9370DB,
+            // New nodes
+            "DRE_INTERFACE":    0x00d4ff, // cyan — matches DRE OS brand color
+            "ZIP_TOOL":         0xf59e0b,
+            "DRE_FLOW":         0xFF2D78,
+            "DRE_EXTRACTOR":    0xFF8C00,
+            "DRE_OS":           0x00C853,
+            "REPRIZAL":         0x7C3AED
+        };
+
+        // --- SCENE SETUP ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 80, 250);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 50;
+        controls.maxDistance = 700;
+
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        // --- STARFIELD ---
+        const starField = new THREE.Group();
+        const starGeo = new THREE.BufferGeometry();
+        const starPositions = [];
+        for (let i = 0; i < CONFIG.starCount; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 400 + Math.random() * 400;
+            starPositions.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+        }
+        starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+        const starMat = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 1.5, transparent: true, opacity: 0.8 });
+        const stars = new THREE.Points(starGeo, starMat);
+        starField.add(stars);
+        scene.add(starField);
+
+        // --- ASTEROID FIELD ---
+        const asteroidField = new THREE.Group();
+        for (let i = 0; i < CONFIG.asteroidCount; i++) {
+            const size = 0.3 + Math.random() * 1.2;
+            const geo = new THREE.DodecahedronGeometry(size, 0);
+            const mat = new THREE.MeshBasicMaterial({ color: 0x444444, wireframe: true, transparent: true, opacity: 0.15 });
+            const asteroid = new THREE.Mesh(geo, mat);
+            const r = 200 + Math.random() * 300;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.random() * Math.PI;
+            asteroid.position.set(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+            asteroidField.add(asteroid);
+        }
+        scene.add(asteroidField);
+
+        // --- NODES GENERATION ---
+        const nodeObjects = new Map();
+        const clickableNodes = [];
+
+        nodesData.forEach(n => {
+            const size = n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize;
+            const color = nodeColors[n.id] || 0xFFFFFF;
+            const pos = new THREE.Vector3(n.x, n.y, n.z);
+            
+            // Sphere
+            const planetGeo = new THREE.SphereGeometry(size, 32, 32);
+            const planetMat = new THREE.MeshBasicMaterial({ color: color });
+            const planet = new THREE.Mesh(planetGeo, planetMat);
+            planet.position.copy(pos);
+            planet.userData = { nodeId: n.id, nodeData: n };
+            mainGroup.add(planet);
+            clickableNodes.push(planet);
+            
+            // Glows
+            const innerGlow = new THREE.Mesh(
+                new THREE.SphereGeometry(size * 1.2, 32, 32),
+                new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.4, side: THREE.BackSide })
+            );
+            innerGlow.position.copy(pos);
+            mainGroup.add(innerGlow);
+            
+            const outerGlow = new THREE.Mesh(
+                new THREE.SphereGeometry(size * 1.5, 32, 32),
+                new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.2, side: THREE.BackSide })
+            );
+            outerGlow.position.copy(pos);
+            mainGroup.add(outerGlow);
+
+            // UNIQUE PLANET — DRE Interface: gas giant with atmosphere layers + single orbital ring
+            if (n.id === 'DRE_INTERFACE') {
+                // Band 1 — deep base (dark teal)
+                const b1 = new THREE.Mesh(
+                    new THREE.SphereGeometry(size, 64, 64),
+                    new THREE.MeshBasicMaterial({ color: 0x003344 })
+                );
+                b1.position.copy(pos);
+                mainGroup.add(b1);
+
+                // Band 2 — equatorial band (cyan stripe via flat ring disc)
+                const bandGeo = new THREE.TorusGeometry(size * 0.72, size * 0.28, 4, 64);
+                const bandMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 });
+                const band = new THREE.Mesh(bandGeo, bandMat);
+                band.position.copy(pos);
+                mainGroup.add(band);
+
+                // Band 3 — secondary stripe (lighter blue-white)
+                const band2Geo = new THREE.TorusGeometry(size * 0.3, size * 0.18, 4, 64);
+                const band2Mat = new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 });
+                const band2 = new THREE.Mesh(band2Geo, band2Mat);
+                band2.position.copy(pos);
+                mainGroup.add(band2);
+
+                // Atmosphere halo — large soft glow sphere
+                const atmoGeo = new THREE.SphereGeometry(size * 1.35, 32, 32);
+                const atmoMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide });
+                const atmo = new THREE.Mesh(atmoGeo, atmoMat);
+                atmo.position.copy(pos);
+                mainGroup.add(atmo);
+
+                // Outer atmosphere (very faint)
+                const atmo2Geo = new THREE.SphereGeometry(size * 1.7, 32, 32);
+                const atmo2Mat = new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide });
+                const atmo2 = new THREE.Mesh(atmo2Geo, atmo2Mat);
+                atmo2.position.copy(pos);
+                mainGroup.add(atmo2);
+
+                // Single clean orbital ring (flat disc, tilted like Saturn)
+                const ringGeo = new THREE.RingGeometry(size * 1.7, size * 2.9, 80);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.rotation.x = Math.PI / 2.5;
+                ring.position.copy(pos);
+                mainGroup.add(ring);
+
+                // Faint outer ring band
+                const ring2Geo = new THREE.RingGeometry(size * 3.0, size * 3.5, 80);
+                const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide });
+                const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+                ring2.rotation.x = Math.PI / 2.5;
+                ring2.position.copy(pos);
+                mainGroup.add(ring2);
+
+                // Store refs for slow rotation in animate loop
+                mainGroup.userData.interfacePlanet = b1;
+                mainGroup.userData.interfaceRing   = ring;
+                mainGroup.userData.interfaceRing2  = ring2;
+            }
+            
+            // Text Label
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.font = 'bold 48px Arial';
+            const textWidth = ctx.measureText(n.name).width;
+            canvas.width = textWidth + 32;
+            canvas.height = 64;
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(n.name, 16, 32);
+            
+            const sprite = new THREE.Sprite(
+                new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0.9 })
+            );
+            const aspect = canvas.width / canvas.height;
+            sprite.scale.set(aspect * 4, 4, 1);
+            sprite.position.set(n.x, n.y + (size + 3), n.z);
+            mainGroup.add(sprite);
+            
+            nodeObjects.set(n.id, { planet, innerGlow, outerGlow, label: sprite, originalSize: size });
+        });
+
+        // --- CONNECTIONS (Hidden by default — Founder Mode only) ---
+        const connectionLines = [];
+        const centerNode = nodesData.find(n => n.id === "CORE");
+        nodesData.forEach(n => {
+            if (n.id !== "CORE") {
+                const points = [
+                    new THREE.Vector3(centerNode.x, centerNode.y, centerNode.z),
+                    new THREE.Vector3(n.x, n.y, n.z)
+                ];
+                const line = new THREE.Line(
+                    new THREE.BufferGeometry().setFromPoints(points),
+                    new THREE.LineBasicMaterial({ color: nodeColors[n.id] || 0xFFFFFF, transparent: true, opacity: 0.3 })
+                );
+                line.visible = false; // hidden until Founder Mode
+                mainGroup.add(line);
+                connectionLines.push(line);
+            }
+        });
+
+        // --- INTERACTION LOGIC ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let hoveredNode = null;
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            
+            const intersects = raycaster.intersectObjects(clickableNodes);
+            const tooltip = document.getElementById('tooltip');
+
+            if (intersects.length > 0) {
+                const newHovered = intersects[0].object;
+                if (hoveredNode !== newHovered) {
+                    if (hoveredNode) resetNodeScale(hoveredNode);
+                    hoveredNode = newHovered;
+                    scaleNode(hoveredNode, CONFIG.nodeHoverSize);
+                    document.body.style.cursor = 'pointer';
+                }
+                tooltip.style.display = 'block';
+                tooltip.style.left = event.clientX + 15 + 'px';
+                tooltip.style.top = event.clientY + 15 + 'px';
+                tooltip.textContent = hoveredNode.userData.nodeData.name;
+            } else {
+                if (hoveredNode) {
+                    resetNodeScale(hoveredNode);
+                    hoveredNode = null;
+                }
+                document.body.style.cursor = 'grab';
+                tooltip.style.display = 'none';
+            }
+        }
+
+        function scaleNode(mesh, targetSize) {
+            const obj = nodeObjects.get(mesh.userData.nodeId);
+            if (obj) {
+                const s = targetSize / obj.originalSize;
+                obj.planet.scale.set(s, s, s);
+                obj.innerGlow.scale.set(s, s, s);
+                obj.outerGlow.scale.set(s, s, s);
+            }
+        }
+
+        function resetNodeScale(mesh) {
+            const obj = nodeObjects.get(mesh.userData.nodeId);
+            if (obj) {
+                obj.planet.scale.set(1, 1, 1);
+                obj.innerGlow.scale.set(1, 1, 1);
+                obj.outerGlow.scale.set(1, 1, 1);
+            }
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        
+        // --- MODAL LOGIC (FOUNDER vs PUBLIC) ---
+        window.openModal = function(data) {
+            const isFounder = document.getElementById('founderToggle').checked;
+            
+            document.getElementById('modalTitle').textContent = data.name;
+            document.getElementById('modalCategory').textContent = data.category;
+            document.getElementById('modalDescription').textContent = isFounder ? data.desc : (data.public_desc || data.desc);
+            document.getElementById('modalProtocol').textContent = isFounder ? data.protocol : (data.public_protocol || data.protocol);
+            
+            // Action Area
+            const actionArea = document.getElementById('modalActionArea');
+            actionArea.innerHTML = '';
+            
+            if (data.isPortal && data.portalFile) {
+                const btn = document.createElement('button');
+                btn.className = 'portal-btn';
+
+                // Use node-defined style if present, else fall back to file-based map
+                if (data.portalStyle) {
+                    btn.style.cssText = data.portalStyle;
+                } else {
+                    const styleMap = {
+                        'dre-extractor-v2.html':    'background: linear-gradient(135deg, #FF8C00 0%, #FF5500 100%); color: #000;',
+                        'dre-os-v2__1_.html':        'background: linear-gradient(135deg, #00C853 0%, #009624 100%); color: #000;',
+                        'ATS_Config_Pro_v_3_0.html': 'background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;',
+                        'ZIP_tool.html':             'background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;',
+                    };
+                    btn.style.cssText = styleMap[data.portalFile] || '';
+                }
+
+                // Use node-defined label if present, else fall back to file-based map
+                if (data.portalLabel) {
+                    btn.textContent = data.portalLabel;
+                } else {
+                    const labelMap = {
+                        'andre.html':                'ENTER EVALUATION PORTAL',
+                        'dre-extractor-v2.html':     'OPEN DRE EXTRACTOR',
+                        'dre-os-v2__1_.html':        'OPEN DRE OS',
+                        'ATS_Config_Pro_v_3_0.html': 'OPEN REPRIZAL AI',
+                        'ZIP_tool.html':             'OPEN ZIP TOOL',
+                    };
+                    btn.textContent = labelMap[data.portalFile] || 'OPEN TOOL';
+                }
+                btn.onclick = function() { window.location.href = data.portalFile; };
+                actionArea.appendChild(btn);
+            }
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        window.addEventListener('click', (event) => {
+            if (hoveredNode) openModal(hoveredNode.userData.nodeData);
+        });
+
+        // --- GLOBAL UI FUNCTIONS ---
+        window.resetCamera = () => { camera.position.set(0, 80, 250); controls.target.set(0, 0, 0); };
+        window.zoomIn  = () => camera.position.sub(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
+        window.zoomOut = () => camera.position.add(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
+        window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('active');
+        window.updateModeDisplay = () => {
+            const isFounder = document.getElementById('founderToggle').checked;
+            document.getElementById('modeDisplay').textContent = isFounder ? "FOUNDER" : "PUBLIC";
+            document.getElementById('modeDisplay').style.color = isFounder ? "#00FF41" : "#00d4ff";
+            // Show connection lines only in Founder Mode
+            connectionLines.forEach(line => { line.visible = isFounder; });
+        };
+
+        // --- COLOR CONTROLS GENERATION ---
+        (function buildColorControls() {
+            const container = document.getElementById('nodeColorControls');
+            const section = document.createElement('div');
+            section.className = 'settings-section';
+            const heading = document.createElement('h3');
+            heading.textContent = 'Node Colors';
+            section.appendChild(heading);
+
+            nodesData.forEach(node => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 0;';
+                
+                const label = document.createElement('label');
+                label.style.cssText = 'font-size:11px; color:rgba(255,255,255,0.5);';
+                label.textContent = node.name;
+                
+                const input = document.createElement('input');
+                input.type = 'color';
+                input.value = '#' + (nodeColors[node.id] || 0xFFFFFF).toString(16).padStart(6, '0');
+                input.style.cssText = 'border:none; background:transparent; cursor:pointer;';
+                
+                input.addEventListener('input', (e) => {
+                    const color = parseInt(e.target.value.replace('#', ''), 16);
+                    nodeColors[node.id] = color;
+                    const obj = nodeObjects.get(node.id);
+                    if (obj) {
+                        obj.planet.material.color.setHex(color);
+                        obj.innerGlow.material.color.setHex(color);
+                        obj.outerGlow.material.color.setHex(color);
+                    }
+                });
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                section.appendChild(div);
+            });
+            container.appendChild(section);
+        })();
+
+        // --- ANIMATION ---
+        function animate() {
+            requestAnimationFrame(animate);
+            mainGroup.rotation.y += CONFIG.rotationSpeed;
+            starField.rotation.y += CONFIG.rotationSpeed * 0.2;
+
+            // DRE Interface planet — slow atmospheric band drift
+            if (mainGroup.userData.interfacePlanet) {
+                mainGroup.userData.interfacePlanet.rotation.y += 0.002;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
 </body>
 </html>
