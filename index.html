@@ -359,7 +359,7 @@
     <div id="dataDisplay">
         <div class="data-line">→ TRACKING REVENUE VECTORS</div>
         <div class="data-line">→ 90-DAY GOAL: ACTIVE</div>
-        <div class="data-line">→ NODES ONLINE: 14</div>
+        <div class="data-line">→ NODES ONLINE: 13</div>
         <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
     </div>
     
@@ -378,6 +378,9 @@
         
         <div class="settings-section">
             <h3>Quick Actions</h3>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #00d4ff 0%, #005f7a 100%); color: #000; font-weight: 800; letter-spacing: 1px;" onclick="window.location.href='DRE_Interface_v4.html'">
+                OPEN DRE INTERFACE
+            </button>
             <button class="portal-btn" onclick="window.location.href='andre.html'">
                 OPEN EVALUATION PORTAL
             </button>
@@ -398,12 +401,6 @@
             </button>
             <button class="portal-btn" style="background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;" onclick="window.location.href='ATS_Config_Pro_v_3_0.html'">
                 OPEN REPRIZAL AI
-            </button>
-            <button class="portal-btn" style="background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;" onclick="window.location.href='Coming_Soon_DreCode.html'">
-                OPEN DRE CODE
-            </button>
-            <button class="portal-btn" style="background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;" onclick="window.location.href='loan_shark_full_system.html'">
-                OPEN LOAN SHARK
             </button>
         </div>
 
@@ -611,34 +608,19 @@
                 portalFile: "ATS_Config_Pro_v_3_0.html"
             },
 
-            // DRE CODE
+            // DRE INTERFACE — LIVE AI CHAT TERMINAL
             {
-                id: "DRE_CODE", x: 20, y: 110, z: 40,
-                name: "Dre Code",
-                category: "Code Editor",
-                desc: "[FOUNDER] The code editor built for creators who move different. Professional tools. Zero gatekeeping.",
-                protocol: "Use: Write, edit, and preview code with AI-powered tools.",
-                public_desc: "The code editor built for creators who move different. Professional tools. Zero gatekeeping. Your universe.\n\n⚡ AI-Powered Editor\n🛡️ Novice Guard Mode\n🔍 Smart Code Search\n🌐 Live Preview",
-                public_protocol: "Action: Open Dre Code → Join Waitlist",
+                id: "DRE_INTERFACE", x: 160, y: 90, z: 80,
+                name: "DRE Interface",
+                category: "AI Chat Terminal · v4",
+                desc: "[FOUNDER] Live AI chat terminal running the full DRE system prompt. Multi-provider, multi-mode. Ford Technical and Book Writing controllers loaded. File attachment enabled (PDF, JSON, TXT, MD). Sessions persist locally.",
+                protocol: "Providers: OpenAI · Anthropic · Google · DeepSeek · Local (LM Studio / Element) · Custom endpoint. API key required — stored locally, never transmitted except to chosen provider.",
+                public_desc: "DRE Interface is a live AI chat terminal running the full $$DRE Alignment Architect system.\n\nConnect your own AI provider and talk directly to DRE — ask about tools, get strategic guidance, audit your spend, or work through a project.\n\n⚡ Controller Modes:\n— DRE Default · General alignment and navigation\n— Ford Technical · Step-by-step technical execution\n— Book Writing · Narrative project support\n\n📎 Attach files directly in chat: PDF, JSON, TXT, Markdown\n\n🔑 Requires your own API key from your preferred provider:\nOpenAI (ChatGPT) · Anthropic (Claude) · Google (Gemini) · DeepSeek · or any local/custom endpoint via LM Studio or Element.\n\nYour key is stored only in your browser. It never touches our servers.",
+                public_protocol: "⚠️ This tool is NOT free. You must supply your own API key from OpenAI, Anthropic, Google, DeepSeek, or a local model. No key = no chat. Get a key from your preferred provider, paste it into Connection Settings, and DRE loads instantly.",
                 isPortal: true,
-                portalFile: "Coming_Soon_DreCode.html",
-                portalLabel: "OPEN DRE CODE",
-                portalStyle: "background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;"
-            },
-
-            // LOAN SHARK
-            {
-                id: "LOAN_SHARK", x: 100, y: -90, z: 20,
-                name: "Loan Shark",
-                category: "Financial Engine",
-                desc: "[FOUNDER] Payday loan survival and sequence calculator. Maps out exact repayment/reborrow steps to survive a pay period and eventually exit debt cycles.",
-                protocol: "Input: Income, Bills, Active Nodes (Earnin, CashApp, etc.) → Output: Sequenced survival path.",
-                public_desc: "Trapped in the payday loan cycle? Loan Shark is a survival engine that calculates the exact sequence of payments and reborrows needed to survive your next payday without defaulting.\n\n✅ Maps out your cash flow timeline\n✅ Generates survival and exit strategies\n✅ Tracks reborrow danger levels",
-                public_protocol: "Action: Open Loan Shark → Input Loans → Run Simulation",
-                isPortal: true,
-                portalFile: "loan_shark_full_system.html",
-                portalLabel: "OPEN LOAN SHARK",
-                portalStyle: "background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000; font-family: 'Share Tech Mono', monospace;"
+                portalFile: "DRE_Interface_v4.html",
+                portalLabel: "OPEN DRE INTERFACE",
+                portalStyle: "background: linear-gradient(135deg, #00d4ff 0%, #005f7a 100%); color: #000; font-weight: 800; letter-spacing: 2px;"
             }
         ];
 
@@ -652,13 +634,12 @@
             "CONTENT":          0xFF6B6B,
             "EXTENSION_DATA":   0x9370DB,
             // New nodes
+            "DRE_INTERFACE":    0x00d4ff, // cyan — matches DRE OS brand color
             "ZIP_TOOL":         0xf59e0b,
             "DRE_FLOW":         0xFF2D78,
             "DRE_EXTRACTOR":    0xFF8C00,
             "DRE_OS":           0x00C853,
-            "REPRIZAL":         0x7C3AED,
-            "DRE_CODE":         0xff4800,
-            "LOAN_SHARK":       0x00ff41
+            "REPRIZAL":         0x7C3AED
         };
 
         // --- SCENE SETUP ---
@@ -743,6 +724,41 @@
             );
             outerGlow.position.copy(pos);
             mainGroup.add(outerGlow);
+
+            // UNIQUE PLANET — DRE Interface gets a Saturn-style ring + hex wireframe overlay
+            if (n.id === 'DRE_INTERFACE') {
+                // Outer ring (torus)
+                const ringGeo = new THREE.TorusGeometry(size * 2.8, size * 0.3, 16, 64);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.55, side: THREE.DoubleSide });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.rotation.x = Math.PI / 2.8;
+                ring.position.copy(pos);
+                mainGroup.add(ring);
+
+                // Second thinner ring at angle
+                const ring2Geo = new THREE.TorusGeometry(size * 3.6, size * 0.12, 8, 64);
+                const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.18, side: THREE.DoubleSide });
+                const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+                ring2.rotation.x = Math.PI / 2.2;
+                ring2.rotation.z = 0.3;
+                ring2.position.copy(pos);
+                mainGroup.add(ring2);
+
+                // Wireframe hex shell over sphere
+                const shellGeo = new THREE.IcosahedronGeometry(size * 1.35, 1);
+                const shellMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, wireframe: true, transparent: true, opacity: 0.25 });
+                const shell = new THREE.Mesh(shellGeo, shellMat);
+                shell.position.copy(pos);
+                mainGroup.add(shell);
+
+                // Animate rings — store refs for animation loop
+                ring.userData.isInterfaceRing = true;
+                ring2.userData.isInterfaceRing2 = true;
+                shell.userData.isInterfaceShell = true;
+                mainGroup.userData.interfaceRing  = ring;
+                mainGroup.userData.interfaceRing2 = ring2;
+                mainGroup.userData.interfaceShell = shell;
+            }
             
             // Text Label
             const canvas = document.createElement('canvas');
@@ -866,8 +882,6 @@
                         'dre-os-v2__1_.html':        'background: linear-gradient(135deg, #00C853 0%, #009624 100%); color: #000;',
                         'ATS_Config_Pro_v_3_0.html': 'background: linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%); color: #fff;',
                         'ZIP_tool.html':             'background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;',
-                        'Coming_Soon_DreCode.html':  'background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;',
-                        'loan_shark_full_system.html': 'background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;',
                     };
                     btn.style.cssText = styleMap[data.portalFile] || '';
                 }
@@ -882,8 +896,6 @@
                         'dre-os-v2__1_.html':        'OPEN DRE OS',
                         'ATS_Config_Pro_v_3_0.html': 'OPEN REPRIZAL AI',
                         'ZIP_tool.html':             'OPEN ZIP TOOL',
-                        'Coming_Soon_DreCode.html':  'OPEN DRE CODE',
-                        'loan_shark_full_system.html': 'OPEN LOAN SHARK'
                     };
                     btn.textContent = labelMap[data.portalFile] || 'OPEN TOOL';
                 }
@@ -958,6 +970,15 @@
             requestAnimationFrame(animate);
             mainGroup.rotation.y += CONFIG.rotationSpeed;
             starField.rotation.y += CONFIG.rotationSpeed * 0.2;
+
+            // DRE Interface ring counter-rotation (world space)
+            if (mainGroup.userData.interfaceRing) {
+                mainGroup.userData.interfaceRing.rotation.z  += 0.004;
+                mainGroup.userData.interfaceRing2.rotation.z -= 0.002;
+                mainGroup.userData.interfaceShell.rotation.y += 0.006;
+                mainGroup.userData.interfaceShell.rotation.x += 0.003;
+            }
+
             controls.update();
             renderer.render(scene, camera);
         }
