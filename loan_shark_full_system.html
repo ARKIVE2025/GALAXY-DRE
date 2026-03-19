@@ -981,7 +981,7 @@
 
 <script>
 // ═══════════════════════════════════════════════
-// Version 2.6 - Liquidity Shuffle Strategy
+// Version 2.7 - AI Context Bills Arrays Fix
 // STATE
 // ═══════════════════════════════════════════════
 let loans = [];
@@ -1039,6 +1039,7 @@ function saveDataLocally() {
     billsC2:  document.getElementById('bills-c2').value,
     billsC3:  document.getElementById('bills-c3').value,
     payday: document.getElementById('payday').value,
+    payFreq: document.getElementById('pay-freq').value,
     cashOnHand: document.getElementById('cash-on-hand').value,
     exitMonths: document.getElementById('exit-months').value,
     priorityMode: document.getElementById('priority-mode').value,
@@ -1066,6 +1067,7 @@ function loadDataLocally() {
     document.getElementById('bills-c3').value = data.billsC3 || data.bills || '0';
     
     document.getElementById('payday').value = data.payday || '';
+    if (data.payFreq) document.getElementById('pay-freq').value = data.payFreq;
     document.getElementById('cash-on-hand').value = data.cashOnHand || '0';
     document.getElementById('exit-months').value = data.exitMonths || '0';
     document.getElementById('priority-mode').value = data.priorityMode || 'liquidity';
@@ -1498,6 +1500,7 @@ function runDecisionGate() {
   const appName = document.getElementById('gate-app').value || 'unknown';
   const days    = parseInt(document.getElementById('gate-days').value) || 14;
   
+  // Use Cycle 1 inputs for gate context
   const income  = parseFloat(document.getElementById('income-c1').value) || 0;
   const bills   = parseFloat(document.getElementById('bills-c1').value) || 0;
 
@@ -1850,7 +1853,11 @@ function buildContextSummary() {
   const incC2 = parseFloat(document.getElementById('income-c2') ? document.getElementById('income-c2').value : 0) || 0;
   const incC3 = parseFloat(document.getElementById('income-c3') ? document.getElementById('income-c3').value : 0) || 0;
   const billsC1 = parseFloat(document.getElementById('bills-c1') ? document.getElementById('bills-c1').value : 0) || 0;
+  const billsC2 = parseFloat(document.getElementById('bills-c2') ? document.getElementById('bills-c2').value : 0) || 0;
+  const billsC3 = parseFloat(document.getElementById('bills-c3') ? document.getElementById('bills-c3').value : 0) || 0;
   const cash = parseFloat(document.getElementById('cash-on-hand') ? document.getElementById('cash-on-hand').value : 0) || 0;
+  const payday = document.getElementById('payday') ? document.getElementById('payday').value : '';
+  const freq = document.getElementById('pay-freq') ? document.getElementById('pay-freq').value : '';
   const exitMonths = parseInt(document.getElementById('exit-months') ? document.getElementById('exit-months').value : 0) || 0;
   const totalOwed  = loans.reduce((s,l) => s + l.owed, 0);
   const totalBorrow= loans.reduce((s,l) => l.reuse==='instant' ? s+l.max : s, 0);
@@ -1862,7 +1869,7 @@ function buildContextSummary() {
   let cycleLines = Object.keys(cycleCounts).map(k => `${k}: ${cycleCounts[k]}x`);
   let cycleSummary = cycleLines.length ? ' | Reuse counts: ' + cycleLines.join(', ') : '';
   
-  return `USER FINANCIAL DATA: income=[$${incC1.toFixed(2)}, $${incC2.toFixed(2)}, $${incC3.toFixed(2)}], cash=$${cash.toFixed(2)}, billsC1=$${billsC1.toFixed(2)}, total owed=$${totalOwed.toFixed(2)}, can reborrow=$${totalBorrow.toFixed(2)}, goal=${exitMonths>0?exitMonths+' mos':'none'} | Loans: ${loanLines.join('; ')}${simSummary}${cycleSummary}`;
+  return `USER FINANCIAL DATA: income=[$${incC1.toFixed(2)}, $${incC2.toFixed(2)}, $${incC3.toFixed(2)}], bills=[$${billsC1.toFixed(2)}, $${billsC2.toFixed(2)}, $${billsC3.toFixed(2)}], cash=$${cash.toFixed(2)}, next payday=${payday} (${freq}), total owed=$${totalOwed.toFixed(2)}, can reborrow=$${totalBorrow.toFixed(2)}, goal=${exitMonths>0?exitMonths+' mos':'none'} | Loans: ${loanLines.join('; ')}${simSummary}${cycleSummary}`;
 }
 
 function refreshDataPreview() {
@@ -1986,6 +1993,7 @@ function exportJSON() {
     billsC2:  document.getElementById('bills-c2').value,
     billsC3:  document.getElementById('bills-c3').value,
     payday: document.getElementById('payday').value,
+    payFreq: document.getElementById('pay-freq').value,
     cashOnHand: document.getElementById('cash-on-hand').value,
     exitMonths: document.getElementById('exit-months').value,
     priorityMode: document.getElementById('priority-mode').value,
