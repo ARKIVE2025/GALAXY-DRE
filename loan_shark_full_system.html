@@ -5,735 +5,472 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SURVIVAL ENGINE // BETA</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
-
-  :root {
-    --green: #00ff41;
-    --green-dim: #00aa2a;
-    --green-dark: #003a0f;
-    --green-glow: rgba(0,255,65,0.15);
-    --amber: #ffb300;
-    --red: #ff3c3c;
-    --bg: #000000;
-    --panel: #030f05;
-    --border: #00ff41;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--green);
-    font-family: 'Share Tech Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Scanline overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
-    );
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  .screen-flicker {
-    animation: flicker 8s infinite;
-  }
-
-  @keyframes flicker {
-    0%,100% { opacity:1 }
-    97% { opacity:1 }
-    97.5% { opacity:0.85 }
-    98% { opacity:1 }
-    99% { opacity:0.9 }
-    99.5% { opacity:1 }
-  }
-
-  /* HEADER */
-  .header {
-    border-bottom: 2px solid var(--green);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--panel);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .logo {
-    font-family: 'VT323', monospace;
-    font-size: 28px;
-    letter-spacing: 4px;
-    text-shadow: 0 0 20px var(--green);
-  }
-
-  .logo span { color: var(--amber); }
-  .logo sup { color: var(--amber); font-size: 12px; letter-spacing: 2px; margin-left: 4px; text-shadow: none; font-family: 'Share Tech Mono', monospace;}
-
-  .status-bar {
-    font-size: 11px;
-    color: var(--green-dim);
-    text-align: right;
-    line-height: 1.6;
-  }
-
-  #clock { color: var(--green); }
-
-  /* TABS */
-  .tabs {
-    display: flex;
-    border-bottom: 1px solid var(--green-dim);
-    background: var(--panel);
-    overflow-x: auto;
-  }
-
-  .tab {
-    padding: 10px 18px;
-    cursor: pointer;
-    font-size: 13px;
-    border: none;
-    background: none;
-    color: var(--green-dim);
-    font-family: 'Share Tech Mono', monospace;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-
-  .tab:hover { color: var(--green); }
-  .tab.active {
-    color: var(--green);
-    border-bottom: 2px solid var(--green);
-    background: var(--green-glow);
-    text-shadow: 0 0 8px var(--green);
-  }
-
-  /* MAIN LAYOUT */
-  .main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  @media (max-width: 768px) {
-    .main { grid-template-columns: 1fr; }
-  }
-
-  .panel {
-    border-right: 1px solid var(--green-dark);
-    border-bottom: 1px solid var(--green-dark);
-    padding: 16px;
-  }
-
-  .panel:nth-child(even) { border-right: none; }
-
-  .panel-title {
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    letter-spacing: 3px;
-    color: var(--green);
-    border-bottom: 1px solid var(--green-dark);
-    padding-bottom: 8px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .panel-title .dot {
-    width: 8px; height: 8px;
-    background: var(--green);
-    border-radius: 50%;
-    box-shadow: 0 0 6px var(--green);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { opacity:1 }
-    50% { opacity:0.3 }
-  }
-
-  /* FORM ELEMENTS */
-  label {
-    display: block;
-    font-size: 11px;
-    color: var(--green-dim);
-    margin-bottom: 4px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  input[type="number"],
-  input[type="text"],
-  input[type="date"],
-  select {
-    width: 100%;
-    background: #000;
-    color: var(--green);
-    border: 1px solid var(--green-dim);
-    padding: 8px 10px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 14px;
-    margin-bottom: 12px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-  }
-
-  input:focus, select:focus {
-    border-color: var(--green);
-    box-shadow: 0 0 10px var(--green-glow);
-  }
-
-  select option { background: #000; }
-
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .field-row-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-  }
-
-  /* LOAN CARDS */
-  .loan-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-
-  .loan-card {
-    background: var(--panel);
-    border: 1px solid var(--green-dark);
-    padding: 10px 12px;
-    position: relative;
-    transition: border-color 0.2s;
-  }
-
-  .loan-card:hover { border-color: var(--green-dim); }
-
-  .loan-card .loan-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .loan-name {
-    font-size: 16px;
-    font-family: 'VT323', monospace;
-    letter-spacing: 2px;
-  }
-
-  .reuse-badge {
-    font-size: 10px;
-    padding: 2px 7px;
-    border: 1px solid;
-    letter-spacing: 1px;
-  }
-
-  .reuse-instant { border-color: var(--green); color: var(--green); }
-  .reuse-delayed { border-color: var(--amber); color: var(--amber); }
-
-  .loan-card .loan-fields {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr 0.8fr auto;
-    gap: 6px;
-    align-items: end;
-  }
-
-  .loan-card label { margin-bottom: 2px; }
-
-  .loan-card input, .loan-card select {
-    margin-bottom: 0;
-    padding: 5px 8px;
-    font-size: 13px;
-  }
-
-  .btn-remove {
-    background: transparent;
-    color: var(--red);
-    border: 1px solid var(--red);
-    cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 16px;
-    padding: 5px 10px;
-    line-height: 1;
-    transition: background 0.2s;
-  }
-
-  .btn-remove:hover { background: rgba(255,60,60,0.15); }
-
-  /* BUTTONS */
-  .btn {
-    background: transparent;
-    color: var(--green);
-    border: 1px solid var(--green);
-    padding: 10px 16px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 14px;
-    cursor: pointer;
-    width: 100%;
-    letter-spacing: 2px;
-    transition: all 0.2s;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
-
-  .btn:hover {
-    background: var(--green-glow);
-    box-shadow: 0 0 15px var(--green-glow);
-    text-shadow: 0 0 8px var(--green);
-  }
-
-  .btn-secondary {
-    border-color: var(--green-dim);
-    color: var(--green-dim);
-    font-size: 12px;
-    padding: 7px;
-  }
-
-  .btn-run {
-    border-color: var(--green);
-    background: var(--green-glow);
-    font-size: 16px;
-    font-family: 'VT323', monospace;
-    letter-spacing: 4px;
-    padding: 12px;
-    box-shadow: 0 0 20px var(--green-glow);
-  }
-
-  .btn-run:hover {
-    background: rgba(0,255,65,0.25);
-    box-shadow: 0 0 30px rgba(0,255,65,0.4);
-  }
-
-  /* OUTPUT TERMINAL */
-  .terminal-output {
-    background: #000;
-    border: 1px solid var(--green-dim);
-    padding: 14px;
-    font-size: 13px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    word-break: break-word;
-    min-height: 200px;
-    max-height: 60vh;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-  }
-
-  .terminal-output::-webkit-scrollbar { width: 4px; }
-  .terminal-output::-webkit-scrollbar-track { background: #000; }
-  .terminal-output::-webkit-scrollbar-thumb { background: var(--green-dim); }
-
-  .out-header { color: var(--green); font-size: 15px; }
-  .out-cycle-header { color: var(--amber); font-size: 16px; font-family: 'VT323', monospace; letter-spacing: 2px; border-top: 1px dashed var(--amber); margin-top: 16px; padding-top: 8px;}
-  .out-ok { color: var(--green); }
-  .out-warn { color: var(--amber); }
-  .out-danger { color: var(--red); }
-  .out-info { color: #00ccff; }
-  .out-dim { color: var(--green-dim); }
-  .out-section {
-    color: var(--green);
-    border-top: 1px solid var(--green-dark);
-    margin-top: 4px;
-    padding-top: 4px;
-  }
-
-  /* DAMAGE METER */
-  .damage-meter {
-    margin: 12px 0;
-    border: 1px solid var(--green-dark);
-    padding: 10px;
-  }
-
-  .damage-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 6px;
-  }
-
-  .meter-track {
-    height: 10px;
-    background: #001a05;
-    border: 1px solid var(--green-dark);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .meter-fill {
-    height: 100%;
-    transition: width 0.6s ease, background 0.6s;
-    box-shadow: 0 0 8px currentColor;
-  }
-
-  /* TIMELINE */
-  .timeline {
-    margin: 8px 0;
-    font-size: 12px;
-  }
-
-  .tl-row {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 8px;
-    margin-bottom: 3px;
-    align-items: center;
-  }
-
-  .tl-date { color: var(--green-dim); font-size: 11px; }
-
-  .tl-bar-wrap {
-    background: #001a05;
-    height: 18px;
-    position: relative;
-    border: 1px solid var(--green-dark);
-  }
-
-  .tl-bar {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    padding-left: 6px;
-    font-size: 10px;
-    transition: width 0.4s;
-  }
-
-  .tl-income { background: rgba(0,255,65,0.25); color: var(--green); }
-  .tl-debt { background: rgba(255,60,60,0.2); color: var(--red); }
-  .tl-borrow { background: rgba(0,204,255,0.2); color: #00ccff; }
-
-  /* STRATEGY CARDS */
-  .strategy-cards { display: flex; flex-direction: column; gap: 8px; }
-
-  .strategy-card {
-    border: 1px solid var(--green-dark);
-    padding: 10px;
-    background: var(--panel);
-  }
-
-  .strategy-card .s-title {
-    font-family: 'VT323', monospace;
-    font-size: 18px;
-    letter-spacing: 2px;
-    margin-bottom: 4px;
-  }
-
-  .strategy-card .s-steps {
-    font-size: 12px;
-    color: var(--green-dim);
-    line-height: 1.7;
-  }
-
-  .s-title-ok { color: var(--green); }
-  .s-title-warn { color: var(--amber); }
-  .s-title-danger { color: var(--red); }
-  .s-title-info { color: #00ccff; }
-
-  /* FULL WIDTH PANEL */
-  .full-panel {
-    grid-column: 1 / -1;
-    border-right: none;
-  }
-
-  /* HIDDEN TABS */
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .tab-page {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* MODAL / OVERLAY */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 500;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal-box {
-    background: var(--bg);
-    border: 2px solid var(--green);
-    padding: 24px;
-    max-width: 500px;
-    width: 92%;
-    box-shadow: 0 0 40px var(--green-glow);
-    position: relative;
-  }
-
-  .modal-title {
-    font-family: 'VT323', monospace;
-    font-size: 24px;
-    letter-spacing: 3px;
-    margin-bottom: 16px;
-    color: var(--green);
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 12px; right: 12px;
-    background: none;
-    border: 1px solid var(--green-dim);
-    color: var(--green-dim);
-    cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
-    padding: 2px 8px;
-  }
-
-  /* CYCLE TRACKER */
-  .cycle-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .cycle-item {
-    border: 1px solid var(--green-dark);
-    padding: 8px;
-    text-align: center;
-    background: var(--panel);
-    font-size: 11px;
-  }
-
-  .cycle-count {
-    font-family: 'VT323', monospace;
-    font-size: 32px;
-    line-height: 1;
-    margin: 4px 0;
-  }
-
-  .cycle-ok { color: var(--green); }
-  .cycle-warn { color: var(--amber); }
-  .cycle-danger { color: var(--red); }
-
-  /* INTRO splash */
-  #splash {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 9000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'VT323', monospace;
-    animation: splashOut 0.4s 2.5s forwards;
-  }
-
-  @keyframes splashOut {
-    to { opacity:0; pointer-events:none; }
-  }
-
-  .splash-logo {
-    font-size: 60px;
-    color: var(--green);
-    text-shadow: 0 0 40px var(--green);
-    letter-spacing: 10px;
-    animation: glitch 1.5s infinite;
-  }
-
-  .splash-sub {
-    font-size: 20px;
-    color: var(--green-dim);
-    letter-spacing: 5px;
-    margin-top: 12px;
-  }
-
-  .splash-bar {
-    width: 300px;
-    height: 3px;
-    background: var(--green-dark);
-    margin-top: 30px;
-    overflow: hidden;
-  }
-
-  .splash-bar-fill {
-    height: 100%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: load 2s ease forwards;
-  }
-
-  @keyframes load { from { width:0 } to { width:100% } }
-
-  @media (max-width: 600px) {
-    .loan-card .loan-fields {
-      grid-template-columns: 1fr 1fr;
-    }
-    .logo { font-size: 20px; }
-    .splash-logo { font-size: 40px; }
-  }
-
-  /* CHAT + SETTINGS TABS */
-  .tab-chat { color: #00ccff !important; }
-  .tab-chat.active { border-bottom: 2px solid #00ccff !important; color: #00ccff !important; text-shadow: 0 0 8px #00ccff !important; background: rgba(0,204,255,0.08) !important; }
-  .tab-settings { color: var(--amber) !important; }
-  .tab-settings.active { border-bottom: 2px solid var(--amber) !important; color: var(--amber) !important; text-shadow: 0 0 8px var(--amber) !important; background: rgba(255,179,0,0.08) !important; }
-  .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 900px; margin: 0 auto; padding: 16px; }
-  .chat-context-bar { background: var(--panel); border: 1px solid var(--green-dark); padding: 8px 14px; font-size: 11px; color: var(--green-dim); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .ctx-pill { background: var(--green-dark); color: var(--green); padding: 2px 8px; font-size: 10px; letter-spacing: 1px; }
-  .chat-messages { flex: 1; overflow-y: auto; background: #000; border: 1px solid var(--green-dark); padding: 14px; margin-bottom: 10px; scroll-behavior: smooth; }
-  .chat-messages::-webkit-scrollbar { width: 4px; }
-  .chat-messages::-webkit-scrollbar-track { background: #000; }
-  .chat-messages::-webkit-scrollbar-thumb { background: var(--green-dim); }
-  .chat-msg { margin-bottom: 14px; line-height: 1.7; font-size: 13px; animation: msgIn 0.2s ease; }
-  @keyframes msgIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
-  .chat-msg .msg-label { font-size: 10px; letter-spacing: 2px; margin-bottom: 3px; }
-  .chat-msg.user .msg-label { color: var(--green-dim); }
-  .chat-msg.user .msg-body  { color: var(--green); }
-  .chat-msg.ai .msg-label   { color: #00ccff; opacity: 0.7; }
-  .chat-msg.ai .msg-body    { color: #ccffee; white-space: pre-wrap; word-break: break-word; }
-  .chat-msg.system .msg-body { color: var(--green-dim); font-size: 11px; font-style: italic; }
-  .chat-input-row { display: flex; gap: 8px; }
-  .chat-input-row input { flex: 1; margin: 0; font-size: 14px; padding: 10px 12px; border-color: #00ccff44; }
-  .chat-input-row input:focus { border-color: #00ccff; box-shadow: 0 0 10px rgba(0,204,255,0.15); }
-  .btn-send { background: transparent; border: 1px solid #00ccff; color: #00ccff; font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 10px 18px; cursor: pointer; letter-spacing: 2px; white-space: nowrap; transition: all 0.2s; }
-  .btn-send:hover { background: rgba(0,204,255,0.12); box-shadow: 0 0 12px rgba(0,204,255,0.2); }
-  .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
-  .typing-indicator { color: #00ccff; font-size: 12px; opacity: 0.7; display: none; margin-bottom: 8px; }
-  .typing-indicator.visible { display: block; animation: blink 1s infinite; }
-  @keyframes blink { 0%,100%{opacity:0.7} 50%{opacity:0.2} }
-  .settings-wrap { max-width: 700px; margin: 0 auto; padding: 24px 16px; }
-  .settings-section { border: 1px solid var(--green-dark); background: var(--panel); padding: 20px; margin-bottom: 20px; }
-  .settings-section .panel-title { margin-bottom: 16px; border-bottom-color: var(--green-dark); }
-  .api-key-wrap { position: relative; }
-  .api-key-wrap input { padding-right: 80px; }
-  .btn-show-key { position: absolute; right: 4px; top: 50%; transform: translateY(-60%); background: transparent; border: 1px solid var(--green-dim); color: var(--green-dim); font-family: 'Share Tech Mono', monospace; font-size: 10px; padding: 3px 8px; cursor: pointer; letter-spacing: 1px; }
-  .api-status { font-size: 11px; margin-top: 6px; min-height: 16px; letter-spacing: 1px; }
-  .api-status.ok    { color: var(--green); }
-  .api-status.error { color: var(--red); }
-  .api-status.info  { color: var(--amber); }
-  .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .setting-item { margin-bottom: 14px; }
-  .setting-item:last-child { margin-bottom: 0; }
-  .setting-desc { font-size: 11px; color: var(--green-dim); margin-top: 4px; line-height: 1.5; }
-  .data-preview { background: #000; border: 1px solid var(--green-dark); padding: 12px; font-size: 11px; color: var(--green-dim); white-space: pre-wrap; max-height: 200px; overflow-y: auto; margin-top: 8px; }
-
-  .export-bar {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-  .btn-export {
-    background: transparent;
-    color: var(--amber);
-    border: 1px solid var(--amber);
-    padding: 7px 14px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-    flex: 1;
-    min-width: 120px;
-  }
-  .btn-export:hover { background: rgba(255,179,0,0.12); box-shadow: 0 0 10px rgba(255,179,0,0.2); }
-  .btn-export:disabled { opacity: 0.35; cursor: not-allowed; }
-  .export-confirm {
-    font-size: 11px;
-    color: var(--green);
-    min-height: 16px;
-    margin-top: 6px;
-    letter-spacing: 1px;
-    display: none;
-  }
-  .export-confirm.show { display: block; }
-  #auto-save-status {
-    font-size: 10px; color: var(--green-dim); margin-left: auto; display: flex; align-items: center; gap: 4px;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+:root {
+  --green: #00ff41;
+  --green-dim: #00aa2a;
+  --green-dark: #003a0f;
+  --green-glow: rgba(0,255,65,0.15);
+  --amber: #ffb300;
+  --red: #ff3c3c;
+  --blue: #00ccff;
+  --bg: #000000;
+  --panel: #030f05;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--green);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* scanlines */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);
+  pointer-events:none;
+  z-index:9999;
+}
+
+@keyframes flicker {
+  0%,98%,100%{opacity:1} 98.5%{opacity:.85} 99.2%{opacity:.93}
+}
+body { animation: flicker 10s infinite; }
+
+/* ── HEADER ── */
+.header {
+  border-bottom: 2px solid var(--green);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { font-family:'VT323',monospace; font-size:26px; letter-spacing:4px; text-shadow:0 0 18px var(--green); }
+.logo span { color:var(--amber); }
+.logo sup { color:var(--amber); font-size:11px; letter-spacing:2px; margin-left:4px; font-family:'Share Tech Mono',monospace; }
+.header-right { display:flex; align-items:center; gap:16px; font-size:11px; color:var(--green-dim); }
+#clock { color:var(--green); }
+#auto-save-status { font-size:10px; color:var(--green-dim); }
+
+/* ── TABS ── */
+.tabs {
+  display:flex;
+  border-bottom:1px solid var(--green-dark);
+  background:var(--panel);
+  overflow-x:auto;
+}
+.tab {
+  padding:10px 16px;
+  cursor:pointer;
+  font-size:12px;
+  border:none;
+  background:none;
+  color:var(--green-dim);
+  font-family:'Share Tech Mono',monospace;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.tab:hover { color:var(--green); }
+.tab.active { color:var(--green); border-bottom-color:var(--green); background:var(--green-glow); text-shadow:0 0 8px var(--green); }
+.tab-chat { color:var(--blue) !important; }
+.tab-chat.active { border-bottom-color:var(--blue) !important; color:var(--blue) !important; text-shadow:0 0 8px var(--blue) !important; background:rgba(0,204,255,.08) !important; }
+.tab-settings { color:var(--amber) !important; }
+.tab-settings.active { border-bottom-color:var(--amber) !important; color:var(--amber) !important; text-shadow:0 0 8px var(--amber) !important; background:rgba(255,179,0,.08) !important; }
+
+/* ── TAB CONTENT ── */
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ── GRID ── */
+.main {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  max-width:1200px;
+  margin:0 auto;
+}
+@media(max-width:768px){ .main{ grid-template-columns:1fr; } }
+
+.panel {
+  border-right:1px solid var(--green-dark);
+  border-bottom:1px solid var(--green-dark);
+  padding:16px;
+}
+.panel:nth-child(even) { border-right:none; }
+.full-panel { grid-column:1/-1; border-right:none; }
+
+.panel-title {
+  font-family:'VT323',monospace;
+  font-size:19px;
+  letter-spacing:3px;
+  border-bottom:1px solid var(--green-dark);
+  padding-bottom:7px;
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.dot {
+  width:8px; height:8px;
+  background:var(--green);
+  border-radius:50%;
+  box-shadow:0 0 6px var(--green);
+  flex-shrink:0;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+.dot { animation:pulse 2s infinite; }
+
+/* ── FORM ELEMENTS ── */
+label {
+  display:block;
+  font-size:10px;
+  color:var(--green-dim);
+  margin-bottom:3px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+input[type="number"],
+input[type="text"],
+input[type="date"],
+select {
+  width:100%;
+  background:#000;
+  color:var(--green);
+  border:1px solid var(--green-dim);
+  padding:7px 10px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  margin-bottom:10px;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+  -webkit-appearance:none;
+  appearance:none;
+}
+input:focus, select:focus { border-color:var(--green); box-shadow:0 0 8px var(--green-glow); }
+select option { background:#000; }
+
+.field-row   { display:grid; grid-template-columns:1fr 1fr;     gap:10px; }
+.field-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;  }
+
+/* ── BUTTONS ── */
+.btn {
+  background:transparent;
+  color:var(--green);
+  border:1px solid var(--green);
+  padding:10px 16px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  cursor:pointer;
+  width:100%;
+  letter-spacing:2px;
+  transition:all .2s;
+  margin-bottom:8px;
+  text-transform:uppercase;
+}
+.btn:hover { background:var(--green-glow); box-shadow:0 0 14px var(--green-glow); text-shadow:0 0 8px var(--green); }
+.btn-secondary { border-color:var(--green-dark); color:var(--green-dim); font-size:11px; padding:6px; }
+.btn-secondary:hover { border-color:var(--green-dim); color:var(--green); background:none; box-shadow:none; text-shadow:none; }
+.btn-run {
+  border-color:var(--green);
+  background:var(--green-glow);
+  font-size:18px;
+  font-family:'VT323',monospace;
+  letter-spacing:5px;
+  padding:14px;
+  box-shadow:0 0 20px var(--green-glow);
+}
+.btn-run:hover { background:rgba(0,255,65,.22); box-shadow:0 0 30px rgba(0,255,65,.4); }
+.btn-remove {
+  background:transparent; color:var(--red); border:1px solid var(--red);
+  cursor:pointer; font-family:'Share Tech Mono',monospace;
+  font-size:15px; padding:4px 9px; line-height:1; transition:background .2s;
+}
+.btn-remove:hover { background:rgba(255,60,60,.15); }
+
+/* ── LOAN CARDS ── */
+.loan-list { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+.loan-card {
+  background:var(--panel);
+  border:1px solid var(--green-dark);
+  padding:10px 12px;
+  transition:border-color .2s;
+}
+.loan-card:hover { border-color:var(--green-dim); }
+.loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.loan-name { font-size:15px; font-family:'VT323',monospace; letter-spacing:2px; }
+.reuse-badge { font-size:9px; padding:2px 7px; border:1px solid; letter-spacing:1px; }
+.reuse-instant { border-color:var(--green); color:var(--green); }
+.reuse-delayed { border-color:var(--amber); color:var(--amber); }
+.loan-fields { display:grid; grid-template-columns:1.2fr 1fr 1fr 0.8fr auto; gap:6px; align-items:end; }
+.loan-card label { margin-bottom:2px; }
+.loan-card input, .loan-card select { margin-bottom:0; padding:5px 7px; font-size:12px; }
+.loan-options { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.loan-options select { flex:1; min-width:110px; margin:0; padding:4px 6px; font-size:10px; }
+.loan-options select:nth-child(2) { border-color:var(--amber); }
+
+/* ── TERMINAL OUTPUT ── */
+.terminal-output {
+  background:#000;
+  border:1px solid var(--green-dark);
+  padding:12px;
+  font-size:12px;
+  line-height:1.75;
+  white-space:pre-wrap;
+  word-break:break-word;
+  min-height:160px;
+  max-height:55vh;
+  overflow-y:auto;
+  scroll-behavior:smooth;
+}
+.terminal-output::-webkit-scrollbar { width:3px; }
+.terminal-output::-webkit-scrollbar-thumb { background:var(--green-dim); }
+
+.out-ok     { color:var(--green); }
+.out-warn   { color:var(--amber); }
+.out-danger { color:var(--red); }
+.out-info   { color:var(--blue); }
+.out-dim    { color:var(--green-dim); }
+.out-cycle  { color:var(--amber); font-family:'VT323',monospace; font-size:15px; letter-spacing:2px; border-top:1px dashed var(--amber); margin-top:12px; padding-top:6px; display:block; }
+
+/* ── SUMMARY CARDS ── */
+.summary-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:8px;
+  margin-bottom:14px;
+}
+.summary-card {
+  background:#000;
+  border:1px solid var(--green-dark);
+  padding:10px 12px;
+  text-align:center;
+}
+.summary-card .sc-label { font-size:9px; color:var(--green-dim); letter-spacing:1px; margin-bottom:4px; }
+.summary-card .sc-value { font-family:'VT323',monospace; font-size:28px; line-height:1; }
+.summary-card .sc-sub   { font-size:9px; color:var(--green-dim); margin-top:3px; }
+.sc-green  { color:var(--green); }
+.sc-amber  { color:var(--amber); }
+.sc-red    { color:var(--red); }
+.sc-blue   { color:var(--blue); }
+
+.result-box {
+  border:1px solid var(--green-dark);
+  padding:12px;
+  margin-bottom:10px;
+  background:#000;
+  font-size:12px;
+  line-height:1.8;
+}
+.result-box.ok     { border-color:var(--green); }
+.result-box.warn   { border-color:var(--amber); }
+.result-box.danger { border-color:var(--red); }
+.result-box .rb-title { font-family:'VT323',monospace; font-size:16px; letter-spacing:2px; margin-bottom:6px; }
+
+/* ── STRESS METER ── */
+.meter-wrap { border:1px solid var(--green-dark); padding:10px; margin:10px 0; }
+.meter-label { display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; }
+.meter-track { height:10px; background:#001a05; border:1px solid var(--green-dark); overflow:hidden; }
+.meter-fill { height:100%; transition:width .6s ease, background .6s; box-shadow:0 0 6px currentColor; }
+
+/* ── TIMELINE ── */
+.timeline { font-size:11px; margin:8px 0; }
+.tl-row { display:grid; grid-template-columns:70px 1fr; gap:6px; margin-bottom:3px; align-items:center; }
+.tl-label { color:var(--green-dim); font-size:10px; }
+.tl-bar-wrap { background:#001a05; height:17px; border:1px solid var(--green-dark); }
+.tl-bar { height:100%; display:flex; align-items:center; padding-left:5px; font-size:9px; transition:width .4s; }
+.tl-income { background:rgba(0,255,65,.22); color:var(--green); }
+.tl-debt   { background:rgba(255,60,60,.18); color:var(--red); }
+.tl-borrow { background:rgba(0,204,255,.18); color:var(--blue); }
+
+/* ── STRATEGY CARDS ── */
+.strategy-cards { display:flex; flex-direction:column; gap:8px; }
+.strategy-card { border:1px solid var(--green-dark); padding:12px; background:var(--panel); }
+.s-title { font-family:'VT323',monospace; font-size:17px; letter-spacing:2px; margin-bottom:5px; }
+.s-steps { font-size:11px; color:var(--green-dim); line-height:1.8; }
+.s-ok     { color:var(--green); }
+.s-warn   { color:var(--amber); }
+.s-danger { color:var(--red); }
+.s-blue   { color:var(--blue); }
+
+/* ── CYCLE TRACKER ── */
+.cycle-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; margin-bottom:12px; }
+.cycle-item { border:1px solid var(--green-dark); padding:8px; text-align:center; background:var(--panel); }
+.cycle-count { font-family:'VT323',monospace; font-size:30px; line-height:1; margin:3px 0; }
+.cycle-ok     { color:var(--green); }
+.cycle-warn   { color:var(--amber); }
+.cycle-danger { color:var(--red); }
+
+/* ── EXPORT ── */
+.export-bar { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.btn-export {
+  background:transparent; color:var(--amber); border:1px solid var(--amber);
+  padding:6px 12px; font-family:'Share Tech Mono',monospace; font-size:11px;
+  cursor:pointer; letter-spacing:1px; transition:all .2s; flex:1; min-width:110px;
+}
+.btn-export:hover { background:rgba(255,179,0,.1); }
+.btn-export:disabled { opacity:.3; cursor:not-allowed; }
+.export-confirm { font-size:10px; color:var(--green); margin-top:5px; display:none; }
+.export-confirm.show { display:block; }
+
+/* ── CHAT ── */
+.chat-wrap { display:flex; flex-direction:column; height:calc(100vh - 115px); max-width:900px; margin:0 auto; padding:14px; }
+.chat-context-bar { background:var(--panel); border:1px solid var(--green-dark); padding:7px 12px; font-size:10px; color:var(--green-dim); margin-bottom:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.ctx-pill { background:var(--green-dark); color:var(--green); padding:2px 7px; font-size:9px; letter-spacing:1px; }
+.chat-messages { flex:1; overflow-y:auto; background:#000; border:1px solid var(--green-dark); padding:12px; margin-bottom:8px; scroll-behavior:smooth; }
+.chat-messages::-webkit-scrollbar { width:3px; }
+.chat-messages::-webkit-scrollbar-thumb { background:var(--green-dim); }
+.chat-msg { margin-bottom:12px; line-height:1.7; font-size:12px; animation:msgIn .2s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+.msg-label { font-size:9px; letter-spacing:2px; margin-bottom:3px; }
+.chat-msg.user .msg-label { color:var(--green-dim); }
+.chat-msg.user .msg-body  { color:var(--green); }
+.chat-msg.ai .msg-label   { color:var(--blue); opacity:.7; }
+.chat-msg.ai .msg-body    { color:#ccffee; white-space:pre-wrap; word-break:break-word; }
+.chat-msg.system .msg-body { color:var(--green-dim); font-size:10px; font-style:italic; }
+.chat-input-row { display:flex; gap:8px; }
+.chat-input-row input { flex:1; margin:0; padding:9px 11px; border-color:rgba(0,204,255,.3); }
+.chat-input-row input:focus { border-color:var(--blue); box-shadow:0 0 8px rgba(0,204,255,.15); }
+.btn-send { background:transparent; border:1px solid var(--blue); color:var(--blue); font-family:'Share Tech Mono',monospace; font-size:13px; padding:9px 16px; cursor:pointer; letter-spacing:2px; white-space:nowrap; transition:all .2s; }
+.btn-send:hover { background:rgba(0,204,255,.1); }
+.btn-send:disabled { opacity:.4; cursor:not-allowed; }
+.typing-indicator { color:var(--blue); font-size:11px; opacity:.7; display:none; margin-bottom:6px; }
+.typing-indicator.visible { display:block; animation:blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:.7} 50%{opacity:.2} }
+
+/* ── SETTINGS ── */
+.settings-wrap { max-width:700px; margin:0 auto; padding:20px 16px; }
+.settings-section { border:1px solid var(--green-dark); background:var(--panel); padding:18px; margin-bottom:16px; }
+.settings-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.setting-item { margin-bottom:12px; }
+.setting-item:last-child { margin-bottom:0; }
+.setting-desc { font-size:10px; color:var(--green-dim); margin-top:3px; line-height:1.5; }
+.api-key-wrap { position:relative; }
+.api-key-wrap input { padding-right:75px; }
+.btn-show-key { position:absolute; right:4px; top:50%; transform:translateY(-60%); background:transparent; border:1px solid var(--green-dim); color:var(--green-dim); font-family:'Share Tech Mono',monospace; font-size:9px; padding:3px 7px; cursor:pointer; }
+.api-status { font-size:10px; margin-top:5px; letter-spacing:1px; min-height:14px; }
+.api-status.ok    { color:var(--green); }
+.api-status.error { color:var(--red); }
+.api-status.info  { color:var(--amber); }
+.data-preview { background:#000; border:1px solid var(--green-dark); padding:10px; font-size:10px; color:var(--green-dim); white-space:pre-wrap; max-height:180px; overflow-y:auto; margin-top:6px; }
+
+/* ── SPLASH ── */
+#splash {
+  position:fixed; inset:0; background:#000; z-index:9000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'VT323',monospace;
+  animation:splashOut .4s 2.4s forwards;
+}
+@keyframes splashOut { to{opacity:0;pointer-events:none} }
+.splash-logo { font-size:56px; color:var(--green); text-shadow:0 0 40px var(--green); letter-spacing:10px; }
+.splash-sub  { font-size:18px; color:var(--green-dim); letter-spacing:5px; margin-top:10px; }
+.splash-bar  { width:280px; height:3px; background:var(--green-dark); margin-top:28px; overflow:hidden; }
+.splash-fill { height:100%; background:var(--green); box-shadow:0 0 8px var(--green); animation:loadBar 2.2s ease forwards; }
+@keyframes loadBar { from{width:0} to{width:100%} }
+
+/* ── FOOTER ── */
+.footer { border-top:1px solid var(--green-dark); padding:12px 16px; text-align:center; background:var(--panel); font-size:11px; color:var(--green-dim); letter-spacing:2px; }
+.footer a { color:var(--green); text-decoration:none; text-shadow:0 0 8px var(--green); }
+
+@media(max-width:600px){
+  .loan-fields { grid-template-columns:1fr 1fr; }
+  .logo { font-size:18px; }
+  .splash-logo { font-size:38px; }
+  .summary-grid { grid-template-columns:1fr 1fr; }
+}
 </style>
 </head>
-<body class="screen-flicker">
+<body>
 
+<!-- SPLASH -->
 <div id="splash">
   <div class="splash-logo">SURVIVAL ENGINE</div>
   <div class="splash-sub">YOUR PAYCHECK SIMULATOR</div>
-  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
 </div>
 
+<!-- HEADER -->
 <div class="header">
   <div class="logo">SURVIVAL<span>ENGINE</span> <sup>BETA</sup></div>
-  <div class="status-bar" style="display:flex; align-items:center; gap: 16px; justify-content: flex-end;">
-    <div id="auto-save-status">✓ Autosaved Locally</div>
+  <div class="header-right">
+    <div id="auto-save-status">✓ Autosaved</div>
     <div id="clock">--:--:--</div>
-    <div id="mode-display">STATUS: READY</div>
+    <div id="mode-display" style="color:var(--green-dim)">READY</div>
   </div>
 </div>
 
+<!-- TABS -->
 <div class="tabs">
-  <button type="button" class="tab active" onclick="switchTab('setup')">[ MY INFO ]</button>
-  <button type="button" class="tab" onclick="switchTab('simulation')">[ MY PLAN ]</button>
-  <button type="button" class="tab" onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
-  <button type="button" class="tab" onclick="switchTab('tracker')">[ MY HISTORY ]</button>
-  <button type="button" class="tab tab-chat" onclick="switchTab('chat')">[ ASK AI ]</button>
-  <button type="button" class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS & SAVE ]</button>
+  <button type="button" class="tab active"      onclick="switchTab('setup')">[ MY INFO ]</button>
+  <button type="button" class="tab"             onclick="switchTab('simulation')">[ MY PLAN ]</button>
+  <button type="button" class="tab"             onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
+  <button type="button" class="tab"             onclick="switchTab('tracker')">[ MY HISTORY ]</button>
+  <button type="button" class="tab tab-chat"    onclick="switchTab('chat')">[ ASK AI ]</button>
+  <button type="button" class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS ]</button>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: MY INFO (SETUP)
+══════════════════════════════════════════════ -->
 <div id="tab-setup" class="tab-content active">
 <div class="main">
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> YOUR INCOME & BILLS</div>
-    
-    <label>Your Paychecks ($) - Next 3 Cycles</label>
+    <div class="panel-title"><div class="dot"></div> YOUR INCOME &amp; BILLS</div>
+
+    <label>Your Paychecks ($) — enter the same amount if it doesn't change</label>
     <div class="field-row-3">
-      <input type="number" id="income-c1" value="310" step="0.01" placeholder="Cycle 1" onchange="saveDataLocally()">
-      <input type="number" id="income-c2" value="310" step="0.01" placeholder="Cycle 2" onchange="saveDataLocally()">
-      <input type="number" id="income-c3" value="310" step="0.01" placeholder="Cycle 3" onchange="saveDataLocally()">
+      <div><label>Paycheck 1</label><input type="number" id="income-c1" value="310" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label>Paycheck 2</label><input type="number" id="income-c2" value="310" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label>Paycheck 3</label><input type="number" id="income-c3" value="310" step="0.01" min="0" onchange="saveData()"></div>
     </div>
 
-    <label>Total Bills ($) - Next 3 Cycles</label>
+    <label>Total Bills ($) — rent, phone, utilities, etc. per paycheck</label>
     <div class="field-row-3">
-      <input type="number" id="bills-c1" value="0" step="0.01" placeholder="Cycle 1" onchange="saveDataLocally()">
-      <input type="number" id="bills-c2" value="0" step="0.01" placeholder="Cycle 2" onchange="saveDataLocally()">
-      <input type="number" id="bills-c3" value="0" step="0.01" placeholder="Cycle 3" onchange="saveDataLocally()">
+      <div><label>Bills — Paycheck 1</label><input type="number" id="bills-c1" value="0" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label>Bills — Paycheck 2</label><input type="number" id="bills-c2" value="0" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label>Bills — Paycheck 3</label><input type="number" id="bills-c3" value="0" step="0.01" min="0" onchange="saveData()"></div>
     </div>
 
-    <div class="field-row" style="margin-top:8px;">
+    <div class="field-row">
       <div>
         <label>Next Payday Date</label>
-        <input type="date" id="payday" onchange="saveDataLocally()">
+        <input type="date" id="payday" onchange="saveData()">
       </div>
       <div>
-        <label>Cash on hand ($)</label>
-        <input type="number" id="cash-on-hand" value="0" step="0.01" onchange="saveDataLocally()">
+        <label>Pay Frequency</label>
+        <select id="pay-freq" onchange="saveData()">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly" selected>Every 2 Weeks</option>
+          <option value="semimonthly">Twice a Month</option>
+          <option value="monthly">Monthly</option>
+        </select>
       </div>
     </div>
 
-    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> YOUR GOAL</div>
+    <label>Cash on hand right now ($)</label>
+    <input type="number" id="cash-on-hand" value="0" step="0.01" min="0" onchange="saveData()">
 
-    <label>Target months to be loan-app-free (enter 0 to skip)</label>
-    <input type="number" id="exit-months" value="0" min="0" onchange="saveDataLocally()">
+    <div class="panel-title" style="margin-top:14px"><div class="dot"></div> YOUR GOAL</div>
 
-    <label>How should the system prioritize your payments?</label>
-    <select id="priority-mode" onchange="saveDataLocally()">
-      <option value="liquidity">Keep cash flowing (pay apps I can borrow from again first)</option>
-      <option value="debt">Reduce what I owe (pay smallest balances first)</option>
-      <option value="survival">Pure survival (clear as many loans as possible)</option>
+    <label>How many months until you want to be free of loan apps? (0 = skip)</label>
+    <input type="number" id="exit-months" value="0" min="0" onchange="saveData()">
+
+    <label>How should the plan prioritize payments?</label>
+    <select id="priority-mode" onchange="saveData()">
+      <option value="liquidity">Keep cash flowing — pay apps I can re-borrow from first</option>
+      <option value="debt">Reduce what I owe — pay smallest balances first</option>
+      <option value="survival">Pure survival — clear as many loans as possible</option>
     </select>
   </div>
 
@@ -744,60 +481,79 @@
     <button type="button" class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD EXAMPLE DATA</button>
   </div>
 
-  <div class="panel full-panel" style="text-align:center; padding:16px;">
-    <button type="button" class="btn btn-run" onclick="runMultiCycleSimulation()">▶ RUN MULTI-CYCLE FORECAST</button>
+  <div class="panel full-panel" style="text-align:center; padding:18px;">
+    <button type="button" class="btn btn-run" onclick="runForecast()">▶ RUN FORECAST</button>
+    <div style="font-size:10px;color:var(--green-dim);margin-top:6px;letter-spacing:1px">SHOWS YOUR NEXT 3 PAYCHECKS — WHAT YOU CAN PAY AND WHAT YOU CAN'T</div>
   </div>
 
 </div>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: MY PLAN (SIMULATION)
+══════════════════════════════════════════════ -->
 <div id="tab-simulation" class="tab-content">
-<div class="main">
 
-  <div class="panel">
-    <div class="panel-title"><div class="dot"></div> 3-PAYCHECK FORECAST</div>
-    <div class="terminal-output" id="output">
-<span class="out-dim">// Set up your loans above, then hit "Run Multi-Cycle Forecast" to see the true cost of your loan loop.</span>
+  <!-- Top: Run button + plain summary -->
+  <div style="max-width:1200px;margin:0 auto;padding:16px;border-bottom:1px solid var(--green-dark);">
+    <button type="button" class="btn btn-run" style="max-width:400px;margin:0 auto 14px;display:block" onclick="runForecast()">▶ RUN FORECAST</button>
+
+    <div class="panel-title" style="border:none;margin-bottom:10px;"><div class="dot"></div> WHAT THIS MEANS IN PLAIN ENGLISH</div>
+    <div id="plain-summary" style="font-size:12px;color:var(--green-dim);line-height:1.9">
+      Run the forecast above to see a simple breakdown of your situation.
     </div>
-    <div class="export-bar" style="margin-top:10px">
-      <button type="button" class="btn-export" id="btn-export-txt" onclick="exportTXT()" disabled>&#8681; EXPORT SUMMARY (.TXT)</button>
-      <button type="button" class="btn-export" id="btn-export-csv" onclick="exportCSV()" disabled>&#8681; EXPORT LOANS (.CSV)</button>
-    </div>
-    <div class="export-confirm" id="export-confirm">&#10003; File downloaded — open it in any app</div>
+
+    <div class="summary-grid" id="summary-cards" style="margin-top:14px"></div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title"><div class="dot"></div> LONG TERM STRESS LEVEL</div>
-    <div class="damage-meter">
-      <div class="damage-label">
-        <span>Cycle Stress Level</span>
-        <span id="damage-val">--</span>
+  <div class="main">
+
+    <div class="panel">
+      <div class="panel-title"><div class="dot"></div> 3-PAYCHECK DETAILED LOG</div>
+      <div class="terminal-output" id="output">
+<span class="out-dim">// Your step-by-step breakdown will appear here after you run the forecast.</span>
       </div>
-      <div class="meter-track">
-        <div class="meter-fill" id="damage-bar" style="width:0%"></div>
+      <div class="export-bar">
+        <button type="button" class="btn-export" id="btn-export-txt" onclick="exportTXT()" disabled>↓ SUMMARY (.TXT)</button>
+        <button type="button" class="btn-export" id="btn-export-csv" onclick="exportCSV()" disabled>↓ LOANS (.CSV)</button>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--green-dim);margin-top:4px">
-        <span>UNDER CONTROL</span><span>HIGH STRESS</span>
+      <div class="export-confirm" id="export-confirm">✓ File downloaded</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><div class="dot"></div> FINANCIAL STRESS LEVEL</div>
+      <div class="meter-wrap">
+        <div class="meter-label">
+          <span>Overall Pressure</span>
+          <span id="stress-val" style="color:var(--green-dim)">--</span>
+        </div>
+        <div class="meter-track">
+          <div class="meter-fill" id="stress-bar" style="width:0%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--green-dim);margin-top:3px">
+          <span>UNDER CONTROL</span><span>HIGH STRESS</span>
+        </div>
+      </div>
+
+      <div class="panel-title" style="margin-top:14px"><div class="dot"></div> PAYCHECK 1 TIMELINE</div>
+      <div class="timeline" id="timeline">
+        <span class="out-dim" style="font-size:11px">// Run forecast to generate timeline</span>
+      </div>
+
+      <div class="panel-title" style="margin-top:14px"><div class="dot"></div> CYCLE 1 — LOAN OUTCOMES</div>
+      <div id="loan-status" style="font-size:12px;line-height:2;margin-top:4px">
+        <span class="out-dim">// Run forecast to see each loan's result</span>
       </div>
     </div>
 
-    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> CYCLE 1 TIMELINE</div>
-    <div class="timeline" id="timeline">
-      <span class="out-dim" style="font-size:12px">// Run simulation to generate timeline</span>
-    </div>
-
-    <div class="panel-title" style="margin-top:16px"><div class="dot"></div> CYCLE 1 OUTCOME</div>
-    <div id="loan-status" style="font-size:12px;line-height:2">
-      <span class="out-dim">// Run your plan to see each loan's outcome</span>
-    </div>
   </div>
-
-</div>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: WHAT TO DO (STRATEGY)
+══════════════════════════════════════════════ -->
 <div id="tab-strategy" class="tab-content">
-<div class="tab-page">
-<div class="main">
+<div class="main" style="max-width:1200px;margin:0 auto;">
 
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> YOUR OPTIONS — WHAT TO DO NEXT</div>
@@ -808,45 +564,47 @@
 
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> SHOULD I BORROW RIGHT NOW?</div>
-    <div style="margin-bottom:12px;font-size:12px;color:var(--green-dim)">// Check this BEFORE opening any loan app</div>
+    <div style="font-size:11px;color:var(--green-dim);margin-bottom:10px">Check this BEFORE opening any loan app</div>
 
     <label>How much do you want to borrow? ($)</label>
-    <input type="number" id="gate-amount" value="100" step="0.01">
+    <input type="number" id="gate-amount" value="100" step="0.01" min="0">
 
-    <label>Which app are you borrowing from?</label>
+    <label>Which app?</label>
     <input type="text" id="gate-app" placeholder="e.g. Earnin, CashApp...">
 
     <label>How many days until you have to pay it back?</label>
-    <input type="number" id="gate-days" value="14">
+    <input type="number" id="gate-days" value="14" min="1">
 
-    <button type="button" class="btn" onclick="runDecisionGate()">▶ CHECK IF THIS IS A GOOD IDEA</button>
+    <button type="button" class="btn" onclick="runDecisionGate()">▶ CHECK IF THIS IS SMART</button>
 
-    <div class="terminal-output" id="gate-output" style="min-height:120px">
-      <span class="out-dim">// The answer will appear here after you check</span>
+    <div class="terminal-output" id="gate-output" style="min-height:100px">
+      <span class="out-dim">// Answer appears here</span>
     </div>
   </div>
 
   <div class="panel full-panel">
     <div class="panel-title"><div class="dot"></div> EMERGENCY PLAN — WHEN YOU HAVE NOTHING LEFT TO BORROW</div>
-    <div id="recovery-output" style="font-size:13px;line-height:1.8;color:var(--green-dim);padding:8px">
-      // This section activates when you have no borrowing power left anywhere.<br>
-      // Run your plan to see if this applies to you.
+    <div id="recovery-output" style="font-size:12px;line-height:1.9;color:var(--green-dim);padding:6px">
+      Run your plan first to see if an emergency plan applies to you.
     </div>
   </div>
 
 </div>
 </div>
-</div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: MY HISTORY (TRACKER)
+══════════════════════════════════════════════ -->
 <div id="tab-tracker" class="tab-content">
-<div class="tab-page">
-<div class="main">
+<div class="main" style="max-width:1200px;margin:0 auto;">
 
   <div class="panel">
-    <div class="panel-title"><div class="dot"></div> HOW MANY TIMES HAVE YOU USED EACH APP?</div>
-    <div style="font-size:11px;color:var(--green-dim);margin-bottom:10px">The more times you reborrow from the same app, the harder it gets to break free. Watch these numbers.</div>
+    <div class="panel-title"><div class="dot"></div> HOW MANY TIMES PER APP</div>
+    <div style="font-size:10px;color:var(--green-dim);margin-bottom:10px;line-height:1.6">
+      The more times you re-borrow from the same app, the harder it is to break free. Watch these numbers climb.
+    </div>
     <div class="cycle-grid" id="cycle-grid">
-      <span class="out-dim" style="font-size:12px">// Add your loans to see this tracker</span>
+      <span class="out-dim" style="font-size:11px">// Add your loans to see this tracker</span>
     </div>
     <button type="button" class="btn btn-secondary" onclick="updateCycleTrackerUI()">⟳ REFRESH</button>
   </div>
@@ -866,61 +624,67 @@
     </select>
 
     <label>Amount ($)</label>
-    <input type="number" id="cycle-amount" value="0" step="0.01">
+    <input type="number" id="cycle-amount" value="0" step="0.01" min="0">
 
-    <label>Any notes? (optional)</label>
-    <input type="text" id="cycle-notes" placeholder="e.g. paid late, contacted support...">
+    <label>Notes (optional)</label>
+    <input type="text" id="cycle-notes" placeholder="e.g. paid late, called support...">
 
     <button type="button" class="btn" onclick="logCycleEvent()">▶ SAVE THIS EVENT</button>
   </div>
 
   <div class="panel full-panel">
-    <div class="panel-title"><div class="dot"></div> YOUR ACTIVITY LOG</div>
-    <div class="terminal-output" id="cycle-log" style="max-height:250px">
-      <span class="out-dim">// Nothing logged yet — record your first event above</span>
+    <div class="panel-title"><div class="dot"></div> ACTIVITY LOG</div>
+    <div class="terminal-output" id="cycle-log" style="max-height:220px">
+      <span class="out-dim">// Nothing logged yet</span>
     </div>
     <button type="button" class="btn btn-secondary" onclick="clearCycleLog()" style="margin-top:8px">✕ CLEAR LOG</button>
   </div>
 
 </div>
 </div>
-</div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: ASK AI (CHAT)
+══════════════════════════════════════════════ -->
 <div id="tab-chat" class="tab-content">
 <div class="chat-wrap">
   <div class="chat-context-bar">
-    <span style="color:var(--green);letter-spacing:1px">AI ADVISOR</span>
+    <span style="color:var(--green);letter-spacing:1px;font-size:10px">AI ADVISOR</span>
     <span class="ctx-pill" id="ctx-income-pill">INCOME: --</span>
     <span class="ctx-pill" id="ctx-loans-pill">LOANS: --</span>
-    <span class="ctx-pill" id="ctx-balance-pill">LAST BALANCE: --</span>
-    <span style="margin-left:auto;font-size:10px" id="api-indicator">No API key &mdash; add one in Settings</span>
+    <span class="ctx-pill" id="ctx-balance-pill">BALANCE: --</span>
+    <span style="margin-left:auto;font-size:9px" id="api-indicator">No API key — add one in Settings</span>
   </div>
   <div class="chat-messages" id="chat-messages">
     <div class="chat-msg system">
-      <div class="msg-body">// Welcome. I know your loan situation and can help you think through decisions, explain what the plan means, or walk you through next steps.<br><br>// Add your API key in the Settings tab to activate me.</div>
+      <div class="msg-body">// I know your loan situation and can help you think through decisions, understand your plan, or figure out next steps.<br><br>// Add your API key in the Settings tab to turn me on.</div>
     </div>
   </div>
-  <div class="typing-indicator" id="typing-indicator">&#9679; AI is thinking...</div>
+  <div class="typing-indicator" id="typing-indicator">● AI is thinking...</div>
   <div class="chat-input-row">
     <input type="text" id="chat-input" placeholder="Ask something... e.g. Which loan should I pay first?" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat();}">
-    <button type="button" class="btn-send" id="btn-send" onclick="sendChat()">SEND &#9654;</button>
+    <button type="button" class="btn-send" id="btn-send" onclick="sendChat()">SEND ▶</button>
   </div>
 </div>
 </div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: SETTINGS
+══════════════════════════════════════════════ -->
 <div id="tab-settings" class="tab-content">
 <div class="settings-wrap">
+
   <div class="settings-section">
-    <div class="panel-title"><div class="dot"></div> SAVE & BACKUP DATA</div>
-    <div style="font-size:12px;color:var(--green-dim);margin-bottom:12px;line-height:1.6">
-      Your data automatically saves to this browser. To back it up to Google Drive, click <strong>EXPORT TO DRIVE</strong> below, and save the file to your Google Drive synced folder. Use <strong>IMPORT DATA</strong> to load it back anytime.
+    <div class="panel-title"><div class="dot"></div> SAVE &amp; BACKUP</div>
+    <div style="font-size:11px;color:var(--green-dim);margin-bottom:12px;line-height:1.7">
+      Your data saves automatically to this browser. Export a backup file to keep it safe or move it to another device.
     </div>
     <div class="export-bar" style="margin-top:0">
-      <button type="button" class="btn-export" onclick="exportJSON()" style="color:var(--green);border-color:var(--green)">&#8681; EXPORT TO DRIVE (.JSON)</button>
-      <button type="button" class="btn-export" onclick="document.getElementById('import-file').click()" style="color:#00ccff;border-color:#00ccff">&#8679; IMPORT DATA (.JSON)</button>
+      <button type="button" class="btn-export" onclick="exportJSON()" style="color:var(--green);border-color:var(--green)">↓ EXPORT BACKUP (.JSON)</button>
+      <button type="button" class="btn-export" onclick="document.getElementById('import-file').click()" style="color:var(--blue);border-color:var(--blue)">↑ IMPORT BACKUP (.JSON)</button>
       <input type="file" id="import-file" style="display:none" accept=".json" onchange="importJSON(event)">
     </div>
-    <div class="export-confirm" id="import-confirm" style="color:#00ccff">&#10003; Data loaded successfully</div>
+    <div class="export-confirm show" id="import-confirm" style="display:none;color:var(--blue)">✓ Data loaded successfully</div>
   </div>
 
   <div class="settings-section">
@@ -931,18 +695,18 @@
         <option value="anthropic">Anthropic (Claude)</option>
         <option value="openai">OpenAI (ChatGPT)</option>
         <option value="google">Google (Gemini)</option>
-        <option value="groq">Groq (Llama / Mixtral &mdash; Free Tier)</option>
-        <option value="deepseek">DeepSeek (V3 / R1 Reasoning)</option>
+        <option value="groq">Groq (Free Tier — Llama)</option>
+        <option value="deepseek">DeepSeek</option>
       </select>
-      <div class="setting-desc" id="provider-desc">Use Claude models. Get your key at console.anthropic.com</div>
+      <div class="setting-desc" id="provider-desc">Get your key at console.anthropic.com</div>
     </div>
     <div class="setting-item">
-      <label id="api-key-label">Your Anthropic API Key</label>
+      <label id="api-key-label">Anthropic API Key</label>
       <div class="api-key-wrap">
         <input type="password" id="api-key-input" placeholder="sk-ant-..." oninput="onApiKeyInput()">
         <button type="button" class="btn-show-key" onclick="toggleKeyVisibility()">SHOW</button>
       </div>
-      <div class="api-status info" id="api-key-status">No key saved yet. Stored only in this browser session.</div>
+      <div class="api-status info" id="api-key-status">No key saved. Stored only in this browser session.</div>
     </div>
     <div class="settings-row">
       <div class="setting-item">
@@ -950,9 +714,8 @@
         <select id="ai-model">
           <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (Recommended)</option>
           <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (Faster)</option>
-          <option value="claude-opus-4-20250514">Claude Opus 4 (Most Powerful)</option>
+          <option value="claude-opus-4-20250514">Claude Opus 4 (Powerful)</option>
         </select>
-        <div class="setting-desc" id="model-desc">Sonnet gives the best balance of speed and quality.</div>
       </div>
       <div class="setting-item">
         <label>AI Tone</label>
@@ -961,166 +724,165 @@
           <option value="direct">Direct &amp; No Fluff</option>
           <option value="coach">Coach / Motivating</option>
         </select>
-        <div class="setting-desc">How you want the AI to talk to you.</div>
       </div>
     </div>
-    <button type="button" class="btn" onclick="testApiKey()" style="margin-top:4px">&#9654; TEST CONNECTION</button>
+    <button type="button" class="btn" onclick="testApiKey()" style="margin-top:2px">▶ TEST CONNECTION</button>
   </div>
+
   <div class="settings-section">
     <div class="panel-title"><div class="dot"></div> WHAT THE AI CAN SEE</div>
-    <div style="font-size:12px;color:var(--green-dim);margin-bottom:8px">When you chat, the AI receives this data from your session so it can give specific advice &mdash; not generic tips.</div>
-    <button type="button" class="btn btn-secondary" onclick="refreshDataPreview()">&#9263; REFRESH PREVIEW</button>
-    <div class="data-preview" id="data-preview">// Click refresh to see what data the AI will receive</div>
+    <div style="font-size:11px;color:var(--green-dim);margin-bottom:8px">The AI receives this snapshot so it can give specific advice — not generic tips.</div>
+    <button type="button" class="btn btn-secondary" onclick="refreshDataPreview()">⟳ REFRESH PREVIEW</button>
+    <div class="data-preview" id="data-preview">// Click refresh to preview</div>
   </div>
+
 </div>
 </div>
 
-<div style="border-top:1px solid #003a0f;padding:14px 16px;text-align:center;background:#030f05;font-family:'Share Tech Mono',monospace;font-size:12px;color:#00aa2a;letter-spacing:2px;">
-  BUILT BY <a href="https://www.andremethod.com" target="_blank" style="color:#00ff41;text-decoration:none;text-shadow:0 0 8px #00ff41;">ANDREMETHOD.COM</a>
+<!-- FOOTER -->
+<div class="footer">
+  BUILT BY <a href="https://www.andremethod.com" target="_blank">ANDREMETHOD.COM</a>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// Version 2.8 - Default Browser Behaviors Blocked
+// ═══════════════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════
-let loans = [];
-let cycleCounts = {};
-let cycleLog = [];
-let lastSimResult = null;
+// ═══════════════════════════════════════════════════════════
+let loans        = [];
+let cycleCounts  = {};
+let cycleLog     = [];
+let lastResult   = null;
+let chatHistory  = [];
 
-const APPS = [
-  { name:'Earnin',  owed:203.97, max:200,   fee: 3.99, reuse:'instant', pullTiming:'immediate', dueCycle: 1 },
-  { name:'Genie',   owed:114.99, max:0,     fee: 0,    reuse:'delayed', pullTiming:'before',    dueCycle: 1 },
-  { name:'Klover',  owed:50,     max:50,    fee: 2.99, reuse:'instant', pullTiming:'manual',    dueCycle: 1 },
-  { name:'Grant',   owed:200,    max:200,   fee: 0,    reuse:'instant', pullTiming:'manual',    dueCycle: 1 },
-  { name:'CashApp', owed:200,    max:124.75,fee: 0,    reuse:'instant', pullTiming:'manual',    dueCycle: 1 },
+const DEFAULT_APPS = [
+  { name:'Earnin',  owed:203.97, max:200,    fee:3.99, reuse:'instant', pullTiming:'immediate', dueCycle:1 },
+  { name:'Genie',   owed:114.99, max:0,      fee:0,    reuse:'delayed',  pullTiming:'before',    dueCycle:1 },
+  { name:'Klover',  owed:50,     max:50,     fee:2.99, reuse:'instant', pullTiming:'manual',    dueCycle:1 },
+  { name:'Grant',   owed:200,    max:200,    fee:0,    reuse:'instant', pullTiming:'manual',    dueCycle:1 },
+  { name:'CashApp', owed:200,    max:124.75, fee:0,    reuse:'instant', pullTiming:'manual',    dueCycle:1 },
 ];
 
-// ═══════════════════════════════════════════════
-// INIT & SAVE SYSTEM
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
 function init() {
-  const today = new Date();
-  document.getElementById('payday').value = today.toISOString().split('T')[0];
-  
-  if (localStorage.getItem('loanSharkData')) {
-    loadDataLocally();
+  document.getElementById('payday').value = new Date().toISOString().split('T')[0];
+
+  if (localStorage.getItem('survivalData')) {
+    loadData();
   } else {
     loadPreset();
   }
-  
+
   updateClock();
   setInterval(updateClock, 1000);
-  var savedProvider = sessionStorage.getItem('ls_provider') || 'anthropic';
-  var provEl = document.getElementById('ai-provider');
+
+  const savedProvider = sessionStorage.getItem('se_provider') || 'anthropic';
+  const provEl = document.getElementById('ai-provider');
   if (provEl) provEl.value = savedProvider;
   onProviderChange();
 }
 
 function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US',{hour12:false});
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-US', {hour12:false});
 }
 
 function loadPreset() {
-  loans = APPS.map(a => ({...a}));
+  loans = DEFAULT_APPS.map(a => ({...a}));
   renderLoans();
   updateCycleTrackerUI();
-  saveDataLocally();
+  saveData();
 }
 
-function saveDataLocally() {
+// ═══════════════════════════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════════════════════════
+function saveData() {
   const data = {
-    incomeC1: document.getElementById('income-c1').value,
-    incomeC2: document.getElementById('income-c2').value,
-    incomeC3: document.getElementById('income-c3').value,
-    billsC1:  document.getElementById('bills-c1').value,
-    billsC2:  document.getElementById('bills-c2').value,
-    billsC3:  document.getElementById('bills-c3').value,
-    payday: document.getElementById('payday').value,
-    payFreq: document.getElementById('pay-freq').value,
-    cashOnHand: document.getElementById('cash-on-hand').value,
-    exitMonths: document.getElementById('exit-months').value,
+    incomeC1:     document.getElementById('income-c1').value,
+    incomeC2:     document.getElementById('income-c2').value,
+    incomeC3:     document.getElementById('income-c3').value,
+    billsC1:      document.getElementById('bills-c1').value,
+    billsC2:      document.getElementById('bills-c2').value,
+    billsC3:      document.getElementById('bills-c3').value,
+    payday:       document.getElementById('payday').value,
+    payFreq:      document.getElementById('pay-freq').value,
+    cashOnHand:   document.getElementById('cash-on-hand').value,
+    exitMonths:   document.getElementById('exit-months').value,
     priorityMode: document.getElementById('priority-mode').value,
-    loans: loans,
-    cycleCounts: cycleCounts,
-    cycleLog: cycleLog
+    loans, cycleCounts, cycleLog
   };
-  localStorage.setItem('loanSharkData', JSON.stringify(data));
-  const indicator = document.getElementById('auto-save-status');
-  indicator.style.color = 'var(--green)';
-  indicator.innerHTML = '✓ Saved';
-  setTimeout(() => indicator.innerHTML = '✓ Autosaved Locally', 2000);
+  localStorage.setItem('survivalData', JSON.stringify(data));
+  const el = document.getElementById('auto-save-status');
+  el.style.color = 'var(--green)';
+  el.textContent = '✓ Saved';
+  setTimeout(() => { el.textContent = '✓ Autosaved'; el.style.color = ''; }, 1800);
 }
 
-function loadDataLocally() {
+function loadData() {
   try {
-    const data = JSON.parse(localStorage.getItem('loanSharkData'));
+    const data = JSON.parse(localStorage.getItem('survivalData'));
     if (!data) return;
-    
-    document.getElementById('income-c1').value = data.incomeC1 || data.income || '310';
-    document.getElementById('income-c2').value = data.incomeC2 || data.income || '310';
-    document.getElementById('income-c3').value = data.incomeC3 || data.income || '310';
-    document.getElementById('bills-c1').value = data.billsC1 || data.bills || '0';
-    document.getElementById('bills-c2').value = data.billsC2 || data.bills || '0';
-    document.getElementById('bills-c3').value = data.billsC3 || data.bills || '0';
-    
-    document.getElementById('payday').value = data.payday || '';
-    if (data.payFreq) document.getElementById('pay-freq').value = data.payFreq;
-    document.getElementById('cash-on-hand').value = data.cashOnHand || '0';
-    document.getElementById('exit-months').value = data.exitMonths || '0';
-    document.getElementById('priority-mode').value = data.priorityMode || 'liquidity';
-    
-    loans = data.loans || [];
+    document.getElementById('income-c1').value     = data.incomeC1     || '310';
+    document.getElementById('income-c2').value     = data.incomeC2     || '310';
+    document.getElementById('income-c3').value     = data.incomeC3     || '310';
+    document.getElementById('bills-c1').value      = data.billsC1      || '0';
+    document.getElementById('bills-c2').value      = data.billsC2      || '0';
+    document.getElementById('bills-c3').value      = data.billsC3      || '0';
+    document.getElementById('payday').value        = data.payday        || '';
+    document.getElementById('pay-freq').value      = data.payFreq       || 'biweekly';
+    document.getElementById('cash-on-hand').value  = data.cashOnHand    || '0';
+    document.getElementById('exit-months').value   = data.exitMonths    || '0';
+    document.getElementById('priority-mode').value = data.priorityMode  || 'liquidity';
+    loans       = data.loans       || [];
     cycleCounts = data.cycleCounts || {};
-    cycleLog = data.cycleLog || [];
+    cycleLog    = data.cycleLog    || [];
     renderLoans();
     updateCycleTrackerUI();
     renderCycleLog();
-  } catch(e) { console.error("Error loading local data", e); }
+  } catch(e) { console.error('Load error', e); }
 }
 
 function importJSON(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
       if (data.loans) {
-        localStorage.setItem('loanSharkData', JSON.stringify(data));
-        loadDataLocally();
-        const conf = document.getElementById('import-confirm');
-        conf.classList.add('show');
-        setTimeout(() => conf.classList.remove('show'), 3000);
+        localStorage.setItem('survivalData', JSON.stringify(data));
+        loadData();
+        const el = document.getElementById('import-confirm');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 3000);
       }
-    } catch(err) { alert("Invalid save file."); }
+    } catch(err) { alert('Invalid backup file.'); }
   };
   reader.readAsText(file);
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // LOAN MANAGEMENT
-// ═══════════════════════════════════════════════
-function addLoan(data={}) {
+// ═══════════════════════════════════════════════════════════
+function addLoan(data = {}) {
   loans.push({
-    name: data.name || 'New App',
-    owed: data.owed || 0,
-    max: data.max || 0,
-    fee: data.fee || 0,
-    reuse: data.reuse || 'instant',
-    pullTiming: data.pullTiming || 'manual',
-    dueCycle: data.dueCycle || 1
+    name:        data.name        || 'New App',
+    owed:        data.owed        || 0,
+    max:         data.max         || 0,
+    fee:         data.fee         || 0,
+    reuse:       data.reuse       || 'instant',
+    pullTiming:  data.pullTiming  || 'manual',
+    dueCycle:    data.dueCycle    || 1
   });
   renderLoans();
-  saveDataLocally();
+  saveData();
 }
 
 function removeLoan(i) {
-  loans.splice(i,1);
+  loans.splice(i, 1);
   renderLoans();
-  saveDataLocally();
+  saveData();
 }
 
 function renderLoans() {
@@ -1128,359 +890,451 @@ function renderLoans() {
   container.innerHTML = '';
 
   loans.forEach((loan, i) => {
-    if (loan.dueBeforePayday === true) loan.pullTiming = 'before';
-    if (loan.dueBeforePayday === false && !loan.pullTiming) loan.pullTiming = 'manual';
-    if (!loan.dueCycle) loan.dueCycle = 1;
-    if (loan.fee === undefined) loan.fee = 0;
+    // migrate old data shape
+    if (loan.dueBeforePayday === true)  loan.pullTiming = 'before';
+    if (!loan.pullTiming)               loan.pullTiming = 'manual';
+    if (!loan.dueCycle)                 loan.dueCycle   = 1;
+    if (loan.fee === undefined)         loan.fee        = 0;
 
     const card = document.createElement('div');
     card.className = 'loan-card';
     card.innerHTML = `
       <div class="loan-header">
         <span class="loan-name">${loan.name}</span>
-        <span class="reuse-badge reuse-${loan.reuse}">${loan.reuse === 'instant' ? 'RE-BORROW ANYTIME' : 'WAITING PERIOD'}</span>
+        <span class="reuse-badge reuse-${loan.reuse}">${loan.reuse === 'instant' ? 'CAN RE-BORROW' : 'WAITING PERIOD'}</span>
       </div>
       <div class="loan-fields">
         <div>
           <label>App Name</label>
-          <input type="text" value="${loan.name}" onchange="loans[${i}].name=this.value;saveDataLocally();renderLoans()">
+          <input type="text" value="${loan.name}"
+            onchange="loans[${i}].name=this.value; saveData(); renderLoans()">
         </div>
         <div>
-          <label>You Owe ($)</label>
-          <input type="number" value="${loan.owed}" step="0.01" onchange="loans[${i}].owed=parseFloat(this.value)||0;saveDataLocally()">
+          <label>I Owe ($)</label>
+          <input type="number" value="${loan.owed}" step="0.01" min="0"
+            onchange="loans[${i}].owed=parseFloat(this.value)||0; saveData()">
         </div>
         <div>
           <label>Max Borrow ($)</label>
-          <input type="number" value="${loan.max}" step="0.01" onchange="loans[${i}].max=parseFloat(this.value)||0;saveDataLocally()">
+          <input type="number" value="${loan.max}" step="0.01" min="0"
+            onchange="loans[${i}].max=parseFloat(this.value)||0; saveData()">
         </div>
         <div>
           <label>Fee/Borrow ($)</label>
-          <input type="number" value="${loan.fee}" step="0.01" onchange="loans[${i}].fee=parseFloat(this.value)||0;saveDataLocally()">
+          <input type="number" value="${loan.fee}" step="0.01" min="0"
+            onchange="loans[${i}].fee=parseFloat(this.value)||0; saveData()">
         </div>
         <button type="button" class="btn-remove" onclick="removeLoan(${i})">✕</button>
       </div>
-      <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;flex-wrap:wrap">
-        <select style="flex:1;min-width:120px;margin:0;padding:4px 6px;font-size:11px" onchange="loans[${i}].dueCycle=parseInt(this.value);saveDataLocally();renderLoans()">
+      <div class="loan-options">
+        <select onchange="loans[${i}].dueCycle=parseInt(this.value); saveData(); renderLoans()">
           <option value="1" ${loan.dueCycle===1?'selected':''}>DUE THIS PAYCHECK</option>
           <option value="2" ${loan.dueCycle===2?'selected':''}>DUE NEXT PAYCHECK</option>
-          <option value="3" ${loan.dueCycle===3?'selected':''}>DUE 3 PAYCHECKS OUT</option>
+          <option value="3" ${loan.dueCycle===3?'selected':''}>DUE IN 3 PAYCHECKS</option>
         </select>
-        <select style="flex:1;min-width:120px;margin:0;padding:4px 6px;font-size:11px;border-color:var(--amber)" onchange="loans[${i}].pullTiming=this.value;saveDataLocally();renderLoans()">
-          <option value="before" ${loan.pullTiming==='before'?'selected':''}>PULLS BEFORE</option>
-          <option value="immediate" ${loan.pullTiming==='immediate'?'selected':''}>PULLS IMMEDIATE</option>
-          <option value="manual" ${loan.pullTiming==='manual'?'selected':''}>PULLS LATER</option>
+        <select onchange="loans[${i}].pullTiming=this.value; saveData(); renderLoans()">
+          <option value="before"    ${loan.pullTiming==='before'   ?'selected':''}>PULLS BEFORE PAYDAY</option>
+          <option value="immediate" ${loan.pullTiming==='immediate'?'selected':''}>PULLS ON PAYDAY</option>
+          <option value="manual"    ${loan.pullTiming==='manual'   ?'selected':''}>I PAY MANUALLY</option>
         </select>
-        <select style="flex:1;min-width:120px;margin:0;padding:4px 6px;font-size:11px" onchange="loans[${i}].reuse=this.value;saveDataLocally();renderLoans()">
-          <option value="instant" ${loan.reuse==='instant'?'selected':''}>RE-BORROW INSTANT</option>
-          <option value="delayed" ${loan.reuse==='delayed'?'selected':''}>WAITING PERIOD</option>
+        <select onchange="loans[${i}].reuse=this.value; saveData(); renderLoans()">
+          <option value="instant" ${loan.reuse==='instant'?'selected':''}>CAN RE-BORROW INSTANTLY</option>
+          <option value="delayed" ${loan.reuse==='delayed'?'selected':''}>WAITING PERIOD TO RE-BORROW</option>
         </select>
       </div>
     `;
     container.appendChild(card);
   });
+
   updateCycleSelectList();
 }
 
 function updateCycleSelectList() {
   const sel = document.getElementById('cycle-loan-select');
-  sel.innerHTML = loans.map(l=>`<option value="${l.name}">${l.name}</option>`).join('');
+  sel.innerHTML = loans.map(l => `<option value="${l.name}">${l.name}</option>`).join('');
 }
 
-// ═══════════════════════════════════════════════
-// MULTI-CYCLE SIMULATION ENGINE
-// ═══════════════════════════════════════════════
-function runMultiCycleSimulation() {
+// ═══════════════════════════════════════════════════════════
+// SIMULATION ENGINE
+// ═══════════════════════════════════════════════════════════
+function runForecast() {
+  if (!loans.length) { alert('Add at least one loan app first.'); return; }
+
   const incomes = [
     parseFloat(document.getElementById('income-c1').value) || 0,
     parseFloat(document.getElementById('income-c2').value) || 0,
-    parseFloat(document.getElementById('income-c3').value) || 0
+    parseFloat(document.getElementById('income-c3').value) || 0,
   ];
   const billsArr = [
     parseFloat(document.getElementById('bills-c1').value) || 0,
     parseFloat(document.getElementById('bills-c2').value) || 0,
-    parseFloat(document.getElementById('bills-c3').value) || 0
+    parseFloat(document.getElementById('bills-c3').value) || 0,
   ];
-  
-  const cashOnHand = parseFloat(document.getElementById('cash-on-hand').value) || 0;
-  const mode       = document.getElementById('priority-mode').value;
+  const cashOnHand   = parseFloat(document.getElementById('cash-on-hand').value) || 0;
+  const mode         = document.getElementById('priority-mode').value;
 
-  if (!loans.length) { alert('Add at least one loan app.'); return; }
-
-  document.getElementById('mode-display').textContent = 'STATUS: CALCULATING...';
+  document.getElementById('mode-display').textContent = 'CALCULATING...';
+  saveData();
   switchTab('simulation');
-  saveDataLocally();
 
-  let simBalance = cashOnHand;
-  let activeDebts = loans.map(l => ({...l, currentOwed: l.owed, paidThisCycle: 0, dueCycle: l.dueCycle || 1}));
-  let log = [];
-  let totalDamage = 0;
-  let finalLoanResults = {};
-  
-  const addLine = (text, cls='out-ok') => log.push({text, cls});
+  // Deep-copy loan state for simulation
+  let debts = loans.map(l => ({
+    ...l,
+    currentOwed:   l.owed,
+    paidThisCycle: 0,
+    dueCycle:      l.dueCycle || 1
+  }));
+
+  let balance     = cashOnHand;
+  let stressTotal = 0;
+  let logLines    = [];
+  let loanResults = {};  // cycle-1 outcome per loan
+
+  const line = (text, cls = 'out-ok') => logLines.push({ text, cls });
+
+  // Sort helper
+  function sortedDebts(arr) {
+    if (mode === 'liquidity') {
+      return [...arr].sort((a, b) =>
+        (a.reuse === 'instant' ? 0 : 1) - (b.reuse === 'instant' ? 0 : 1) ||
+        a.currentOwed - b.currentOwed
+      );
+    }
+    return [...arr].sort((a, b) => a.currentOwed - b.currentOwed);
+  }
 
   for (let cycle = 1; cycle <= 3; cycle++) {
-    let income = incomes[cycle-1];
-    let bills = billsArr[cycle-1];
+    const income = incomes[cycle - 1];
+    const bills  = billsArr[cycle - 1];
 
-    addLine(`CYCLE ${cycle}: PAYCHECK ${cycle}`, 'out-cycle-header');
-    addLine(`  Starting cash: $${simBalance.toFixed(2)}`, 'out-dim');
-    
-    function sortLoans(arr) {
-      if (mode === 'liquidity') return arr.sort((a,b) => (a.reuse==='instant'?-1:1) - (b.reuse==='instant'?-1:1) || a.currentOwed - b.currentOwed);
-      return arr.sort((a,b) => a.currentOwed - b.currentOwed);
-    }
+    line(`CYCLE ${cycle} — PAYCHECK ${cycle}`, 'out-cycle');
+    line(`  Start: $${balance.toFixed(2)} cash on hand`, 'out-dim');
 
-    activeDebts.forEach(d => d.paidThisCycle = 0);
+    debts.forEach(d => { d.paidThisCycle = 0; });
     let failedThisCycle = [];
 
-    // 1. BEFORE PAYDAY
-    let before = sortLoans(activeDebts.filter(d => d.pullTiming === 'before' && d.currentOwed > 0 && cycle >= d.dueCycle));
-    for (let d of before) {
-      if (simBalance >= d.currentOwed) {
-        simBalance -= d.currentOwed;
+    // ── STEP 1: Pre-payday pulls ──
+    const prePay = sortedDebts(debts.filter(d => d.pullTiming === 'before' && d.currentOwed > 0 && cycle >= d.dueCycle));
+    for (const d of prePay) {
+      if (balance >= d.currentOwed) {
+        balance -= d.currentOwed;
         d.paidThisCycle += d.currentOwed;
-        addLine(`  ✓ [Pre-Pay] ${d.name} paid: $${d.currentOwed.toFixed(2)}. Balance: $${simBalance.toFixed(2)}`, 'out-ok');
+        line(`  ✓ [Pre-pay] ${d.name}: paid $${d.currentOwed.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
         d.currentOwed = 0;
       } else {
-        d.paidThisCycle += Math.max(0, simBalance);
-        d.currentOwed -= Math.max(0, simBalance);
-        addLine(`  ✗ [Pre-Pay] ${d.name} OVERDRAFT RISK: Owe $${(d.currentOwed+d.paidThisCycle).toFixed(2)}, have $${Math.max(0,simBalance).toFixed(2)}. (Stress +25)`, 'out-danger');
-        simBalance = Math.min(0, simBalance - d.currentOwed);
-        totalDamage += 25;
+        const avail = Math.max(0, balance);
+        d.paidThisCycle += avail;
+        d.currentOwed   -= avail;
+        balance          = 0;
+        stressTotal     += 25;
         failedThisCycle.push(d);
+        line(`  ✗ [Pre-pay] ${d.name}: needed $${(d.currentOwed + avail).toFixed(2)}, only had $${avail.toFixed(2)}. Still owe $${d.currentOwed.toFixed(2)}. (+25 stress)`, 'out-danger');
       }
     }
 
-    // 2. PAYDAY
-    simBalance += income;
-    addLine(`  + Paycheck deposited: $${income.toFixed(2)}. Balance: $${simBalance.toFixed(2)}`, 'out-ok');
+    // ── STEP 2: Paycheck arrives ──
+    balance += income;
+    line(`  + Paycheck: +$${income.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
 
-    // 3. IMMEDIATE PULLS
-    let immediate = sortLoans(activeDebts.filter(d => d.pullTiming === 'immediate' && d.currentOwed > 0 && cycle >= d.dueCycle));
-    for (let d of immediate) {
-      if (simBalance >= d.currentOwed) {
-        simBalance -= d.currentOwed;
+    // ── STEP 3: Immediate (same-day) auto-pulls ──
+    const immediate = sortedDebts(debts.filter(d => d.pullTiming === 'immediate' && d.currentOwed > 0 && cycle >= d.dueCycle));
+    for (const d of immediate) {
+      if (balance >= d.currentOwed) {
+        balance -= d.currentOwed;
         d.paidThisCycle += d.currentOwed;
-        addLine(`  ✓ [Immediate] ${d.name} paid: $${d.currentOwed.toFixed(2)}. Balance: $${simBalance.toFixed(2)}`, 'out-ok');
+        line(`  ✓ [Auto-pull] ${d.name}: $${d.currentOwed.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
         d.currentOwed = 0;
       } else {
-        let paid = Math.max(0, simBalance);
+        const paid = Math.max(0, balance);
         d.paidThisCycle += paid;
-        d.currentOwed -= paid;
-        addLine(`  ✗ [Immediate] ${d.name} SHORTFALL: Paid $${paid.toFixed(2)}, still owe $${d.currentOwed.toFixed(2)}. (Stress +15)`, 'out-danger');
-        simBalance = 0;
-        totalDamage += 15;
+        d.currentOwed   -= paid;
+        balance          = 0;
+        stressTotal     += 15;
         failedThisCycle.push(d);
+        line(`  ✗ [Auto-pull] ${d.name}: paid $${paid.toFixed(2)}, still owe $${d.currentOwed.toFixed(2)}. (+15 stress)`, 'out-danger');
       }
     }
 
-    // 4. BILLS
-    simBalance -= bills;
-    if (bills > 0) addLine(`  - Bills deducted: $${bills.toFixed(2)}. Balance: $${simBalance.toFixed(2)}`, 'out-warn');
+    // ── STEP 4: Bills ──
+    if (bills > 0) {
+      balance -= bills;
+      line(`  - Bills: -$${bills.toFixed(2)} → balance $${balance.toFixed(2)}`, balance >= 0 ? 'out-warn' : 'out-danger');
+    }
 
-    // 5. MANUAL PAYMENTS
-    let manual = sortLoans(activeDebts.filter(d => d.pullTiming === 'manual' && d.currentOwed > 0 && cycle >= d.dueCycle));
-    for (let d of manual) {
-      if (simBalance >= d.currentOwed) {
-        simBalance -= d.currentOwed;
+    // ── STEP 5: Manual payments ──
+    const manual = sortedDebts(debts.filter(d => d.pullTiming === 'manual' && d.currentOwed > 0 && cycle >= d.dueCycle));
+    for (const d of manual) {
+      if (balance >= d.currentOwed) {
+        balance -= d.currentOwed;
         d.paidThisCycle += d.currentOwed;
-        addLine(`  ✓ [Manual] ${d.name} paid: $${d.currentOwed.toFixed(2)}. Balance: $${simBalance.toFixed(2)}`, 'out-ok');
+        line(`  ✓ [Manual] ${d.name}: paid $${d.currentOwed.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
         d.currentOwed = 0;
-      } else if (simBalance > 0) {
-        addLine(`  ~ [Manual] ${d.name} PARTIAL: Paid $${simBalance.toFixed(2)}, deferred $${(d.currentOwed - simBalance).toFixed(2)}. (Stress +10)`, 'out-warn');
-        d.paidThisCycle += simBalance;
-        d.currentOwed -= simBalance;
-        simBalance = 0;
-        totalDamage += 10;
+      } else if (balance > 0) {
+        const paid = balance;
+        d.paidThisCycle += paid;
+        d.currentOwed   -= paid;
+        balance          = 0;
+        stressTotal     += 10;
         failedThisCycle.push(d);
+        line(`  ~ [Manual] ${d.name}: partial $${paid.toFixed(2)}, deferred $${d.currentOwed.toFixed(2)}. (+10 stress)`, 'out-warn');
       } else {
-        addLine(`  ✗ [Manual] ${d.name} DEFERRED: Cannot pay $${d.currentOwed.toFixed(2)}. Rolls to next cycle. (Stress +15)`, 'out-danger');
-        totalDamage += 15;
+        stressTotal += 15;
         failedThisCycle.push(d);
+        line(`  ✗ [Manual] ${d.name}: can't pay $${d.currentOwed.toFixed(2)} — rolls to next cycle. (+15 stress)`, 'out-danger');
       }
     }
 
-    // 6. RE-BORROW
-    let availableApps = activeDebts.filter(d => d.paidThisCycle > 0 && d.reuse === 'instant');
-    
-    for (let app of availableApps) {
-      if (simBalance < 0) {
-        let need = Math.abs(simBalance);
-        let canBorrow = Math.min(need + app.fee, app.max); 
-        if (canBorrow > 0) {
-          let received = Math.max(0, canBorrow - app.fee); 
-          simBalance += received;
-          app.currentOwed += canBorrow; 
-          addLine(`  ⚠ TRAP: Re-borrowed $${canBorrow.toFixed(2)} from ${app.name} (Fee: $${app.fee.toFixed(2)}). Received $${received.toFixed(2)}. Debt added to next cycle.`, 'out-info');
-        }
+    // ── STEP 6: Emergency re-borrow (only if negative) ──
+    if (balance < 0) {
+      const available = debts.filter(d => d.currentOwed === 0 && d.reuse === 'instant' && d.max > 0);
+      for (const app of available) {
+        if (balance >= 0) break;
+        const need          = Math.abs(balance);
+        const canBorrow     = app.max;                             // freshly paid off = full limit available
+        if (canBorrow <= app.fee) continue;
+        const grossBorrow   = Math.min(need + app.fee, canBorrow);
+        const netReceived   = grossBorrow - app.fee;
+        if (netReceived <= 0) continue;
+        balance        += netReceived;
+        app.currentOwed = grossBorrow;                            // owes gross next cycle
+        stressTotal    += 10;
+        line(`  ⚠ Re-borrowed $${grossBorrow.toFixed(2)} from ${app.name} (fee $${app.fee.toFixed(2)}, received $${netReceived.toFixed(2)}). Owe this back next cycle. (+10 stress)`, 'out-info');
       }
     }
 
-    if (simBalance < 0) {
-      addLine(`  ☠ CRITICAL: Ended Cycle ${cycle} with a deficit of $${Math.abs(simBalance).toFixed(2)} and nothing left to borrow. (Stress +40)`, 'out-danger');
-      totalDamage += 40;
+    // ── END OF CYCLE ──
+    if (balance < 0) {
+      stressTotal += 40;
+      line(`  ☠ ENDED CYCLE ${cycle} AT -$${Math.abs(balance).toFixed(2)}. Nothing left to borrow. (+40 stress)`, 'out-danger');
     } else {
-      addLine(`  Ended Cycle ${cycle} with $${simBalance.toFixed(2)} cash.`, 'out-dim');
+      line(`  → Ended cycle ${cycle} with $${balance.toFixed(2)} remaining.`, 'out-dim');
     }
 
+    // Capture cycle-1 outcomes for the display panel
     if (cycle === 1) {
-      activeDebts.forEach(d => {
-        if (d.dueCycle > 1) finalLoanResults[d.name] = `Skipped - Due Future Cycle`;
-        else if (d.currentOwed === 0 && d.paidThisCycle > 0) finalLoanResults[d.name] = 'Paid in Full';
-        else if (d.paidThisCycle > 0) finalLoanResults[d.name] = `Partial - still owe $${d.currentOwed.toFixed(2)}`;
-        else finalLoanResults[d.name] = `Deferred/Missed - owe $${d.currentOwed.toFixed(2)}`;
+      debts.forEach(d => {
+        if (d.dueCycle > 1)                                   loanResults[d.name] = 'Not due yet';
+        else if (d.currentOwed === 0 && d.paidThisCycle > 0) loanResults[d.name] = 'Paid in Full ✓';
+        else if (d.paidThisCycle > 0)                         loanResults[d.name] = `Partial — still owe $${d.currentOwed.toFixed(2)}`;
+        else                                                  loanResults[d.name] = `Missed — owe $${d.currentOwed.toFixed(2)}`;
       });
-      
-      const preLoans = activeDebts.filter(l=>l.pullTiming==='before' && l.dueCycle === 1);
-      const postLoans = activeDebts.filter(l=>l.pullTiming!=='before' && l.dueCycle === 1);
-      renderTimeline(incomes[0], cashOnHand, billsArr[0], activeDebts.filter(l=>l.dueCycle === 1), preLoans, postLoans);
-      
-      const isRecoveryCycle1 = simBalance < 0;
-      generateStrategies(incomes[0], cashOnHand, billsArr[0], loans, isRecoveryCycle1, failedThisCycle, totalDamage);
+
+      const beforeLoans = debts.filter(d => d.pullTiming === 'before'    && d.dueCycle === 1);
+      const afterLoans  = debts.filter(d => d.pullTiming !== 'before'    && d.dueCycle === 1);
+      renderTimeline(incomes[0], cashOnHand, billsArr[0], debts.filter(d => d.dueCycle === 1), beforeLoans, afterLoans);
+      generateStrategies(incomes[0], cashOnHand, billsArr[0], loans, balance < 0, failedThisCycle, stressTotal);
     }
 
-    let totalRemainingDebt = activeDebts.reduce((sum, d) => sum + d.currentOwed, 0);
-    if (simBalance >= 0 && totalRemainingDebt <= 0) {
-      addLine(`  🎉 FREEDOM ACHIEVED IN CYCLE ${cycle}! No remaining loan debt.`, 'out-ok');
+    const totalRemaining = debts.reduce((s, d) => s + d.currentOwed, 0);
+    if (balance >= 0 && totalRemaining <= 0) {
+      line(`🎉 DEBT-FREE achieved in Cycle ${cycle}!`, 'out-ok');
       break;
     }
   }
 
+  // ── RENDER TERMINAL OUTPUT ──
   const outputEl = document.getElementById('output');
-  outputEl.innerHTML = log.map(l => `<span class="${l.cls}">${l.text}</span>`).join('\n');
+  outputEl.innerHTML = logLines.map(l => `<span class="${l.cls}">${l.text}</span>`).join('\n');
   outputEl.scrollTop = outputEl.scrollHeight;
 
-  let displayDamage = Math.min(100, Math.max(0, totalDamage));
-  const bar = document.getElementById('damage-bar');
-  const stressLabel = displayDamage > 60 ? 'HIGH STRESS' : displayDamage > 30 ? 'SOME PRESSURE' : 'UNDER CONTROL';
-  document.getElementById('damage-val').textContent = `${displayDamage}/100 — ${stressLabel}`;
-  bar.style.width = displayDamage + '%';
-  bar.style.background = displayDamage > 60 ? 'var(--red)' : displayDamage > 30 ? 'var(--amber)' : 'var(--green)';
+  // ── STRESS METER ──
+  const stress = Math.min(100, Math.max(0, stressTotal));
+  const stressLabel = stress > 60 ? 'HIGH STRESS' : stress > 30 ? 'SOME PRESSURE' : 'UNDER CONTROL';
+  const stressColor = stress > 60 ? 'var(--red)' : stress > 30 ? 'var(--amber)' : 'var(--green)';
+  document.getElementById('stress-val').textContent = `${stress}/100 — ${stressLabel}`;
+  document.getElementById('stress-val').style.color = stressColor;
+  const bar = document.getElementById('stress-bar');
+  bar.style.width = stress + '%';
+  bar.style.background = stressColor;
 
-  const statusEl = document.getElementById('loan-status');
-  statusEl.innerHTML = Object.entries(finalLoanResults).map(([name, status]) => {
-    const cls = status.includes('Paid in Full') ? 'out-ok' : status.includes('Partial') ? 'out-warn' : (status.includes('Skipped') ? 'out-dim' : 'out-danger');
+  // ── LOAN OUTCOMES ──
+  document.getElementById('loan-status').innerHTML = Object.entries(loanResults).map(([name, status]) => {
+    const cls = status.includes('Full') ? 'out-ok' : status.includes('Partial') ? 'out-warn' : status.includes('yet') ? 'out-dim' : 'out-danger';
     return `<div class="${cls}">${name} → ${status}</div>`;
   }).join('');
 
-  lastSimResult = { 
-    income: incomes[0], cashOnHand, bills: billsArr[0], simLoans: loans, balance: simBalance, 
-    damageScore: displayDamage, isRecovery: simBalance < 0, 
-    failed: activeDebts.filter(d=>d.currentOwed>0), loanResults: finalLoanResults 
+  // ── PLAIN ENGLISH SUMMARY ──
+  renderPlainSummary(incomes, billsArr, cashOnHand, balance, stress, loanResults, loans);
+
+  // ── SAVE RESULT ──
+  lastResult = {
+    income: incomes[0], cashOnHand, bills: billsArr[0],
+    balance, damageScore: stress,
+    isRecovery: balance < 0,
+    failed: debts.filter(d => d.currentOwed > 0),
+    loanResults
   };
-  
-  ['btn-export-txt','btn-export-csv'].forEach(function(id) {
-    var btn = document.getElementById(id);
+
+  ['btn-export-txt','btn-export-csv'].forEach(id => {
+    const btn = document.getElementById(id);
     if (btn) btn.disabled = false;
   });
+
+  document.getElementById('mode-display').textContent = 'DONE';
+  updateChatContextBar();
 }
 
-// ═══════════════════════════════════════════════
-// TIMELINE RENDER
-// ═══════════════════════════════════════════════
+// ── PLAIN ENGLISH SUMMARY RENDERER ──
+function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress, loanResults, allLoans) {
+  const totalIncome = incomes.reduce((a, b) => a + b, 0);
+  const totalBills  = billsArr.reduce((a, b) => a + b, 0);
+  const totalOwed   = allLoans.reduce((s, l) => s + l.owed, 0);
+  const paidFull    = Object.values(loanResults).filter(v => v.includes('Full')).length;
+  const missed      = Object.values(loanResults).filter(v => v.includes('Missed')).length;
+  const totalFees   = allLoans.reduce((s, l) => s + l.fee, 0);
+
+  const summaryEl = document.getElementById('plain-summary');
+  const isOk = finalBalance >= 0;
+
+  let html = '';
+  if (isOk) {
+    html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks. 
+After bills ($${totalBills.toFixed(2)}) and paying back your loan apps ($${totalOwed.toFixed(2)} owed + $${totalFees.toFixed(2)} in fees), 
+you end up with <strong style="color:var(--green)">$${finalBalance.toFixed(2)}</strong> left over.
+You paid off <strong>${paidFull} of ${allLoans.length}</strong> loans in full this first cycle.`;
+    if (missed > 0) html += ` <span style="color:var(--amber)">${missed} had to be skipped.</span>`;
+  } else {
+    html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks, 
+but you owe <strong style="color:var(--red)">$${totalOwed.toFixed(2)}</strong> to loan apps plus $${totalBills.toFixed(2)} in bills. 
+<strong style="color:var(--red)">You come up $${Math.abs(finalBalance).toFixed(2)} short</strong> — meaning some payments will be missed or deferred. 
+You'll likely need to borrow again just to survive, which keeps the cycle going.`;
+  }
+
+  html += `<br><br><em style="color:var(--green-dim)">Stress level: ${stress}/100 — ${stress > 60 ? 'this is a tough cycle. Check WHAT TO DO for help.' : stress > 30 ? 'manageable but tight. Watch for shortcuts.' : 'you have breathing room. Consider dropping one app permanently.'}</em>`;
+
+  summaryEl.innerHTML = html;
+
+  // Summary stat cards
+  const cards = document.getElementById('summary-cards');
+  cards.innerHTML = `
+    <div class="summary-card">
+      <div class="sc-label">3-CHECK INCOME</div>
+      <div class="sc-value sc-green">$${totalIncome.toFixed(0)}</div>
+      <div class="sc-sub">coming in</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">TOTAL OWED</div>
+      <div class="sc-value sc-red">$${totalOwed.toFixed(0)}</div>
+      <div class="sc-sub">to loan apps</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">TOTAL BILLS</div>
+      <div class="sc-value sc-amber">$${totalBills.toFixed(0)}</div>
+      <div class="sc-sub">3 paychecks</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">END BALANCE</div>
+      <div class="sc-value ${finalBalance >= 0 ? 'sc-green' : 'sc-red'}">$${finalBalance.toFixed(0)}</div>
+      <div class="sc-sub">${finalBalance >= 0 ? 'after everything' : 'deficit'}</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">LOANS PAID C1</div>
+      <div class="sc-value ${paidFull === allLoans.length ? 'sc-green' : paidFull > 0 ? 'sc-amber' : 'sc-red'}">${paidFull}/${allLoans.length}</div>
+      <div class="sc-sub">in full</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">STRESS</div>
+      <div class="sc-value ${stress > 60 ? 'sc-red' : stress > 30 ? 'sc-amber' : 'sc-green'}">${stress}</div>
+      <div class="sc-sub">out of 100</div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════════════════
 function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) {
-  const el = document.getElementById('timeline');
-  const maxVal = Math.max(income, ...allLoans.map(l=>l.owed), 50);
-  const bar = (val, cls, label) => {
-    const pct = Math.min(100, (val/maxVal)*100);
+  const el   = document.getElementById('timeline');
+  const maxV = Math.max(income, ...allLoans.map(l => l.owed), bills, 50);
+  const bar  = (val, cls, label) => {
+    const pct = Math.min(100, (val / maxV) * 100);
     return `<div class="tl-bar-wrap"><div class="tl-bar ${cls}" style="width:${pct}%">${label} $${val.toFixed(0)}</div></div>`;
   };
 
   let html = '';
-  html += `<div class="tl-row"><div class="tl-date">NOW</div>${bar(cash,'tl-income','On Hand')}</div>`;
-
-  beforeLoans.forEach(l => {
-    html += `<div class="tl-row"><div class="tl-date">Pre-Pay</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
-  });
-
-  html += `<div class="tl-row"><div class="tl-date">Payday</div>${bar(income,'tl-income','Paycheck')}</div>`;
-  if (bills > 0) html += `<div class="tl-row"><div class="tl-date">Bills</div>${bar(bills,'tl-debt','Bills')}</div>`;
-
-  afterLoans.forEach(l => {
-    html += `<div class="tl-row"><div class="tl-date">Pay Off</div>${bar(l.owed,'tl-debt',l.name)}</div>`;
-  });
-
-  const reborrows = allLoans.filter(l=>l.reuse==='instant');
-  reborrows.forEach(l => {
-    if (l.max > 0)
-      html += `<div class="tl-row"><div class="tl-date">Borrow</div>${bar(l.max,'tl-borrow',l.name + ' again')}</div>`;
+  html += `<div class="tl-row"><div class="tl-label">NOW</div>${bar(cash, 'tl-income', 'Cash')}</div>`;
+  beforeLoans.forEach(l => { html += `<div class="tl-row"><div class="tl-label">Pre-Pay</div>${bar(l.owed, 'tl-debt', l.name)}</div>`; });
+  html += `<div class="tl-row"><div class="tl-label">Payday</div>${bar(income, 'tl-income', 'Paycheck')}</div>`;
+  if (bills > 0) html += `<div class="tl-row"><div class="tl-label">Bills</div>${bar(bills, 'tl-debt', 'Bills')}</div>`;
+  afterLoans.forEach(l => { html += `<div class="tl-row"><div class="tl-label">Pay Off</div>${bar(l.owed, 'tl-debt', l.name)}</div>`; });
+  allLoans.filter(l => l.reuse === 'instant' && l.max > 0).forEach(l => {
+    html += `<div class="tl-row"><div class="tl-label">Re-borrow</div>${bar(l.max, 'tl-borrow', l.name)}</div>`;
   });
 
   el.innerHTML = html;
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // STRATEGY GENERATOR
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, damage) {
-  const container = document.getElementById('strategy-cards');
-  const cards = [];
+  const container    = document.getElementById('strategy-cards');
+  const cards        = [];
+  const net          = income - bills - allLoans.reduce((s, l) => s + l.owed, 0);
+  const instantLoans = allLoans.filter(l => l.reuse === 'instant');
+  const delayedLoans = allLoans.filter(l => l.reuse === 'delayed');
+  const totalInstantMax = instantLoans.reduce((s, l) => s + l.max, 0);
 
-  const net = income - bills - allLoans.reduce((s,l)=>s+l.owed,0);
-  const instantLoans = allLoans.filter(l=>l.reuse==='instant');
-  const delayedLoans = allLoans.filter(l=>l.reuse==='delayed');
-  const totalInstantReborrow = instantLoans.reduce((s,l)=>s+l.max,0);
-
-  // ADVANCED: LIQUIDITY SHUFFLE
+  // LIQUIDITY SHUFFLE
   if (instantLoans.length > 1) {
-    let sortedByMax = [...instantLoans].sort((a,b) => b.max - a.max);
-    let hubApp = sortedByMax[0];
-    let smallInstants = sortedByMax.slice(1);
-    let targetApps = allLoans.filter(l => l.name !== hubApp.name && (l.fee > 0 || l.reuse === 'delayed' || l.owed >= 50));
-
-    if (hubApp.max > 50) {
-      let steps = `1. Pay ${hubApp.name} first ($${hubApp.owed.toFixed(2)}) to unlock its maximum limit ($${hubApp.max.toFixed(2)}).\n`;
-      if (smallInstants.length > 0) {
-          steps += `2. Pay smaller flexible apps (${smallInstants.map(l=>l.name).join(', ')}) and reborrow them ONLY if needed.\n`;
-      }
-      steps += `3. QUICKLY borrow from ${hubApp.name} to clear high-fee or rigid apps`;
-      if (targetApps.length > 0) steps += ` (${targetApps.map(l=>l.name).join(', ')})`;
-      steps += `.\n4. STOP. Do not max out ${hubApp.name}. Leave the remaining balance as your emergency liquid reserve.\n\n`;
-      steps += `Why? By funneling money through your largest flexible app, you can clear expensive apps while keeping a liquid safety net open instead of maxing everything out.`;
-
-      cards.push({
-        title: 'ADVANCED: THE LIQUIDITY SHUFFLE',
-        cls: 's-title-info',
-        steps: steps
-      });
+    const sorted  = [...instantLoans].sort((a, b) => b.max - a.max);
+    const hub     = sorted[0];
+    const others  = sorted.slice(1);
+    const targets = allLoans.filter(l => l.name !== hub.name && (l.fee > 0 || l.reuse === 'delayed' || l.owed >= 50));
+    if (hub.max > 50) {
+      let steps = `1. Pay ${hub.name} first ($${hub.owed.toFixed(2)}) to unlock its full limit ($${hub.max.toFixed(2)}).\n`;
+      if (others.length) steps += `2. Pay smaller flexible apps (${others.map(l => l.name).join(', ')}) and re-borrow only if needed.\n`;
+      steps += `3. Quickly borrow from ${hub.name} to knock out the expensive or rigid apps`;
+      if (targets.length) steps += ` (${targets.map(l => l.name).join(', ')})`;
+      steps += `.\n4. Stop there — don't max ${hub.name} out. Keep the remaining limit as your emergency cushion.\n\nWhy: funneling through your biggest flexible app lets you wipe out costly apps while keeping one safety valve open.`;
+      cards.push({ title:'ADVANCED: LIQUIDITY SHUFFLE', cls:'s-blue', steps });
     }
   }
 
-  // STANDARD LOOP
+  // STANDARD RE-BORROW LOOP
   if (instantLoans.length > 0) {
-    const steps = instantLoans.sort((a,b)=>a.owed-b.owed).map((l,i) =>
-      `${i+1}. Pay ${l.name} ($${l.owed.toFixed(2)}) — then borrow $${l.max.toFixed(2)} right back`
+    const steps = instantLoans.sort((a, b) => a.owed - b.owed).map((l, i) =>
+      `${i + 1}. Pay ${l.name} ($${l.owed.toFixed(2)}) → re-borrow $${l.max.toFixed(2)} right back`
     ).join('\n');
     cards.push({
       title: 'STANDARD RE-BORROW LOOP',
-      cls: net < 0 ? 's-title-warn' : 's-title-ok',
-      steps: steps + `\n\nIf you cannot use the Liquidity Shuffle, use this standard loop. You will have $${totalInstantReborrow.toFixed(2)} available to borrow again.`
+      cls:   net < 0 ? 's-warn' : 's-ok',
+      steps: steps + `\n\nAfter this loop you'll have $${totalInstantMax.toFixed(2)} available again. Use it only if you must.`
     });
   }
 
+  // REDUCE LOAN COUNT
   if (damage > 30 || failed.length > 0) {
-    const prioritized = [...allLoans].sort((a,b)=>a.owed-b.owed);
-    const steps = prioritized.map((l,i) =>
-      `${i+1}. ${l.reuse==='instant'?'[Can re-borrow]':'[One-time payoff]'} ${l.name} — $${l.owed.toFixed(2)}`
+    const sorted = [...allLoans].sort((a, b) => a.owed - b.owed);
+    const steps  = sorted.map((l, i) =>
+      `${i + 1}. ${l.reuse === 'instant' ? '[Can re-borrow]' : '[One-time payoff]'} ${l.name} — $${l.owed.toFixed(2)}`
     ).join('\n');
     cards.push({
-      title: 'REDUCE YOUR LOAN COUNT',
-      cls: 's-title-warn',
-      steps: steps + '\n\nFocus on clearing the smallest amounts first.\nFewer active loans = less pressure every paycheck.'
+      title: 'DROP YOUR LOAN COUNT',
+      cls:   's-warn',
+      steps: steps + '\n\nFewer active apps = less pressure every payday. Focus on clearing the smallest first, then stop re-borrowing from those.'
     });
   }
 
+  // EMERGENCY PLAN
   if (isRecovery) {
-    const smallest = [...allLoans].sort((a,b)=>a.owed-b.owed).slice(0,2);
+    const smallest = [...allLoans].sort((a, b) => a.owed - b.owed).slice(0, 2);
     cards.push({
-      title: 'EMERGENCY PLAN — ZERO BORROWING AVAILABLE',
-      cls: 's-title-danger',
-      steps: `You have nothing left to borrow. Some payments will be late. That is okay.\n\n` +
-        `BEFORE PAYDAY:\nDo not try to overdraft or find quick money. Just wait.\n\n` +
-        `WHEN YOUR CHECK ARRIVES — do this in order:\n` +
-        smallest.map((l,i) => `  ${i+1}. Pay off ${l.name} first ($${l.owed.toFixed(2)})`).join('\n') +
-        `\n  3. Put whatever is left toward your biggest remaining balance.\n  4. Leave the rest for next cycle.\n\nDo not try to fix everything at once. One step at a time.`
+      title: 'EMERGENCY PLAN — YOU\'RE SHORT',
+      cls:   's-danger',
+      steps: `You don't have enough to cover everything. Some payments will be late — that's okay right now.\n\nWHEN YOUR CHECK ARRIVES — do this in order:\n` +
+        smallest.map((l, i) => `  ${i + 1}. Pay ${l.name} ($${l.owed.toFixed(2)}) first.`).join('\n') +
+        `\n  3. Put whatever's left toward your biggest remaining balance.\n  4. Don't try to fix everything at once.\n\nOne step at a time.`
     });
+
+    document.getElementById('recovery-output').innerHTML = `
+      <div style="color:var(--red);font-family:'VT323',monospace;font-size:16px;letter-spacing:2px;margin-bottom:8px">⚠ YOU ARE OVER-EXTENDED</div>
+      <div>You have more owed than your paycheck can cover. Here's what to do when your check hits:</div><br>
+      ${smallest.map((l, i) => `<div style="color:var(--green)">  ${i + 1}. Pay <strong>${l.name}</strong> ($${l.owed.toFixed(2)}) first — this re-opens your re-borrow option.</div>`).join('')}
+      <br><div style="color:var(--amber)">Do not try to pay everything. Clear the smallest ones and leave the rest for next cycle. You'll get out — just not all at once.</div>
+    `;
+  } else {
+    document.getElementById('recovery-output').innerHTML = `<span style="color:var(--green)">✓ You're not in emergency territory this cycle. Keep going.</span>`;
   }
 
   container.innerHTML = cards.length
@@ -1489,72 +1343,62 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
           <div class="s-title ${c.cls}">${c.title}</div>
           <div class="s-steps">${c.steps.replace(/\n/g,'<br>')}</div>
         </div>`).join('')
-    : '<div class="out-dim" style="font-size:12px;padding:8px">// Run your plan first to see your options here.</div>';
+    : '<div class="out-dim" style="font-size:11px;padding:8px">// Run your plan first to see options here.</div>';
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // DECISION GATE
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 function runDecisionGate() {
   const amount  = parseFloat(document.getElementById('gate-amount').value) || 0;
-  const appName = document.getElementById('gate-app').value || 'unknown';
+  const appName = document.getElementById('gate-app').value.trim() || 'this app';
   const days    = parseInt(document.getElementById('gate-days').value) || 14;
-  
   const income  = parseFloat(document.getElementById('income-c1').value) || 0;
   const bills   = parseFloat(document.getElementById('bills-c1').value) || 0;
+  const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
 
-  const totalOwed = loans.reduce((s,l) => s + l.owed, 0);
+  // After paying this back, how much do you have left?
   const projectedBalance = income - bills - totalOwed - amount;
-  const cyclesExtended = amount > 50 ? 1 : 0;
 
-  let out = '';
-  out += `<span class="out-section">── CHECKING YOUR BORROW REQUEST ──</span>\n`;
-  out += `<span class="out-info">You want to borrow $${amount.toFixed(2)} from ${appName}</span>\n`;
-  out += `<span class="out-dim">You would need to pay it back in ${days} days.</span>\n\n`;
+  let out = `<span class="out-dim">── BORROW CHECK: ${appName.toUpperCase()} ──</span>\n\n`;
+  out += `<span class="out-info">You want: $${amount.toFixed(2)} from ${appName}</span>\n`;
+  out += `<span class="out-dim">Pay-back deadline: ~${days} days</span>\n\n`;
+  out += `<span class="out-dim">Your next paycheck:        $${income.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">Bills coming out:         -$${bills.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">Other apps you owe:       -$${totalOwed.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">This borrow you'd owe:    -$${amount.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">─────────────────────────────</span>\n`;
 
   if (projectedBalance >= 0) {
-    out += `<span class="out-ok">✓ You should be able to handle this. After paying it back, you would have about $${projectedBalance.toFixed(2)} left.</span>\n`;
+    out += `<span class="out-ok">Estimated leftover:  +$${projectedBalance.toFixed(2)}</span>\n\n`;
+    out += `<span class="out-ok">✓ LOOKS MANAGEABLE — you should be able to pay this back without going negative.</span>`;
   } else {
-    out += `<span class="out-danger">✗ Warning: after paying this back, you would be $${Math.abs(projectedBalance).toFixed(2)} short.</span>\n`;
-    out += `<span class="out-warn">  That means you would need to borrow again just to survive — making the cycle worse.</span>\n`;
-  }
-
-  if (cyclesExtended) {
-    out += `<span class="out-warn">⚠ This will likely push your paycheck cycle about ${cyclesExtended} pay period(s) longer.</span>\n`;
-  }
-
-  out += `\n<span class="out-dim">RECOMMENDATION:</span>\n`;
-  if (projectedBalance >= 0) {
-    out += `<span class="out-ok">GO AHEAD — this borrow looks manageable.</span>`;
-  } else {
-    out += `<span class="out-danger">DO NOT BORROW RIGHT NOW — this will make your next paycheck even harder.</span>`;
+    out += `<span class="out-danger">Estimated shortfall: -$${Math.abs(projectedBalance).toFixed(2)}</span>\n\n`;
+    out += `<span class="out-danger">✗ DO NOT BORROW — after paying this back you'll be $${Math.abs(projectedBalance).toFixed(2)} short, which means you'll have to borrow again to survive. That makes the cycle worse.</span>`;
   }
 
   document.getElementById('gate-output').innerHTML = out;
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // CYCLE TRACKER
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 function updateCycleTrackerUI() {
   const grid = document.getElementById('cycle-grid');
   if (!loans.length) {
-    grid.innerHTML = '<span class="out-dim" style="font-size:12px">// Add your loan apps in the My Info tab to see this tracker</span>';
+    grid.innerHTML = '<span class="out-dim" style="font-size:11px">// Add loans to see this tracker</span>';
     return;
   }
-
   grid.innerHTML = loans.map(l => {
-    const count = cycleCounts[l.name] || 0;
-    const cls = count > 5 ? 'cycle-danger' : count > 3 ? 'cycle-warn' : 'cycle-ok';
-    const statusText = count > 5 ? 'WATCH OUT' : count > 3 ? 'GETTING HIGH' : 'LOOKS GOOD';
+    const count      = cycleCounts[l.name] || 0;
+    const cls        = count > 5 ? 'cycle-danger' : count > 3 ? 'cycle-warn' : 'cycle-ok';
+    const statusText = count > 5 ? 'WATCH OUT' : count > 3 ? 'GETTING HIGH' : 'OK';
     return `
       <div class="cycle-item">
-        <div style="font-size:11px;color:var(--green-dim)">${l.name}</div>
+        <div style="font-size:10px;color:var(--green-dim)">${l.name}</div>
         <div class="cycle-count ${cls}">${count}</div>
-        <div style="font-size:10px;color:var(--green-dim)">${l.reuse === 'instant' ? 'Can re-borrow' : 'Waiting period'}</div>
-        <div style="font-size:10px;color:${cls === 'cycle-danger'?'var(--red)':cls==='cycle-warn'?'var(--amber)':'var(--green-dim)'}">
-          ${statusText}
-        </div>
+        <div style="font-size:9px;color:var(--green-dim)">${l.reuse === 'instant' ? 'can re-borrow' : 'waiting period'}</div>
+        <div style="font-size:9px;color:${cls==='cycle-danger'?'var(--red)':cls==='cycle-warn'?'var(--amber)':'var(--green-dim)'}">${statusText}</div>
       </div>`;
   }).join('');
 }
@@ -1563,187 +1407,203 @@ function logCycleEvent() {
   const loanName = document.getElementById('cycle-loan-select').value;
   const action   = document.getElementById('cycle-action').value;
   const amount   = parseFloat(document.getElementById('cycle-amount').value) || 0;
-  const notes    = document.getElementById('cycle-notes').value;
+  const notes    = document.getElementById('cycle-notes').value.trim();
 
-  if (action === 'reborrowed') {
-    cycleCounts[loanName] = (cycleCounts[loanName] || 0) + 1;
-  }
+  if (action === 'reborrowed') cycleCounts[loanName] = (cycleCounts[loanName] || 0) + 1;
 
-  const ts = new Date().toLocaleTimeString('en-US',{hour12:false});
+  const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
   cycleLog.unshift({ ts, loanName, action, amount, notes });
 
-  saveDataLocally();
+  saveData();
   renderCycleLog();
   updateCycleTrackerUI();
 
   document.getElementById('cycle-amount').value = '0';
-  document.getElementById('cycle-notes').value = '';
+  document.getElementById('cycle-notes').value  = '';
 }
 
 function renderCycleLog() {
   const el = document.getElementById('cycle-log');
   if (!cycleLog.length) {
-    el.innerHTML = '<span class="out-dim">// Nothing recorded yet — use the form above to log your first event</span>';
+    el.innerHTML = '<span class="out-dim">// Nothing recorded yet</span>';
     return;
   }
-  const actionLabels = { paid: 'Paid back', reborrowed: 'Borrowed again from', partial: 'Partial payment to', missed: 'Missed payment on' };
+  const labels = { paid:'Paid back', reborrowed:'Borrowed again from', partial:'Partial payment to', missed:'Missed payment on' };
   el.innerHTML = cycleLog.map(e => {
-    const cls = e.action === 'paid' ? 'out-ok' : e.action === 'reborrowed' ? 'out-info' : e.action === 'missed' ? 'out-danger' : 'out-warn';
-    const label = actionLabels[e.action] || e.action;
-    return `<span class="${cls}">[${e.ts}] ${label} ${e.loanName} — $${e.amount.toFixed(2)}${e.notes ? '  // ' + e.notes : ''}</span>`;
+    const cls = e.action==='paid' ? 'out-ok' : e.action==='reborrowed' ? 'out-info' : e.action==='missed' ? 'out-danger' : 'out-warn';
+    return `<span class="${cls}">[${e.ts}] ${labels[e.action]||e.action} ${e.loanName} — $${e.amount.toFixed(2)}${e.notes ? '  // '+e.notes : ''}</span>`;
   }).join('\n');
 }
 
 function clearCycleLog() {
   cycleLog = [];
-  saveDataLocally();
+  saveData();
   renderCycleLog();
 }
 
-// ═══════════════════════════════════════════════
-// TAB NAVIGATION & AI API SETTINGS (RESTORED)
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════
 function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  const tabs = {setup:0,simulation:1,strategy:2,tracker:3,chat:4,settings:5};
-  document.querySelectorAll('.tab')[tabs[id]]?.classList.add('active');
-  if (id === 'chat') updateChatContextBar();
+  document.getElementById('tab-' + id).classList.add('active');
+  const order = { setup:0, simulation:1, strategy:2, tracker:3, chat:4, settings:5 };
+  const tabBtns = document.querySelectorAll('.tab');
+  if (tabBtns[order[id]]) tabBtns[order[id]].classList.add('active');
+  if (id === 'chat')     updateChatContextBar();
   if (id === 'settings') { onProviderChange(); refreshDataPreview(); }
 }
 
-function getApiKey() {
-  var provider = getProvider();
-  return sessionStorage.getItem('ls_api_key_' + provider) || '';
+// ═══════════════════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════════════════
+function triggerDownload(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  const el = document.getElementById('export-confirm');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-function getProvider() {
-  var el = document.getElementById('ai-provider');
-  if (el) return el.value;
-  return sessionStorage.getItem('ls_provider') || 'anthropic';
+function exportTXT() {
+  if (!lastResult) return;
+  const d = new Date().toLocaleDateString();
+  const r = lastResult;
+  const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
+  const lines = [
+    `SURVIVAL ENGINE EXPORT — ${d}`,
+    `Paycheck C1: $${r.income.toFixed(2)}`,
+    `Bills C1:    $${r.bills.toFixed(2)}`,
+    `Total Owed:  $${totalOwed.toFixed(2)}`,
+    `End Balance: $${r.balance.toFixed(2)}`,
+    `Stress:      ${r.damageScore}/100`,
+    '',
+    'LOAN OUTCOMES (Cycle 1):',
+    ...Object.entries(r.loanResults).map(([n, s]) => `  ${n}: ${s}`)
+  ];
+  triggerDownload(`survival_plan_${d.replace(/\//g,'-')}.txt`, lines.join('\n'), 'text/plain');
 }
 
-function getDefaultModel(provider) {
-  if (provider === 'openai')  return 'gpt-4o';
-  if (provider === 'google')  return 'gemini-1.5-flash';
-  if (provider === 'groq')    return 'llama-3.3-70b-versatile';
-  return 'claude-sonnet-4-20250514';
+function exportCSV() {
+  const rows = ['App Name,Owed,Max Borrow,Fee,Timing,Due Cycle'];
+  loans.forEach(l => rows.push(`"${l.name}",${l.owed},${l.max},${l.fee},${l.pullTiming},${l.dueCycle}`));
+  triggerDownload(`survival_loans_${new Date().toISOString().slice(0,10)}.csv`, rows.join('\n'), 'text/csv');
 }
 
-var PROVIDER_CONFIG = {
+function exportJSON() {
+  const data = {
+    incomeC1:     document.getElementById('income-c1').value,
+    incomeC2:     document.getElementById('income-c2').value,
+    incomeC3:     document.getElementById('income-c3').value,
+    billsC1:      document.getElementById('bills-c1').value,
+    billsC2:      document.getElementById('bills-c2').value,
+    billsC3:      document.getElementById('bills-c3').value,
+    payday:       document.getElementById('payday').value,
+    payFreq:      document.getElementById('pay-freq').value,
+    cashOnHand:   document.getElementById('cash-on-hand').value,
+    exitMonths:   document.getElementById('exit-months').value,
+    priorityMode: document.getElementById('priority-mode').value,
+    loans, cycleCounts, cycleLog,
+    exportedAt: new Date().toISOString()
+  };
+  triggerDownload(`survival_backup_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(data, null, 2), 'application/json');
+}
+
+// ═══════════════════════════════════════════════════════════
+// AI / CHAT
+// ═══════════════════════════════════════════════════════════
+const PROVIDER_CONFIG = {
   anthropic: {
-    label: 'Anthropic (Claude)', keyLabel: 'Anthropic API Key', placeholder: 'sk-ant-...',
-    keyHint: 'Get your key at console.anthropic.com',
-    models: [
-      {v:'claude-sonnet-4-20250514', t:'Claude Sonnet 4 (Recommended)'},
-      {v:'claude-haiku-4-5-20251001', t:'Claude Haiku 4.5 (Faster)'},
-      {v:'claude-opus-4-20250514', t:'Claude Opus 4 (Powerful)'}
+    label:'Anthropic (Claude)', keyLabel:'Anthropic API Key', placeholder:'sk-ant-...',
+    keyHint:'Get your key at console.anthropic.com',
+    models:[
+      {v:'claude-sonnet-4-20250514',t:'Claude Sonnet 4 (Recommended)'},
+      {v:'claude-haiku-4-5-20251001',t:'Claude Haiku 4.5 (Faster)'},
+      {v:'claude-opus-4-20250514',t:'Claude Opus 4 (Powerful)'}
     ]
   },
   openai: {
-    label: 'OpenAI (ChatGPT)', keyLabel: 'OpenAI API Key', placeholder: 'sk-...',
-    keyHint: 'Get your key at platform.openai.com',
-    models: [
-      {v:'gpt-4o', t:'GPT-4o (Recommended)'},
-      {v:'gpt-4o-mini', t:'GPT-4o Mini (Faster)'},
-      {v:'gpt-4-turbo', t:'GPT-4 Turbo'}
-    ]
+    label:'OpenAI (ChatGPT)', keyLabel:'OpenAI API Key', placeholder:'sk-...',
+    keyHint:'Get your key at platform.openai.com',
+    models:[{v:'gpt-4o',t:'GPT-4o'},{v:'gpt-4o-mini',t:'GPT-4o Mini'}]
   },
   google: {
-    label: 'Google (Gemini)', keyLabel: 'Google AI API Key', placeholder: 'AIza...',
-    keyHint: 'Get your key at aistudio.google.com',
-    models: [
-      {v:'gemini-1.5-flash', t:'Gemini 1.5 Flash (Recommended)'},
-      {v:'gemini-1.5-pro', t:'Gemini 1.5 Pro (Powerful)'}
-    ]
+    label:'Google (Gemini)', keyLabel:'Google AI Key', placeholder:'AIza...',
+    keyHint:'Get your key at aistudio.google.com',
+    models:[{v:'gemini-1.5-flash',t:'Gemini 1.5 Flash'},{v:'gemini-1.5-pro',t:'Gemini 1.5 Pro'}]
   },
   groq: {
-    label: 'Groq', keyLabel: 'Groq API Key', placeholder: 'gsk_...',
-    keyHint: 'Free tier available at console.groq.com',
-    models: [
-      {v:'llama-3.3-70b-versatile', t:'Llama 3.3 70B (Recommended)'},
-      {v:'mixtral-8x7b-32768', t:'Mixtral 8x7B'}
-    ]
+    label:'Groq', keyLabel:'Groq API Key', placeholder:'gsk_...',
+    keyHint:'Free tier at console.groq.com',
+    models:[{v:'llama-3.3-70b-versatile',t:'Llama 3.3 70B'},{v:'mixtral-8x7b-32768',t:'Mixtral 8x7B'}]
   },
   deepseek: {
-    label: 'DeepSeek', keyLabel: 'DeepSeek API Key', placeholder: 'sk-...',
-    keyHint: 'Get your key at platform.deepseek.com',
-    corsBlocked: true,
-    corsNote: 'Use model deepseek-chat or deepseek-coder. Endpoint is api.deepseek.com/chat/completions.',
-    models: [
-      {v:'deepseek-chat', t:'DeepSeek V3 (Recommended)'},
-      {v:'deepseek-coder', t:'DeepSeek Coder'},
-      {v:'deepseek-reasoner', t:'DeepSeek R1'}
-    ]
+    label:'DeepSeek', keyLabel:'DeepSeek API Key', placeholder:'sk-...',
+    keyHint:'Get your key at platform.deepseek.com', corsBlocked:true,
+    models:[{v:'deepseek-chat',t:'DeepSeek V3'},{v:'deepseek-reasoner',t:'DeepSeek R1'}]
   }
 };
 
+function getProvider() {
+  const el = document.getElementById('ai-provider');
+  return el ? el.value : (sessionStorage.getItem('se_provider') || 'anthropic');
+}
+function getApiKey() {
+  return sessionStorage.getItem('se_key_' + getProvider()) || '';
+}
+function getDefaultModel(provider) {
+  const cfg = PROVIDER_CONFIG[provider];
+  return cfg ? cfg.models[0].v : 'claude-sonnet-4-20250514';
+}
+
 function onProviderChange() {
-  var provider = getProvider();
-  sessionStorage.setItem('ls_provider', provider);
-  var cfg = PROVIDER_CONFIG[provider];
+  const provider = getProvider();
+  sessionStorage.setItem('se_provider', provider);
+  const cfg = PROVIDER_CONFIG[provider];
   if (!cfg) return;
-  
-  var keyLabel = document.getElementById('api-key-label');
-  var keyInput = document.getElementById('api-key-input');
-  var provDesc = document.getElementById('provider-desc');
-  var modelSel = document.getElementById('ai-model');
-  var st = document.getElementById('api-key-status');
-  
-  if (keyLabel) keyLabel.textContent = cfg.keyLabel;
-  if (keyInput) { 
-    keyInput.placeholder = cfg.placeholder; 
-    keyInput.value = getApiKey(); 
-  }
-  if (provDesc) provDesc.textContent = cfg.keyHint;
-  
-  if (modelSel) {
-    modelSel.innerHTML = '';
+
+  const keyLabelEl = document.getElementById('api-key-label');
+  const keyInputEl = document.getElementById('api-key-input');
+  const descEl     = document.getElementById('provider-desc');
+  const modelEl    = document.getElementById('ai-model');
+  const statusEl   = document.getElementById('api-key-status');
+
+  if (keyLabelEl) keyLabelEl.textContent = cfg.keyLabel;
+  if (keyInputEl) { keyInputEl.placeholder = cfg.placeholder; keyInputEl.value = getApiKey(); }
+  if (descEl)     descEl.textContent = cfg.keyHint;
+
+  if (modelEl) {
+    modelEl.innerHTML = '';
     cfg.models.forEach(m => {
-      var opt = document.createElement('option');
+      const opt = document.createElement('option');
       opt.value = m.v; opt.textContent = m.t;
-      modelSel.appendChild(opt);
+      modelEl.appendChild(opt);
     });
   }
-  
-  if (st) {
-    var existingKey = getApiKey();
-    if (existingKey.length > 10) {
-      st.textContent = cfg.label + ' key loaded. Ready to use.';
-      st.className = 'api-status ok';
-    } else if (cfg.corsBlocked) {
-      st.innerHTML = '<strong>&#9888; NOTE:</strong> ' + cfg.corsNote;
-      st.className = 'api-status error';
-    } else {
-      st.textContent = 'No key saved yet for ' + cfg.label + '. Enter your key above.';
-      st.className = 'api-status info';
-    }
+
+  if (statusEl) {
+    const key = getApiKey();
+    if (key.length > 10) { statusEl.textContent = cfg.label + ' key loaded.'; statusEl.className = 'api-status ok'; }
+    else if (cfg.corsBlocked) { statusEl.textContent = 'Note: ' + cfg.label + ' may be blocked by browser CORS. Try Groq for free.'; statusEl.className = 'api-status error'; }
+    else { statusEl.textContent = 'No key yet for ' + cfg.label + '.'; statusEl.className = 'api-status info'; }
   }
-  
-  var corsWarn = document.getElementById('cors-warning');
-  if (corsWarn) corsWarn.style.display = cfg.corsBlocked ? 'block' : 'none';
-  
+
   updateApiIndicator();
 }
 
 function onApiKeyInput() {
-  var val = document.getElementById('api-key-input').value.trim();
-  var provider = getProvider();
-  var cfg = PROVIDER_CONFIG[provider];
-  sessionStorage.setItem('ls_api_key_' + provider, val);
-  
-  var st = document.getElementById('api-key-status');
-  if (val.length > 10) {
-    st.textContent = (cfg ? cfg.label : provider) + ' key saved. Click TEST CONNECTION to verify.';
-    st.className = 'api-status ok';
-  } else if (val.length > 0) {
-    st.textContent = 'Key looks too short. Double-check it.';
-    st.className = 'api-status error';
-  } else {
-    st.textContent = 'No key entered yet. Your key is stored only in this browser session.';
-    st.className = 'api-status info';
-  }
+  const val      = document.getElementById('api-key-input').value.trim();
+  const provider = getProvider();
+  sessionStorage.setItem('se_key_' + provider, val);
+  const st = document.getElementById('api-key-status');
+  if (val.length > 10)  { st.textContent = 'Key saved. Test to verify.'; st.className = 'api-status ok'; }
+  else if (val.length)  { st.textContent = 'Key looks too short.';        st.className = 'api-status error'; }
+  else                  { st.textContent = 'No key entered.';              st.className = 'api-status info'; }
   updateApiIndicator();
 }
 
@@ -1754,258 +1614,196 @@ function toggleKeyVisibility() {
 }
 
 function updateApiIndicator() {
-  var el = document.getElementById('api-indicator');
+  const el  = document.getElementById('api-indicator');
   if (!el) return;
-  var key = getApiKey();
-  var cfg = PROVIDER_CONFIG[getProvider()];
-  if (key && key.length > 10) { 
-    el.textContent = (cfg ? cfg.label : 'API') + ' connected'; 
-    el.style.color = 'var(--green)'; 
-  } else { 
-    el.textContent = 'No API key'; 
-    el.style.color = 'var(--amber)'; 
-  }
-}
-
-async function testApiKey() {
-  var key = getApiKey();
-  var provider = getProvider();
-  var cfg = PROVIDER_CONFIG[provider];
-  var st = document.getElementById('api-key-status');
-  if (!key) { st.textContent = 'Please enter an API key first.'; st.className = 'api-status error'; return; }
-  st.textContent = 'Testing connection to ' + cfg.label + '...'; st.className = 'api-status info';
-  try {
-    var testResult = await callAI(provider, key, cfg.models[0].v, 'You are a test assistant.', [{role:'user',content:'Say OK'}], 10);
-    if (testResult.ok) {
-      st.textContent = cfg.label + ' connected and working. You can now use the AI chat.';
-      st.className = 'api-status ok';
-      updateApiIndicator();
-    } else {
-      st.textContent = 'Error: ' + testResult.error;
-      st.className = 'api-status error';
-    }
-  } catch(e) {
-    st.textContent = 'Could not connect. Check your key and internet.';
-    st.className = 'api-status error';
-  }
-}
-
-async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
-  if (provider === 'openai') {
-    var res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-      body: JSON.stringify({ model: model, max_tokens: maxTokens, messages: [{role:'system', content: systemPrompt}].concat(messages) })
-    });
-    var data = await res.json();
-    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'OpenAI error' };
-    return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
-  }
-  if (provider === 'google') {
-    var geminiBody = { 
-      system_instruction: { parts: [{text: systemPrompt}] }, 
-      contents: messages.map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{text: m.content}] })), 
-      generationConfig: { maxOutputTokens: maxTokens } 
-    };
-    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + (model || 'gemini-1.5-flash') + ':generateContent?key=' + key, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(geminiBody)
-    });
-    var data = await res.json();
-    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'Google API error' };
-    var text = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts ? data.candidates[0].content.parts[0].text : '(no response)';
-    return { ok: true, text: text };
-  }
-  if (provider === 'groq') {
-    var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-      body: JSON.stringify({ model: model, max_tokens: maxTokens, messages: [{role:'system', content: systemPrompt}].concat(messages) })
-    });
-    var data = await res.json();
-    if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'Groq error' };
-    return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
-  }
-  if (provider === 'deepseek') {
-    try {
-      var res = await fetch('https://api.deepseek.com/chat/completions', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-        body: JSON.stringify({ model: model || 'deepseek-chat', max_tokens: maxTokens, stream: false, messages: [{role:'system', content: systemPrompt}].concat(messages) })
-      });
-      var data = await res.json();
-      if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'DeepSeek API error' };
-      return { ok: true, text: data.choices && data.choices[0] ? data.choices[0].message.content : '(no response)' };
-    } catch(err) {
-      return { ok: false, error: 'DeepSeek is blocked by browser CORS. Switch to Groq/OpenAI.' };
-    }
-  }
-  // Anthropic Default
-  var res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: model || 'claude-sonnet-4-20250514', max_tokens: maxTokens, system: systemPrompt, messages: messages })
-  });
-  var data = await res.json();
-  if (!res.ok) return { ok: false, error: data.error ? data.error.message : 'Anthropic error' };
-  return { ok: true, text: data.content && data.content[0] ? data.content[0].text : '(no response)' };
-}
-
-// ═══ CHAT ENGINE CONTEXT ═══
-function buildContextSummary() {
-  const incC1 = parseFloat(document.getElementById('income-c1') ? document.getElementById('income-c1').value : 0) || 0;
-  const incC2 = parseFloat(document.getElementById('income-c2') ? document.getElementById('income-c2').value : 0) || 0;
-  const incC3 = parseFloat(document.getElementById('income-c3') ? document.getElementById('income-c3').value : 0) || 0;
-  const billsC1 = parseFloat(document.getElementById('bills-c1') ? document.getElementById('bills-c1').value : 0) || 0;
-  const billsC2 = parseFloat(document.getElementById('bills-c2') ? document.getElementById('bills-c2').value : 0) || 0;
-  const billsC3 = parseFloat(document.getElementById('bills-c3') ? document.getElementById('bills-c3').value : 0) || 0;
-  const cash = parseFloat(document.getElementById('cash-on-hand') ? document.getElementById('cash-on-hand').value : 0) || 0;
-  const payday = document.getElementById('payday') ? document.getElementById('payday').value : '';
-  const freq = document.getElementById('pay-freq') ? document.getElementById('pay-freq').value : '';
-  const exitMonths = parseInt(document.getElementById('exit-months') ? document.getElementById('exit-months').value : 0) || 0;
-  const totalOwed  = loans.reduce((s,l) => s + l.owed, 0);
-  const totalBorrow= loans.reduce((s,l) => l.reuse==='instant' ? s+l.max : s, 0);
-  
-  let loanLines = loans.map(l => `  - ${l.name}: owes $${l.owed.toFixed(2)}, can re-borrow $${l.max.toFixed(2)} (${l.reuse === 'instant' ? 'immediately' : 'waiting period'}) [Timing: ${l.pullTiming}, Due Cycle: ${l.dueCycle}, Fee: $${l.fee.toFixed(2)}]`);
-  
-  let simSummary = lastSimResult ? ` | Last plan (Cycle 3 end): balance $${lastSimResult.balance.toFixed(2)}, stress ${lastSimResult.damageScore}/100, skipped ${lastSimResult.failed.length}` : '';
-  
-  let cycleLines = Object.keys(cycleCounts).map(k => `${k}: ${cycleCounts[k]}x`);
-  let cycleSummary = cycleLines.length ? ' | Reuse counts: ' + cycleLines.join(', ') : '';
-  
-  return `USER FINANCIAL DATA: income=[$${incC1.toFixed(2)}, $${incC2.toFixed(2)}, $${incC3.toFixed(2)}], bills=[$${billsC1.toFixed(2)}, $${billsC2.toFixed(2)}, $${billsC3.toFixed(2)}], cash=$${cash.toFixed(2)}, next payday=${payday} (${freq}), total owed=$${totalOwed.toFixed(2)}, can reborrow=$${totalBorrow.toFixed(2)}, goal=${exitMonths>0?exitMonths+' mos':'none'} | Loans: ${loanLines.join('; ')}${simSummary}${cycleSummary}`;
-}
-
-function refreshDataPreview() {
-  var el = document.getElementById('data-preview');
-  if (el) el.textContent = buildContextSummary();
+  const key = getApiKey();
+  const cfg = PROVIDER_CONFIG[getProvider()];
+  if (key && key.length > 10) { el.textContent = (cfg ? cfg.label : 'API') + ' connected'; el.style.color = 'var(--green)'; }
+  else                        { el.textContent = 'No API key — add one in Settings';         el.style.color = 'var(--amber)'; }
 }
 
 function updateChatContextBar() {
-  var income = parseFloat(document.getElementById('income-c1') ? document.getElementById('income-c1').value : 0) || 0;
-  var totalOwed = loans.reduce((s,l) => s + l.owed, 0);
-  var p1 = document.getElementById('ctx-income-pill');
-  var p2 = document.getElementById('ctx-loans-pill');
-  var p3 = document.getElementById('ctx-balance-pill');
+  const income   = parseFloat(document.getElementById('income-c1').value) || 0;
+  const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
+  const p1 = document.getElementById('ctx-income-pill');
+  const p2 = document.getElementById('ctx-loans-pill');
+  const p3 = document.getElementById('ctx-balance-pill');
   if (p1) p1.textContent = 'INCOME C1: $' + income.toFixed(0);
-  if (p2) p2.textContent = 'LOANS: ' + loans.length + ' apps / $' + totalOwed.toFixed(0) + ' owed';
-  if (p3) p3.textContent = lastSimResult ? 'LAST BALANCE: $' + lastSimResult.balance.toFixed(2) : 'not run yet';
+  if (p2) p2.textContent = 'LOANS: ' + loans.length + ' / $' + totalOwed.toFixed(0) + ' owed';
+  if (p3) p3.textContent = lastResult ? 'END BAL: $' + lastResult.balance.toFixed(2) : 'not run yet';
   updateApiIndicator();
 }
 
-// ═══ CHAT EXECUTION ═══
-var chatHistory = [];
+function buildContextSummary() {
+  const inc  = [1,2,3].map(n => parseFloat(document.getElementById('income-c'+n).value)||0);
+  const bill = [1,2,3].map(n => parseFloat(document.getElementById('bills-c'+n).value)||0);
+  const cash = parseFloat(document.getElementById('cash-on-hand').value) || 0;
+  const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
+  const totalMax  = loans.filter(l => l.reuse === 'instant').reduce((s, l) => s + l.max, 0);
+  const loanLines = loans.map(l => `  - ${l.name}: owe $${l.owed.toFixed(2)}, max $${l.max.toFixed(2)}, fee $${l.fee.toFixed(2)}, ${l.reuse}, due cycle ${l.dueCycle}`);
+  const simNote   = lastResult ? ` | After 3 cycles: $${lastResult.balance.toFixed(2)} balance, stress ${lastResult.damageScore}/100` : '';
+  return `Income: [${inc.map(v=>'$'+v.toFixed(2)).join(', ')}], Bills: [${bill.map(v=>'$'+v.toFixed(2)).join(', ')}], Cash: $${cash.toFixed(2)}, Total owed: $${totalOwed.toFixed(2)}, Total re-borrow capacity: $${totalMax.toFixed(2)}${simNote} | Loans:\n${loanLines.join('\n')}`;
+}
+
+function refreshDataPreview() {
+  const el = document.getElementById('data-preview');
+  if (el) el.textContent = buildContextSummary();
+}
+
+async function testApiKey() {
+  const key      = getApiKey();
+  const provider = getProvider();
+  const cfg      = PROVIDER_CONFIG[provider];
+  const st       = document.getElementById('api-key-status');
+  if (!key) { st.textContent = 'Enter a key first.'; st.className = 'api-status error'; return; }
+  st.textContent = 'Testing...'; st.className = 'api-status info';
+  try {
+    const res = await callAI(provider, key, cfg.models[0].v, 'You are a test.', [{role:'user',content:'Say OK'}], 10);
+    if (res.ok) { st.textContent = cfg.label + ' connected ✓'; st.className = 'api-status ok'; updateApiIndicator(); }
+    else        { st.textContent = 'Error: ' + res.error; st.className = 'api-status error'; }
+  } catch(e) { st.textContent = 'Could not connect.'; st.className = 'api-status error'; }
+}
 
 function appendMessage(role, text) {
-  var container = document.getElementById('chat-messages');
-  var div = document.createElement('div');
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
   div.className = 'chat-msg ' + (role === 'user' ? 'user' : role === 'system' ? 'system' : 'ai');
-  var label = role === 'user' ? 'YOU' : (role === 'system' ? '' : 'AI ADVISOR');
-  var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-  div.innerHTML = (label ? '<div class="msg-label">' + label + '</div>' : '') + '<div class="msg-body">' + safe + '</div>';
+  const label = role === 'user' ? 'YOU' : (role === 'system' ? '' : 'AI ADVISOR');
+  const safe  = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  div.innerHTML = (label ? `<div class="msg-label">${label}</div>` : '') + `<div class="msg-body">${safe}</div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
 
 async function sendChat() {
-  var input   = document.getElementById('chat-input');
-  var sendBtn = document.getElementById('btn-send');
-  var userMsg = input.value.trim();
+  const input   = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('btn-send');
+  const userMsg = input.value.trim();
   if (!userMsg) return;
-  var key = getApiKey();
-  var provider = getProvider();
+
+  const key      = getApiKey();
+  const provider = getProvider();
   if (!key || key.length < 10) {
-    appendMessage('system', 'No API key found. Go to the Settings tab, choose your AI provider, and add your key.');
+    appendMessage('system', 'No API key found. Go to Settings, choose your AI provider, and add your key.');
     return;
   }
-  
+
   appendMessage('user', userMsg);
   input.value = '';
   sendBtn.disabled = true;
   document.getElementById('typing-indicator').classList.add('visible');
-  chatHistory.push({ role: 'user', content: userMsg });
-  
-  var toneMap = { friendly: 'You are warm and use simple everyday language.', direct: 'You are direct and concise. Give clear action steps.', coach: 'You are an encouraging financial coach.' };
-  var toneEl = document.getElementById('ai-tone');
-  var tone   = toneEl ? (toneMap[toneEl.value] || toneMap.friendly) : toneMap.friendly;
-  var modelEl = document.getElementById('ai-model');
-  var model   = modelEl ? modelEl.value : getDefaultModel(provider);
-  
-  if (provider === 'deepseek' && model && model.indexOf('claude') >= 0) { model = 'deepseek-chat'; }
-  if (provider === 'openai'   && model && model.indexOf('claude') >= 0) { model = 'gpt-4o'; }
-  if (provider === 'google'   && model && model.indexOf('claude') >= 0) { model = 'gemini-1.5-flash'; }
-  if (provider === 'groq'     && model && model.indexOf('claude') >= 0) { model = 'llama-3.3-70b-versatile'; }
-  
-  var context = buildContextSummary();
-  var systemPrompt = 'You are a financial advisor in the Survival Engine app, which forecasts loan cycles (Earnin, CashApp, Genie, etc.) to help users break free. ' + tone + ' You have the user financial data: ' + context + '. Give specific personalized advice based on this exact data. Be practical and on their side.';
-  
+  chatHistory.push({ role:'user', content:userMsg });
+
+  const toneMap = {
+    friendly: 'You are warm and use simple everyday language.',
+    direct:   'You are direct and concise. Give clear action steps.',
+    coach:    'You are an encouraging financial coach.'
+  };
+  const toneEl   = document.getElementById('ai-tone');
+  const tone     = toneEl ? (toneMap[toneEl.value] || toneMap.friendly) : toneMap.friendly;
+  const modelEl  = document.getElementById('ai-model');
+  let   model    = modelEl ? modelEl.value : getDefaultModel(provider);
+
+  // Guard against mismatched model/provider
+  if (provider === 'openai'   && !model.startsWith('gpt'))          model = 'gpt-4o';
+  if (provider === 'google'   && !model.startsWith('gemini'))        model = 'gemini-1.5-flash';
+  if (provider === 'groq'     && model.startsWith('claude'))         model = 'llama-3.3-70b-versatile';
+  if (provider === 'deepseek' && !model.startsWith('deepseek'))      model = 'deepseek-chat';
+
+  const context      = buildContextSummary();
+  const systemPrompt = `You are a financial advisor inside the Survival Engine app, which helps people stuck in payday loan app cycles (Earnin, CashApp, etc.) break free. ${tone} Here is the user's exact financial data:\n${context}\nGive specific, practical advice based on this data. Be honest and on their side.`;
+
   try {
-    var result = await callAI(provider, key, model, systemPrompt, chatHistory, 1000);
+    const result = await callAI(provider, key, model, systemPrompt, chatHistory, 1000);
     document.getElementById('typing-indicator').classList.remove('visible');
     if (!result.ok) {
       appendMessage('system', 'Error from ' + provider + ': ' + result.error);
       chatHistory.pop();
     } else {
       appendMessage('ai', result.text);
-      chatHistory.push({ role: 'assistant', content: result.text });
+      chatHistory.push({ role:'assistant', content:result.text });
     }
   } catch(e) {
     document.getElementById('typing-indicator').classList.remove('visible');
-    appendMessage('system', 'Could not reach the AI. Check your internet and try again.');
+    appendMessage('system', 'Could not reach AI. Check your internet and try again.');
     chatHistory.pop();
   }
+
   sendBtn.disabled = false;
   input.focus();
 }
 
-// ═══════════════════════════════════════════════
-// EXPORT FUNCTIONS
-// ═══════════════════════════════════════════════
-function triggerDownload(filename, content, mimeType) {
-  var blob = new Blob([content], { type: mimeType });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement('a');
-  a.href     = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
+  if (provider === 'openai') {
+    const res  = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body: JSON.stringify({ model, max_tokens:maxTokens, messages:[{role:'system',content:systemPrompt},...messages] })
+    });
+    const data = await res.json();
+    if (!res.ok) return { ok:false, error:data.error?.message||'OpenAI error' };
+    return { ok:true, text:data.choices?.[0]?.message?.content || '(no response)' };
+  }
+
+  if (provider === 'google') {
+    const res  = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model||'gemini-1.5-flash'}:generateContent?key=${key}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction:{ parts:[{text:systemPrompt}] },
+        contents: messages.map(m => ({ role:m.role==='assistant'?'model':'user', parts:[{text:m.content}] })),
+        generationConfig:{ maxOutputTokens:maxTokens }
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) return { ok:false, error:data.error?.message||'Google API error' };
+    return { ok:true, text:data.candidates?.[0]?.content?.parts?.[0]?.text || '(no response)' };
+  }
+
+  if (provider === 'groq') {
+    const res  = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body: JSON.stringify({ model, max_tokens:maxTokens, messages:[{role:'system',content:systemPrompt},...messages] })
+    });
+    const data = await res.json();
+    if (!res.ok) return { ok:false, error:data.error?.message||'Groq error' };
+    return { ok:true, text:data.choices?.[0]?.message?.content || '(no response)' };
+  }
+
+  if (provider === 'deepseek') {
+    try {
+      const res  = await fetch('https://api.deepseek.com/chat/completions', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body: JSON.stringify({ model:model||'deepseek-chat', max_tokens:maxTokens, stream:false, messages:[{role:'system',content:systemPrompt},...messages] })
+      });
+      const data = await res.json();
+      if (!res.ok) return { ok:false, error:data.error?.message||'DeepSeek error' };
+      return { ok:true, text:data.choices?.[0]?.message?.content || '(no response)' };
+    } catch { return { ok:false, error:'DeepSeek is blocked by browser CORS. Use Groq instead (free).' }; }
+  }
+
+  // Default: Anthropic
+  const res  = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({ model:model||'claude-sonnet-4-20250514', max_tokens:maxTokens, system:systemPrompt, messages })
+  });
+  const data = await res.json();
+  if (!res.ok) return { ok:false, error:data.error?.message||'Anthropic error' };
+  return { ok:true, text:data.content?.[0]?.text || '(no response)' };
 }
 
-function exportTXT() {
-  if (!lastSimResult) return;
-  var r = lastSimResult;
-  var d = new Date().toLocaleDateString();
-  var lines = [`SURVIVAL ENGINE EXPORT - ${d}`, `Paycheck C1: $${r.income.toFixed(2)}`, `Bills C1: $${r.bills.toFixed(2)}`];
-  triggerDownload(`survival_plan_${d}.txt`, lines.join('\n'), 'text/plain');
-}
-
-function exportCSV() {
-  if (!lastSimResult) return;
-  var rows = ['App Name,Amount Owed,Max Reborrow,Fee,Timing,Due Cycle'];
-  loans.forEach(l => rows.push(`"${l.name}",${l.owed},${l.max},${l.fee},${l.pullTiming},${l.dueCycle}`));
-  triggerDownload(`survival_loans_${new Date().toLocaleDateString()}.csv`, rows.join('\n'), 'text/csv');
-}
-
-function exportJSON() {
-  const data = {
-    incomeC1: document.getElementById('income-c1').value,
-    incomeC2: document.getElementById('income-c2').value,
-    incomeC3: document.getElementById('income-c3').value,
-    billsC1:  document.getElementById('bills-c1').value,
-    billsC2:  document.getElementById('bills-c2').value,
-    billsC3:  document.getElementById('bills-c3').value,
-    payday: document.getElementById('payday').value,
-    payFreq: document.getElementById('pay-freq').value,
-    cashOnHand: document.getElementById('cash-on-hand').value,
-    exitMonths: document.getElementById('exit-months').value,
-    priorityMode: document.getElementById('priority-mode').value,
-    loans: loans,
-    cycleCounts: cycleCounts,
-    cycleLog: cycleLog,
-    exportedAt: new Date().toISOString()
-  };
-  triggerDownload(`survival_engine_backup_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(data, null, 2), 'application/json');
-}
-
+// ═══════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', init);
 </script>
-
 </body>
 </html>
