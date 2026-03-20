@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover"/>
   <title>DRE Extractor — Andre Method</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <!-- Added lamejs for MP3 encoding -->
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     :root{
@@ -163,7 +165,7 @@
   <div class="boot-logo">DRE Extractor</div>
   <div class="boot-scan-lines">
     <div class="boot-line" id="bl0"><div class="boot-dot" id="bd0"></div><span class="boot-line-text">Loading audio engine</span><span class="boot-line-label" id="bs0">—</span></div>
-    <div class="boot-line" id="bl1"><div class="boot-dot" id="bd1"></div><span class="boot-line-text">Initializing WAV decoder</span><span class="boot-line-label" id="bs1">—</span></div>
+    <div class="boot-line" id="bl1"><div class="boot-dot" id="bd1"></div><span class="boot-line-text">Initializing MP3 encoder</span><span class="boot-line-label" id="bs1">—</span></div>
     <div class="boot-line" id="bl2"><div class="boot-dot" id="bd2"></div><span class="boot-line-text">Verifying secure context</span><span class="boot-line-label" id="bs2">—</span></div>
   </div>
   <div class="boot-bar-wrap"><div class="boot-bar" id="bootBar"></div></div>
@@ -191,8 +193,8 @@
         </div>
         <div class="file-widget">
           <div class="file-widget-title">Output</div>
-          <div class="file-row"><span class="file-key">Format</span><span class="file-val">WAV · PCM</span></div>
-          <div class="file-row"><span class="file-key">Depth</span><span class="file-val">16-bit</span></div>
+          <div class="file-row"><span class="file-key">Format</span><span class="file-val">MP3</span></div>
+          <div class="file-row"><span class="file-key">Bitrate</span><span class="file-val">128 kbps</span></div>
           <div class="file-row"><span class="file-key">Channels</span><span class="file-val" id="infoChannels">—</span></div>
           <div class="file-row"><span class="file-key">Sample Rate</span><span class="file-val" id="infoSampleRate">—</span></div>
         </div>
@@ -203,7 +205,7 @@
             <svg width="10" height="10" viewBox="0 0 10 10" fill="var(--green)"><path d="M5 0L9.33 2.5v5L5 10 .67 7.5v-5z"/></svg>
             On-Device Only
           </div>
-          <div class="privacy-note-body">No uploads. No servers. Audio is decoded and converted entirely inside your browser using the Web Audio API.</div>
+          <div class="privacy-note-body">No uploads. No servers. Audio is decoded and converted to MP3 entirely inside your browser.</div>
         </div>
       </div>
 
@@ -223,8 +225,8 @@
     <div class="right-panel" id="stateUpload">
       <div class="panel-header">
         <div class="panel-eyebrow">Audio Engine</div>
-        <div class="panel-title">Extract Audio</div>
-        <div class="panel-desc">Drop any video or audio file. Decoded natively in your browser — nothing is uploaded. Output is a lossless 16-bit WAV file.</div>
+        <div class="panel-title">Extract & Convert</div>
+        <div class="panel-desc">Drop any video or audio file (including WAV). Decoded natively in your browser and exported as MP3.</div>
       </div>
       <div class="right-panel-body">
         <div class="drop-zone" id="dropZone" onclick="fileInput.click()">
@@ -241,8 +243,8 @@
             Select Video or Audio File
           </button>
           <div class="format-chips">
-            <span class="chip">MP4</span><span class="chip">MOV</span><span class="chip">AVI</span>
-            <span class="chip">MKV</span><span class="chip">MP3</span><span class="chip">AAC</span>
+            <span class="chip">WAV</span><span class="chip">MP4</span><span class="chip">MOV</span>
+            <span class="chip">AVI</span><span class="chip">MKV</span><span class="chip">AAC</span>
             <span class="chip">WEBM</span><span class="chip">M4A</span>
           </div>
         </div>
@@ -253,7 +255,7 @@
     <div class="right-panel hidden" id="stateProcessing">
       <div class="panel-header">
         <div class="panel-eyebrow">Audio Engine</div>
-        <div class="panel-title">Extracting Audio</div>
+        <div class="panel-title">Converting to MP3</div>
         <div class="panel-desc">Browser native decoder is running. This happens entirely on your device.</div>
       </div>
       <div class="processing-wrap">
@@ -282,7 +284,7 @@
           </div>
           <div class="stage-item" id="st2">
             <div class="stage-num" id="sn2">3</div>
-            <div><div class="stage-text">Build WAV container</div><div class="stage-detail" id="sd2">Pending</div></div>
+            <div><div class="stage-text">Encode to MP3</div><div class="stage-detail" id="sd2">Pending</div></div>
           </div>
           <div class="stage-item" id="st3">
             <div class="stage-num" id="sn3">4</div>
@@ -295,9 +297,9 @@
     <!-- RIGHT PANEL — DOWNLOAD STATE -->
     <div class="right-panel hidden" id="stateDownload">
       <div class="panel-header">
-        <div class="panel-eyebrow">Extraction Complete</div>
+        <div class="panel-eyebrow">Conversion Complete</div>
         <div class="panel-title">Ready to Download</div>
-        <div class="panel-desc">Your audio has been decoded and packaged as a lossless WAV file.</div>
+        <div class="panel-desc">Your audio has been encoded and packaged as an MP3 file.</div>
       </div>
       <div class="download-wrap">
         <div class="success-banner">
@@ -305,8 +307,8 @@
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#4CAF82" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 11 8.5 15.5 18 6"/></svg>
           </div>
           <div>
-            <div class="success-title">Extraction successful</div>
-            <div class="success-sub" id="fileNameDisplay">audio.wav is ready</div>
+            <div class="success-title">Conversion successful</div>
+            <div class="success-sub" id="fileNameDisplay">audio.mp3 is ready</div>
           </div>
         </div>
 
@@ -317,17 +319,17 @@
 
         <div class="stats-grid">
           <div class="stat-card"><div class="stat-label">Duration</div><div class="stat-val" id="statDur">—</div><div class="stat-sub">minutes : seconds</div></div>
-          <div class="stat-card"><div class="stat-label">File Size</div><div class="stat-val" id="statSize">—</div><div class="stat-sub">WAV · Lossless PCM</div></div>
+          <div class="stat-card"><div class="stat-label">File Size</div><div class="stat-val" id="statSize">—</div><div class="stat-sub">MP3 Compressed</div></div>
           <div class="stat-card"><div class="stat-label">Sample Rate</div><div class="stat-val" id="statSR">—</div><div class="stat-sub" id="statChLabel">Stereo · 2ch</div></div>
-          <div class="stat-card"><div class="stat-label">Bit Rate</div><div class="stat-val" id="statBR">—</div><div class="stat-sub">16-bit PCM depth</div></div>
+          <div class="stat-card"><div class="stat-label">Bit Rate</div><div class="stat-val" id="statBR">128k</div><div class="stat-sub">CBR Encoding</div></div>
         </div>
 
         <div class="action-row">
           <button class="btn-download" id="downloadBtn">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
-            Download WAV
+            Download MP3
           </button>
-          <button class="btn-again" onclick="resetTool()">Extract Another</button>
+          <button class="btn-again" onclick="resetTool()">Convert Another</button>
         </div>
       </div>
     </div>
@@ -394,7 +396,7 @@
     if (f) processFile(f);
   });
 
-  // ===== MAIN PROCESS (original logic preserved exactly) =====
+  // ===== MAIN PROCESS =====
   async function processFile(file) {
     // Update sidebar
     setSidebar(file.name, (file.size / 1024 / 1024).toFixed(1) + ' MB', file.type.split('/')[1]?.toUpperCase() || file.name.split('.').pop().toUpperCase());
@@ -406,11 +408,11 @@
     setStage(0, 10, 'Reading file…', 'Buffering ' + (file.size/1024/1024).toFixed(1) + ' MB into memory');
 
     try {
-      // 1. Read File (original)
+      // 1. Read File
       const arrayBuffer = await file.arrayBuffer();
       setStage(1, 35, 'Decoding audio stream…', 'Browser native Web Audio API running');
 
-      // 2. Decode Audio — original browser native engine
+      // 2. Decode Audio
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
 
@@ -418,12 +420,14 @@
       G('infoChannels').textContent  = audioBuffer.numberOfChannels === 2 ? 'Stereo' : 'Mono';
       G('infoSampleRate').textContent = (audioBuffer.sampleRate / 1000).toFixed(1) + ' kHz';
 
-      setStage(2, 65, 'Building WAV container…', 'Writing PCM headers and interleaving channels');
+      setStage(2, 65, 'Encoding to MP3…', 'Compressing audio data with lamejs');
 
-      // 3. Convert to WAV Blob (original bufferToWave)
-      const wavBlob = bufferToWave(audioBuffer, audioBuffer.length);
-      const url      = URL.createObjectURL(wavBlob);
-      const newName  = file.name.replace(/\.[^/.]+$/, '') + '.wav';
+      // 3. Convert to MP3 Blob using lamejs
+      // We must let UI update before doing heavy synchronous work
+      await new Promise(r => setTimeout(r, 50)); 
+      const mp3Blob = bufferToMp3(audioBuffer);
+      const url      = URL.createObjectURL(mp3Blob);
+      const newName  = file.name.replace(/\.[^/.]+$/, '') + '.mp3';
 
       setStage(3, 90, 'Preparing download…', 'Generating object URL');
       await new Promise(r => setTimeout(r, 280));
@@ -434,15 +438,13 @@
       const dur   = audioBuffer.duration;
       const mm    = String(Math.floor(dur / 60)).padStart(2, '0');
       const ss    = String(Math.floor(dur % 60)).padStart(2, '0');
-      const kbps  = Math.round(audioBuffer.sampleRate * audioBuffer.numberOfChannels * 16 / 1000);
-      const mb    = (wavBlob.size / 1024 / 1024).toFixed(2);
+      const mb    = (mp3Blob.size / 1024 / 1024).toFixed(2);
       const chLbl = audioBuffer.numberOfChannels === 2 ? 'Stereo · 2ch' : 'Mono · 1ch';
 
       G('fileNameDisplay').textContent = newName + ' is ready';
       G('statDur').textContent   = mm + ':' + ss;
       G('statSize').textContent  = mb + ' MB';
       G('statSR').textContent    = (audioBuffer.sampleRate/1000).toFixed(1) + 'k';
-      G('statBR').textContent    = kbps + 'k';
       G('statChLabel').textContent = chLbl;
 
       // Waveform (decorative)
@@ -469,6 +471,7 @@
       show('stateDownload');
 
     } catch (err) {
+      console.error(err);
       setEngine('Error', 'ready');
       G('stageName').textContent = 'Extraction failed';
       G('stageSub').textContent  = 'File may be corrupted, DRM-protected, or unsupported';
@@ -488,38 +491,49 @@
     show('stateUpload');
   }
 
-  // ===== WAV ENCODER (original — untouched) =====
-  function bufferToWave(abuffer, len) {
-    let numOfChan = abuffer.numberOfChannels,
-        length    = len * numOfChan * 2 + 44,
-        buffer    = new ArrayBuffer(length),
-        view      = new DataView(buffer),
-        channels  = [], i, sample,
-        offset    = 0, pos = 0;
+  // ===== MP3 ENCODER (Replaced WAV with lamejs) =====
+  function bufferToMp3(abuffer) {
+    const channels = abuffer.numberOfChannels;
+    const sampleRate = abuffer.sampleRate;
+    const kbps = 128; // standard mp3 bitrate
+    const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
+    const mp3Data = [];
 
-    setUint32(0x46464952); setUint32(length - 8);   setUint32(0x45564157);
-    setUint32(0x20746d66); setUint32(16);             setUint16(1);
-    setUint16(numOfChan);  setUint32(abuffer.sampleRate);
-    setUint32(abuffer.sampleRate * 2 * numOfChan);
-    setUint16(numOfChan * 2); setUint16(16);
-    setUint32(0x61746164); setUint32(length - pos - 4);
+    const left = abuffer.getChannelData(0);
+    const right = channels === 2 ? abuffer.getChannelData(1) : null;
+    const sampleBlockSize = 1152;
+    
+    // Convert Float32 arrays to Int16
+    const leftInt16 = new Int16Array(left.length);
+    const rightInt16 = right ? new Int16Array(right.length) : null;
 
-    for (i = 0; i < abuffer.numberOfChannels; i++)
-      channels.push(abuffer.getChannelData(i));
-
-    while (pos < len) {
-      for (i = 0; i < numOfChan; i++) {
-        sample = Math.max(-1, Math.min(1, channels[i][pos]));
-        sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
-        view.setInt16(44 + offset, sample, true);
-        offset += 2;
+    for (let i = 0; i < left.length; i++) {
+      leftInt16[i] = left[i] < 0 ? left[i] * 32768 : left[i] * 32767;
+      if (right) {
+        rightInt16[i] = right[i] < 0 ? right[i] * 32768 : right[i] * 32767;
       }
-      pos++;
     }
-    return new Blob([buffer], { type: 'audio/wav' });
 
-    function setUint16(d) { view.setUint16(pos, d, true); pos += 2; }
-    function setUint32(d) { view.setUint32(pos, d, true); pos += 4; }
+    for (let i = 0; i < leftInt16.length; i += sampleBlockSize) {
+      const leftChunk = leftInt16.subarray(i, i + sampleBlockSize);
+      let mp3buf;
+      if (right) {
+        const rightChunk = rightInt16.subarray(i, i + sampleBlockSize);
+        mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+      } else {
+        mp3buf = mp3encoder.encodeBuffer(leftChunk);
+      }
+      if (mp3buf.length > 0) {
+        mp3Data.push(mp3buf);
+      }
+    }
+
+    const mp3buf = mp3encoder.flush();
+    if (mp3buf.length > 0) {
+      mp3Data.push(mp3buf);
+    }
+    
+    return new Blob(mp3Data, { type: 'audio/mp3' });
   }
 
   // ===== BOOT SEQUENCE =====
