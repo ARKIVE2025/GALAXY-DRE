@@ -350,65 +350,96 @@
       filter: drop-shadow(0 0 4px var(--accent-cyan));
     }
 
-    /* ── COUNTDOWN ── */
-    .countdown-section {
+    /* ── LAUNCH DATE (Gathering Stars Effect) ── */
+    .launch-date-section {
       margin: 0 auto 48px;
       animation: fadeSlideUp 1s ease 0.6s both;
     }
 
-    .countdown-label {
+    .launch-date-label {
       font-family: 'Orbitron', sans-serif;
       font-size: 0.62rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
       color: var(--text-dim);
       text-align: center;
-      margin-bottom: 14px;
+      margin-bottom: 24px;
     }
 
-    .countdown {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      align-items: flex-end;
+    .launch-date-container {
+      position: relative;
+      display: inline-block;
     }
 
-    .cd-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .cd-num {
+    .launch-date {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 900;
-      color: var(--flame-blue);
-      text-shadow: 0 0 20px rgba(0,170,255,0.7), 0 0 40px rgba(0,100,255,0.4);
-      line-height: 1;
-      min-width: 70px;
-      text-align: center;
-      background: rgba(0,30,80,0.4);
-      border: 1px solid rgba(26,111,255,0.3);
-      padding: 10px 12px 8px;
-      border-radius: 2px;
-    }
-
-    .cd-sep {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: rgba(26,111,255,0.4);
-      padding-bottom: 16px;
-    }
-
-    .cd-label {
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
+      color: #ffffff;
       text-transform: uppercase;
-      color: var(--text-dim);
-      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 0.2em;
+      text-shadow:
+        0 0 10px rgba(255,255,255,0.8),
+        0 0 20px rgba(0,245,255,0.6),
+        0 0 40px rgba(26,111,255,0.5),
+        0 0 80px rgba(26,111,255,0.3);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Ambient glow behind text */
+    .launch-date-container::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background: radial-gradient(circle, rgba(0,170,255,0.3) 0%, transparent 70%);
+      filter: blur(10px);
+      animation: pulseGlow 3s infinite alternate ease-in-out;
+      z-index: 1;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      100% { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* Rotating, gathering star particles */
+    .star-cluster {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 2px; height: 2px;
+      background: transparent;
+      border-radius: 50%;
+      box-shadow:
+        -60px -40px 1px 0px #fff,
+        70px -30px 2px 1px #00f5ff,
+        -40px 50px 2px 0px #ffb700,
+        50px 40px 1px 1px #fff,
+        0px -70px 2px 0px #1a6fff,
+        -70px 0px 1px 0px #00aaff,
+        80px 20px 1px 1px #fff,
+        -20px -60px 2px 0px #00f5ff,
+        30px 60px 1px 1px #ffb700;
+      animation: clusterRotate 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    @keyframes clusterRotate {
+      0% { transform: translate(-50%, -50%) rotate(0deg) scale(1.2); opacity: 0; }
+      20% { opacity: 1; }
+      50% { transform: translate(-50%, -50%) rotate(180deg) scale(0.3); opacity: 1; box-shadow:
+        -15px -10px 2px 1px #fff,
+        20px -8px 3px 2px #00f5ff,
+        -10px 15px 3px 1px #ffb700,
+        15px 12px 2px 2px #fff,
+        0px -20px 3px 1px #1a6fff,
+        -20px 0px 2px 1px #00aaff,
+        25px 5px 2px 2px #fff,
+        -5px -15px 2px 1px #00f5ff,
+        8px 18px 2px 1px #ffb700; }
+      80% { opacity: 1; }
+      100% { transform: translate(-50%, -50%) rotate(360deg) scale(1.2); opacity: 0; }
     }
 
     /* ── STATS SECTION ── */
@@ -496,9 +527,7 @@
 
     @media (max-width: 600px) {
       .top-bar, .bottom-strip { padding: 12px 18px; }
-      .countdown { gap: 8px; }
-      .cd-num { min-width: 54px; font-size: 1.6rem; padding: 8px; }
-      .cd-sep { font-size: 1.4rem; }
+      .launch-date { font-size: 2.2rem; }
     }
   </style>
 </head>
@@ -591,29 +620,12 @@
         <div class="feat-pill"><span class="feat-icon">🚀</span>No Code Degree Required</div>
       </div>
 
-      <!-- Countdown -->
-      <div class="countdown-section">
-        <div class="countdown-label">Launching in</div>
-        <div class="countdown">
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-days">00</div>
-            <div class="cd-label">Days</div>
-          </div>
-          <div class="cd-sep">:</div>
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-hours">00</div>
-            <div class="cd-label">Hours</div>
-          </div>
-          <div class="cd-sep">:</div>
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-mins">00</div>
-            <div class="cd-label">Mins</div>
-          </div>
-          <div class="cd-sep">:</div>
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-secs">00</div>
-            <div class="cd-label">Secs</div>
-          </div>
+      <!-- Launch Date with Gathering Stars Effect -->
+      <div class="launch-date-section">
+        <div class="launch-date-label">Status: Countdown Activated</div>
+        <div class="launch-date-container">
+          <div class="star-cluster"></div>
+          <div class="launch-date">MAY 20, 2026</div>
         </div>
       </div>
 
@@ -737,29 +749,6 @@
     `;
     document.body.appendChild(p);
   }
-
-  // ══════════════════════════════════════════════════════════
-  // COUNTDOWN — Target: Fixed date
-  // ══════════════════════════════════════════════════════════
-  const launch = new Date('2026-05-20T00:00:00Z').getTime();
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-
-  function updateCountdown() {
-    const now  = new Date().getTime();
-    const diff = Math.max(0, launch - now);
-    const d    = Math.floor(diff / 86400000);
-    const h    = Math.floor((diff % 86400000) / 3600000);
-    const m    = Math.floor((diff % 3600000)  / 60000);
-    const s    = Math.floor((diff % 60000)    / 1000);
-    document.getElementById('cd-days').textContent  = pad(d);
-    document.getElementById('cd-hours').textContent = pad(h);
-    document.getElementById('cd-mins').textContent  = pad(m);
-    document.getElementById('cd-secs').textContent  = pad(s);
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
 
   // ══════════════════════════════════════════════════════════
   // PARALLAX NEBULA on mouse move
