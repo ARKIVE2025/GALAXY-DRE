@@ -161,7 +161,7 @@
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.7); }
+      50%        { opacity: 0.4; transform: scale(0.7); }
     }
 
     /* ── GRAFFITI ACCENT (SVG path — subtle, decorative) ── */
@@ -411,69 +411,12 @@
       font-family: 'Rajdhani', sans-serif;
     }
 
-    /* ── NOTIFY FORM ── */
+    /* ── STATS SECTION ── */
     .notify-section {
       animation: fadeSlideUp 1s ease 0.7s both;
       max-width: 500px;
       width: 100%;
       margin: 0 auto 20px;
-    }
-
-    .notify-label {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .notify-form {
-      display: flex;
-      gap: 0;
-      border: 1px solid rgba(26,111,255,0.35);
-      border-radius: 2px;
-      overflow: hidden;
-      background: rgba(3,2,10,0.6);
-      backdrop-filter: blur(10px);
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .notify-form:focus-within {
-      border-color: rgba(0,170,255,0.7);
-      box-shadow: 0 0 24px rgba(0,100,255,0.2);
-    }
-
-    .notify-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 14px 18px;
-      color: var(--text-main);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 0.95rem;
-      letter-spacing: 0.05em;
-    }
-    .notify-input::placeholder { color: var(--text-dim); }
-
-    .notify-btn {
-      background: linear-gradient(135deg, #1a6fff, #0033cc);
-      color: #fff;
-      border: none;
-      padding: 14px 24px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      cursor: none;
-      transition: background 0.2s, box-shadow 0.2s;
-      white-space: nowrap;
-    }
-    .notify-btn:hover {
-      background: linear-gradient(135deg, #00aaff, #1a6fff);
-      box-shadow: 0 0 20px rgba(0,170,255,0.4);
     }
 
     .notify-sub {
@@ -540,20 +483,6 @@
     .corner-mark.tr { top: 0; right: 0; border-top: 2px solid rgba(0,245,255,0.4); border-right: 2px solid rgba(0,245,255,0.4); }
     .corner-mark.bl { bottom: 0; left: 0; border-bottom: 2px solid rgba(0,245,255,0.4); border-left: 2px solid rgba(0,245,255,0.4); }
     .corner-mark.br { bottom: 0; right: 0; border-bottom: 2px solid rgba(0,245,255,0.4); border-right: 2px solid rgba(0,245,255,0.4); }
-
-    /* ── SUCCESS STATE ── */
-    .success-msg {
-      display: none;
-      text-align: center;
-      padding: 14px 20px;
-      border: 1px solid rgba(0,245,255,0.3);
-      background: rgba(0,40,80,0.4);
-      border-radius: 2px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.18em;
-      color: var(--accent-cyan);
-    }
 
     /* Fire shimmer — gradient shifts position to simulate heat movement */
     @keyframes fireShimmer {
@@ -688,17 +617,9 @@
         </div>
       </div>
 
-      <!-- Notify form -->
+      <!-- Waitlist Stats -->
       <div class="notify-section">
-        <div class="notify-label">Be First in the Galaxy</div>
-        <div class="notify-form" id="notifyForm">
-          <input class="notify-input" type="email" id="emailInput" placeholder="your@email.com" autocomplete="email">
-          <button class="notify-btn" id="notifyBtn">Notify Me</button>
-        </div>
-        <div class="success-msg" id="successMsg">
-          ✦ You're on the list. The galaxy awaits. ✦
-        </div>
-        <p class="notify-sub">Join <span id="signupCount">1,247</span> others already waiting · No spam · Ever.</p>
+        <p class="notify-sub">Join <span id="signupCount">1,247</span> others already waiting</p>
       </div>
 
     </div><!-- /hero -->
@@ -818,14 +739,14 @@
   }
 
   // ══════════════════════════════════════════════════════════
-  // COUNTDOWN — Target: 60 days from now
+  // COUNTDOWN — Target: Fixed date
   // ══════════════════════════════════════════════════════════
-  const launch = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+  const launch = new Date('2026-05-20T00:00:00Z').getTime();
 
   function pad(n) { return String(n).padStart(2, '0'); }
 
   function updateCountdown() {
-    const now  = new Date();
+    const now  = new Date().getTime();
     const diff = Math.max(0, launch - now);
     const d    = Math.floor(diff / 86400000);
     const h    = Math.floor((diff % 86400000) / 3600000);
@@ -839,28 +760,6 @@
 
   updateCountdown();
   setInterval(updateCountdown, 1000);
-
-  // ══════════════════════════════════════════════════════════
-  // NOTIFY FORM
-  // ══════════════════════════════════════════════════════════
-  let count = 1247;
-
-  document.getElementById('notifyBtn').addEventListener('click', () => {
-    const email = document.getElementById('emailInput').value.trim();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      document.getElementById('emailInput').style.borderColor = 'rgba(255,60,60,0.5)';
-      setTimeout(() => document.getElementById('emailInput').style.borderColor = '', 1200);
-      return;
-    }
-    document.getElementById('notifyForm').style.display    = 'none';
-    document.getElementById('successMsg').style.display    = 'block';
-    count++;
-    document.getElementById('signupCount').textContent = count.toLocaleString();
-  });
-
-  document.getElementById('emailInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('notifyBtn').click();
-  });
 
   // ══════════════════════════════════════════════════════════
   // PARALLAX NEBULA on mouse move
