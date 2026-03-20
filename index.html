@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Andre Method // Revenue & Alignment System</title>
+    <title>DRE ECOSYSTEM</title>
     <style>
         /* CORE VISUAL STYLES [Preserved from GALAXY_IN_THE_AIR] */
         * {
@@ -346,9 +346,222 @@
             letter-spacing: 1px;
             font-weight: 500;
         }
+        /* ── ENTRY GATE ───────────────────────────────────────── */
+        #entryGate {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        /* Animated grid background on gate */
+        #entryGate::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridDrift 12s linear infinite;
+        }
+
+        @keyframes gridDrift {
+            0%   { transform: translateY(0); }
+            100% { transform: translateY(40px); }
+        }
+
+        /* Radial glow behind the text */
+        #entryGate::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1);   opacity: 0.6; }
+            50%       { transform: scale(1.15); opacity: 1;   }
+        }
+
+        .gate-eyebrow {
+            font-size: 11px;
+            letter-spacing: 5px;
+            color: rgba(0, 212, 255, 0.6);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+            font-weight: 400;
+        }
+
+        .gate-title {
+            font-size: clamp(36px, 7vw, 80px);
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+        }
+
+        .gate-title span {
+            color: #00d4ff;
+        }
+
+        .gate-subtitle {
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.35);
+            text-transform: uppercase;
+            margin-bottom: 64px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gate-btn {
+            position: relative;
+            z-index: 1;
+            background: transparent;
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            color: #00d4ff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 18px 48px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .gate-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 212, 255, 0.06);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gate-btn:hover {
+            border-color: #00d4ff;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.25), inset 0 0 30px rgba(0, 212, 255, 0.05);
+        }
+
+        .gate-btn:hover::before { opacity: 1; }
+
+        .gate-hint {
+            position: absolute;
+            bottom: 32px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            z-index: 1;
+        }
+
+        /* Gate fade-out on enter */
+        #entryGate.leaving {
+            animation: gateLeave 1.2s ease forwards;
+        }
+
+        @keyframes gateLeave {
+            0%   { opacity: 1; transform: scale(1); }
+            60%  { opacity: 1; transform: scale(1.03); }
+            100% { opacity: 0; transform: scale(1.06); pointer-events: none; }
+        }
+
+        /* Music controls */
+        #musicControls {
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .music-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #FFFFFF;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: all;
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .music-vol {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 70px;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .music-vol::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00d4ff;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+
+    <!-- ── AUDIO ───────────────────────────────────────────────── -->
+    <!-- REPLACE "your-track.mp3" with your actual filename        -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="your-track.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ── ENTRY GATE ──────────────────────────────────────────── -->
+    <div id="entryGate">
+        <div class="gate-eyebrow">Andre Method · DRE Core Systems</div>
+        <div class="gate-title">WELCOME TO<br>THE <span>GALAXY</span></div>
+        <div class="gate-subtitle">System-Driven. Street-Savvy.</div>
+        <button class="gate-btn" onclick="enterGalaxy()">ENTER THE GALAXY</button>
+        <div class="gate-hint">Click to enter · Audio will play</div>
+    </div>
+
+    <!-- ── MUSIC CONTROLS (shown after entry) ──────────────────── -->
+    <div id="musicControls" style="display:none;">
+        <input class="music-vol" type="range" min="0" max="1" step="0.05"
+               value="0.6" oninput="setVolume(this.value)" title="Volume">
+        <button class="music-btn" id="muteBtn" onclick="toggleMute()" title="Mute / Unmute">🔊</button>
+    </div>
     <div id="interface">
         <div class="system-label" id="systemLabelDisplay">WELCOME TO DRE CORE SYSTEMS</div>
         <div class="stat-line">ANCHOR: <strong id="missionDisplay">ANDRE GO</strong></div>
@@ -1055,6 +1268,39 @@
         });
 
         animate();
+
+        // ── ENTRY GATE & MUSIC LOGIC ──────────────────────────────
+        const music   = document.getElementById('bgMusic');
+        const gate    = document.getElementById('entryGate');
+        const muteBtn = document.getElementById('muteBtn');
+        const musicUI = document.getElementById('musicControls');
+
+        music.volume = 0.6;
+
+        window.enterGalaxy = function() {
+            // Start music — this works because it's inside a user click
+            music.play().catch(() => {
+                // Browser still blocked — music stays silent, galaxy opens anyway
+            });
+
+            // Animate gate out
+            gate.classList.add('leaving');
+            gate.addEventListener('animationend', () => {
+                gate.style.display = 'none';
+                musicUI.style.display = 'flex';
+            }, { once: true });
+        };
+
+        window.toggleMute = function() {
+            music.muted = !music.muted;
+            muteBtn.textContent = music.muted ? '🔇' : '🔊';
+        };
+
+        window.setVolume = function(val) {
+            music.volume = parseFloat(val);
+            music.muted  = false;
+            muteBtn.textContent = '🔊';
+        };
     </script>
 </body>
 </html>
