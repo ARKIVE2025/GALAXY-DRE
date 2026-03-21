@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRE Flow 4.0</title>
+<title>DRE Flow 4.1</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
@@ -101,7 +101,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);displ
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .topbar{background:var(--surface);border-bottom:1px solid var(--bd);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--s1);gap:12px;}
 .tbt{font-size:15px;font-weight:600;letter-spacing:-0.015em;white-space:nowrap;}
-.tbr{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.tbr{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
 #content{flex:1;overflow-y:auto;padding:22px 26px;}
 
 /* SEARCH */
@@ -120,12 +120,13 @@ mark.hl{background:var(--hl);border-radius:2px;padding:0 1px;}
 .ey{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);margin-bottom:4px;}
 
 /* STATS */
-.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
 .sc2{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);padding:14px 16px;transition:box-shadow 0.2s,transform 0.2s;}
 .sc2:hover{box-shadow:var(--s2);transform:translateY(-1px);}
 .sv{font-size:26px;font-weight:700;letter-spacing:-0.03em;line-height:1;margin-bottom:5px;}
 .sl{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--t3);}
 .sc2.ac .sv{color:var(--ac);}
+.sc2.ok .sv{color:var(--ok);}
 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r1);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:opacity 0.15s,transform 0.1s;white-space:nowrap;}
@@ -280,7 +281,7 @@ body.focus-mode:hover .topbar{opacity:1;pointer-events:all;}
 
 /* MODAL */
 .mov{position:fixed;inset:0;background:rgba(31,35,40,0.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fi 0.2s ease;}
-.mo{background:var(--surface);border-radius:var(--r3);box-shadow:var(--s3);width:520px;max-width:92vw;max-height:88vh;overflow-y:auto;padding:28px;animation:fu 0.3s cubic-bezier(0.2,0,0,1);}
+.mo{background:var(--surface);border-radius:var(--r3);box-shadow:var(--s3);width:560px;max-width:92vw;max-height:88vh;overflow-y:auto;padding:28px;animation:fu 0.3s cubic-bezier(0.2,0,0,1);}
 .mot{font-size:17px;font-weight:600;letter-spacing:-0.02em;margin-bottom:4px;}
 .mos{font-size:12px;color:var(--t2);margin-bottom:20px;}
 .fg{margin-bottom:14px;}
@@ -414,6 +415,27 @@ textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
 /* Sidebar toggle */
 .sb-toggle{width:28px;height:28px;border-radius:8px;border:none;background:transparent;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.1s,color 0.1s;flex-shrink:0;}
 .sb-toggle:hover{background:var(--bd);color:var(--t1);}
+
+/* ── FIX ENGINE ── */
+.fix-log{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r1);max-height:320px;overflow-y:auto;font-family:'DM Mono',monospace;font-size:11px;line-height:1.8;padding:12px 14px;}
+.fix-log-item{display:flex;gap:10px;padding:3px 0;border-bottom:1px solid var(--bd);}
+.fix-log-item:last-child{border-bottom:none;}
+.fln{color:var(--t3);min-width:34px;}
+.fls.ok{color:var(--ok);}
+.fls.sk{color:var(--t3);}
+.fls.er{color:var(--err);}
+.fld{color:var(--t1);flex:1;word-break:break-word;}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.how-card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);padding:14px;text-align:center;}
+.how-n{width:30px;height:30px;border-radius:50%;background:var(--ac);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.how-t{font-size:12px;font-weight:600;margin-bottom:3px;}
+.how-d{font-size:11px;color:var(--t2);line-height:1.5;}
+.step{display:flex;gap:10px;padding:9px 12px;border-radius:var(--r1);border:1px solid var(--bd);background:var(--bg);font-size:12px;line-height:1.6;margin-bottom:6px;}
+.stepn{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);min-width:18px;padding-top:1px;}
+.prov-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:var(--r1);border:2px solid var(--bd);background:var(--bg);cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .15s,background .15s;}
+.prov-btn.sel{background:var(--acs);}
+.prov-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.prov-lbl{font-size:10px;font-weight:600;color:var(--t1);white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -423,7 +445,7 @@ textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
     <div class="sblogo">
       <div class="lm">DF</div>
       <div>
-        <div class="sbt">DRE Flow <span class="sbver">4.0</span></div>
+        <div class="sbt">DRE Flow <span class="sbver">4.1</span></div>
         <div class="sbs">Story Intelligence</div>
       </div>
     </div>
@@ -460,6 +482,10 @@ textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
       Locations
       <span class="badge" id="bdg-loc" style="margin-left:auto">0</span>
       <span class="nba" onclick="event.stopPropagation();openAddLoc()">+</span>
+    </button>
+    <button class="nb" id="nb-fixengine" onclick="showView('fixengine')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M7 4v3l2 2" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
+      Fix Engine
     </button>
     <button class="nb" id="nb-settings" onclick="showView('settings')">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.2" stroke="currentColor" stroke-width="1.4"/><path d="M7 1.5v1M7 11.5v1M1.5 7h1M11.5 7h1M3.1 3.1l.7.7M10.2 10.2l.7.7M10.2 3.1l-.7.7M3.1 10.2l.7.7" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
@@ -541,6 +567,8 @@ var events     = [];
 var chars      = [];
 var locs       = [];
 var highlights = [];
+var fixLog     = [];
+var fixStats   = {applied:0,skipped:0,errors:0};
 var curView    = 'dashboard';
 var cfilt      = '';
 var chfilt     = '';
@@ -566,6 +594,16 @@ var HL_SOLID = {yellow:'#FFD700',green:'#48C75A',blue:'#5B7CDD',
 var HL_BG    = {yellow:'rgba(255,220,0,.52)',green:'rgba(72,199,90,.4)',
                 blue:'rgba(91,124,221,.36)',  pink:'rgba(228,30,99,.28)',
                 orange:'rgba(255,140,0,.42)', purple:'rgba(160,40,200,.3)'};
+
+// ── PROVIDERS ─────────────────────────────────────
+var PROVS = {
+  claude:   {label:'Claude',    full:'Claude (Anthropic)', color:'#D97706', ph:'sk-ant-…',  link:'console.anthropic.com',        model:'claude-3-5-sonnet-20241022'},
+  openai:   {label:'ChatGPT',   full:'ChatGPT (OpenAI)',   color:'#10A37F', ph:'sk-…',      link:'platform.openai.com/api-keys', model:'gpt-4o'},
+  gemini:   {label:'Gemini',    full:'Gemini (Google)',    color:'#4285F4', ph:'AIza…',     link:'aistudio.google.com/app/apikey',model:'gemini-1.5-flash'},
+  deepseek: {label:'DeepSeek',  full:'DeepSeek',           color:'#6366F1', ph:'sk-…',      link:'platform.deepseek.com/api_keys',model:'deepseek-chat'},
+  grok:     {label:'Grok',      full:'Grok (xAI)',         color:'#1DA1F2', ph:'xai-…',     link:'console.x.ai',                 model:'grok-beta'}
+};
+var selectedProv = 'claude';
 
 // ── HELPERS ───────────────────────────────────────
 function uid(){ return Math.random().toString(36).slice(2,10); }
@@ -659,11 +697,12 @@ function applySearchMarks(el, term){
 function showView(v){
   var c = document.getElementById('content');
   c.className='';
+  if(v !== 'read') document.onkeydown = null;
   curView = v;
   document.querySelectorAll('.nb').forEach(function(b){ b.classList.remove('on'); });
   var btn = document.getElementById('nb-'+v);
   if (btn) btn.classList.add('on');
-  var titles = {dashboard:'Dashboard',timeline:'Timeline',read:'Read & Edit',characters:'Characters',locations:'Locations',highlights:'Highlights',compare:'Compare Chapters',settings:'Settings'};
+  var titles = {dashboard:'Dashboard',timeline:'Timeline',read:'Read & Edit',characters:'Characters',locations:'Locations',highlights:'Highlights',compare:'Compare Chapters',fixengine:'Fix Engine',settings:'Settings'};
   document.getElementById('vt').textContent = titles[v]||v;
   renderView();
 }
@@ -676,6 +715,7 @@ function renderView(){
   else if (curView==='locations')  renderLocs(c);
   else if (curView==='highlights') renderHLView(c);
   else if (curView==='compare')    renderCompare(c);
+  else if (curView==='fixengine')  renderFixEngine(c);
   else if (curView==='settings')   renderSettings(c);
   updateBadges();
 }
@@ -691,6 +731,7 @@ function renderDash(c){
   html+='<div class="sc2"><div class="sv">'+events.length+'</div><div class="sl">Events</div></div>';
   html+='<div class="sc2 ac"><div class="sv">'+cn.size+'</div><div class="sl">Characters</div></div>';
   html+='<div class="sc2"><div class="sv">'+ln.size+'</div><div class="sl">Locations</div></div>';
+  html+='<div class="sc2 ok"><div class="sv">'+fixStats.applied+'</div><div class="sl">Fixes Applied</div></div>';
   html+='</div></div>';
   if (cn.size>0){
     html+='<div class="card"><div class="ch"><div class="ct">Character Thread Map</div><span class="tag ta">'+cn.size+' characters</span></div>';
@@ -782,6 +823,7 @@ function renderRead(c){
     '<button class="btn bs bsm" onclick="toggleFindReplace()" title="Find &amp; Replace (Ctrl+H)">🔍 Find</button>'+
     '<button class="btn bs bsm" onclick="exportChapter()" title="Export this chapter">⬇ Export</button>'+
     '<button class="btn bs bsm" onclick="showView(\'compare\')">⧉ Compare</button>'+
+    '<button class="btn bs bsm" onclick="showView(\'fixengine\')">⧉ Fix Engine</button>'+
     '<button class="btn bs bsm '+(edFocusMode?'ba':'')+'" onclick="toggleFocusMode()" title="Focus mode">'+
     '<svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M1 5V2h3M10 2h3v3M1 9v3h3M10 12h3V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
     ' Focus</button>'+
@@ -885,7 +927,6 @@ function renderRead(c){
 
   c.innerHTML='<div class="read-layout">'+tocHtml+editorShell+panelHtml+'</div>';
 
-  // Restore find bar state
   if(edFindActive){
     var fb=document.getElementById('fr-bar');
     if(fb) fb.classList.add('vis');
@@ -907,8 +948,10 @@ function renderRead(c){
   updateToolbarState();
   renderRRPanel();
 
-  // Keyboard shortcut for find
   document.onkeydown = function(e){
+    var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    var isEditable = tag === 'input' || tag === 'textarea' || e.target.isContentEditable;
+    if(isEditable) return;
     if((e.ctrlKey||e.metaKey)&&(e.key==='h'||e.key==='f')){
       e.preventDefault(); toggleFindReplace();
     }
@@ -921,13 +964,9 @@ function renderRead(c){
 // ── EDITOR TOOLBAR BUILD ──────────────────────────
 function buildEditorToolbar(){
   return '<div class="editor-toolbar" id="editor-toolbar">'+
-
-    // Undo / Redo
     '<button class="etbtn" id="etb-undo" onclick="execEdCmd(\'undo\')" title="Undo (Ctrl+Z)">'+svgUndo()+'</button>'+
     '<button class="etbtn" id="etb-redo" onclick="execEdCmd(\'redo\')" title="Redo (Ctrl+Y)">'+svgRedo()+'</button>'+
     '<span class="et-sep"></span>'+
-
-    // Heading / para style
     '<select class="et-select" id="et-block" onchange="execEdBlock(this.value)" title="Block style">'+
     '<option value="p">Paragraph</option>'+
     '<option value="h1">Heading 1</option>'+
@@ -935,8 +974,6 @@ function buildEditorToolbar(){
     '<option value="h3">Heading 3</option>'+
     '<option value="blockquote">Blockquote</option>'+
     '</select>'+
-
-    // Font family
     '<select class="et-select" id="et-font" onchange="execEdFontName(this.value)" title="Font family">'+
     '<option value="DM Sans">DM Sans</option>'+
     '<option value="Georgia">Georgia</option>'+
@@ -945,8 +982,6 @@ function buildEditorToolbar(){
     '<option value="Courier New">Courier New</option>'+
     '<option value="DM Mono">DM Mono</option>'+
     '</select>'+
-
-    // Font size
     '<select class="et-select" id="et-size" onchange="execEdFontSize(this.value)" title="Font size">'+
     '<option value="1">10</option>'+
     '<option value="2">13</option>'+
@@ -956,28 +991,20 @@ function buildEditorToolbar(){
     '<option value="6">32</option>'+
     '</select>'+
     '<span class="et-sep"></span>'+
-
-    // Text formatting
     '<button class="etbtn" id="etb-bold" onclick="execEdCmd(\'bold\')" title="Bold (Ctrl+B)"><b style="font-size:13px">B</b></button>'+
     '<button class="etbtn" id="etb-italic" onclick="execEdCmd(\'italic\')" title="Italic (Ctrl+I)"><i style="font-size:13px">I</i></button>'+
     '<button class="etbtn" id="etb-underline" onclick="execEdCmd(\'underline\')" title="Underline (Ctrl+U)"><u style="font-size:13px">U</u></button>'+
     '<button class="etbtn" id="etb-strikethrough" onclick="execEdCmd(\'strikeThrough\')" title="Strikethrough"><s style="font-size:13px">S</s></button>'+
     '<span class="et-sep"></span>'+
-
-    // Alignment
     '<button class="etbtn" id="etb-left" onclick="execEdCmd(\'justifyLeft\')" title="Align left">'+svgAlignLeft()+'</button>'+
     '<button class="etbtn" id="etb-center" onclick="execEdCmd(\'justifyCenter\')" title="Align center">'+svgAlignCenter()+'</button>'+
     '<button class="etbtn" id="etb-right" onclick="execEdCmd(\'justifyRight\')" title="Align right">'+svgAlignRight()+'</button>'+
     '<span class="et-sep"></span>'+
-
-    // Lists
     '<button class="etbtn" id="etb-ul" onclick="execEdCmd(\'insertUnorderedList\')" title="Bullet list">'+svgUL()+'</button>'+
     '<button class="etbtn" id="etb-ol" onclick="execEdCmd(\'insertOrderedList\')" title="Numbered list">'+svgOL()+'</button>'+
     '<button class="etbtn" id="etb-indent" onclick="execEdCmd(\'indent\')" title="Indent">'+svgIndent()+'</button>'+
     '<button class="etbtn" id="etb-outdent" onclick="execEdCmd(\'outdent\')" title="Outdent">'+svgOutdent()+'</button>'+
     '<span class="et-sep"></span>'+
-
-    // Colors
     '<div class="et-color-btn" title="Text color">'+
       '<div class="et-color-preview" id="et-fc-preview" style="background:'+edTxtColor+';"></div>'+
       '<input type="color" value="'+edTxtColor+'" oninput="edTxtColor=this.value;document.getElementById(\'et-fc-preview\').style.background=this.value;" onchange="execEdForeColor(this.value)">'+
@@ -987,16 +1014,12 @@ function buildEditorToolbar(){
       '<input type="color" value="'+edBgColor+'" oninput="edBgColor=this.value;document.getElementById(\'et-bc-preview\').style.background=this.value;" onchange="execEdHilite(this.value)">'+
     '</div>'+
     '<span class="et-sep"></span>'+
-
-    // Insert
     '<button class="etbtn etbtn-wide" onclick="edInsertLink()" title="Insert link">🔗</button>'+
     '<button class="etbtn etbtn-wide" onclick="execEdCmd(\'insertHorizontalRule\')" title="Insert divider">—</button>'+
     '<button class="etbtn etbtn-wide" onclick="edRemoveFormat()" title="Clear formatting" style="font-size:11px;width:auto;padding:0 6px;">✕ Fmt</button>'+
-
   '</div>';
 }
 
-// Icon SVG helpers
 function svgUndo(){ return '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 5h7a4 4 0 010 8H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 2L1 5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 function svgRedo(){ return '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M13 5H6a4 4 0 000 8h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 2l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 function svgAlignLeft(){ return '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M1 6h8M1 9h12M1 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'; }
@@ -1007,7 +1030,6 @@ function svgOL(){ return '<svg width="12" height="12" viewBox="0 0 14 14" fill="
 function svgIndent(){ return '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M5 6h8M5 9h8M1 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M1 6l3 1.5-3 1.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 function svgOutdent(){ return '<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M5 6h8M5 9h8M1 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4 6L1 7.5 4 9" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
 
-// ── EDITOR COMMANDS ───────────────────────────────
 function execEdCmd(cmd){
   var p=document.getElementById('rproseEl');
   if(p){ p.focus(); document.execCommand(cmd,false,null); onProseInput(); updateToolbarState(); }
@@ -1051,7 +1073,6 @@ function updateToolbarState(){
     var el=document.getElementById(pair[1]);
     if(el){ if(document.queryCommandState(pair[0])) el.classList.add('active'); else el.classList.remove('active'); }
   });
-  // block format
   var bsel=document.getElementById('et-block');
   if(bsel){
     var block=(document.queryCommandValue('formatBlock')||'p').toLowerCase().replace(/^<|>$/g,'');
@@ -1249,7 +1270,7 @@ function saveProseEdit(){
   var rd=readableEvents();
   if(rd[readIdx]) rd[readIdx].fullText=clone.innerHTML;
   setAutosaveStatus('saved');
-  localStorage.setItem('dref5',JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights}));
+  localStorage.setItem('dref5',JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights,fixLog:fixLog,fixStats:fixStats}));
 }
 function debouncedSaveProseEdit(){
   clearTimeout(saveTimeout);
@@ -1528,13 +1549,6 @@ function cmpScrollTag(tag,side){
     if(title.indexOf('#'+tag)>-1){spans[i].scrollIntoView({behavior:'smooth',block:'center'});spans[i].style.boxShadow='0 0 0 3px '+HL_SOLID.yellow;var s=spans[i];setTimeout(function(){s.style.boxShadow='';},1800);break;}
   }
 }
-function jumpCh(i){
-  var readable=readableEvents(); if(i<0||i>=readable.length) return;
-  readIdx=i; hlTagFilt='';
-  renderRead(document.getElementById('content'));
-  var eb=document.getElementById('editor-body');
-  if(eb) eb.scrollTop=0;
-}
 
 // ── CHARACTERS VIEW ───────────────────────────────
 function renderChars(c){
@@ -1598,27 +1612,307 @@ function addEvent(){ events.push({id:uid(),chapter:'',event:'',characters:'',loc
 function upEv(i,k,v){ events[i][k]=v; updateBadges(); }
 function delEv(i){ events.splice(i,1); renderView(); updateBadges(); toast('Deleted','in'); }
 
-// ── BADGES ────────────────────────────────────────
-function updateBadges(){
-  document.getElementById('bdg-event').textContent=events.length;
-  document.getElementById('bdg-read').textContent=readableEvents().length;
-  document.getElementById('bdg-char').textContent=allCharNames().size;
-  document.getElementById('bdg-loc').textContent=allLocNames().size;
-  var bhl=document.getElementById('bdg-hl'); if(bhl) bhl.textContent=highlights.length;
+// ── FIX ENGINE ────────────────────────────────────
+function renderFixEngine(c) {
+  c.className = '';
+  var hasChaps = readableEvents().length > 0;
+  document.getElementById('tbr').innerHTML = hasChaps
+    ? '<button class="btn ba" onclick="openFixModal()">&#10022; Run Fix Engine</button>'
+    : '<button class="btn bs bsm" onclick="openPasteModal()">Import Manuscript First</button>';
+
+  var html = '<div class="card">';
+  html += '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;">';
+  html += '<div style="width:40px;height:40px;border-radius:10px;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
+  html += '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#fff" stroke-width="1.6"/><path d="M10 6v4l2.5 2.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  html += '</div><div><div style="font-size:14px;font-weight:600;">Fix Engine</div>';
+  html += '<div style="font-size:12px;color:var(--t2);margin-top:2px;">Paste your fix list — AI applies every correction across all chapters automatically</div></div>';
+  if (hasChaps) html += '<button class="btn ba bsm" style="margin-left:auto;flex-shrink:0;" onclick="openFixModal()">Run &rarr;</button>';
+  html += '</div>';
+
+  if (!hasAI()) {
+    html += '<div style="background:var(--warns);border:1px solid var(--warn);border-radius:var(--r1);padding:12px 14px;font-size:12px;color:var(--warn);margin-bottom:16px;">';
+    html += '&#9888; No API key set &mdash; <a href="#" onclick="openSettings();return false;" style="color:var(--warn);font-weight:600;">set your AI provider key</a> to use the Fix Engine.</div>';
+  }
+
+  html += '<div style="font-size:13px;font-weight:600;margin-bottom:10px;">How It Works</div>';
+  ['Paste your fix list in FIND: / REPLACE: format, or # GLOBAL: "old" \u2192 "new" for whole-manuscript replacements',
+   'The engine parses every fix automatically — no manual copy-paste needed',
+   'Your chosen AI searches each chapter for the exact text and replaces it, preserving everything else',
+   'A detailed log shows every fix applied, skipped, or flagged',
+   'Export the corrected manuscript as a clean .txt file'
+  ].forEach(function(s, i) {
+    html += '<div class="step"><span class="stepn">' + (i+1) + '</span><span style="font-size:12px;color:var(--t2);line-height:1.6;">' + s + '</span></div>';
+  });
+
+  html += '<div style="font-size:13px;font-weight:600;margin:16px 0 10px;">Fix List Format</div>';
+  html += '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:var(--r1);padding:14px;font-family:\'DM Mono\',monospace;font-size:11px;line-height:2.1;color:var(--t2);">';
+  html += 'FIND: She burped while sipping on the punch the Principle had made.<br>';
+  html += 'REPLACE: She said while sipping on the punch the Principal had made.<br><br>';
+  html += 'FIND: Graduation was fastly approaching.<br>';
+  html += 'REPLACE: Graduation was fast approaching.<br><br>';
+  html += '<span style="color:var(--t3)"># GLOBAL: "use to" \u2192 "used to"</span><br>';
+  html += '<span style="color:var(--t3)"># GLOBAL: "road" \u2192 "rode"</span>';
+  html += '</div></div>';
+
+  if (fixLog.length) {
+    html += '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">';
+    html += '<div style="font-size:14px;font-weight:600;">Last Run Results</div>';
+    html += '<button class="btn bs bsm" onclick="fixLog=[];fixStats={applied:0,skipped:0,errors:0};renderView();">Clear</button>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">';
+    html += '<span style="padding:5px 12px;border-radius:var(--rp);font-size:12px;font-weight:600;background:var(--oks);color:var(--ok);font-family:\'DM Mono\',monospace;">&#10003; ' + fixStats.applied + ' applied</span>';
+    html += '<span style="padding:5px 12px;border-radius:var(--rp);font-size:12px;font-weight:600;background:var(--neus);color:var(--t2);font-family:\'DM Mono\',monospace;">&mdash; ' + fixStats.skipped + ' not found</span>';
+    if (fixStats.errors) html += '<span style="padding:5px 12px;border-radius:var(--rp);font-size:12px;font-weight:600;background:var(--errs);color:var(--err);font-family:\'DM Mono\',monospace;">&#10007; ' + fixStats.errors + ' errors</span>';
+    html += '</div>';
+    html += '<div class="fix-log">';
+    fixLog.forEach(function(item) {
+      html += '<div class="fix-log-item">';
+      html += '<span class="fln">#' + item.num + '</span>';
+      html += '<span class="fls ' + item.st + '">' + (item.st==='ok'?'&#10003;':item.st==='er'?'&#10007;':'&mdash;') + '</span>';
+      html += '<span class="fld">' + esc(item.desc) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:12px;"><button class="btn ba" onclick="exportFixed()">&#8595; Export Fixed Manuscript</button></div>';
+    html += '</div>';
+  }
+
+  c.innerHTML = html;
+}
+
+function openFixModal() {
+  if (!readableEvents().length) { toast('Import a manuscript first', 'er'); return; }
+  if (!hasAI()) { openSettings(); return; }
+  var ai = getAI();
+  var pv = PROVS[ai.p] || PROVS.claude;
+  document.getElementById('mr').innerHTML =
+    '<div class="mov" onclick="if(event.target===this)closeModal()">' +
+    '<div class="mo" style="width:680px;max-width:95vw;">' +
+    '<div class="mot">&#10022; Fix Engine</div>' +
+    '<div class="mos">Paste your complete fix list. Using: <b style="color:' + pv.color + ';">' + pv.full + '</b></div>' +
+    '<div class="fg"><label class="fl">Fix List</label>' +
+    '<textarea class="fi2" id="fix-input" style="min-height:260px;font-family:\'DM Mono\',monospace;font-size:12px;" ' +
+    'placeholder="FIND: original text here&#10;REPLACE: corrected text here&#10;&#10;# GLOBAL: &quot;use to&quot; &#8594; &quot;used to&quot;&#10;# GLOBAL: &quot;road&quot; &#8594; &quot;rode&quot;"></textarea>' +
+    '</div>' +
+    '<div id="parse-prev" style="display:none;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r1);padding:10px 12px;font-size:12px;color:var(--t2);margin-bottom:12px;"></div>' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+    '<input type="checkbox" id="preview-mode" style="accent-color:var(--ac);">' +
+    '<label for="preview-mode" style="font-size:12px;color:var(--t2);cursor:pointer;">Preview mode — show what would change without applying</label>' +
+    '</div>' +
+    '<div class="mof">' +
+    '<button class="btn bs" onclick="previewFixes()">Parse List</button>' +
+    '<button class="btn bs" onclick="closeModal()">Cancel</button>' +
+    '<button class="btn ba" onclick="runFixes()">Run Fix Engine</button>' +
+    '</div></div></div>';
+  setTimeout(function(){ var ta=document.getElementById('fix-input'); if(ta)ta.focus(); }, 100);
+}
+
+function previewFixes() {
+  var raw = (document.getElementById('fix-input').value || '').trim();
+  if (!raw) { toast('Paste your fix list first', 'er'); return; }
+  var fixes = parseFixList(raw);
+  var prev = document.getElementById('parse-prev');
+  if (prev) {
+    prev.style.display = 'block';
+    var lines = '<b style="color:var(--t1);">Parsed ' + fixes.length + ' fix' + (fixes.length !== 1 ? 'es' : '') + ':</b><br><br>';
+    fixes.slice(0, 10).forEach(function(f, i) {
+      lines += '<span style="color:var(--t3);">#' + (i+1) + '</span> ' +
+        (f.global ? '<span style="color:var(--ac);">GLOBAL</span>' : '<span style="color:var(--t2);">FIND</span>') +
+        ' &ldquo;' + esc(f.find.substring(0, 55)) + (f.find.length > 55 ? '&hellip;' : '') + '&rdquo;<br>';
+    });
+    if (fixes.length > 10) lines += '<span style="color:var(--t3);">&hellip; and ' + (fixes.length - 10) + ' more</span>';
+    prev.innerHTML = lines;
+  }
+  toast(fixes.length + ' fixes parsed', 'ok');
+}
+
+function parseFixList(raw) {
+  var fixes = [];
+  var lines = raw.split('\n');
+  var i = 0;
+  while (i < lines.length) {
+    var line = lines[i].trim();
+
+    if (/^#\s*global/i.test(line)) {
+      var gm = line.match(/["""'']([^"""'']+)["""'']\s*[→\->]+\s*["""'']([^"""'']*)["""'']/i);
+      if (!gm) gm = line.match(/"([^"]+)"\s*[→\->]+\s*"([^"]*)"/i);
+      if (gm) fixes.push({type:'global', global:true, find:gm[1], replace:gm[2]});
+      i++; continue;
+    }
+
+    if (/^find:/i.test(line)) {
+      var findText = line.replace(/^find:\s*/i, '');
+      while (i + 1 < lines.length && !/^(replace:|find:|#)/i.test(lines[i+1].trim())) {
+        i++;
+        findText += '\n' + lines[i];
+      }
+      i++;
+      if (i < lines.length && /^replace:/i.test(lines[i].trim())) {
+        var replText = lines[i].trim().replace(/^replace:\s*/i, '');
+        while (i + 1 < lines.length && !/^(replace:|find:|#)/i.test(lines[i+1].trim())) {
+          i++;
+          replText += '\n' + lines[i];
+        }
+        if (findText.trim()) fixes.push({type:'local', global:false, find:findText.trim(), replace:replText.trim()});
+      }
+      i++; continue;
+    }
+
+    var am = line.match(/^["""'']([^"""'']+)["""'']\s*[→\->]+\s*["""'']([^"""'']*)["""'']/);
+    if (am && !/^#/.test(line)) {
+      fixes.push({type:'local', global:false, find:am[1], replace:am[2]});
+    }
+    i++;
+  }
+  return fixes;
+}
+
+async function runFixes() {
+  var raw = (document.getElementById('fix-input').value || '').trim();
+  var preview = document.getElementById('preview-mode').checked;
+  if (!raw) { toast('Paste your fix list first', 'er'); return; }
+  var fixes = parseFixList(raw);
+  if (!fixes.length) { toast('No valid fixes found — check format', 'er'); return; }
+  closeModal();
+
+  fixLog = [];
+  fixStats = {applied:0, skipped:0, errors:0};
+  var rd = readableEvents();
+
+  var prog = document.getElementById('ai-ind');
+  var bar = document.getElementById('ai-bar');
+  var lbl = document.getElementById('ai-lbl');
+  var ctr = document.getElementById('ai-ctr');
+  if(prog) prog.style.display = 'block';
+  if(bar) bar.style.width = '0%';
+
+  var globalFixes = fixes.filter(function(f) { return f.global; });
+  var localFixes  = fixes.filter(function(f) { return !f.global; });
+
+  if (globalFixes.length) {
+    if(lbl) lbl.textContent = 'Applying global replacements...';
+    rd.forEach(function(chapter) {
+      var text = chapter.fullText || '';
+      globalFixes.forEach(function(f, fi) {
+        var escaped = f.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var re = new RegExp(escaped, 'gi');
+        var matches = (text.match(re) || []).length;
+        if (matches > 0) {
+          if (!preview) text = text.replace(re, f.replace);
+          fixLog.push({num:fi+1, st:'ok', desc:(preview?'[PREVIEW] ':'') + 'GLOBAL "' + f.find + '" \u2192 "' + f.replace + '" (' + matches + ' in "' + (chapter.heading||'Ch.'+chapter.chapter) + '")'});
+          fixStats.applied += matches;
+        }
+      });
+      if (!preview) chapter.fullText = text;
+    });
+    if(bar) bar.style.width = '25%';
+  }
+
+  if (localFixes.length && rd.length) {
+    var sys = 'You are a precise manuscript editor. Apply the listed corrections exactly.\n' +
+      'Rules:\n' +
+      '- Find the EXACT original text specified and replace it with the corrected version\n' +
+      '- Preserve ALL surrounding text, HTML tags, and formatting exactly as-is\n' +
+      '- Only change what is explicitly listed — nothing else\n' +
+      '- Keep the author\'s voice, dialect, and intentional stylistic choices\n' +
+      '- Return ONLY the corrected chapter HTML. No explanations, no markdown code fences.';
+
+    for (var ci = 0; ci < rd.length; ci++) {
+      var chapter = rd[ci];
+      if(lbl) lbl.textContent = 'Chapter ' + (ci+1) + ' of ' + rd.length + ': ' + (chapter.heading||'Ch.'+chapter.chapter);
+      if(ctr) ctr.textContent = (ci+1) + ' / ' + rd.length;
+      if(bar) bar.style.width = Math.round(25 + (ci / rd.length) * 75) + '%';
+
+      var plainText = (chapter.fullText || '').replace(/<[^>]*>/g, ' ');
+      var relevant = localFixes.filter(function(f) {
+        return plainText.toLowerCase().indexOf(f.find.toLowerCase().substring(0, 40)) > -1;
+      });
+
+      if (!relevant.length) continue;
+
+      var fixBlock = relevant.map(function(f, fi) {
+        return 'FIX ' + (fi+1) + ':\nFIND: ' + f.find + '\nREPLACE: ' + f.replace;
+      }).join('\n\n');
+
+      var userMsg = 'CHAPTER: ' + (chapter.heading || 'Chapter ' + chapter.chapter) + '\n\n' +
+        'APPLY THESE FIXES:\n' + fixBlock + '\n\n' +
+        'CHAPTER HTML:\n' + (chapter.fullText || '').substring(0, 12000);
+
+      try {
+        var result = await callAI(sys, userMsg, 4096);
+        result = result.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+
+        if (!preview && result && result.length > 80) {
+          relevant.forEach(function(f) {
+            var wasIn = (chapter.fullText || '').indexOf(f.find) > -1;
+            var stillIn = result.indexOf(f.find) > -1;
+            var idx = localFixes.indexOf(f);
+            if (wasIn && !stillIn) {
+              fixLog.push({num:idx+1, st:'ok', desc:'"' + f.find.substring(0,60) + '" \u2192 applied in "' + (chapter.heading||'Ch.'+chapter.chapter) + '"'});
+              fixStats.applied++;
+            } else if (wasIn && stillIn) {
+              fixLog.push({num:idx+1, st:'sk', desc:'"' + f.find.substring(0,60) + '" \u2014 found but unchanged in "' + (chapter.heading||'Ch.'+chapter.chapter) + '"'});
+              fixStats.skipped++;
+            }
+          });
+          chapter.fullText = result;
+        } else if (preview) {
+          relevant.forEach(function(f) {
+            var idx = localFixes.indexOf(f);
+            fixLog.push({num:idx+1, st:'ok', desc:'[PREVIEW] "' + f.find.substring(0,60) + '" would be replaced in "' + (chapter.heading||'Ch.'+chapter.chapter) + '"'});
+            fixStats.applied++;
+          });
+        }
+      } catch(e) {
+        fixLog.push({num:ci+1, st:'er', desc:'Chapter "' + (chapter.heading||'Ch.'+chapter.chapter) + '": ' + e.message});
+        fixStats.errors++;
+        toast('Ch.' + chapter.chapter + ' error: ' + e.message, 'er');
+      }
+    }
+  }
+
+  localFixes.forEach(function(f, fi) {
+    var found = fixLog.some(function(l) { return l.num === fi+1; });
+    if (!found) {
+      fixLog.push({num:fi+1, st:'sk', desc:'"' + f.find.substring(0,70) + '" \u2014 not found in manuscript'});
+      fixStats.skipped++;
+    }
+  });
+
+  if(bar) bar.style.width = '100%';
+  if(lbl) lbl.textContent = 'Done!';
+  if(ctr) ctr.textContent = fixStats.applied + ' applied, ' + fixStats.skipped + ' not found' + (fixStats.errors ? ', ' + fixStats.errors + ' errors' : '');
+  setTimeout(function() { if(prog) prog.style.display = 'none'; }, 4000);
+
+  saveP();
+  toast(fixStats.applied + ' fix' + (fixStats.applied !== 1 ? 'es' : '') + ' applied!', 'ok');
+  showView('fixengine');
+}
+function exportFixed(){
+  var rd = readableEvents();
+  if (!rd.length) { toast('Nothing to export', 'er'); return; }
+  var txt = rd.map(function(e) {
+    return (e.heading || 'CHAPTER ' + e.chapter).toUpperCase() + '\n\n' +
+      (e.fullText || '').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+  }).join('\n\n---\n\n');
+  var blob = new Blob([txt], {type:'text/plain'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='manuscript_fixed.txt'; a.click();
+  URL.revokeObjectURL(url); toast('Exported', 'ok');
 }
 
 // ── SAVE / LOAD / EXPORT ──────────────────────────
-function saveP(){ localStorage.setItem('dref5',JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights})); toast('Saved','ok'); }
+function saveP(){ localStorage.setItem('dref5',JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights,fixLog:fixLog,fixStats:fixStats})); toast('Saved','ok'); }
 function loadP(){
   try{
     var d=JSON.parse(localStorage.getItem('dref5'));
     if(!d){toast('No saved project','er');return;}
-    events=d.events||[];chars=d.chars||[];locs=d.locs||[];highlights=d.highlights||[];
+    events=d.events||[];chars=d.chars||[];locs=d.locs||[];highlights=d.highlights||[];fixLog=d.fixLog||[];fixStats=d.fixStats||{applied:0,skipped:0,errors:0};
     ensureEventIds(); renderView(); updateBadges(); toast('Loaded '+events.length+' events','ok');
   }catch(e){toast('Load failed','er');}
 }
 function exportJ(){
-  var blob=new Blob([JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights},null,2)],{type:'application/json'});
+  var blob=new Blob([JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights,fixLog:fixLog,fixStats:fixStats},null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download='dre-flow.json';a.click();
   URL.revokeObjectURL(url);toast('Exported','ok');
@@ -1737,28 +2031,84 @@ function delLoc(id){locs=locs.filter(function(l){return l.id!==id;});renderView(
 function closeModal(){document.getElementById('mr').innerHTML='';}
 
 // ── AI SETTINGS ───────────────────────────────────
-var PROVS={claude:{label:'Claude (Anthropic)',color:'#D97706'},openai:{label:'ChatGPT (OpenAI)',color:'#10A37F'},gemini:{label:'Gemini (Google)',color:'#4285F4'},deepseek:{label:'DeepSeek',color:'#6366F1'}};
 function getAI(){try{return JSON.parse(localStorage.getItem('dref_ai'))||{p:'claude',k:''};}catch(e){return{p:'claude',k:''};}}
 function hasAI(){var ai=getAI();return!!(ai&&ai.k);}
+
 function openSettings(){
   var s=getAI();
-  var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:560px">';
-  html+='<div class="mot">AI Settings</div>';
-  html+='<div class="mos">Your API key is stored only in this browser.</div>';
-  html+='<div class="fg"><label class="fl">Provider</label><div class="pg">';
-  Object.entries(PROVS).forEach(function(entry){var k=entry[0],p=entry[1];html+='<button class="pb'+(s.p===k?' on':'')+'" id="pb-'+k+'" onclick="selProv(\''+k+'\')"><span class="pd" style="background:'+p.color+'"></span>'+p.label+'</button>';});
-  html+='</div></div>';
-  html+='<div class="fg"><label class="fl">API Key</label><input class="fi2" type="password" id="aik" value="'+(s.k||'')+'" placeholder="Paste your API key here…"></div>';
-  html+='<div class="mof"><button class="btn bs" onclick="closeModal()">Cancel</button><button class="btn ba" onclick="saveAI()">Save Key</button></div>';
-  html+='</div></div>';
-  document.getElementById('mr').innerHTML=html;
+  selectedProv = s.p || 'claude';
+  document.getElementById('mr').innerHTML = buildAIModal(s.k || '');
+  highlightProv(selectedProv);
 }
-function selProv(k){document.querySelectorAll('.pb').forEach(function(b){b.classList.remove('on');});var el=document.getElementById('pb-'+k);if(el)el.classList.add('on');}
-function saveAI(){
-  var sel=document.querySelector('.pb.on');if(!sel){toast('Select provider','er');return;}
-  var k=(document.getElementById('aik').value||'').trim();if(!k){toast('Key required','er');return;}
-  localStorage.setItem('dref_ai',JSON.stringify({p:sel.id.replace('pb-',''),k:k}));
-  closeModal();toast('AI settings saved','ok');
+
+function buildAIModal(currentKey) {
+  var btns = Object.keys(PROVS).map(function(p) {
+    var pv = PROVS[p];
+    return '<button class="prov-btn" id="pb-' + p + '" onclick="pickProv(\'' + p + '\')">' +
+      '<span class="prov-dot" style="background:' + pv.color + '"></span>' +
+      '<span class="prov-lbl">' + pv.label + '</span>' +
+      '</button>';
+  }).join('');
+
+  var keyLinks = Object.keys(PROVS).map(function(p) {
+    var pv = PROVS[p];
+    return '<span style="color:var(--t3);">&#9632;</span> <b>' + pv.full + '</b>: ' +
+      '<a href="https://' + pv.link + '" target="_blank" style="color:var(--ac);">' + pv.link + '</a>';
+  }).join('<br>');
+
+  return '<div class="mov" onclick="if(event.target===this)closeModal()">' +
+    '<div class="mo" style="max-width:560px;">' +
+    '<div class="mot">AI Provider</div>' +
+    '<div class="mos">Choose your provider and paste your API key. Stored only in this browser.</div>' +
+    '<div class="fg"><label class="fl">Provider</label>' +
+    '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">' + btns + '</div>' +
+    '<div id="prov-info" style="font-size:11px;color:var(--t3);margin-top:8px;min-height:16px;"></div>' +
+    '</div>' +
+    '<div class="fg"><label class="fl">API Key</label>' +
+    '<div style="display:flex;gap:8px;">' +
+    '<input class="fi2" type="password" id="ai-key-inp" value="' + currentKey + '" placeholder="Paste your API key…" style="flex:1;">' +
+    '<button class="btn ba" onclick="saveAI()">Save</button>' +
+    '</div></div>' +
+    '<div id="ai-save-msg" style="font-size:12px;min-height:18px;margin-top:-8px;"></div>' +
+    '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:var(--r1);padding:12px 14px;font-size:11px;color:var(--t2);line-height:2;margin-top:12px;">' +
+    '<b style="color:var(--t1);">Get your API key:</b><br>' + keyLinks +
+    '</div>' +
+    '<div class="mof"><button class="btn bs" onclick="closeModal()">Close</button></div>' +
+    '</div></div>';
+}
+
+function pickProv(p) {
+  selectedProv = p;
+  highlightProv(p);
+  var pv = PROVS[p];
+  var info = document.getElementById('prov-info');
+  if (info) info.innerHTML = 'Model: <b style="color:var(--t1);">' + pv.model + '</b>';
+  var inp = document.getElementById('ai-key-inp');
+  if (inp) inp.placeholder = pv.ph;
+}
+
+function highlightProv(p) {
+  Object.keys(PROVS).forEach(function(k) {
+    var btn = document.getElementById('pb-' + k);
+    if (!btn) return;
+    if (k === p) {
+      btn.classList.add('sel');
+      btn.style.borderColor = PROVS[k].color;
+    } else {
+      btn.classList.remove('sel');
+      btn.style.borderColor = 'var(--bd)';
+    }
+  });
+}
+
+function saveAI() {
+  var k = (document.getElementById('ai-key-inp').value || '').trim();
+  if (!k) { toast('Enter an API key', 'er'); return; }
+  localStorage.setItem('dref_ai', JSON.stringify({p: selectedProv, k: k}));
+  var msg = document.getElementById('ai-save-msg');
+  if (msg) msg.innerHTML = '<span style="color:var(--ok);">&#10003; Saved — using ' + PROVS[selectedProv].full + '</span>';
+  updateBadges();
+  toast(PROVS[selectedProv].full + ' key saved', 'ok');
 }
 
 // ── AI ANALYSIS ───────────────────────────────────
@@ -1768,30 +2118,86 @@ async function analyzeChapter(body,num){
   var text=await callAI(sys,msg,200);
   return JSON.parse(text.replace(/```json|```/g,'').trim());
 }
-async function callAI(sys,msg,maxTokens){
-  var ai=getAI(); maxTokens=maxTokens||1000;
-  var r,d;
-  if(ai.p==='claude'){
-    r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ai.k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTokens,system:sys,messages:[{role:'user',content:msg}]})});
-    d=await r.json();if(d.error)throw new Error(d.error.message);
-    return(d.content[0].text||'').trim();
-  }else if(ai.p==='openai'||ai.p==='deepseek'){
-    var ep=ai.p==='openai'?'https://api.openai.com/v1/chat/completions':'https://api.deepseek.com/v1/chat/completions';
-    var model=ai.p==='openai'?'gpt-4o-mini':'deepseek-chat';
-    r=await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ai.k},body:JSON.stringify({model:model,max_tokens:maxTokens,messages:[{role:'system',content:sys},{role:'user',content:msg}]})});
-    d=await r.json();if(d.error)throw new Error(d.error.message);
-    return(d.choices[0].message.content||'').trim();
-  }else if(ai.p==='gemini'){
-    r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+ai.k,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{parts:[{text:msg}]}],generationConfig:{maxOutputTokens:maxTokens}})});
-    d=await r.json();if(d.error)throw new Error(d.error.message);
-    return(d.candidates[0].content.parts[0].text||'').trim();
+
+async function callAI(sys, msg, maxTok) {
+  var ai = getAI();
+  maxTok = maxTok || 2000;
+  var p = ai.p || 'claude';
+  var pv = PROVS[p] || PROVS.claude;
+  var model = pv.model;
+  var r, d;
+
+  if (p === 'claude') {
+    r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ai.k,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({model:model, max_tokens:maxTok, system:sys, messages:[{role:'user',content:msg}]})
+    });
+    d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return (d.content[0].text || '').trim();
   }
-  throw new Error('Unknown provider');
+
+  if (p === 'openai') {
+    r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+ai.k},
+      body: JSON.stringify({model:model, max_tokens:maxTok, messages:[{role:'system',content:sys},{role:'user',content:msg}]})
+    });
+    d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return (d.choices[0].message.content || '').trim();
+  }
+
+  if (p === 'gemini') {
+    r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+ai.k, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction: {parts:[{text:sys}]},
+        contents: [{parts:[{text:msg}]}],
+        generationConfig: {maxOutputTokens:maxTok, temperature:0.2}
+      })
+    });
+    d = await r.json();
+    if (d.error) throw new Error(d.error.message || JSON.stringify(d.error));
+    if (!d.candidates || !d.candidates[0]) throw new Error('Gemini returned no response');
+    return (d.candidates[0].content.parts[0].text || '').trim();
+  }
+
+  if (p === 'deepseek') {
+    r = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+ai.k},
+      body: JSON.stringify({model:model, max_tokens:maxTok, messages:[{role:'system',content:sys},{role:'user',content:msg}]})
+    });
+    d = await r.json();
+    if (d.error) throw new Error(d.error.message || JSON.stringify(d.error));
+    return (d.choices[0].message.content || '').trim();
+  }
+
+  if (p === 'grok') {
+    r = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+ai.k},
+      body: JSON.stringify({model:model, max_tokens:maxTok, messages:[{role:'system',content:sys},{role:'user',content:msg}]})
+    });
+    d = await r.json();
+    if (d.error) throw new Error(d.error.message || JSON.stringify(d.error));
+    return (d.choices[0].message.content || '').trim();
+  }
+
+  throw new Error('Unknown provider: ' + p);
 }
 
 // ── AI: ASK CHAPTER ───────────────────────────────
 function openAskChapter(){
-  if(!hasAI()){toast('Set your AI key in AI Settings first','er');return;}
+  if(!hasAI()){openSettings();return;}
   var readable=readableEvents(), cur=readable[readIdx];
   if(!cur){toast('No chapter loaded','er');return;}
   closeModal();
@@ -1827,7 +2233,7 @@ async function submitAskChapter(){
 
 // ── AI: TIMELINE CHECK ────────────────────────────
 async function runTimelineCheck(){
-  if(!hasAI()){toast('Set your AI key in AI Settings first','er');return;}
+  if(!hasAI()){openSettings();return;}
   if(!events.length){toast('No timeline events to check','er');return;}
   closeModal();
   var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:640px">';
@@ -1847,7 +2253,7 @@ async function runTimelineCheck(){
 
 // ── AI: ANALYZE HIGHLIGHTS ────────────────────────
 async function analyzeHighlights(){
-  if(!hasAI()){toast('Set your AI key in AI Settings first','er');return;}
+  if(!hasAI()){openSettings();return;}
   if(!highlights.length){toast('No highlights to analyze','er');return;}
   closeModal();
   var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:640px">';
@@ -1867,7 +2273,7 @@ async function analyzeHighlights(){
 
 // ── AI: CHARACTER ARC ─────────────────────────────
 async function checkCharacterArc(name){
-  if(!hasAI()){toast('Set your AI key in AI Settings first','er');return;}
+  if(!hasAI()){openSettings();return;}
   closeModal();
   var html='<div class="mov" onclick="if(event.target===this)closeModal()"><div class="mo" style="max-width:640px">';
   html+='<div class="mot">Character Arc: '+esc(name)+'</div>';
@@ -1925,9 +2331,6 @@ async function inflateRaw(data){
   chunks.forEach(function(ch){out.set(ch,offset);offset+=ch.length;});
   return new TextDecoder('utf-8').decode(out);
 }
-function readU16(b,o){return b[o]|(b[o+1]<<8);}
-function readU32(b,o){return(b[o]|(b[o+1]<<8)|(b[o+2]<<16)|(b[o+3]<<24))>>>0;}
-function bytesToStr(b){var s='';for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return s;}
 function parseDocXml(xml){
   var lines=[];
   var paras=xml.split(/<w:p[ >\/]/);
@@ -2083,7 +2486,7 @@ function renderSettings(c){
   html+='<div class="fg"><label class="fl">API Key</label><div style="display:flex;gap:8px;">';
   html+='<input class="fi2" type="password" id="s-aik" value="'+(ai.k||'')+'" placeholder="Paste your API key…" style="flex:1">';
   html+='<button class="btn ba bsm" onclick="saveSettingsAI()">Save Key</button></div></div>';
-  var provLinks={claude:'anthropic.com/api',openai:'platform.openai.com',gemini:'aistudio.google.com',deepseek:'platform.deepseek.com'};
+  var provLinks={claude:'anthropic.com/api',openai:'platform.openai.com',gemini:'aistudio.google.com',deepseek:'platform.deepseek.com',grok:'console.x.ai'};
   html+='<div style="font-size:11px;color:var(--t3);">Get a free key at <a href="https://'+provLinks[ai.p||'claude']+'" target="_blank" style="color:var(--ac);text-decoration:none;" id="s-provlink">'+provLinks[ai.p||'claude']+'</a></div>';
   if(ai.k){html+='<div style="margin-top:12px;padding:10px 14px;background:var(--oks);border:1px solid var(--ok);border-radius:8px;font-size:12px;color:var(--ok);">✓ AI key configured — all AI features active</div>';}
   else{html+='<div style="margin-top:12px;padding:10px 14px;background:var(--warns);border:1px solid var(--warn);border-radius:8px;font-size:12px;color:var(--warn);">⚠ No AI key — import analysis and AI features are disabled</div>';}
@@ -2117,7 +2520,7 @@ function renderSettings(c){
 function selSettingsProv(k){
   document.querySelectorAll('[id^="spb-"]').forEach(function(b){b.classList.remove('on');});
   var el=document.getElementById('spb-'+k);if(el)el.classList.add('on');
-  var links={claude:'anthropic.com/api',openai:'platform.openai.com',gemini:'aistudio.google.com',deepseek:'platform.deepseek.com'};
+  var links={claude:'anthropic.com/api',openai:'platform.openai.com',gemini:'aistudio.google.com',deepseek:'platform.deepseek.com',grok:'console.x.ai'};
   var lnk=document.getElementById('s-provlink');
   if(lnk){lnk.href='https://'+links[k];lnk.textContent=links[k];}
 }
@@ -2127,7 +2530,7 @@ function saveSettingsAI(){
   var k=(document.getElementById('s-aik').value||'').trim();
   if(!k){toast('Enter an API key','er');return;}
   localStorage.setItem('dref_ai',JSON.stringify({p:prov,k:k}));
-  toast('AI settings saved','ok');renderView();
+  toast('AI settings saved','ok');renderView();updateSidebarAI();
 }
 function saveSettingsGoogle(){
   var id=(document.getElementById('s-gcid').value||'').trim();
@@ -2163,6 +2566,7 @@ function openGoogleSettings(){
 function saveGoogClientId(){var id=(document.getElementById('gcid').value||'').trim();if(!id){toast('Client ID required','er');return;}saveGoogCfg({clientId:id});closeModal();toast('Client ID saved','ok');window._gSignInCb=function(){_showGDocOptions();};gSignIn(null);}
 function gSignOut(){_gToken=null;updateGDocBtn();closeModal();toast('Signed out of Google','in');}
 function updateGDocBtn(){var lbl=document.getElementById('gdoc-btn-label');if(lbl)lbl.textContent=_gToken?'Google Docs ✓':'Open from Google Docs';var btn=document.getElementById('gdoc-btn');if(btn)btn.style.borderColor=_gToken?'rgba(76,175,130,.5)':'rgba(255,255,255,0.15)';}
+function updateSidebarAI(){var btn=document.getElementById('nb-settings');if(!btn)return;var ai=getAI();if(ai&&ai.k){var pv=PROVS[ai.p]||PROVS.claude;btn.title='AI: '+pv.full+' ✓';var dot=btn.querySelector('.ai-dot');if(!dot){dot=document.createElement('span');dot.className='ai-dot';dot.style.cssText='width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-left:auto;';btn.appendChild(dot);}dot.style.background=pv.color;}else{var dot=btn.querySelector('.ai-dot');if(dot)dot.remove();btn.title='Settings — no AI key set';}}
 function loadGIS(cb){if(window.google&&window.google.accounts){cb();return;}var s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.onload=cb;s.onerror=function(){toast('Could not load Google sign-in library','er');};document.head.appendChild(s);}
 function loadPickerAPI(cb){if(window.google&&window.google.picker){cb();return;}if(!window.gapi){var s=document.createElement('script');s.src='https://apis.google.com/js/api.js';s.onload=function(){gapi.load('picker',cb);};s.onerror=function(){toast('Could not load Google Picker','er');};document.head.appendChild(s);}else{gapi.load('picker',cb);}}
 function gSignIn(cb){
@@ -2254,9 +2658,13 @@ async function fetchGDoc(docId,docName){
 
 // ── INIT ──────────────────────────────────────────
 (function(){
-  try{var d=JSON.parse(localStorage.getItem('dref5'));if(d){events=d.events||[];chars=d.chars||[];locs=d.locs||[];highlights=d.highlights||[];}}catch(e){}
+  try{
+    var d=JSON.parse(localStorage.getItem('dref5'));
+    if(d){events=d.events||[];chars=d.chars||[];locs=d.locs||[];highlights=d.highlights||[];fixLog=d.fixLog||[];fixStats=d.fixStats||{applied:0,skipped:0,errors:0};}
+  }catch(e){}
   ensureEventIds();
   applyTheme(localStorage.getItem('dref_theme')||'light');
+  updateSidebarAI();
   showView('dashboard');
 })();
 </script>
