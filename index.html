@@ -346,6 +346,7 @@
             letter-spacing: 1px;
             font-weight: 500;
         }
+
         /* ── ENTRY GATE ───────────────────────────────────────── */
         #entryGate {
             position: fixed;
@@ -360,7 +361,6 @@
             overflow: hidden;
         }
 
-        /* Animated grid background on gate */
         #entryGate::before {
             content: '';
             position: absolute;
@@ -377,7 +377,6 @@
             100% { transform: translateY(40px); }
         }
 
-        /* Radial glow behind the text */
         #entryGate::after {
             content: '';
             position: absolute;
@@ -389,7 +388,7 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1);   opacity: 0.6; }
+            0%, 100% { transform: scale(1);    opacity: 0.6; }
             50%       { transform: scale(1.15); opacity: 1;   }
         }
 
@@ -418,9 +417,7 @@
             text-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
         }
 
-        .gate-title span {
-            color: #00d4ff;
-        }
+        .gate-title span { color: #00d4ff; }
 
         .gate-subtitle {
             font-size: 13px;
@@ -475,7 +472,6 @@
             z-index: 1;
         }
 
-        /* Gate fade-out on enter */
         #entryGate.leaving {
             animation: gateLeave 1.2s ease forwards;
         }
@@ -542,7 +538,6 @@
 <body>
 
     <!-- ── AUDIO ───────────────────────────────────────────────── -->
-    <!-- REPLACE "your-track.mp3" with your actual filename        -->
     <audio id="bgMusic" loop preload="auto">
         <source src="Dre Galaxy Theme.mp3" type="audio/mpeg">
     </audio>
@@ -562,6 +557,7 @@
                value="0.6" oninput="setVolume(this.value)" title="Volume">
         <button class="music-btn" id="muteBtn" onclick="toggleMute()" title="Mute / Unmute">🔊</button>
     </div>
+
     <div id="interface">
         <div class="system-label" id="systemLabelDisplay">WELCOME TO DRE CORE SYSTEMS</div>
         <div class="stat-line">ANCHOR: <strong id="missionDisplay">ANDRE GO</strong></div>
@@ -663,7 +659,6 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // --- CONFIGURATION ---
         const CONFIG = {
             nodeSize: 2.5,
             centerNodeSize: 5,
@@ -674,25 +669,23 @@
             asteroidCount: 200
         };
 
-        // --- NODE DATA ---
         const nodesData = [
-            // REVENUE ANCHOR (CENTER)
+            // ── UPDATED: CORE node with full reference data from Andre_Go_Reference.json ──
             { 
                 id: "CORE", x: 0, y: 0, z: 0, 
                 name: "Andre Go", 
                 isCenter: true, 
-                category: "Revenue Engine · Chrome Extension",
-                desc: "[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats. Chrome Web Store live. $9.99/mo or $19.99 lifetime. 3 free sessions to hook. Push content → installs → MRR.", 
-                protocol: "90-Day Play: Drive traffic via YouTube/Stream → land on Dre_Go_lndpage → free session → convert. Every node in this galaxy feeds THIS.",
-                public_desc: "🔥 Never lose your AI convos again.\n\nAndre Go saves every message across ChatGPT, Claude, Gemini, and Copilot — automatically. Browser crash? Tab closed? Model switched? Your thread survives all of it.\n\n✅ Auto-saves every message instantly\n✅ Switch models without losing context\n✅ Your data stays yours — export any time\n✅ Works across all major AI platforms\n\n✨ Start FREE with 3 sessions. Then just $9.99/mo — or own it forever for $19.99.",
-                public_protocol: "👇 One click. Your AI memory starts now.",
+                category: "Revenue Engine · Chrome Extension · v5.0.0",
+                desc: "[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats. Chrome Web Store live. $9.99/mo or $19.99 lifetime. 3 free sessions to hook. Push content → installs → MRR.\n\nPlatforms: Claude, ChatGPT, Gemini, Copilot, Poe, Perplexity, You.com, Grok, DeepSeek + universal fallback.\n\nAI Providers: Andre Cloud (no key needed) · OpenAI · Anthropic · Google · DeepSeek · Grok · Custom API.\n\nTech: Manifest V3 · Chrome 114+ · Edge 114+ · Brave · Local storage only — no tracking.",
+                protocol: "90-Day Play: Drive traffic via YouTube/Stream → land on Dre_Go_lndpage → free session → convert. Every node in this galaxy feeds THIS.\n\nFree tier: 3 sessions, all exports, all platforms, code blocks sanitized.\nPremium Monthly $9.99: Unlimited sessions, full code capture, Andre Cloud AI included.\nPremium Lifetime $19.99: Unlimited sessions, full code capture, BYO API key — pay once, own forever.",
+                public_desc: "🔥 Never lose your AI convos again.\n\nAndre Go is a professional chat capture tool that saves every message across ChatGPT, Claude, Gemini, Copilot, Grok, DeepSeek, Perplexity, Poe, and more — automatically, in real time.\n\nBrowser crash? Tab closed? Model switched? Hit the context limit? Your thread survives all of it.\n\n✅ Real-time capture with live stats\n✅ Switch models without losing context — carry your full thread to a fresh AI\n✅ Edit AI responses directly — fix the 10% that's wrong without starting over\n✅ Export to JSON, Markdown, CSV, or plain text\n✅ Works across 10+ AI platforms with universal fallback\n✅ Your data is 100% local — no tracking, no analytics\n\n⚡ Premium unlocks:\n— Unlimited sessions\n— Full code block capture with syntax preservation\n— AI-powered analysis: summaries, insights, Q&A extraction, action items, timelines\n— Andre Cloud included (no API key needed) or BYO key from OpenAI, Anthropic, Google, DeepSeek, Grok\n\n✨ Start FREE — 3 sessions, no card required. Then $9.99/mo or $19.99 once.",
+                public_protocol: "👇 One click. Your AI memory starts now.\n\nWorks on Chrome 114+, Edge 114+, and Brave. Capture works offline — internet only needed for AI features.",
                 isPortal: true,
                 portalFile: "Dre_Go_lndpage.html",
                 portalLabel: "GET ANDRE GO FREE →",
                 portalStyle: "background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); color: #fff; font-size: 13px;"
             },
             
-            // EVALUATION PORTAL
             { 
                 id: "EVALUATE", x: 70, y: 30, z: 120, 
                 name: "START EVALUATION", 
@@ -705,7 +698,6 @@
                 portalFile: "andre.html"
             },
 
-            // FOUNDATIONAL ANCHOR
             { 
                 id: "CHRIST", x: 0, y: 70, z: 0, 
                 name: "Christ", 
@@ -716,7 +708,6 @@
                 public_protocol: "Principle: Integrity in every transaction."
             },
             
-            // STRATEGIC SUPPORT (DRE)
             { 
                 id: "DRE", x: -110, y: 30, z: -70, 
                 name: "DRE System", 
@@ -727,7 +718,6 @@
                 public_protocol: "Process: 7-Stage Analysis"
             },
 
-            // PUBLIC SERVICES
             { 
                 id: "CONSULT", x: 100, y: -40, z: -80, 
                 name: "Church Consulting", 
@@ -756,9 +746,6 @@
                 public_protocol: "Privacy: 100% Local"
             },
 
-            // ── NEW NODES ─────────────────────────────────────────────
-
-            // ZIP TOOL
             {
                 id: "ZIP_TOOL", x: 90, y: 55, z: -110,
                 name: "ZIP Tool",
@@ -773,7 +760,6 @@
                 portalStyle: "background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #000;"
             },
 
-            // DRE FLOW
             {
                 id: "DRE_FLOW", x: -140, y: 20, z: 40,
                 name: "DRE Flow",
@@ -788,7 +774,6 @@
                 portalStyle: "background: linear-gradient(135deg, #FF2D78 0%, #8B0038 100%); color: #fff;"
             },
 
-            // DRE EXTRACTOR
             {
                 id: "DRE_EXTRACTOR", x: -50, y: 60, z: -145,
                 name: "DRE Extractor",
@@ -801,7 +786,6 @@
                 portalFile: "dre-extractor-v2.html"
             },
 
-            // DRE OS
             {
                 id: "DRE_OS", x: 135, y: -20, z: 65,
                 name: "DRE OS",
@@ -814,7 +798,6 @@
                 portalFile: "dre-os-v2__1_.html"
             },
 
-            // REPRIZAL AI RESUME BUILDER
             {
                 id: "REPRIZAL", x: -30, y: -95, z: -115,
                 name: "RePlizal AI",
@@ -827,7 +810,6 @@
                 portalFile: "ATS_Config_Pro_v_3_0.html"
             },
 
-            // DRE CODE
             {
                 id: "DRE_CODE", x: 20, y: 110, z: 40,
                 name: "Dre Code",
@@ -842,7 +824,6 @@
                 portalStyle: "background: linear-gradient(135deg, #e83000 0%, #ffaa00 100%); color: #fff;"
             },
 
-            // LOAN SHARK
             {
                 id: "LOAN_SHARK", x: 100, y: -90, z: 20,
                 name: "Loan Shark",
@@ -857,7 +838,7 @@
                 portalStyle: "background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;"
             },
 
-            // DRE INTERFACE — LIVE AI CHAT TERMINAL
+            // ── UPDATED: DRE Interface with full planet geometry ──
             {
                 id: "DRE_INTERFACE", x: 160, y: 90, z: 80,
                 name: "DRE Interface",
@@ -873,7 +854,6 @@
             }
         ];
 
-        // --- COLOR MAPPING ---
         const nodeColors = {
             "CORE":             0x00d4ff,
             "CHRIST":           0xFFFFFF,
@@ -882,8 +862,7 @@
             "CONSULT":          0x50C878,
             "CONTENT":          0xFF6B6B,
             "EXTENSION_DATA":   0x9370DB,
-            // New nodes
-            "DRE_INTERFACE":    0x00d4ff, // cyan — matches DRE OS brand color
+            "DRE_INTERFACE":    0x00d4ff,
             "ZIP_TOOL":         0xf59e0b,
             "DRE_FLOW":         0xFF2D78,
             "DRE_EXTRACTOR":    0xFF8C00,
@@ -893,7 +872,6 @@
             "LOAN_SHARK":       0x00ff41
         };
 
-        // --- SCENE SETUP ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.set(0, 80, 250);
@@ -976,9 +954,9 @@
             outerGlow.position.copy(pos);
             mainGroup.add(outerGlow);
 
-            // UNIQUE PLANET — DRE Interface: gas giant with atmosphere layers + single orbital ring
+            // ── UPDATED: DRE Interface — gas giant with atmosphere + Saturn rings ──
             if (n.id === 'DRE_INTERFACE') {
-                // Band 1 — deep base (dark teal)
+                // Deep teal base layer
                 const b1 = new THREE.Mesh(
                     new THREE.SphereGeometry(size, 64, 64),
                     new THREE.MeshBasicMaterial({ color: 0x003344 })
@@ -986,51 +964,53 @@
                 b1.position.copy(pos);
                 mainGroup.add(b1);
 
-                // Band 2 — equatorial band (cyan stripe via flat ring disc)
+                // Equatorial band
                 const bandGeo = new THREE.TorusGeometry(size * 0.72, size * 0.28, 4, 64);
-                const bandMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 });
-                const band = new THREE.Mesh(bandGeo, bandMat);
+                const band = new THREE.Mesh(bandGeo, new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 }));
                 band.position.copy(pos);
                 mainGroup.add(band);
 
-                // Band 3 — secondary stripe (lighter blue-white)
+                // Secondary stripe
                 const band2Geo = new THREE.TorusGeometry(size * 0.3, size * 0.18, 4, 64);
-                const band2Mat = new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 });
-                const band2 = new THREE.Mesh(band2Geo, band2Mat);
+                const band2 = new THREE.Mesh(band2Geo, new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 }));
                 band2.position.copy(pos);
                 mainGroup.add(band2);
 
-                // Atmosphere halo — large soft glow sphere
-                const atmoGeo = new THREE.SphereGeometry(size * 1.35, 32, 32);
-                const atmoMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide });
-                const atmo = new THREE.Mesh(atmoGeo, atmoMat);
+                // Inner atmosphere halo
+                const atmo = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 1.35, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide })
+                );
                 atmo.position.copy(pos);
                 mainGroup.add(atmo);
 
                 // Outer atmosphere (very faint)
-                const atmo2Geo = new THREE.SphereGeometry(size * 1.7, 32, 32);
-                const atmo2Mat = new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide });
-                const atmo2 = new THREE.Mesh(atmo2Geo, atmo2Mat);
+                const atmo2 = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 1.7, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide })
+                );
                 atmo2.position.copy(pos);
                 mainGroup.add(atmo2);
 
-                // Single clean orbital ring (flat disc, tilted like Saturn)
-                const ringGeo = new THREE.RingGeometry(size * 1.7, size * 2.9, 80);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
-                const ring = new THREE.Mesh(ringGeo, ringMat);
+                // Primary orbital ring — flat disc tilted like Saturn
+                const ring = new THREE.Mesh(
+                    new THREE.RingGeometry(size * 1.7, size * 2.9, 80),
+                    new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+                );
                 ring.rotation.x = Math.PI / 2.5;
                 ring.position.copy(pos);
                 mainGroup.add(ring);
 
                 // Faint outer ring band
-                const ring2Geo = new THREE.RingGeometry(size * 3.0, size * 3.5, 80);
-                const ring2Mat = new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide });
-                const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+                const ring2 = new THREE.Mesh(
+                    new THREE.RingGeometry(size * 3.0, size * 3.5, 80),
+                    new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide })
+                );
                 ring2.rotation.x = Math.PI / 2.5;
                 ring2.position.copy(pos);
                 mainGroup.add(ring2);
 
-                // Store refs for slow rotation in animate loop
+                // Store refs for animation
                 mainGroup.userData.interfacePlanet = b1;
                 mainGroup.userData.interfaceRing   = ring;
                 mainGroup.userData.interfaceRing2  = ring2;
@@ -1073,7 +1053,7 @@
                     new THREE.BufferGeometry().setFromPoints(points),
                     new THREE.LineBasicMaterial({ color: nodeColors[n.id] || 0xFFFFFF, transparent: true, opacity: 0.3 })
                 );
-                line.visible = false; // hidden until Founder Mode
+                line.visible = false;
                 mainGroup.add(line);
                 connectionLines.push(line);
             }
@@ -1144,7 +1124,6 @@
             document.getElementById('modalDescription').textContent = isFounder ? data.desc : (data.public_desc || data.desc);
             document.getElementById('modalProtocol').textContent = isFounder ? data.protocol : (data.public_protocol || data.protocol);
             
-            // Action Area
             const actionArea = document.getElementById('modalActionArea');
             actionArea.innerHTML = '';
             
@@ -1152,7 +1131,6 @@
                 const btn = document.createElement('button');
                 btn.className = 'portal-btn';
 
-                // Use node-defined style if present, else fall back to file-based map
                 if (data.portalStyle) {
                     btn.style.cssText = data.portalStyle;
                 } else {
@@ -1165,7 +1143,6 @@
                     btn.style.cssText = styleMap[data.portalFile] || '';
                 }
 
-                // Use node-defined label if present, else fall back to file-based map
                 if (data.portalLabel) {
                     btn.textContent = data.portalLabel;
                 } else {
@@ -1252,7 +1229,7 @@
             mainGroup.rotation.y += CONFIG.rotationSpeed;
             starField.rotation.y += CONFIG.rotationSpeed * 0.2;
 
-            // DRE Interface planet — slow atmospheric band drift
+            // DRE Interface planet — slow atmospheric rotation
             if (mainGroup.userData.interfacePlanet) {
                 mainGroup.userData.interfacePlanet.rotation.y += 0.002;
             }
@@ -1278,12 +1255,7 @@
         music.volume = 0.6;
 
         window.enterGalaxy = function() {
-            // Start music — this works because it's inside a user click
-            music.play().catch(() => {
-                // Browser still blocked — music stays silent, galaxy opens anyway
-            });
-
-            // Animate gate out
+            music.play().catch(() => {});
             gate.classList.add('leaving');
             gate.addEventListener('animationend', () => {
                 gate.style.display = 'none';
