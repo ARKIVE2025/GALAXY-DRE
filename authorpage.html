@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose Your Perspective</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Space+Mono&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  transition: transform 0.1s ease, width 0.25s ease, height 0.25s ease;
+}
+#cursor-trail {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: left 0.12s ease-out, top 0.12s ease-out, width 0.3s ease, height 0.3s ease, border-color 0.4s ease;
+}
+
+/* ── SCENE ── */
+.scene {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+/* ── PANELS ── */
+.panel {
+  position: relative;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: width 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+  cursor: none;
+}
+
+/* LIGHT SIDE */
+.panel--light {
+  background: #f0ebe0;
+}
+
+/* grain texture overlay */
+.panel--light::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* vignette */
+.panel--light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(180,160,110,0.18) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* DARK SIDE */
+.panel--dark {
+  background: #07090f;
+}
+
+.panel--dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.panel--dark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 50%, rgba(30,50,100,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* star field for dark panel */
+.stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(180,200,255,0.7);
+  animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50%       { opacity: 0.9; transform: scale(1.4); }
+}
+
+/* sun glow for light panel */
+.sun-glow {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,100,0.22) 0%, rgba(255,180,60,0.08) 50%, transparent 75%);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulse-sun 6s ease-in-out infinite;
+}
+@keyframes pulse-sun {
+  0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.8; }
+  50%       { transform: translateX(-50%) scale(1.1); opacity: 1;   }
+}
+
+/* moon glow for dark panel */
+.moon-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,120,220,0.18) 0%, rgba(40,80,160,0.06) 55%, transparent 80%);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulse-moon 8s ease-in-out infinite;
+}
+@keyframes pulse-moon {
+  0%, 100% { transform: translateX(-50%) scale(1);    opacity: 0.7; }
+  50%       { transform: translateX(-50%) scale(1.08); opacity: 1;   }
+}
+
+/* ── CONTENT ── */
+.content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  user-select: none;
+}
+
+/* LIGHT CONTENT */
+.panel--light .content { color: #1c1408; }
+
+.panel--light .author-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 9vw, 120px);
+  letter-spacing: 0.06em;
+  line-height: 0.9;
+  color: #1c1408;
+  transition: letter-spacing 0.5s ease;
+}
+
+.panel--light .tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 300;
+  color: #6b5232;
+  letter-spacing: 0.12em;
+  margin-top: 18px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.panel--light .enter-btn {
+  margin-top: 36px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #1c1408;
+  border: 1px solid rgba(28,20,8,0.35);
+  padding: 13px 32px;
+  cursor: none;
+  background: transparent;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s, background 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.panel--light .enter-btn:hover {
+  background: #1c1408;
+  color: #f0ebe0;
+}
+
+.panel--light .label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #b89a6a;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+/* DARK CONTENT */
+.panel--dark .content { color: #dce6f8; }
+
+.panel--dark .author-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(60px, 7.5vw, 108px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 0.92;
+  color: #dce6f8;
+  transition: letter-spacing 0.5s ease;
+}
+
+.panel--dark .tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(13px, 1.3vw, 17px);
+  font-weight: 300;
+  color: #7a99c8;
+  letter-spacing: 0.1em;
+  margin-top: 18px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.panel--dark .enter-btn {
+  margin-top: 36px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #dce6f8;
+  border: 1px solid rgba(220,230,248,0.25);
+  padding: 13px 32px;
+  cursor: none;
+  background: transparent;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s, background 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.panel--dark .enter-btn:hover {
+  background: rgba(80,120,200,0.15);
+  border-color: rgba(120,160,240,0.5);
+}
+
+.panel--dark .label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #4a6090;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+/* hover reveal of tagline + button */
+.panel--light:hover .tagline,
+.panel--dark:hover .tagline {
+  opacity: 1;
+  transform: translateY(0);
+}
+.panel--light:hover .enter-btn,
+.panel--dark:hover .enter-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+.panel--light:hover .author-name { letter-spacing: 0.1em; }
+.panel--dark:hover  .author-name { letter-spacing: 0.13em; }
+
+/* panel expand on hover */
+.scene:has(.panel--light:hover) .panel--light { width: 56%; }
+.scene:has(.panel--light:hover) .panel--dark  { width: 44%; }
+.scene:has(.panel--dark:hover)  .panel--dark  { width: 56%; }
+.scene:has(.panel--dark:hover)  .panel--light { width: 44%; }
+
+/* ── DIVIDER ── */
+.divider {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  z-index: 50;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: left 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.divider-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(160,140,100,0.2) 15%,
+    rgba(200,180,130,0.55) 40%,
+    rgba(200,180,130,0.55) 60%,
+    rgba(160,140,100,0.2) 85%,
+    transparent 100%
+  );
+}
+
+.divider-orb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(200,180,130,0.7);
+  animation: orb-pulse 4s ease-in-out infinite;
+}
+
+@keyframes orb-pulse {
+  0%, 100% { box-shadow: 0 0 0   4px rgba(200,180,130,0.1); }
+  50%       { box-shadow: 0 0 0  12px rgba(200,180,130,0.0), 0 0 20px rgba(200,180,130,0.15); }
+}
+
+/* ── CENTER OVERLAY TEXT ── */
+.center-phrase {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.4s ease;
+}
+
+.center-phrase span {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+  mix-blend-mode: difference;
+  color: rgba(200,190,170,0.55);
+}
+
+/* hide center phrase on hover */
+.scene:has(.panel:hover) .center-phrase { opacity: 0; }
+
+/* ── TRANSITION OVERLAY ── */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ── HORIZON LINE (light panel) ── */
+.horizon {
+  position: absolute;
+  bottom: 28%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(180,140,80,0.25), transparent);
+  z-index: 2;
+}
+
+/* ── CONSTELLATION (dark panel) ── */
+.constellation {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+/* ── BOTTOM ATTRIBUTION ── */
+.attribution {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(150,140,120,0.45);
+  pointer-events: none;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+<div id="transition-overlay"></div>
+
+<div class="scene" id="scene">
+
+  <!-- ─── LIGHT PANEL — DL FORD ─── -->
+  <div class="panel panel--light" id="panel-light" onclick="enterLight()">
+
+    <div class="sun-glow"></div>
+    <div class="horizon"></div>
+
+    <div class="content">
+      <div class="label">Light / Exposure</div>
+      <div class="author-name">DL<br>FORD</div>
+      <div class="tagline">People don't break.<br>They decide.</div>
+      <a class="enter-btn" href="#" onclick="showSoon(event)">Enter the Work</a>
+    </div>
+
+  </div>
+
+  <!-- ─── DIVIDER ─── -->
+  <div class="divider" id="divider">
+    <div class="divider-line"></div>
+    <div class="divider-orb"></div>
+  </div>
+
+  <!-- ─── CENTER PHRASE ─── -->
+  <div class="center-phrase" id="center-phrase">
+    <span>Same world.</span>
+    <span>Different visibility.</span>
+  </div>
+
+  <!-- ─── DARK PANEL — ATLAS PARKS ─── -->
+  <div class="panel panel--dark" id="panel-dark" onclick="enterDark()">
+
+    <div class="moon-glow"></div>
+
+    <!-- Stars -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Constellation SVG -->
+    <svg class="constellation" viewBox="0 0 500 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="rgba(160,190,255,0.7)" stroke-width="0.5" fill="none">
+        <line x1="120" y1="180" x2="200" y2="240"/>
+        <line x1="200" y1="240" x2="310" y2="200"/>
+        <line x1="310" y1="200" x2="380" y2="260"/>
+        <line x1="200" y1="240" x2="250" y2="320"/>
+        <line x1="250" y1="320" x2="310" y2="200"/>
+        <line x1="250" y1="320" x2="220" y2="410"/>
+        <line x1="250" y1="320" x2="300" y2="390"/>
+      </g>
+      <g fill="rgba(180,210,255,0.9)">
+        <circle cx="120" cy="180" r="2"/>
+        <circle cx="200" cy="240" r="2.5"/>
+        <circle cx="310" cy="200" r="1.5"/>
+        <circle cx="380" cy="260" r="1.5"/>
+        <circle cx="250" cy="320" r="3"/>
+        <circle cx="220" cy="410" r="1.5"/>
+        <circle cx="300" cy="390" r="1.5"/>
+      </g>
+    </svg>
+
+    <div class="content">
+      <div class="label">Dark / Pattern</div>
+      <div class="author-name">ATLAS<br>PARKS</div>
+      <div class="tagline">The dark doesn't hide things.<br>It reveals what light ignores.</div>
+      <a class="enter-btn" href="#" onclick="showSoon(event)">Enter the Work</a>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="attribution">andremethod.com</div>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const trail  = document.getElementById('cursor-trail');
+let mx = 0, my = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top  = my + 'px';
+  setTimeout(() => {
+    trail.style.left = mx + 'px';
+    trail.style.top  = my + 'px';
+  }, 60);
+
+  // divider follows X slightly — subtle magnetic pull
+  const vw = window.innerWidth;
+  const ratio = mx / vw;
+  const pull = (ratio - 0.5) * 12;
+  document.getElementById('divider').style.left = `calc(50% + ${pull}px)`;
+});
+
+// ── STARS ──
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 90; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 1.8 + 0.4;
+  s.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    --dur:${(Math.random()*4+2).toFixed(1)}s;
+    --delay:-${(Math.random()*5).toFixed(1)}s;
+    opacity:${Math.random()*0.5+0.1};
+  `;
+  starsEl.appendChild(s);
+}
+
+// ── TRANSITION ──
+const overlay = document.getElementById('transition-overlay');
+
+function enterLight() { showSoon(); }
+function enterDark()  { showSoon(); }
+
+function showSoon(e) {
+  if (e) e.preventDefault();
+  const existing = document.getElementById('soon-toast');
+  if (existing) return;
+  const toast = document.createElement('div');
+  toast.id = 'soon-toast';
+  toast.textContent = 'Coming Soon';
+  toast.style.cssText = `
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.92);
+    z-index: 2000;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(200,185,150,0.9);
+    border: 1px solid rgba(200,185,150,0.3);
+    padding: 18px 48px;
+    background: rgba(10,8,4,0.85);
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  `;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translate(-50%, -50%) scale(1)';
+  });
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -50%) scale(0.95)';
+    setTimeout(() => toast.remove(), 400);
+  }, 1800);
+}
+
+// ── CURSOR HOVER RESPONSE ──
+document.querySelectorAll('.panel').forEach(p => {
+  p.addEventListener('mouseenter', () => {
+    cursor.style.width  = '14px';
+    cursor.style.height = '14px';
+  });
+  p.addEventListener('mouseleave', () => {
+    cursor.style.width  = '8px';
+    cursor.style.height = '8px';
+  });
+});
+
+document.querySelectorAll('.enter-btn').forEach(b => {
+  b.addEventListener('mouseenter', () => {
+    cursor.style.width  = '40px';
+    cursor.style.height = '40px';
+  });
+  b.addEventListener('mouseleave', () => {
+    cursor.style.width  = '8px';
+    cursor.style.height = '8px';
+  });
+});
+
+// prevent enter-btn click from firing twice with panel onclick
+document.querySelectorAll('.enter-btn').forEach(b => {
+  b.addEventListener('click', e => e.stopPropagation());
+});
+</script>
+
+</body>
+</html>
