@@ -537,12 +537,10 @@
 </head>
 <body>
 
-    <!-- ── AUDIO ───────────────────────────────────────────────── -->
     <audio id="bgMusic" loop preload="auto">
         <source src="Dre Galaxy Theme.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- ── ENTRY GATE ──────────────────────────────────────────── -->
     <div id="entryGate">
         <div class="gate-eyebrow">Andre Method · DRE Core Systems</div>
         <div class="gate-title">WELCOME TO<br>THE <span>GALAXY</span></div>
@@ -551,7 +549,6 @@
         <div class="gate-hint">Click to enter · Audio will play</div>
     </div>
 
-    <!-- ── MUSIC CONTROLS (shown after entry) ──────────────────── -->
     <div id="musicControls" style="display:none;">
         <input class="music-vol" type="range" min="0" max="1" step="0.05"
                value="0.6" oninput="setVolume(this.value)" title="Volume">
@@ -568,7 +565,7 @@
     <div id="dataDisplay">
         <div class="data-line">→ TRACKING REVENUE VECTORS</div>
         <div class="data-line">→ 90-DAY GOAL: ACTIVE</div>
-        <div class="data-line">→ NODES ONLINE: 15</div>
+        <div class="data-line">→ NODES ONLINE: 16</div>
         <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
     </div>
     
@@ -616,6 +613,16 @@
             </button>
             <button class="portal-btn" style="background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;" onclick="window.location.href='loan_shark_full_system.html'">
                 OPEN LOAN SHARK
+            </button>
+        </div>
+
+        <div class="settings-section">
+            <h3>✦ Kleara Studios</h3>
+            <div style="font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:1px; text-transform:uppercase; margin-bottom:12px; line-height:1.6;">
+                Separate universe · DL Ford &amp; Atlas Parks
+            </div>
+            <button class="portal-btn" style="background: linear-gradient(135deg, #1a0033 0%, #6b00a8 50%, #c084fc 100%); color: #fff; font-weight: 800; letter-spacing: 2px;" onclick="window.location.href='authorpage.html'">
+                ENTER KLEARA STUDIOS →
             </button>
         </div>
 
@@ -800,12 +807,12 @@
 
             {
                 id: "REPRIZAL", x: -30, y: -95, z: -115,
-                name: "RePrizal AI",
+                name: "RePlizal AI",
                 category: "Career Tool",
                 desc: "[FOUNDER] LLM-powered resume builder. PDF import via AI JSON pipeline. Use as lead-gen or standalone product.",
                 protocol: "Flow: Import PDF → LLM converts → JSON loads into builder → Export polished resume.",
                 public_desc: "Build a professional resume powered by AI. Import your existing PDF, let an LLM reformat it, and export a polished result — all without a monthly subscription.",
-                public_protocol: "Action: Open RePrizal AI → Import Resume → Export",
+                public_protocol: "Action: Open RePlizal AI → Import Resume → Export",
                 isPortal: true,
                 portalFile: "ATS_Config_Pro_v_3_0.html"
             },
@@ -836,6 +843,21 @@
                 portalFile: "loan_shark_full_system.html",
                 portalLabel: "OPEN LOAN SHARK",
                 portalStyle: "background: linear-gradient(135deg, #003a0f 0%, #00ff41 100%); color: #000;"
+            },
+
+            // ── KLEARA STUDIOS — isolated space station, static at bottom of the galaxy ──
+            {
+                id: "KLEARA", x: 0, y: -160, z: 0,
+                name: "Kleara Studios",
+                category: "Author Universe · DL Ford & Atlas Parks",
+                desc: "[FOUNDER] The literary arm. Completely separate from the Andre ecosystem. DL Ford (Light/Exposure) and Atlas Parks (Dark/Pattern) — two authors, two perspectives, one universe. Books: DEFINED series, DEFINED AFFAIR, HADDER.",
+                protocol: "This node does not feed the revenue engine. It is a separate creative universe. Route book traffic here. Do not cross-sell Andre tools on this node.",
+                public_desc: "Welcome to Kleara Studios.\n\nTwo authors. Two perspectives on the same world.\n\n☀️ DL Ford — Light / Exposure\nPeople don't break. They decide.\nThe DEFINED series · DEFINED AFFAIR: A Prelude\n\n🌑 Atlas Parks — Dark / Pattern\nThe dark doesn't hide things. It reveals what light ignores.\nHADDER: Isabella Hadder\n\nThis is not a tool. This is the work.",
+                public_protocol: "Enter the universe → Choose your perspective → Light or Dark",
+                isPortal: true,
+                portalFile: "authorpage.html",
+                portalLabel: "ENTER KLEARA STUDIOS →",
+                portalStyle: "background: linear-gradient(135deg, #1a0033 0%, #6b00a8 50%, #ffffff 100%); color: #fff; font-weight: 800; letter-spacing: 2px; font-size: 12px;"
             },
 
             // ── UPDATED: DRE Interface with full planet geometry ──
@@ -869,7 +891,8 @@
             "DRE_OS":           0x00C853,
             "REPRIZAL":         0x7C3AED,
             "DRE_CODE":         0xff4800,
-            "LOAN_SHARK":       0x00ff41
+            "LOAN_SHARK":       0x00ff41,
+            "KLEARA":           0xff6600
         };
 
         const scene = new THREE.Scene();
@@ -926,96 +949,334 @@
         const clickableNodes = [];
 
         nodesData.forEach(n => {
-            const size = n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize;
+            // Increase the size massively for KLEARA to dominate its sector
+            const size = n.id === "KLEARA" ? 12 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
             const color = nodeColors[n.id] || 0xFFFFFF;
             const pos = new THREE.Vector3(n.x, n.y, n.z);
             
-            // Sphere
-            const planetGeo = new THREE.SphereGeometry(size, 32, 32);
-            const planetMat = new THREE.MeshBasicMaterial({ color: color });
-            const planet = new THREE.Mesh(planetGeo, planetMat);
-            planet.position.copy(pos);
-            planet.userData = { nodeId: n.id, nodeData: n };
-            mainGroup.add(planet);
-            clickableNodes.push(planet);
+            // Decouple Kleara from mainGroup so it doesn't swivel with the galaxy
+            const parentGroup = n.id === "KLEARA" ? scene : mainGroup;
             
-            // Glows
-            const innerGlow = new THREE.Mesh(
-                new THREE.SphereGeometry(size * 1.2, 32, 32),
-                new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.4, side: THREE.BackSide })
-            );
-            innerGlow.position.copy(pos);
-            mainGroup.add(innerGlow);
-            
-            const outerGlow = new THREE.Mesh(
-                new THREE.SphereGeometry(size * 1.5, 32, 32),
-                new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.2, side: THREE.BackSide })
-            );
-            outerGlow.position.copy(pos);
-            mainGroup.add(outerGlow);
+            // Create a parent mesh wrapper for standard planets
+            let planet;
 
-            // ── UPDATED: DRE Interface — gas giant with atmosphere + Saturn rings ──
-            if (n.id === 'DRE_INTERFACE') {
-                // Deep teal base layer
-                const b1 = new THREE.Mesh(
-                    new THREE.SphereGeometry(size, 64, 64),
-                    new THREE.MeshBasicMaterial({ color: 0x003344 })
+            // ── KLEARA STUDIOS — Deep Space Station, static at galaxy bottom ──
+            if (n.id === 'KLEARA') {
+                const stationGroup = new THREE.Group();
+                stationGroup.position.copy(pos);
+
+                // Invisible click anchor
+                const anchorGeo = new THREE.SphereGeometry(size * 2.0, 16, 16);
+                const anchorMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 });
+                planet = new THREE.Mesh(anchorGeo, anchorMat);
+                stationGroup.add(planet);
+
+                // Materials — deep space palette matching Kleara brand
+                const hull      = new THREE.MeshBasicMaterial({ color: 0x1a1a2e });
+                const hullLight = new THREE.MeshBasicMaterial({ color: 0x2d2d4e });
+                const hullMid   = new THREE.MeshBasicMaterial({ color: 0x16213e });
+                const purpleGlow  = new THREE.MeshBasicMaterial({ color: 0x9b30ff });
+                const purpleDim   = new THREE.MeshBasicMaterial({ color: 0x6b00a8, transparent: true, opacity: 0.8 });
+                const lavender    = new THREE.MeshBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0.9 });
+                const deepPurple  = new THREE.MeshBasicMaterial({ color: 0x4a0080 });
+                const whiteAccent = new THREE.MeshBasicMaterial({ color: 0xe8e8ff, transparent: true, opacity: 0.85 });
+                const solarPanel  = new THREE.MeshBasicMaterial({ color: 0x0d1b2a, transparent: true, opacity: 0.95 });
+                const solarTrim   = new THREE.MeshBasicMaterial({ color: 0x1e3a5f });
+
+                // ── 1. CENTRAL TRUSS / SPINE (long horizontal backbone) ──
+                const spineGeo = new THREE.CylinderGeometry(size * 0.12, size * 0.12, size * 9, 12);
+                const spine = new THREE.Mesh(spineGeo, hullLight);
+                spine.rotation.z = Math.PI / 2;
+                stationGroup.add(spine);
+
+                // Spine segment rings (structural detail)
+                for (let i = -3; i <= 3; i++) {
+                    const seg = new THREE.Mesh(
+                        new THREE.TorusGeometry(size * 0.18, size * 0.04, 8, 16),
+                        i === 0 ? purpleGlow : hullMid
+                    );
+                    seg.rotation.y = Math.PI / 2;
+                    seg.position.x = i * size * 1.25;
+                    stationGroup.add(seg);
+                }
+
+                // ── 2. CENTRAL HABITAT MODULE (command hub) ──
+                const habGeo = new THREE.CylinderGeometry(size * 0.7, size * 0.7, size * 1.6, 16);
+                const hab = new THREE.Mesh(habGeo, hullLight);
+                hab.rotation.z = Math.PI / 2;
+                stationGroup.add(hab);
+
+                // Habitat end caps
+                const capGeo = new THREE.CylinderGeometry(size * 0.35, size * 0.7, size * 0.4, 16);
+                const capL = new THREE.Mesh(capGeo, hull);
+                capL.rotation.z = Math.PI / 2;
+                capL.position.x = -size * 1.0;
+                stationGroup.add(capL);
+                const capR = new THREE.Mesh(new THREE.CylinderGeometry(size * 0.7, size * 0.35, size * 0.4, 16), hull);
+                capR.rotation.z = Math.PI / 2;
+                capR.position.x = size * 1.0;
+                stationGroup.add(capR);
+
+                // Habitat glowing ring bands
+                [-0.5, 0, 0.5].forEach(offset => {
+                    const band = new THREE.Mesh(
+                        new THREE.TorusGeometry(size * 0.72, size * 0.05, 8, 32),
+                        offset === 0 ? lavender : purpleDim
+                    );
+                    band.rotation.y = Math.PI / 2;
+                    band.position.x = offset * size;
+                    stationGroup.add(band);
+                });
+
+                // ── 3. DOCKING PORT (front-facing cylinder) ──
+                const dockGeo = new THREE.CylinderGeometry(size * 0.35, size * 0.35, size * 0.9, 12);
+                const dock = new THREE.Mesh(dockGeo, deepPurple);
+                dock.position.z = size * 0.85;
+                stationGroup.add(dock);
+
+                const dockRing = new THREE.Mesh(
+                    new THREE.TorusGeometry(size * 0.4, size * 0.06, 8, 24),
+                    purpleGlow
                 );
-                b1.position.copy(pos);
-                mainGroup.add(b1);
+                dockRing.position.z = size * 1.3;
+                stationGroup.add(dockRing);
 
-                // Equatorial band
-                const bandGeo = new THREE.TorusGeometry(size * 0.72, size * 0.28, 4, 64);
-                const band = new THREE.Mesh(bandGeo, new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 }));
-                band.position.copy(pos);
-                mainGroup.add(band);
-
-                // Secondary stripe
-                const band2Geo = new THREE.TorusGeometry(size * 0.3, size * 0.18, 4, 64);
-                const band2 = new THREE.Mesh(band2Geo, new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 }));
-                band2.position.copy(pos);
-                mainGroup.add(band2);
-
-                // Inner atmosphere halo
-                const atmo = new THREE.Mesh(
-                    new THREE.SphereGeometry(size * 1.35, 32, 32),
-                    new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide })
+                // Docking hatch glow
+                const hatchGlow = new THREE.Mesh(
+                    new THREE.CircleGeometry(size * 0.28, 16),
+                    new THREE.MeshBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0.6 })
                 );
-                atmo.position.copy(pos);
-                mainGroup.add(atmo);
+                hatchGlow.position.z = size * 1.31;
+                stationGroup.add(hatchGlow);
 
-                // Outer atmosphere (very faint)
-                const atmo2 = new THREE.Mesh(
-                    new THREE.SphereGeometry(size * 1.7, 32, 32),
-                    new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide })
+                // ── 4. SOLAR PANEL ARRAYS (4 pairs extending from spine) ──
+                const panelPositions = [-2.8, -1.4, 1.4, 2.8];
+                panelPositions.forEach(xOff => {
+                    [-1, 1].forEach(side => {
+                        // Panel arm strut
+                        const strutGeo = new THREE.CylinderGeometry(size * 0.05, size * 0.05, size * 1.8, 8);
+                        const strut = new THREE.Mesh(strutGeo, hullMid);
+                        strut.position.set(xOff * size, side * size * 0.9, 0);
+                        stationGroup.add(strut);
+
+                        // Panel segment (flat box-like)
+                        const panelGeo = new THREE.BoxGeometry(size * 0.9, size * 1.5, size * 0.04);
+                        const panel = new THREE.Mesh(panelGeo, solarPanel);
+                        panel.position.set(xOff * size, side * size * 1.9, 0);
+                        stationGroup.add(panel);
+
+                        // Panel grid lines (trim)
+                        const trimH = new THREE.Mesh(new THREE.BoxGeometry(size * 0.92, size * 0.04, size * 0.045), solarTrim);
+                        trimH.position.set(xOff * size, side * size * 1.9, 0);
+                        stationGroup.add(trimH);
+
+                        for (let g = -1; g <= 1; g++) {
+                            const trimV = new THREE.Mesh(new THREE.BoxGeometry(size * 0.04, size * 1.52, size * 0.045), solarTrim);
+                            trimV.position.set((xOff + g * 0.28) * size, side * size * 1.9, 0);
+                            stationGroup.add(trimV);
+                        }
+
+                        // Panel edge glow strip
+                        const edgeGeo = new THREE.BoxGeometry(size * 0.9, size * 0.04, size * 0.05);
+                        const edgeTop = new THREE.Mesh(edgeGeo, side > 0 ? purpleGlow : lavender);
+                        edgeTop.position.set(xOff * size, side * (size * 1.9 + size * 0.75), 0);
+                        stationGroup.add(edgeTop);
+                    });
+                });
+
+                // ── 5. COMMUNICATION / ANTENNA ARRAY (top of central hub) ──
+                const dishArmGeo = new THREE.CylinderGeometry(size * 0.04, size * 0.04, size * 1.4, 8);
+                const dishArm = new THREE.Mesh(dishArmGeo, hullLight);
+                dishArm.position.y = size * 1.4;
+                stationGroup.add(dishArm);
+
+                // Dish bowl
+                const dishGeo = new THREE.SphereGeometry(size * 0.55, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+                const dish = new THREE.Mesh(dishGeo, hullLight);
+                dish.rotation.x = Math.PI;
+                dish.position.y = size * 2.1;
+                stationGroup.add(dish);
+
+                const dishRim = new THREE.Mesh(
+                    new THREE.TorusGeometry(size * 0.55, size * 0.04, 8, 32),
+                    purpleGlow
                 );
-                atmo2.position.copy(pos);
-                mainGroup.add(atmo2);
+                dishRim.rotation.x = Math.PI / 2;
+                dishRim.position.y = size * 2.1;
+                stationGroup.add(dishRim);
 
-                // Primary orbital ring — flat disc tilted like Saturn
-                const ring = new THREE.Mesh(
-                    new THREE.RingGeometry(size * 1.7, size * 2.9, 80),
-                    new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+                // Secondary small antenna spikes
+                [{ x: size * 1.5, z: 0 }, { x: -size * 1.5, z: 0 }, { x: 0, z: size * 0.8 }].forEach(p => {
+                    const ant = new THREE.Mesh(
+                        new THREE.CylinderGeometry(size * 0.03, size * 0.03, size * 0.9, 6),
+                        whiteAccent
+                    );
+                    ant.position.set(p.x, size * 0.9, p.z);
+                    stationGroup.add(ant);
+                    // blinking light tip
+                    const tip = new THREE.Mesh(new THREE.SphereGeometry(size * 0.07, 8, 8), purpleGlow);
+                    tip.position.set(p.x, size * 1.35, p.z);
+                    stationGroup.add(tip);
+                });
+
+                // ── 6. THRUSTER PODS (rear of station) ──
+                [-1, 0, 1].forEach(i => {
+                    const thrusterGeo = new THREE.CylinderGeometry(size * 0.15, size * 0.2, size * 0.5, 10);
+                    const thruster = new THREE.Mesh(thrusterGeo, hull);
+                    thruster.position.set(i * size * 0.6, 0, -size * 0.75);
+                    stationGroup.add(thruster);
+                    const thrustGlow = new THREE.Mesh(
+                        new THREE.CircleGeometry(size * 0.15, 10),
+                        new THREE.MeshBasicMaterial({ color: 0x9b30ff, transparent: true, opacity: 0.7 })
+                    );
+                    thrustGlow.rotation.x = Math.PI / 2;
+                    thrustGlow.position.set(i * size * 0.6, 0, -size * 1.01);
+                    stationGroup.add(thrustGlow);
+                });
+
+                // ── 7. NEBULA ATMOSPHERE / GALAXY BLEED HALO ──
+                // Outer nebula glow — deep purple, makes it feel part of the galaxy
+                const nebula1 = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 5.5, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: 0x2a004a, transparent: true, opacity: 0.18, side: THREE.BackSide })
                 );
-                ring.rotation.x = Math.PI / 2.5;
-                ring.position.copy(pos);
-                mainGroup.add(ring);
+                stationGroup.add(nebula1);
 
-                // Faint outer ring band
-                const ring2 = new THREE.Mesh(
-                    new THREE.RingGeometry(size * 3.0, size * 3.5, 80),
-                    new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide })
+                const nebula2 = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 4.0, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: 0x6b00a8, transparent: true, opacity: 0.10, side: THREE.BackSide })
                 );
-                ring2.rotation.x = Math.PI / 2.5;
-                ring2.position.copy(pos);
-                mainGroup.add(ring2);
+                stationGroup.add(nebula2);
 
-                // Store refs for animation
-                mainGroup.userData.interfacePlanet = b1;
-                mainGroup.userData.interfaceRing   = ring;
-                mainGroup.userData.interfaceRing2  = ring2;
+                const nebula3 = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 2.8, 16, 16),
+                    new THREE.MeshBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0.04, side: THREE.BackSide })
+                );
+                stationGroup.add(nebula3);
+
+                // Flat nebula disc cloud (galaxy plane feel)
+                const nebulaDisc = new THREE.Mesh(
+                    new THREE.RingGeometry(size * 1.5, size * 6, 64),
+                    new THREE.MeshBasicMaterial({ color: 0x4a0080, transparent: true, opacity: 0.12, side: THREE.DoubleSide })
+                );
+                nebulaDisc.rotation.x = Math.PI / 2.2;
+                stationGroup.add(nebulaDisc);
+
+                // Small dust particles around station
+                const dustGeo = new THREE.BufferGeometry();
+                const dustPts = [];
+                for (let d = 0; d < 80; d++) {
+                    const r = size * (2.5 + Math.random() * 3.5);
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = (Math.random() - 0.5) * Math.PI * 0.4;
+                    dustPts.push(r * Math.cos(theta) * Math.cos(phi), r * Math.sin(phi), r * Math.sin(theta) * Math.cos(phi));
+                }
+                dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPts, 3));
+                const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xc084fc, size: 0.6, transparent: true, opacity: 0.5 }));
+                stationGroup.add(dust);
+
+                parentGroup.add(stationGroup);
+
+                // Store refs — NO rotation animation, fully static
+                scene.userData.kleara      = stationGroup;
+                scene.userData.klearaRing  = null; // no spinning ring
+
+                // Slight fixed tilt — looks natural, not robotic
+                stationGroup.rotation.x = 0.18;
+                stationGroup.rotation.z = 0.08;
+                
+            } else {
+                // Standard planet generation
+                const planetGeo = new THREE.SphereGeometry(size, 32, 32);
+                const planetMat = new THREE.MeshBasicMaterial({ color: color });
+                planet = new THREE.Mesh(planetGeo, planetMat);
+                planet.position.copy(pos);
+                parentGroup.add(planet);
+
+                // Standard planet glows
+                const innerGlow = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 1.2, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.4, side: THREE.BackSide })
+                );
+                innerGlow.position.copy(pos);
+                parentGroup.add(innerGlow);
+                
+                const outerGlow = new THREE.Mesh(
+                    new THREE.SphereGeometry(size * 1.5, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.2, side: THREE.BackSide })
+                );
+                outerGlow.position.copy(pos);
+                parentGroup.add(outerGlow);
+
+                nodeObjects.set(n.id, { innerGlow, outerGlow });
+
+                // ── DRE Interface Planet Customization ──
+                if (n.id === 'DRE_INTERFACE') {
+                    // Deep teal base layer
+                    const b1 = new THREE.Mesh(
+                        new THREE.SphereGeometry(size, 64, 64),
+                        new THREE.MeshBasicMaterial({ color: 0x003344 })
+                    );
+                    b1.position.copy(pos);
+                    parentGroup.add(b1);
+
+                    // Equatorial band
+                    const bandGeo = new THREE.TorusGeometry(size * 0.72, size * 0.28, 4, 64);
+                    const band = new THREE.Mesh(bandGeo, new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 }));
+                    band.position.copy(pos);
+                    parentGroup.add(band);
+
+                    // Secondary stripe
+                    const band2Geo = new THREE.TorusGeometry(size * 0.3, size * 0.18, 4, 64);
+                    const band2 = new THREE.Mesh(band2Geo, new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 }));
+                    band2.position.copy(pos);
+                    parentGroup.add(band2);
+
+                    // Inner atmosphere halo
+                    const atmo = new THREE.Mesh(
+                        new THREE.SphereGeometry(size * 1.35, 32, 32),
+                        new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide })
+                    );
+                    atmo.position.copy(pos);
+                    parentGroup.add(atmo);
+
+                    // Outer atmosphere (very faint)
+                    const atmo2 = new THREE.Mesh(
+                        new THREE.SphereGeometry(size * 1.7, 32, 32),
+                        new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide })
+                    );
+                    atmo2.position.copy(pos);
+                    parentGroup.add(atmo2);
+
+                    // Primary orbital ring — flat disc tilted like Saturn
+                    const ring = new THREE.Mesh(
+                        new THREE.RingGeometry(size * 1.7, size * 2.9, 80),
+                        new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+                    );
+                    ring.rotation.x = Math.PI / 2.5;
+                    ring.position.copy(pos);
+                    parentGroup.add(ring);
+
+                    // Faint outer ring band
+                    const ring2 = new THREE.Mesh(
+                        new THREE.RingGeometry(size * 3.0, size * 3.5, 80),
+                        new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide })
+                    );
+                    ring2.rotation.x = Math.PI / 2.5;
+                    ring2.position.copy(pos);
+                    parentGroup.add(ring2);
+
+                    // Store refs for animation
+                    parentGroup.userData.interfacePlanet = b1;
+                    parentGroup.userData.interfaceRing   = ring;
+                    parentGroup.userData.interfaceRing2  = ring2;
+                }
             }
             
+            // Assign hover data and tracking properties to whatever the click target is
+            planet.userData = { nodeId: n.id, nodeData: n };
+            clickableNodes.push(planet);
+
             // Text Label
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -1035,16 +1296,23 @@
             const aspect = canvas.width / canvas.height;
             sprite.scale.set(aspect * 4, 4, 1);
             sprite.position.set(n.x, n.y + (size + 3), n.z);
-            mainGroup.add(sprite);
+            parentGroup.add(sprite);
             
-            nodeObjects.set(n.id, { planet, innerGlow, outerGlow, label: sprite, originalSize: size });
+            // Store properties for scaling
+            if(nodeObjects.has(n.id)) {
+                nodeObjects.get(n.id).planet = planet;
+                nodeObjects.get(n.id).label = sprite;
+                nodeObjects.get(n.id).originalSize = size;
+            } else {
+                nodeObjects.set(n.id, { planet, label: sprite, originalSize: size, innerGlow: null, outerGlow: null });
+            }
         });
 
         // --- CONNECTIONS (Hidden by default — Founder Mode only) ---
         const connectionLines = [];
         const centerNode = nodesData.find(n => n.id === "CORE");
         nodesData.forEach(n => {
-            if (n.id !== "CORE") {
+            if (n.id !== "CORE" && n.id !== "KLEARA") {
                 const points = [
                     new THREE.Vector3(centerNode.x, centerNode.y, centerNode.z),
                     new THREE.Vector3(n.x, n.y, n.z)
@@ -1096,20 +1364,21 @@
 
         function scaleNode(mesh, targetSize) {
             const obj = nodeObjects.get(mesh.userData.nodeId);
-            if (obj) {
+            // Kleara station handles scale via its primary parent group separately, skip resizing on hover so it stays static
+            if (obj && mesh.userData.nodeId !== "KLEARA") {
                 const s = targetSize / obj.originalSize;
                 obj.planet.scale.set(s, s, s);
-                obj.innerGlow.scale.set(s, s, s);
-                obj.outerGlow.scale.set(s, s, s);
+                if (obj.innerGlow) obj.innerGlow.scale.set(s, s, s);
+                if (obj.outerGlow) obj.outerGlow.scale.set(s, s, s);
             }
         }
 
         function resetNodeScale(mesh) {
             const obj = nodeObjects.get(mesh.userData.nodeId);
-            if (obj) {
+            if (obj && mesh.userData.nodeId !== "KLEARA") {
                 obj.planet.scale.set(1, 1, 1);
-                obj.innerGlow.scale.set(1, 1, 1);
-                obj.outerGlow.scale.set(1, 1, 1);
+                if (obj.innerGlow) obj.innerGlow.scale.set(1, 1, 1);
+                if (obj.outerGlow) obj.outerGlow.scale.set(1, 1, 1);
             }
         }
 
@@ -1209,7 +1478,7 @@
                     const color = parseInt(e.target.value.replace('#', ''), 16);
                     nodeColors[node.id] = color;
                     const obj = nodeObjects.get(node.id);
-                    if (obj) {
+                    if (obj && obj.innerGlow && obj.outerGlow) {
                         obj.planet.material.color.setHex(color);
                         obj.innerGlow.material.color.setHex(color);
                         obj.outerGlow.material.color.setHex(color);
@@ -1233,6 +1502,8 @@
             if (mainGroup.userData.interfacePlanet) {
                 mainGroup.userData.interfacePlanet.rotation.y += 0.002;
             }
+
+            // Kleara Studios space station — fully static, no animation
 
             controls.update();
             renderer.render(scene, camera);
