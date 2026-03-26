@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRE Flow 4.1</title>
+<title>DRE Flow 4.5</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
@@ -207,7 +207,7 @@ td[contenteditable]:focus{background:var(--acs);box-shadow:inset 0 0 0 2px var(-
 .toc-hldot{font-size:9px;color:var(--ac);}
 
 /* EDITOR SHELL */
-.editor-shell{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.editor-shell{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
 
 /* EDITOR TOOLBAR */
 .editor-toolbar{background:var(--editor-bar);border-bottom:1px solid var(--editor-bar-bd);padding:5px 12px;display:flex;align-items:center;gap:3px;flex-wrap:wrap;flex-shrink:0;position:relative;z-index:10;}
@@ -243,12 +243,21 @@ td[contenteditable]:focus{background:var(--acs);box-shadow:inset 0 0 0 2px var(-
 .fr-close:hover{background:var(--bd);color:var(--t1);}
 
 /* EDITOR BODY */
-.editor-body{flex:1;overflow-y:auto;position:relative;}
-.chapter-heading-wrap{padding:28px 52px 0;max-width:860px;margin:0 auto;}
-.chapter-heading-input{font-size:22px;font-weight:700;letter-spacing:-0.02em;border:none;outline:none;background:transparent;color:var(--t1);width:100%;font-family:'DM Sans',sans-serif;line-height:1.3;padding:0;}
+.editor-body{flex:1;overflow-y:auto;position:relative;padding:20px;}
+.rprose{
+  font-size:15px;line-height:1.9;color:#000;background:#fff;
+  font-family:'DM Sans',sans-serif;max-width:816px;margin:0 auto 20px auto;
+  padding:96px;min-height:1056px;box-shadow:var(--s2);border:1px solid var(--bd);
+  word-break:break-word;outline:none;border-radius:4px;
+}
+body.dark .rprose {
+  background:#181C23;color:var(--t1);border-color:rgba(255,255,255,0.08);
+}
+.chapter-heading-wrap{padding:0;max-width:100%;margin:0 0 16px 0;}
+.chapter-heading-input{font-size:24px;font-weight:700;letter-spacing:-0.02em;border:none;outline:none;background:transparent;color:inherit;width:100%;font-family:'DM Sans',sans-serif;line-height:1.3;padding:0;}
 .chapter-heading-input::placeholder{color:var(--t3);}
-.chapter-meta{display:flex;gap:8px;flex-wrap:wrap;padding:10px 52px 14px;max-width:860px;margin:0 auto;border-bottom:1px solid var(--bd);}
-.rprose{font-size:15px;line-height:1.9;color:var(--t1);font-family:'DM Sans',sans-serif;max-width:760px;word-break:break-word;outline:none;padding:24px 52px 48px;min-height:300px;}
+.chapter-meta{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 24px;max-width:100%;margin:0 auto;border-bottom:1px solid var(--bd);margin-bottom:24px;}
+
 .rprose:focus-visible{outline:none;}
 .rprose p{margin-bottom:0.9em;}
 .rprose h1,.rprose h2,.rprose h3{font-weight:700;letter-spacing:-0.02em;margin:1.2em 0 0.5em;}
@@ -263,7 +272,7 @@ td[contenteditable]:focus{background:var(--acs);box-shadow:inset 0 0 0 2px var(-
 .rprose img{max-width:100%;border-radius:8px;}
 
 /* EDITOR NAV */
-.editor-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 52px;border-top:1px solid var(--bd);background:var(--surface);flex-shrink:0;max-width:860px;margin:0 auto;width:100%;}
+.editor-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--bd);background:var(--surface);flex-shrink:0;max-width:816px;margin:0 auto;width:100%;border-radius:4px;box-shadow:var(--s1);}
 
 /* Focus mode */
 body.focus-mode .rtoc,
@@ -272,8 +281,7 @@ body.focus-mode .editor-toolbar,
 body.focus-mode .wc-bar,
 body.focus-mode .topbar,
 body.focus-mode #sb{opacity:0;pointer-events:none;transition:opacity 0.4s;}
-body.focus-mode #content.read-mode{background:var(--surface);}
-body.focus-mode .rprose{max-width:680px;margin:0 auto;padding:48px 52px;}
+body.focus-mode .editor-shell{background:var(--bg);}
 body.focus-mode:hover .rtoc,
 body.focus-mode:hover .editor-toolbar,
 body.focus-mode:hover .wc-bar,
@@ -445,7 +453,7 @@ textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
     <div class="sblogo">
       <div class="lm">DF</div>
       <div>
-        <div class="sbt">DRE Flow <span class="sbver">4.1</span></div>
+        <div class="sbt">DRE Flow <span class="sbver">4.5</span></div>
         <div class="sbs">Story Intelligence</div>
       </div>
     </div>
@@ -519,7 +527,6 @@ textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
     <div style="display:flex;gap:6px;">
       <button class="btn bs" onclick="saveP()" style="flex:1;justify-content:center;font-size:12px;">Save</button>
       <button class="btn bs" onclick="loadP()" style="flex:1;justify-content:center;font-size:12px;">Load</button>
-      <button class="btn bs" onclick="exportJ()" style="flex:1;justify-content:center;font-size:12px;">Export</button>
     </div>
     <button class="btn bs" onclick="showView('settings')" style="width:100%;justify-content:center;font-size:12px;">
       <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.2" stroke="currentColor" stroke-width="1.4"/><path d="M7 1.5v1M7 11.5v1M1.5 7h1M11.5 7h1" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/></svg>
@@ -547,7 +554,6 @@ textarea.fi2{resize:vertical;min-height:70px;line-height:1.5;}
 <div id="tc"></div>
 <div id="mr"></div>
 
-<!-- Highlight floating toolbar -->
 <div id="hltb">
   <div class="htsw sel" data-c="yellow" style="background:#FFD700;" title="Yellow" onclick="pickColor('yellow',this)"></div>
   <div class="htsw" data-c="green"  style="background:#48C75A;" title="Green"  onclick="pickColor('green',this)"></div>
@@ -597,7 +603,7 @@ var HL_BG    = {yellow:'rgba(255,220,0,.52)',green:'rgba(72,199,90,.4)',
 
 // ── PROVIDERS ─────────────────────────────────────
 var PROVS = {
-  claude:   {label:'Claude',    full:'Claude (Anthropic)', color:'#D97706', ph:'sk-ant-…',  link:'console.anthropic.com',        model:'claude-3-5-sonnet-20241022'},
+  claude:   {label:'Claude',    full:'Claude (Anthropic)', color:'#D97706', ph:'sk-ant-…',      link:'console.anthropic.com',        model:'claude-3-5-sonnet-20241022'},
   openai:   {label:'ChatGPT',   full:'ChatGPT (OpenAI)',   color:'#10A37F', ph:'sk-…',      link:'platform.openai.com/api-keys', model:'gpt-4o'},
   gemini:   {label:'Gemini',    full:'Gemini (Google)',    color:'#4285F4', ph:'AIza…',     link:'aistudio.google.com/app/apikey',model:'gemini-1.5-flash'},
   deepseek: {label:'DeepSeek',  full:'DeepSeek',           color:'#6366F1', ph:'sk-…',      link:'platform.deepseek.com/api_keys',model:'deepseek-chat'},
@@ -719,6 +725,10 @@ function renderView(){
   else if (curView==='settings')   renderSettings(c);
   updateBadges();
 }
+function jumpCh(idx){
+  readIdx = idx;
+  showView('read');
+}
 
 // ── DASHBOARD ─────────────────────────────────────
 function renderDash(c){
@@ -821,7 +831,7 @@ function renderRead(c){
     ' Highlights <span class="badge" style="margin-left:3px">'+highlights.length+'</span></button>'+
     '</div>'+
     '<button class="btn bs bsm" onclick="toggleFindReplace()" title="Find &amp; Replace (Ctrl+H)">🔍 Find</button>'+
-    '<button class="btn bs bsm" onclick="exportChapter()" title="Export this chapter">⬇ Export</button>'+
+    '<button class="btn bs bsm" onclick="exportChapter()" title="Export formatted chapter">⬇ Export</button>'+
     '<button class="btn bs bsm" onclick="showView(\'compare\')">⧉ Compare</button>'+
     '<button class="btn bs bsm" onclick="showView(\'fixengine\')">⧉ Fix Engine</button>'+
     '<button class="btn bs bsm '+(edFocusMode?'ba':'')+'" onclick="toggleFocusMode()" title="Focus mode">'+
@@ -901,12 +911,14 @@ function renderRead(c){
     wcBar+
     frBar+
     '<div class="editor-body" id="editor-body">'+
-      '<div class="chapter-heading-wrap">'+
-        '<input class="chapter-heading-input" id="ch-heading" value="'+esc(cur.heading||'Chapter '+cur.chapter)+'" placeholder="Chapter title…" onchange="saveChapterHeading(this.value)" oninput="saveChapterHeading(this.value)">'+
-      '</div>'+
-      '<div class="chapter-meta">'+metaHtml+'</div>'+
-      '<div class="rprose" id="rproseEl" contenteditable="true" spellcheck="true" oninput="onProseInput()">'+
-        (cur.fullText||'')+
+      '<div class="rprose" id="rproseWrap">'+
+        '<div class="chapter-heading-wrap">'+
+          '<input class="chapter-heading-input" id="ch-heading" value="'+esc(cur.heading||'Chapter '+cur.chapter)+'" placeholder="Chapter title…" onchange="saveChapterHeading(this.value)" oninput="saveChapterHeading(this.value)">'+
+        '</div>'+
+        '<div class="chapter-meta">'+metaHtml+'</div>'+
+        '<div id="rproseEl" contenteditable="true" spellcheck="true" oninput="onProseInput()">'+
+          (cur.fullText||'')+
+        '</div>'+
       '</div>'+
       '<div class="editor-nav">'+prevBtn+counter+nextBtn+'</div>'+
     '</div>'+
@@ -1236,11 +1248,13 @@ function moveChapter(tocIdx, dir){
 function exportChapter(){
   var readable=readableEvents(), cur=readable[readIdx];
   if(!cur){ toast('No chapter','er'); return; }
-  var txt=(cur.heading||'Chapter '+cur.chapter)+'\n\n'+(cur.fullText||'').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'');
-  var blob=new Blob([txt],{type:'text/plain'});
+  var htmlData = '<html xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body>' +
+                 '<h1>'+esc(cur.heading||'Chapter '+cur.chapter)+'</h1>' + (cur.fullText||'') +
+                 '</body></html>';
+  var blob=new Blob(['\ufeff', htmlData],{type:'application/msword'});
   var url=URL.createObjectURL(blob);
-  var a=document.createElement('a'); a.href=url; a.download=(cur.heading||'chapter-'+cur.chapter)+'.txt'; a.click();
-  URL.revokeObjectURL(url); toast('Chapter exported as .txt','ok');
+  var a=document.createElement('a'); a.href=url; a.download=(cur.heading||'chapter-'+cur.chapter)+'.doc'; a.click();
+  URL.revokeObjectURL(url); toast('Chapter exported as .doc','ok');
 }
 
 // ── PROSE SAVE / AUTO-SAVE ────────────────────────
@@ -1639,7 +1653,7 @@ function renderFixEngine(c) {
    'The engine parses every fix automatically — no manual copy-paste needed',
    'Your chosen AI searches each chapter for the exact text and replaces it, preserving everything else',
    'A detailed log shows every fix applied, skipped, or flagged',
-   'Export the corrected manuscript as a clean .txt file'
+   'Export the corrected manuscript as a clean .doc file'
   ].forEach(function(s, i) {
     html += '<div class="step"><span class="stepn">' + (i+1) + '</span><span style="font-size:12px;color:var(--t2);line-height:1.6;">' + s + '</span></div>';
   });
@@ -1891,13 +1905,14 @@ async function runFixes() {
 function exportFixed(){
   var rd = readableEvents();
   if (!rd.length) { toast('Nothing to export', 'er'); return; }
-  var txt = rd.map(function(e) {
-    return (e.heading || 'CHAPTER ' + e.chapter).toUpperCase() + '\n\n' +
-      (e.fullText || '').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
-  }).join('\n\n---\n\n');
-  var blob = new Blob([txt], {type:'text/plain'});
+  var htmlData = '<html xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"></head><body>';
+  rd.forEach(function(e) {
+    htmlData += '<h1>'+esc(e.heading || 'CHAPTER ' + e.chapter)+'</h1>' + (e.fullText || '') + '<br clear="all" style="page-break-before:always" />';
+  });
+  htmlData += '</body></html>';
+  var blob = new Blob(['\ufeff', htmlData], {type:'application/msword'});
   var url = URL.createObjectURL(blob);
-  var a = document.createElement('a'); a.href=url; a.download='manuscript_fixed.txt'; a.click();
+  var a = document.createElement('a'); a.href=url; a.download='manuscript_fixed.doc'; a.click();
   URL.revokeObjectURL(url); toast('Exported', 'ok');
 }
 
@@ -1910,12 +1925,6 @@ function loadP(){
     events=d.events||[];chars=d.chars||[];locs=d.locs||[];highlights=d.highlights||[];fixLog=d.fixLog||[];fixStats=d.fixStats||{applied:0,skipped:0,errors:0};
     ensureEventIds(); renderView(); updateBadges(); toast('Loaded '+events.length+' events','ok');
   }catch(e){toast('Load failed','er');}
-}
-function exportJ(){
-  var blob=new Blob([JSON.stringify({events:events,chars:chars,locs:locs,highlights:highlights,fixLog:fixLog,fixStats:fixStats},null,2)],{type:'application/json'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download='dre-flow.json';a.click();
-  URL.revokeObjectURL(url);toast('Exported','ok');
 }
 function ensureEventIds(){
   events.forEach(function(e,i){
@@ -2411,7 +2420,10 @@ async function parseImport(rawHtml,filename){
     }else{currentBody.appendChild(node.cloneNode(true));}
   });
   if(currentBody.innerHTML.trim()||chapters.length===0) chapters.push({heading:currentHeading,body:currentBody.innerHTML});
-  if(events.length>0){if(!confirm('You have '+events.length+' existing events.\n\nOK = Replace all   Cancel = Append')){}else events=[];}
+  
+  // Clear all history/highlights/events on new load as requested
+  events=[]; chars=[]; locs=[]; highlights=[]; fixLog=[]; fixStats={applied:0,skipped:0,errors:0};
+  
   var start=events.length;
   chapters.forEach(function(ch,i){
     events.push({id:uid(),chapter:i+1,heading:ch.heading,event:'Analyzing…',characters:'',location:'',notes:ch.body.replace(/<[^>]*>?/gm,'').substring(0,400).replace(/\s+/g,' ').trim(),fullText:ch.body});
@@ -2505,10 +2517,9 @@ function renderSettings(c){
 
   html+='<div class="card"><div class="ey">Data</div><div class="ct" style="margin-bottom:4px;">Project Storage</div>';
   html+='<div style="font-size:12px;color:var(--t2);margin-bottom:16px;">Your project is stored in your browser\'s localStorage.</div>';
-  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
   html+='<button class="btn bs" onclick="saveP()" style="justify-content:center;font-size:12px;">💾 Save</button>';
   html+='<button class="btn bs" onclick="loadP()" style="justify-content:center;font-size:12px;">📂 Load</button>';
-  html+='<button class="btn bs" onclick="exportJ()" style="justify-content:center;font-size:12px;">📤 Export JSON</button>';
   html+='</div>';
   var dataSize=JSON.stringify({events,chars,locs,highlights}).length;
   html+='<div style="margin-top:12px;font-size:11px;color:var(--t3);">Project size: ~'+(dataSize/1024).toFixed(1)+' KB &nbsp;·&nbsp; '+events.length+' events &nbsp;·&nbsp; '+highlights.length+' highlights</div>';
@@ -2645,7 +2656,8 @@ async function fetchGDoc(docId,docName){
   toast('Fetching "'+docName+'"…','in');
   try{
     var resp=await fetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(docId)+'/export?mimeType=text%2Fhtml',{headers:{'Authorization':'Bearer '+_gToken}});
-    if(resp.status===401){_gToken=null;updateGDocBtn();toast('Session expired — please reconnect','er');gSignIn(function(){fetchGDoc(docId,docName);});return;}
+    if(resp.status===
+       401){_gToken=null;updateGDocBtn();toast('Session expired — please reconnect','er');gSignIn(function(){fetchGDoc(docId,docName);});return;}
     if(resp.status===403){toast('Access denied','er');return;}
     if(!resp.ok){var errText=await resp.text().catch(function(){return'Unknown error';});throw new Error('HTTP '+resp.status+': '+errText.substring(0,120));}
     var text=await resp.text();
