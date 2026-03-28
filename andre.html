@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ANDRE – Stop Overpaying for Services You Don't Need</title>
+  <title>ANDRE Method — Before You Pay a Vendor</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -24,11 +24,7 @@
       --error: #ef4444;
     }
 
-    * { 
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -38,14 +34,9 @@
       line-height: 1.6;
     }
 
-    /* Animated gradient background */
     .bg-gradient {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background:
         radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.12) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
@@ -56,36 +47,22 @@
     }
 
     @keyframes gradientShift {
-      0%, 100% { 
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-      }
-      50% { 
-        opacity: 0.9;
-        transform: scale(1.05) rotate(1deg);
-      }
+      0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.9; transform: scale(1.05) rotate(1deg); }
     }
 
-    /* Subtle grid overlay */
     .grid-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-image:
         linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 60px 60px;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0.3;
+      z-index: 1; pointer-events: none; opacity: 0.3;
     }
 
-    /* Header */
+    /* ── HEADER ── */
     header {
-      position: relative;
-      z-index: 100;
+      position: relative; z-index: 100;
       padding: 20px 40px;
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--glass-border);
@@ -93,29 +70,18 @@
     }
 
     .header-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
-    .logo-section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .logo-section { display: flex; align-items: center; gap: 16px; }
 
     .logo {
       font-family: 'Space Mono', monospace;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 4px;
+      font-size: 28px; font-weight: 700; letter-spacing: 4px;
       background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
       background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       animation: gradientFlow 6s ease infinite;
     }
 
@@ -125,48 +91,30 @@
     }
 
     .tagline {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-weight: 500;
+      font-size: 11px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500;
     }
 
-    nav {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
+    nav { display: flex; gap: 12px; align-items: center; }
 
     .nav-btn {
       padding: 10px 20px;
       border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      background: var(--glass-bg);
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
+      border-radius: 8px; background: var(--glass-bg);
+      color: var(--text-secondary); cursor: pointer;
+      font-size: 13px; font-weight: 500; letter-spacing: 0.3px;
+      transition: all 0.3s ease; text-decoration: none; display: inline-block;
     }
 
     .nav-btn:hover {
-      background: var(--accent-soft);
-      border-color: var(--accent-primary);
-      color: var(--accent-primary);
-      transform: translateY(-1px);
+      background: var(--accent-soft); border-color: var(--accent-primary);
+      color: var(--accent-primary); transform: translateY(-1px);
     }
 
     .nav-btn.primary {
       background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
-      background-size: 200% 200%;
-      border: none;
-      color: #000;
-      font-weight: 600;
-      box-shadow: 0 0 20px var(--accent-glow);
+      background-size: 200% 200%; border: none; color: #000;
+      font-weight: 600; box-shadow: 0 0 20px var(--accent-glow);
       animation: gradientFlow 6s ease infinite;
     }
 
@@ -175,225 +123,269 @@
       transform: translateY(-2px);
     }
 
-    /* Main container */
+    /* ── MAIN ── */
     .container {
-      position: relative;
-      z-index: 10;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 60px 40px;
+      position: relative; z-index: 10;
+      max-width: 1400px; margin: 0 auto; padding: 60px 40px;
     }
 
-    /* Hero Section */
+    /* ── HERO ── */
     .hero-section {
-      text-align: center;
-      margin-bottom: 80px;
+      text-align: center; margin-bottom: 80px;
       animation: fadeInUp 0.8s ease;
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 3px;
+      color: var(--accent-primary); text-transform: uppercase;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 20px; padding: 6px 16px;
+      margin-bottom: 24px;
+      background: rgba(0, 212, 255, 0.06);
     }
 
     .hero-title {
-      font-size: 56px;
-      font-weight: 700;
-      line-height: 1.2;
+      font-size: 56px; font-weight: 700; line-height: 1.2;
       margin-bottom: 24px;
       background: linear-gradient(135deg, #ffffff 0%, #00d4ff 40%, #3b82f6 70%, #8b5cf6 100%);
       background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -1px;
-      animation: gradientFlow 8s ease infinite;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      letter-spacing: -1px; animation: gradientFlow 8s ease infinite;
     }
 
     .hero-subtitle {
-      font-size: 20px;
-      color: var(--text-secondary);
-      max-width: 700px;
-      margin: 0 auto 40px;
-      font-weight: 400;
-      line-height: 1.6;
+      font-size: 20px; color: var(--text-secondary);
+      max-width: 700px; margin: 0 auto 16px;
+      font-weight: 400; line-height: 1.6;
     }
 
-    /* Chat Card - x.ai style */
+    .hero-sub2 {
+      font-size: 15px; color: var(--text-muted);
+      max-width: 600px; margin: 0 auto 40px; line-height: 1.7;
+    }
+
+    .hero-cta-group {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    }
+
+    .cta-primary {
+      padding: 16px 36px;
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%; border: none; border-radius: 10px;
+      color: #000; font-weight: 700; font-size: 15px;
+      cursor: pointer; text-decoration: none; display: inline-block;
+      box-shadow: 0 0 30px var(--accent-glow);
+      animation: gradientFlow 6s ease infinite;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .cta-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px var(--accent-glow), 0 10px 40px rgba(59, 130, 246, 0.4);
+    }
+
+    .cta-secondary {
+      padding: 16px 36px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 10px; color: var(--text-secondary);
+      font-weight: 500; font-size: 15px;
+      cursor: pointer; text-decoration: none; display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .cta-secondary:hover {
+      background: var(--accent-soft); border-color: var(--accent-primary);
+      color: var(--accent-primary); transform: translateY(-2px);
+    }
+
+    /* ── CHAT ── */
     .chat-container {
-      max-width: 900px;
-      margin: 0 auto 100px;
+      max-width: 900px; margin: 0 auto 100px;
       animation: fadeInUp 0.8s ease 0.2s backwards;
     }
 
     .chat-card {
       position: relative;
-      background: var(--glass-bg);
-      backdrop-filter: blur(40px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 0;
-      overflow: hidden;
-      box-shadow: 
+      background: var(--glass-bg); backdrop-filter: blur(40px);
+      border: 1px solid var(--glass-border); border-radius: 24px;
+      padding: 0; overflow: hidden;
+      box-shadow:
         0 0 60px rgba(0, 212, 255, 0.2),
         0 0 40px rgba(59, 130, 246, 0.15),
         0 20px 60px rgba(0, 0, 0, 0.4);
     }
 
-    /* Smoke-like ambient effect behind card */
     .chat-card::before {
       content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 150%;
-      height: 150%;
-      background: 
+      position: absolute; top: 50%; left: 50%; width: 150%; height: 150%;
+      background:
         radial-gradient(ellipse at 30% 40%, rgba(0, 212, 255, 0.3) 0%, transparent 40%),
         radial-gradient(ellipse at 70% 60%, rgba(59, 130, 246, 0.25) 0%, transparent 45%),
         radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
-      transform: translate(-50%, -50%);
-      z-index: -1;
-      filter: blur(60px);
-      animation: smoke 8s ease-in-out infinite;
-      opacity: 0.7;
+      transform: translate(-50%, -50%); z-index: -1; filter: blur(60px);
+      animation: smoke 8s ease-in-out infinite; opacity: 0.7;
     }
 
     @keyframes smoke {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
-        opacity: 0.7;
-      }
-      25% {
-        transform: translate(-48%, -52%) scale(1.1) rotate(5deg);
-        opacity: 0.85;
-      }
-      50% {
-        transform: translate(-52%, -48%) scale(1.15) rotate(-3deg);
-        opacity: 0.9;
-      }
-      75% {
-        transform: translate(-50%, -51%) scale(1.08) rotate(7deg);
-        opacity: 0.8;
-      }
+      0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.7; }
+      25% { transform: translate(-48%, -52%) scale(1.1) rotate(5deg); opacity: 0.85; }
+      50% { transform: translate(-52%, -48%) scale(1.15) rotate(-3deg); opacity: 0.9; }
+      75% { transform: translate(-50%, -51%) scale(1.08) rotate(7deg); opacity: 0.8; }
     }
 
-    /* Shimmer effect on top border */
     .chat-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 2px;
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 100%; height: 2px;
       background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
       animation: shimmer 3s linear infinite;
     }
 
-    @keyframes shimmer {
-      to { left: 100%; }
-    }
+    @keyframes shimmer { to { left: 100%; } }
 
     .chat-header {
       padding: 24px 32px;
       border-bottom: 1px solid var(--glass-border);
       background: rgba(255, 255, 255, 0.02);
+      display: flex; align-items: center; justify-content: space-between;
     }
 
-    .chat-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 4px;
+    .chat-header-left h3 {
+      font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;
     }
 
-    .chat-header p {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 400;
+    .chat-header-left p { font-size: 13px; color: var(--text-muted); font-weight: 400; }
+
+    .dre-status {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: var(--success); letter-spacing: 1px;
     }
 
+    .status-pulse {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Chat messages area */
     .chat-body {
-      padding: 32px;
-      min-height: 400px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .chat-placeholder {
-      text-align: center;
-      color: var(--text-muted);
-    }
-
-    .chat-placeholder-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      opacity: 0.3;
-    }
-
-    .chat-placeholder-text {
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .chat-input-area {
       padding: 24px 32px;
+      min-height: 380px; max-height: 480px;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-body::-webkit-scrollbar { width: 4px; }
+    .chat-body::-webkit-scrollbar-track { background: transparent; }
+    .chat-body::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 2px; }
+
+    .message {
+      display: flex; flex-direction: column; gap: 4px;
+      animation: msgIn 0.3s ease;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.dre { align-items: flex-start; }
+    .message.user { align-items: flex-end; }
+
+    .msg-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--text-muted); padding: 0 4px;
+    }
+
+    .message.dre .msg-label { color: var(--accent-primary); }
+
+    .msg-bubble {
+      max-width: 78%; padding: 14px 18px; border-radius: 14px;
+      font-size: 14px; line-height: 1.65;
+    }
+
+    .message.dre .msg-bubble {
+      background: rgba(0, 212, 255, 0.07);
+      border: 1px solid rgba(0, 212, 255, 0.18);
+      color: var(--text-primary); border-radius: 4px 14px 14px 14px;
+    }
+
+    .message.user .msg-bubble {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      color: var(--text-primary); border-radius: 14px 4px 14px 14px;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: none; align-items: center; gap: 5px; padding: 14px 18px;
+      background: rgba(0, 212, 255, 0.07);
+      border: 1px solid rgba(0, 212, 255, 0.18);
+      border-radius: 4px 14px 14px 14px;
+      width: fit-content;
+    }
+
+    .typing-indicator.visible { display: flex; }
+
+    .typing-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent-primary); opacity: 0.4;
+      animation: typingBounce 1.2s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* Input */
+    .chat-input-area {
+      padding: 20px 32px 24px;
       border-top: 1px solid var(--glass-border);
       background: rgba(255, 255, 255, 0.02);
     }
 
-    .chat-input-wrapper {
-      display: flex;
-      gap: 12px;
-      align-items: flex-end;
-    }
+    .chat-input-wrapper { display: flex; gap: 12px; align-items: flex-end; }
 
     .chat-input {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 14px 18px;
-      color: var(--text-primary);
-      font-size: 14px;
-      font-family: inherit;
-      resize: none;
-      min-height: 52px;
-      max-height: 200px;
-      transition: all 0.3s ease;
+      flex: 1; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border); border-radius: 12px;
+      padding: 14px 18px; color: var(--text-primary);
+      font-size: 14px; font-family: inherit; resize: none;
+      min-height: 52px; max-height: 200px; transition: all 0.3s ease;
     }
 
     .chat-input:focus {
-      outline: none;
-      border-color: var(--accent-primary);
+      outline: none; border-color: var(--accent-primary);
       background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
-    .chat-input::placeholder {
-      color: var(--text-muted);
-    }
+    .chat-input::placeholder { color: var(--text-muted); }
 
     .send-btn {
       padding: 14px 28px;
       background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
-      background-size: 200% 200%;
-      border: none;
-      border-radius: 12px;
-      color: #000;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      background-size: 200% 200%; border: none; border-radius: 12px;
+      color: #000; font-weight: 600; font-size: 14px;
+      cursor: pointer; transition: all 0.3s ease;
       box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
       animation: gradientFlow 6s ease infinite;
+      white-space: nowrap;
     }
 
     .send-btn:hover {
@@ -401,738 +393,825 @@
       box-shadow: 0 6px 30px rgba(0, 212, 255, 0.5), 0 3px 15px rgba(59, 130, 246, 0.3);
     }
 
-    .send-btn:active {
-      transform: translateY(0);
+    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .chat-footer-note {
+      margin-top: 10px; font-size: 11px;
+      color: var(--text-muted); text-align: center; letter-spacing: 0.3px;
     }
 
-    /* Four Pillars Section */
-    .pillars-section {
-      margin-bottom: 100px;
-      animation: fadeInUp 0.8s ease 0.4s backwards;
-    }
+    /* ── AUDIT CATEGORIES ── */
+    .pillars-section { margin-bottom: 100px; animation: fadeInUp 0.8s ease 0.4s backwards; }
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 60px;
-    }
+    .section-header { text-align: center; margin-bottom: 60px; }
 
     .section-title {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      letter-spacing: -0.5px;
+      font-size: 36px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.5px;
     }
 
-    .section-description {
-      font-size: 16px;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    .section-description { font-size: 16px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; }
 
     .pillars-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      max-width: 1200px;
-      margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; max-width: 1200px; margin: 0 auto;
     }
 
     .pillar-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 32px 28px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 16px;
+      padding: 32px 28px; transition: all 0.3s ease;
+      position: relative; overflow: hidden;
     }
 
     .pillar-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 3px;
       background: linear-gradient(90deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
       background-size: 200% 100%;
-      transform: scaleX(0);
-      transform-origin: left;
+      transform: scaleX(0); transform-origin: left;
       transition: transform 0.3s ease;
-      animation: gradientSlide 3s linear infinite;
-    }
-
-    @keyframes gradientSlide {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 200% 0%; }
     }
 
     .pillar-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent-primary);
+      transform: translateY(-4px); border-color: var(--accent-primary);
       box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2), 0 6px 20px rgba(59, 130, 246, 0.15);
     }
 
-    .pillar-card:hover::before {
-      transform: scaleX(1);
+    .pillar-card:hover::before { transform: scaleX(1); }
+
+    .pillar-icon { font-size: 32px; margin-bottom: 16px; display: block; }
+
+    .pillar-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); }
+
+    .pillar-description { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+
+    .pillar-flag {
+      font-size: 12px; color: var(--warning);
+      background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.2);
+      border-radius: 6px; padding: 8px 12px; line-height: 1.5;
+      font-style: italic;
     }
 
-    .pillar-icon {
-      font-size: 32px;
-      margin-bottom: 16px;
-      display: block;
+    /* ── METHOD SECTION ── */
+    .method-section {
+      max-width: 960px; margin: 0 auto 100px;
+      animation: fadeInUp 0.8s ease 0.5s backwards;
     }
 
-    .pillar-title {
-      font-size: 20px;
-      font-weight: 600;
+    .method-card {
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 20px; padding: 48px;
+    }
+
+    .method-header { margin-bottom: 36px; }
+
+    .method-eyebrow {
+      font-family: 'Space Mono', monospace; font-size: 10px;
+      letter-spacing: 3px; color: var(--accent-primary); text-transform: uppercase;
       margin-bottom: 12px;
-      color: var(--text-primary);
     }
 
-    .pillar-description {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.6;
+    .method-title { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+
+    .method-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 640px; }
+
+    .method-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;
+      margin-bottom: 36px;
     }
 
-    /* Trust Section */
+    .method-step {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .step-number {
+      font-family: 'Space Mono', monospace; font-size: 11px;
+      color: var(--accent-primary); letter-spacing: 2px;
+    }
+
+    .step-name { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+
+    .step-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    .method-cta {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+      padding-top: 32px; border-top: 1px solid var(--glass-border);
+    }
+
+    .method-cta-text { font-size: 15px; color: var(--text-secondary); max-width: 480px; line-height: 1.6; }
+
+    /* ── TRUST ── */
     .trust-section {
-      max-width: 800px;
-      margin: 0 auto 100px;
-      text-align: center;
-      animation: fadeInUp 0.8s ease 0.6s backwards;
+      max-width: 800px; margin: 0 auto 100px;
+      text-align: center; animation: fadeInUp 0.8s ease 0.6s backwards;
     }
 
     .trust-statement {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 40px;
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 16px; padding: 40px;
     }
 
-    .trust-title {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 24px;
-      color: var(--accent-primary);
-    }
+    .trust-title { font-size: 24px; font-weight: 600; margin-bottom: 24px; color: var(--accent-primary); }
 
-    .trust-list {
-      list-style: none;
-      margin-bottom: 24px;
-    }
+    .trust-list { list-style: none; margin-bottom: 24px; }
 
     .trust-list li {
-      font-size: 16px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-      padding-left: 28px;
-      position: relative;
-      text-align: left;
+      font-size: 16px; color: var(--text-secondary);
+      margin-bottom: 12px; padding-left: 28px;
+      position: relative; text-align: left;
     }
 
     .trust-list li::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: var(--success);
-      font-weight: bold;
-      font-size: 18px;
+      content: '✓'; position: absolute; left: 0;
+      color: var(--success); font-weight: bold; font-size: 18px;
     }
 
     .trust-footer {
-      font-size: 14px;
-      color: var(--text-muted);
-      font-style: italic;
+      font-size: 14px; color: var(--text-muted); font-style: italic;
       border-top: 1px solid var(--glass-border);
-      padding-top: 20px;
-      margin-top: 20px;
+      padding-top: 20px; margin-top: 20px;
     }
 
-    /* Research Archive Section */
-    .archive-section {
-      margin-bottom: 100px;
-      animation: fadeInUp 0.8s ease 0.8s backwards;
-    }
+    /* ── RESEARCH ARCHIVE ── */
+    .archive-section { margin-bottom: 100px; animation: fadeInUp 0.8s ease 0.8s backwards; }
 
     .tabs {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: flex; gap: 12px; margin-bottom: 32px;
+      flex-wrap: wrap; justify-content: center;
     }
 
     .tab {
-      padding: 10px 20px;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s ease;
+      padding: 10px 20px; background: var(--glass-bg);
+      border: 1px solid var(--glass-border); border-radius: 8px;
+      color: var(--text-secondary); cursor: pointer; font-size: 13px;
+      font-weight: 500; transition: all 0.3s ease;
     }
 
-    .tab:hover {
-      background: var(--accent-soft);
-      color: var(--accent-primary);
-      border-color: var(--accent-primary);
-    }
+    .tab:hover { background: var(--accent-soft); color: var(--accent-primary); border-color: var(--accent-primary); }
 
     .tab.active {
       background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
-      background-size: 200% 200%;
-      color: #000;
-      border: none;
-      font-weight: 600;
-      animation: gradientFlow 6s ease infinite;
+      background-size: 200% 200%; color: #000; border: none;
+      font-weight: 600; animation: gradientFlow 6s ease infinite;
     }
 
     .archive-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 24px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px;
     }
 
     .archive-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 24px;
-      transition: all 0.3s ease;
-      cursor: pointer;
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 12px;
+      padding: 24px; transition: all 0.3s ease; cursor: default;
     }
 
     .archive-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent-primary);
+      transform: translateY(-4px); border-color: var(--accent-primary);
       box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2), 0 6px 20px rgba(59, 130, 246, 0.1);
     }
 
     .archive-category {
-      display: inline-block;
-      padding: 4px 12px;
-      background: var(--accent-soft);
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--accent-primary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      display: inline-block; padding: 4px 12px; background: var(--accent-soft);
+      border-radius: 6px; font-size: 11px; font-weight: 600;
+      color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
     }
 
-    .archive-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: var(--text-primary);
-      line-height: 1.4;
-    }
+    .archive-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); line-height: 1.4; }
 
-    .archive-excerpt {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
+    .archive-excerpt { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
 
     .archive-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      padding-top: 12px;
-      border-top: 1px solid var(--glass-border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-muted);
+      padding-top: 12px; border-top: 1px solid var(--glass-border);
     }
 
-    .status-badge {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 11px;
-    }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+    .status-badge.debunked { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+    .status-badge.verified { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .status-badge.conditional { background: rgba(251, 191, 36, 0.1); color: var(--warning); }
+    .status-badge.replaceable { background: rgba(139, 92, 246, 0.1); color: #a78bfa; }
 
-    .status-badge.debunked {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--error);
-    }
-
-    .status-badge.verified {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-    }
-
-    .status-badge.conditional {
-      background: rgba(251, 191, 36, 0.1);
-      color: var(--warning);
-    }
-
-    /* Footer */
+    /* ── FOOTER ── */
     footer {
-      position: relative;
-      z-index: 10;
+      position: relative; z-index: 10;
       border-top: 1px solid var(--glass-border);
-      padding: 40px;
-      text-align: center;
-      background: rgba(10, 14, 39, 0.8);
-      backdrop-filter: blur(20px);
+      padding: 40px; text-align: center;
+      background: rgba(10, 14, 39, 0.8); backdrop-filter: blur(20px);
     }
 
-    .footer-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      color: var(--text-muted);
-      font-size: 14px;
+    .footer-content { max-width: 1400px; margin: 0 auto; color: var(--text-muted); font-size: 14px; }
+
+    .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+
+    .footer-link { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+    .footer-link:hover { color: var(--accent-primary); }
+
+    .footer-brand {
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      color: var(--accent-primary); letter-spacing: 2px; margin-bottom: 8px;
     }
 
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .footer-link {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .footer-link:hover {
-      color: var(--accent-primary);
-    }
-
-    /* Responsive */
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      .container {
-        padding: 40px 20px;
-      }
+      .container { padding: 40px 20px; }
+      .hero-title { font-size: 36px; }
+      .hero-subtitle { font-size: 16px; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .archive-grid { grid-template-columns: 1fr; }
+      .chat-card { border-radius: 16px; }
+      .chat-body { padding: 20px; min-height: 300px; }
+      .chat-input-area { padding: 16px 20px 20px; }
+      header { padding: 16px 20px; }
+      .header-content { flex-direction: column; gap: 16px; align-items: flex-start; }
+      nav { width: 100%; flex-wrap: wrap; }
+      .method-card { padding: 28px; }
+      .method-steps { grid-template-columns: 1fr 1fr; }
+    }
 
-      .hero-title {
-        font-size: 36px;
-      }
-
-      .hero-subtitle {
-        font-size: 16px;
-      }
-
-      .pillars-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .archive-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .chat-card {
-        border-radius: 16px;
-      }
-
-      header {
-        padding: 16px 20px;
-      }
-
-      .header-content {
-        flex-direction: column;
-        gap: 16px;
-        align-items: flex-start;
-      }
-
-      nav {
-        width: 100%;
-        flex-wrap: wrap;
-      }
+    @media (max-width: 480px) {
+      .method-steps { grid-template-columns: 1fr; }
+      .hero-cta-group { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background effects -->
   <div class="bg-gradient"></div>
   <div class="grid-overlay"></div>
 
-  <!-- Header -->
+  <!-- ── HEADER ── -->
   <header>
     <div class="header-content">
       <div class="logo-section">
         <div class="logo">ANDRE</div>
-        <div class="tagline">Stop Overpaying</div>
+        <div class="tagline">Andre Method</div>
       </div>
       <nav>
-        <a href="#research" class="nav-btn">Research</a>
         <a href="#how-it-works" class="nav-btn">How It Works</a>
+        <a href="#research" class="nav-btn">Research</a>
+        <a href="https://www.andremethod.com" class="nav-btn">The Galaxy</a>
         <a href="reprizal.html" class="nav-btn primary">Get Started</a>
       </nav>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- ── MAIN ── -->
   <div class="container">
 
-    <!-- Hero Section -->
+    <!-- HERO -->
     <section class="hero-section">
-      <h1 class="hero-title">Before you pay a vendor, we tell you what's unnecessary, overpriced, or risky.</h1>
-      <p class="hero-subtitle">We help people and businesses avoid getting overcharged, upsold, or locked into services they don't actually need.</p>
+      <div class="hero-eyebrow">Andre Method — Evaluation Portal</div>
+      <h1 class="hero-title">Before you pay a vendor,<br>we tell you what's unnecessary,<br>overpriced, or risky.</h1>
+      <p class="hero-subtitle">We help businesses and operators stop funding overhead they don't need — and redirect that budget toward work that actually moves the mission forward.</p>
+      <p class="hero-sub2">Agencies, retainers, SaaS stacks, ad spend, web contracts — most digital services are sold on fear and complexity. We cut through both. Ask DRE anything.</p>
+      <div class="hero-cta-group">
+        <a href="reprizal.html" class="cta-primary">Get Started — Book a Consult</a>
+        <a href="#how-it-works" class="cta-secondary">See How It Works</a>
+      </div>
     </section>
 
-    <!-- Chat Interface -->
+    <!-- CHAT -->
     <section class="chat-container">
       <div class="chat-card">
         <div class="chat-header">
-          <h3>Ask About Any Service or Quote</h3>
-          <p>Tell us what you're being asked to pay for — we'll help you figure out if it's worth it</p>
-        </div>
-        <div class="chat-body">
-          <div class="chat-placeholder">
-            <div class="chat-placeholder-icon">💬</div>
-            <div class="chat-placeholder-text">
-              Chat system will be integrated here.<br>
-              You'll be able to ask questions and get real-time analysis.
-            </div>
+          <div class="chat-header-left">
+            <h3>Ask DRE About Any Service, Quote, or Vendor</h3>
+            <p>Describe what you're being asked to pay for — DRE will tell you if it's worth it</p>
+          </div>
+          <div class="dre-status">
+            <div class="status-pulse"></div>
+            DRE ONLINE
           </div>
         </div>
+
+        <div class="chat-body" id="chatBody">
+          <!-- Messages injected by JS -->
+        </div>
+
         <div class="chat-input-area">
           <div class="chat-input-wrapper">
-            <textarea 
-              class="chat-input" 
-              placeholder="Tell us what you're being asked to pay for — a service, a quote, a contract, electronics, or a digital tool. You don't need to explain it perfectly. Just explain it honestly."
+            <textarea
+              id="chatInput"
+              class="chat-input"
+              placeholder="Describe a service you're paying for, a vendor quote, or a digital spend you're questioning. DRE will give you a straight read."
               rows="1"
             ></textarea>
-            <button class="send-btn">Send</button>
+            <button class="send-btn" id="sendBtn">Send</button>
           </div>
+          <div class="chat-footer-note">Powered by Andre Method · DRE v4.1 · Your data is never stored or transmitted</div>
         </div>
       </div>
     </section>
 
-    <!-- Four Pillars -->
+    <!-- AUDIT CATEGORIES -->
     <section class="pillars-section" id="how-it-works">
       <div class="section-header">
-        <h2 class="section-title">How We Help You Avoid Bad Deals</h2>
-        <p class="section-description">We analyze what you're being charged and help you make informed decisions</p>
+        <h2 class="section-title">What We Audit</h2>
+        <p class="section-description">Six categories where businesses consistently overpay, get locked in, or buy services AI can now replace.</p>
       </div>
       <div class="pillars-grid">
+
         <div class="pillar-card">
-          <span class="pillar-icon">💰</span>
-          <h3 class="pillar-title">Price Reality</h3>
-          <p class="pillar-description">We compare what you're being charged to what others are actually paying — locally and online.</p>
+          <span class="pillar-icon">🌐</span>
+          <h3 class="pillar-title">Web Design & Development</h3>
+          <p class="pillar-description">Monthly maintenance fees on static sites, five-figure quotes for basic builds, proprietary CMS lock-in, and redesigns with no measurable outcome tied to them.</p>
+          <div class="pillar-flag">"The question is whether what you're paying for is tied to an outcome — or just to keeping the lights on."</div>
         </div>
+
         <div class="pillar-card">
-          <span class="pillar-icon">✓</span>
-          <h3 class="pillar-title">Need Check</h3>
-          <p class="pillar-description">We help figure out if you really need the service or if it's just a nice-sounding add-on.</p>
+          <span class="pillar-icon">📊</span>
+          <h3 class="pillar-title">CRM & Sales Tools</h3>
+          <p class="pillar-description">Features that never get used, overlapping tools doing the same job, per-seat pricing beyond actual team usage, and no clear line between what the tool costs and what it generates.</p>
+          <div class="pillar-flag">"If you can't point to a direct revenue outcome from that tool, it's overhead — not infrastructure."</div>
         </div>
+
         <div class="pillar-card">
-          <span class="pillar-icon">🚨</span>
-          <h3 class="pillar-title">Risk Scan</h3>
-          <p class="pillar-description">We look for red flags like long contracts, auto-renewals, vague promises, and lock-ins.</p>
+          <span class="pillar-icon">📣</span>
+          <h3 class="pillar-title">Paid Ads & Media</h3>
+          <p class="pillar-description">Agencies paid a percentage of your ad spend — a model that rewards burning more of your budget. No cost-per-acquisition tracked. Ads running to landing pages that were never tested.</p>
+          <div class="pillar-flag">"Percentage-of-spend models mean your agency profits more when your budget goes up — regardless of your results."</div>
         </div>
+
         <div class="pillar-card">
-          <span class="pillar-icon">🎯</span>
-          <h3 class="pillar-title">Better Options</h3>
-          <p class="pillar-description">If something is overpriced or unnecessary, we show cheaper or simpler alternatives.</p>
+          <span class="pillar-icon">🔁</span>
+          <h3 class="pillar-title">SaaS Subscriptions</h3>
+          <p class="pillar-description">Auto-renewing tools no one actively uses, enterprise tiers for teams of three, and subscription stacks with 30–40% redundancy baked in because no one did the audit.</p>
+          <div class="pillar-flag">"Most businesses are paying for 30–40% more SaaS than they actively use."</div>
+        </div>
+
+        <div class="pillar-card">
+          <span class="pillar-icon">🖥️</span>
+          <h3 class="pillar-title">Hosting & Domains</h3>
+          <p class="pillar-description">Premium hosting for sites that serve under a thousand visitors a month. Hosting bundled into agency retainers at two to three times the commodity rate with no visibility.</p>
+          <div class="pillar-flag">"Hosting is largely a commodity. If it's bundled into an agency retainer, it's almost always marked up."</div>
+        </div>
+
+        <div class="pillar-card">
+          <span class="pillar-icon">🤖</span>
+          <h3 class="pillar-title">AI-Replaceable Services</h3>
+          <p class="pillar-description">Copywriting retainers, chatbot subscriptions, internal knowledge bases, report generation, proposal drafting, and lead qualification flows — all now buildable with a custom AI solution for a fraction of the recurring cost.</p>
+          <div class="pillar-flag">"Has anyone shown you what this looks like built with AI? The recurring cost model for this type of work has changed significantly."</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DRE METHOD -->
+    <section class="method-section">
+      <div class="method-card">
+        <div class="method-header">
+          <div class="method-eyebrow">The DRE System</div>
+          <h2 class="method-title">Diagnose. Redesign. Complete.</h2>
+          <p class="method-desc">Every consult runs through the same three-stage framework — a structured process for cutting what doesn't belong, validating what does, and building toward a single aligned outcome.</p>
+        </div>
+        <div class="method-steps">
+          <div class="method-step">
+            <div class="step-number">01 — DIAGNOSE</div>
+            <div class="step-name">Map the Spend</div>
+            <div class="step-desc">We identify every active vendor, tool, and retainer — then score each one against a single question: is this tied to a real outcome?</div>
+          </div>
+          <div class="method-step">
+            <div class="step-number">02 — REDESIGN</div>
+            <div class="step-name">Cut and Replace</div>
+            <div class="step-desc">We eliminate redundant costs, flag misaligned contracts, and identify what AI or simpler tooling can replace without losing capability.</div>
+          </div>
+          <div class="method-step">
+            <div class="step-number">03 — COMPLETE</div>
+            <div class="step-name">Build to Align</div>
+            <div class="step-desc">We deliver a clear plan — or build the replacement ourselves — so the budget freed from overhead funds work that actually moves the mission forward.</div>
+          </div>
+        </div>
+        <div class="method-cta">
+          <p class="method-cta-text">The consult is where this process starts. You walk away knowing exactly what to keep, what to cut, and what's now possible. No pitch. No obligation. Just the truth about your stack.</p>
+          <a href="reprizal.html" class="cta-primary">Book the Consult</a>
         </div>
       </div>
     </section>
 
-    <!-- Trust Statement -->
+    <!-- TRUST -->
     <section class="trust-section">
       <div class="trust-statement">
         <h2 class="trust-title">How We Stay Independent</h2>
         <ul class="trust-list">
-          <li>We don't sell products.</li>
-          <li>We don't take kickbacks.</li>
-          <li>We don't negotiate contracts.</li>
-          <li>We provide independent analysis so you can decide with clear information.</li>
+          <li>We don't sell third-party products or take vendor referral fees.</li>
+          <li>We don't benefit from recommending one tool over another.</li>
+          <li>We don't run on percentage-of-spend, retainer lock-ins, or upsell models.</li>
+          <li>We build what you need — or tell you honestly when you don't need anything built at all.</li>
+          <li>Every recommendation is filtered through one question: does this actually serve your mission?</li>
         </ul>
-        <p class="trust-footer">Our only goal is to help you avoid unnecessary costs and risky commitments.</p>
+        <p class="trust-footer">The entire Andre Method ecosystem — every tool, every consult, every conversation — is built on this principle: John 14:6. The Way, The Truth, The Life. We operate from that foundation, not from a sales script.</p>
       </div>
     </section>
 
-    <!-- Public Research & Breakdowns -->
+    <!-- RESEARCH ARCHIVE -->
     <section class="archive-section" id="research">
       <div class="section-header">
-        <h2 class="section-title">Public Research & Breakdowns</h2>
-        <p class="section-description">See how we think and learn from real examples</p>
+        <h2 class="section-title">Research & Breakdowns</h2>
+        <p class="section-description">Real audit examples and analysis from the Andre Method framework — so you can see how we think before you book a consult.</p>
       </div>
 
       <div class="tabs">
-        <button class="tab active" onclick="filterArchive('all')">All Reports</button>
-        <button class="tab" onclick="filterArchive('software')">Software & Tools</button>
-        <button class="tab" onclick="filterArchive('services')">Services</button>
-        <button class="tab" onclick="filterArchive('security')">Security</button>
-        <button class="tab" onclick="filterArchive('career')">Career</button>
+        <button class="tab active" onclick="filterArchive('all', event)">All</button>
+        <button class="tab" onclick="filterArchive('web', event)">Web & Dev</button>
+        <button class="tab" onclick="filterArchive('saas', event)">SaaS & Tools</button>
+        <button class="tab" onclick="filterArchive('ai', event)">AI-Replaceable</button>
+        <button class="tab" onclick="filterArchive('career', event)">Career</button>
+        <button class="tab" onclick="filterArchive('ads', event)">Ads & Media</button>
       </div>
 
       <div class="archive-grid">
-        <div class="archive-card" data-category="software">
-          <div class="archive-category">Software & Tools</div>
-          <h3 class="archive-title">Is Norton Antivirus Necessary in 2026?</h3>
-          <p class="archive-excerpt">
-            Built-in OS security features have evolved significantly. For most users, third-party antivirus software introduces more friction than protection.
-          </p>
+
+        <div class="archive-card" data-category="ai">
+          <div class="archive-category">AI-Replaceable</div>
+          <h3 class="archive-title">The $3K/Month Copywriting Retainer — Is It Still Justified?</h3>
+          <p class="archive-excerpt">With Claude and ChatGPT producing publication-ready copy at the cost of an API call, the traditional copywriting retainer model has fundamentally changed. We break down what's still worth paying for and what isn't.</p>
           <div class="archive-meta">
-            <span>Jan 15, 2026</span>
+            <span>Mar 2026</span>
+            <span class="status-badge replaceable">AI-Replaceable</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="web">
+          <div class="archive-category">Web & Dev</div>
+          <h3 class="archive-title">Agency Website Maintenance Fees: What You're Actually Paying For</h3>
+          <p class="archive-excerpt">Most monthly "maintenance" retainers cover less than four hours of actual work. We document what's included, what's inflated, and what you can own outright for a flat fee.</p>
+          <div class="archive-meta">
+            <span>Feb 2026</span>
             <span class="status-badge debunked">Debunked</span>
           </div>
         </div>
 
-        <div class="archive-card" data-category="services">
-          <div class="archive-category">Subscription Services</div>
-          <h3 class="archive-title">LinkedIn Premium: Value Analysis</h3>
-          <p class="archive-excerpt">
-            Comprehensive review of Premium features vs. free alternatives. 87% of premium features can be replicated through strategic profile optimization.
-          </p>
+        <div class="archive-card" data-category="saas">
+          <div class="archive-category">SaaS & Tools</div>
+          <h3 class="archive-title">LinkedIn Premium: Who It Actually Makes Sense For</h3>
+          <p class="archive-excerpt">The majority of Premium features can be replicated through strategic profile optimization and consistent outreach. We identify the two specific use cases where the upgrade genuinely earns its keep.</p>
           <div class="archive-meta">
-            <span>Jan 12, 2026</span>
+            <span>Feb 2026</span>
             <span class="status-badge conditional">Conditional</span>
           </div>
         </div>
 
-        <div class="archive-card" data-category="security">
-          <div class="archive-category">Security & Privacy</div>
-          <h3 class="archive-title">VPN Services: Personal Use Assessment</h3>
-          <p class="archive-excerpt">
-            Investigation into actual privacy gains vs. marketing claims. Most consumer VPN use cases can be addressed through free browser configurations.
-          </p>
+        <div class="archive-card" data-category="ai">
+          <div class="archive-category">AI-Replaceable</div>
+          <h3 class="archive-title">Internal Knowledge Bases: SaaS vs. Custom AI Build</h3>
+          <p class="archive-excerpt">Notion, Confluence, Guru — these tools serve a real need. But a custom AI-powered knowledge base built on your own documents now does the same job, answers natural language questions, and costs less per month than a per-seat SaaS plan.</p>
           <div class="archive-meta">
-            <span>Jan 10, 2026</span>
+            <span>Feb 2026</span>
+            <span class="status-badge replaceable">AI-Replaceable</span>
+          </div>
+        </div>
+
+        <div class="archive-card" data-category="ads">
+          <div class="archive-category">Ads & Media</div>
+          <h3 class="archive-title">Percentage-of-Spend Ad Agencies: The Built-In Conflict of Interest</h3>
+          <p class="archive-excerpt">When your agency earns more as your budget grows, their incentive is budget growth — not ROI. We map the exact misalignment and document what a properly structured performance model should look like instead.</p>
+          <div class="archive-meta">
+            <span>Jan 2026</span>
             <span class="status-badge debunked">Debunked</span>
           </div>
         </div>
 
         <div class="archive-card" data-category="career">
-          <div class="archive-category">Career Tools</div>
-          <h3 class="archive-title">Resume Writing Services Evaluation</h3>
-          <p class="archive-excerpt">
-            Analysis of 50+ resume services reveals standardized templates and recycled advice. Alternative approaches deliver better results.
-          </p>
+          <div class="archive-category">Career</div>
+          <h3 class="archive-title">Resume Writing Services: $300 for a Template You Could Build Yourself</h3>
+          <p class="archive-excerpt">We analyzed the output of 40+ resume services. The result: standardized templates, recycled language, and zero ATS optimization. The RePrizal AI Resume Builder produces a more targeted result — for free — using your own career data and any AI assistant.</p>
           <div class="archive-meta">
-            <span>Jan 8, 2026</span>
+            <span>Jan 2026</span>
             <span class="status-badge debunked">Debunked</span>
           </div>
         </div>
 
-        <div class="archive-card" data-category="software">
-          <div class="archive-category">Software & Tools</div>
-          <h3 class="archive-title">Grammarly Premium Worth Assessment</h3>
-          <p class="archive-excerpt">
-            Comparative study of free vs. premium features. Free tier covers 94% of common use cases. Premium justified only for specific professional needs.
-          </p>
+        <div class="archive-card" data-category="saas">
+          <div class="archive-category">SaaS & Tools</div>
+          <h3 class="archive-title">Cloud Storage Subscriptions: The 23% Utilization Problem</h3>
+          <p class="archive-excerpt">The average paid cloud storage subscriber actively uses less than a quarter of their storage cap. Strategic use of multiple free tiers eliminates this cost for most individuals and small teams entirely.</p>
           <div class="archive-meta">
-            <span>Jan 5, 2026</span>
-            <span class="status-badge conditional">Conditional</span>
-          </div>
-        </div>
-
-        <div class="archive-card" data-category="services">
-          <div class="archive-category">Subscription Services</div>
-          <h3 class="archive-title">Cloud Storage: Actual Need vs. Upsell</h3>
-          <p class="archive-excerpt">
-            Average user utilizes only 23% of paid cloud storage. Strategic use of multiple free tiers can eliminate most paid subscriptions.
-          </p>
-          <div class="archive-meta">
-            <span>Jan 3, 2026</span>
+            <span>Jan 2026</span>
             <span class="status-badge debunked">Debunked</span>
           </div>
         </div>
 
-        <div class="archive-card" data-category="security">
-          <div class="archive-category">Security & Privacy</div>
-          <h3 class="archive-title">Password Manager Necessity Review</h3>
-          <p class="archive-excerpt">
-            Security analysis confirms password managers are one of few genuinely necessary tools. Browser-based solutions sufficient for most users.
-          </p>
+        <div class="archive-card" data-category="web">
+          <div class="archive-category">Web & Dev</div>
+          <h3 class="archive-title">Proprietary CMS Lock-In: The Hidden Cost Nobody Quotes</h3>
+          <p class="archive-excerpt">When your agency builds your site on a platform only they control, every future change goes through them at their rate. We document what true ownership looks like in a web contract — and the questions you should ask before signing anything.</p>
           <div class="archive-meta">
-            <span>Dec 28, 2025</span>
-            <span class="status-badge verified">Verified</span>
-          </div>
-        </div>
-
-        <div class="archive-card" data-category="career">
-          <div class="archive-category">Career Tools</div>
-          <h3 class="archive-title">Professional Networking Event ROI</h3>
-          <p class="archive-excerpt">
-            Data from 200+ professionals shows paid networking events yield lower ROI than strategic cold outreach and online community engagement.
-          </p>
-          <div class="archive-meta">
-            <span>Dec 22, 2025</span>
+            <span>Dec 2025</span>
             <span class="status-badge debunked">Debunked</span>
           </div>
         </div>
+
       </div>
     </section>
 
   </div>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <footer>
     <div class="footer-content">
+      <div class="footer-brand">ANDRE METHOD</div>
       <div class="footer-links">
-        <a href="#" class="footer-link">About</a>
-        <a href="#" class="footer-link" onclick="openPrivacy(event)">Privacy</a>
-        <a href="#" class="footer-link">Terms</a>
-        <a href="#" class="footer-link">Contact</a>
+        <a href="https://www.andremethod.com" class="footer-link">The Galaxy</a>
+        <a href="#how-it-works" class="footer-link">How It Works</a>
+        <a href="#research" class="footer-link">Research</a>
+        <a href="reprizal.html" class="footer-link">Get Started</a>
+        <a href="authorpage.html" class="footer-link">Kleara Studios</a>
       </div>
-      <p>&copy; 2026 ANDRE. Independent analysis to help you avoid unnecessary costs.</p>
+      <p>&copy; 2026 Donyell Ford · Andre Method™ · All rights reserved · Built on integrity, not on a sales script.</p>
     </div>
   </footer>
 
-  <!-- Privacy Policy Modal -->
-  <div id="privacy-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);">
-    <div style="background:#0f1630; border:1px solid rgba(0,212,255,0.18); border-radius:16px; max-width:780px; width:92%; max-height:88vh; overflow-y:auto; padding:48px 44px; position:relative; box-shadow:0 0 60px rgba(0,212,255,0.12);">
-      <button onclick="closePrivacy()" style="position:sticky; top:0; float:right; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#a0aec0; border-radius:8px; padding:6px 14px; cursor:pointer; font-size:13px; transition:all 0.2s;" onmouseover="this.style.color='#00d4ff';this.style.borderColor='#00d4ff';" onmouseout="this.style.color='#a0aec0';this.style.borderColor='rgba(255,255,255,0.12)';">✕ Close</button>
-
-      <h1 style="font-family:'Space Mono',monospace; font-size:26px; font-weight:700; background:linear-gradient(135deg,#00d4ff,#3b82f6,#8b5cf6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px;">Privacy Policy</h1>
-      <p style="color:#4a5568; font-size:13px; margin-bottom:36px;">Last updated: January 1, 2026</p>
-
-      <p style="color:#a0aec0; font-size:15px; line-height:1.8; margin-bottom:28px;">RePrizal ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services. Please read this policy carefully.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">1. Information We Collect</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:10px;"><strong style="color:#e2e8f0;">Information you provide directly:</strong> When you submit a query or contact us, we may collect text you type into our interface, including descriptions of services or pricing you are evaluating.</p>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:10px;"><strong style="color:#e2e8f0;">Automatically collected information:</strong> We may automatically collect certain technical data when you visit our site, including your IP address, browser type and version, pages visited, time and date of visits, and referring URLs.</p>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:28px;"><strong style="color:#e2e8f0;">Cookies and similar technologies:</strong> We may use cookies, web beacons, and similar tracking technologies to improve your experience, analyze site traffic, and understand usage patterns. You can control cookies through your browser settings.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">2. How We Use Your Information</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:10px;">We use the information we collect to:</p>
-      <ul style="color:#a0aec0; font-size:14px; line-height:1.8; padding-left:24px; margin-bottom:28px;">
-        <li style="margin-bottom:8px;">Provide, operate, and improve our service and analysis tools</li>
-        <li style="margin-bottom:8px;">Respond to your queries and deliver independent pricing analysis</li>
-        <li style="margin-bottom:8px;">Monitor and analyze usage trends to enhance user experience</li>
-        <li style="margin-bottom:8px;">Detect, prevent, and address technical issues or abuse</li>
-        <li style="margin-bottom:8px;">Comply with applicable legal obligations</li>
-      </ul>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">3. How We Share Your Information</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:10px;">We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following limited circumstances:</p>
-      <ul style="color:#a0aec0; font-size:14px; line-height:1.8; padding-left:24px; margin-bottom:28px;">
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Service providers:</strong> Trusted third parties who assist in operating our website (e.g., hosting, analytics), under strict confidentiality agreements</li>
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Legal requirements:</strong> When required by law, court order, or governmental authority</li>
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Protection of rights:</strong> When necessary to protect the rights, property, or safety of ANDRE, our users, or others</li>
-      </ul>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">4. Data Retention</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:28px;">We retain your information only for as long as necessary to fulfill the purposes outlined in this policy, or as required by law. Query data submitted through our tool is used solely for delivering your analysis and is not stored for commercial profiling.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">5. Your Rights & Choices</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:10px;">Depending on your location, you may have the following rights regarding your personal data:</p>
-      <ul style="color:#a0aec0; font-size:14px; line-height:1.8; padding-left:24px; margin-bottom:28px;">
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Access:</strong> Request a copy of the personal data we hold about you</li>
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Correction:</strong> Request correction of inaccurate or incomplete data</li>
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Deletion:</strong> Request deletion of your personal data, subject to certain legal exceptions</li>
-        <li style="margin-bottom:8px;"><strong style="color:#e2e8f0;">Opt-out:</strong> Opt out of any non-essential communications from us at any time</li>
-      </ul>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">6. Security</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:28px;">We implement reasonable technical and organizational measures to protect your information from unauthorized access, loss, or misuse. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">7. Third-Party Links</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:28px;">Our site may contain links to third-party websites. We are not responsible for the privacy practices of those sites and encourage you to review their policies separately.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">8. Children's Privacy</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:28px;">Our services are not directed to individuals under the age of 13. We do not knowingly collect personal information from children. If you believe we have inadvertently collected such data, please contact us immediately.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">9. Changes to This Policy</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:28px;">We may update this Privacy Policy from time to time. We will notify you of any material changes by updating the "Last updated" date at the top of this page. Continued use of our service after changes take effect constitutes your acceptance of the revised policy.</p>
-
-      <div style="height:1px; background:rgba(255,255,255,0.06); margin-bottom:28px;"></div>
-
-      <h2 style="color:#00d4ff; font-size:15px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; margin-bottom:14px;">10. Contact Us</h2>
-      <p style="color:#a0aec0; font-size:14px; line-height:1.8; margin-bottom:8px;">If you have any questions or concerns about this Privacy Policy or our data practices, please contact us:</p>
-      <p style="color:#e2e8f0; font-size:14px; line-height:1.8;">ANDRE — Independent Consumer Analysis<br>
-      <span style="color:#00d4ff;">privacy@andre.ai</span></p>
-    </div>
-  </div>
-
   <script>
-    // Privacy modal
-    function openPrivacy(e) {
-      e.preventDefault();
-      const modal = document.getElementById('privacy-modal');
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-    function closePrivacy() {
-      const modal = document.getElementById('privacy-modal');
-      modal.style.display = 'none';
-      document.body.style.overflow = '';
-    }
-    document.getElementById('privacy-modal').addEventListener('click', function(e) {
-      if (e.target === this) closePrivacy();
-    });
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closePrivacy();
-    });
+    // ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
+    const DRE_SYSTEM_PROMPT = `You are DRE.
 
-    // Archive filtering
-    function filterArchive(category) {
-      const tabs = document.querySelectorAll('.tab');
-      const cards = document.querySelectorAll('.archive-card');
-      
-      tabs.forEach(tab => tab.classList.remove('active'));
-      event.target.classList.add('active');
-      
-      cards.forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
+You are not an assistant reviewing a framework. You are not here to analyze, summarize, or comment on anything. You are the digital concierge and guide for the Galaxy — the Andre Method ecosystem website at www.andremethod.com.
+
+Your two jobs:
+1. Help visitors find the right tool for their situation.
+2. Drive business visitors toward booking a consult via the Get Started button.
+
+You detect which job applies from the visitor's first message. You never announce the switch. You just do it.
+
+SECTION 2: INITIALIZATION — FIRST OUTPUT EVERY TIME
+
+Your first message in every new session is always exactly this — no variation, no theatrical opener, no deviation:
+
+"DRE loaded ✓. I'm your guide to the Galaxy. Are we looking for a specific tool like ANDRE Go, seeking strategic guidance from Kleara Studios, or do you need help with site navigation?"
+
+This string is locked. It fires first, every time, no exceptions.
+
+CRITICAL RULE: Even if the visitor types a message before you initialize — output the locked greeting first, then address their message on your next turn. Never skip it. Never rephrase it.
+
+SECTION 3: ROUTING LOGIC
+
+After the visitor responds, classify their question before answering. Every question belongs to one of two sides.
+
+ROUTE TO TOOLS SIDE when the visitor:
+- Asks about Andre Go, DRE Extractor, DRE Flow, ZIP Tool, DRE OS, ROI Calculator, or the RePrizal AI Resume Builder
+- Asks what a tool does, how it works, or how to use it
+- Mentions capturing AI conversations, extracting audio, managing sessions, or exporting data
+- Mentions resumes, job applications, ATS, career tools, or job hunting
+- Asks about pricing for any tool
+- Is a developer, researcher, content creator, student, or author with a workflow problem
+- Asks about Kleara Studios or any book in the catalog
+- Needs technical support or documentation
+
+ROUTE TO BUSINESS SIDE when the visitor:
+- Mentions paying a vendor, agency, or contractor for digital services
+- Describes a monthly retainer, SaaS subscription, or project quote
+- Asks whether something is worth paying for
+- Mentions building an app, website, or digital product and wants cost guidance
+- Uses words like overpriced, unnecessary, risky, vendor, agency, or retainer
+- Asks what Andre Method or this company can do for their business
+- Is a business owner evaluating digital spend
+
+CROSS-SIDE RULES:
+- If a visitor asks about Andre Go in a business context → answer Tools Side first, then introduce consult only if they signal broader business needs.
+- If a business-side visitor asks a tools question mid-conversation → answer it directly and completely, then return to the business conversation.
+- NEVER push the consult in response to a tools question.
+- NEVER push a tool in response to a business spend question.
+
+SECTION 4: TOOLS KNOWLEDGE
+
+TOOL 1 — ANDRE GO (v5.0)
+CORE PURPOSE: Andre Go turns temporary AI conversations into permanent memory. It captures AI conversations in real time across platforms and preserves them as structured data.
+PROBLEMS IT SOLVES:
+1. LOST CONVERSATIONS — Sessions disappear when browsers close or tabs crash.
+2. AI MEMORY LIMITS — Long conversations cause models to forget earlier context.
+3. PLATFORM LOCK-IN — AI history trapped inside individual platforms.
+4. UNSTRUCTURED CHAT HISTORY — Useful insights buried in thousands of messages.
+5. UNDOCUMENTED AI WORK — AI-generated decisions leave no clear record.
+Supported platforms: Claude, ChatGPT, Gemini, Microsoft Copilot, Poe, Perplexity, You.com, Grok, DeepSeek, plus universal fallback.
+PRICING:
+FREE — No cost, no card. All platforms captured, up to 3 saved sessions, all export formats.
+PREMIUM MONTHLY — $9.99/month. Unlimited sessions, full code block capture, Andre Cloud AI included.
+PREMIUM LIFETIME — $19.99 one-time. Unlimited sessions, BYO API key, pay once own forever.
+Always lead with free. Surface upgrades only when the visitor's need outgrows the free tier.
+
+TOOL 2 — DRE EXTRACTOR (v2.0)
+Browser-native audio extraction engine. Converts video/audio files into lossless 16-bit WAV entirely on-device. Nothing uploaded. Free.
+
+TOOL 3 — DRE FLOW — STORY INTELLIGENCE
+Manuscript analysis dashboard for authors. AI-driven chapter analysis, character thread mapping, consistency checks. Runs on visitor's own API key.
+
+TOOL 4 — DRE INTERFACE (v4.0)
+Live AI chat terminal running the full DRE system. Multiple AI providers via user API keys. File attachment support. Requires own API key.
+
+TOOL 5 — ZIP TOOL
+Browser-native file archiver. Create and extract ZIP files entirely in the browser. No uploads, no accounts. Free.
+
+TOOL 6 — DRE OS / PRIVACY DASHBOARD (v2.0)
+Scans browser and network signals, scores exposure level, provides hardening steps. All local. Free.
+
+TOOL 7 — REPRIZAL AI RESUME BUILDER (ATS Config Pro v3.0)
+7-step guided resume builder that exports a JSON AI configuration file. Any AI assistant uses that config to produce an ATS-optimized resume for a specific job posting. Free. Works with Claude, ChatGPT, Gemini, DeepSeek.
+Route here when: Visitor mentions resumes, job applications, ATS, career tools, or being rejected by ATS filters.
+
+TOOL 8 — LOAN SHARK (v1.0)
+Financial survival calculator that maps the exact sequence of payday loan payments needed to survive a pay period. Free.
+
+KLEARA STUDIOS CATALOG
+Surface books based on what the visitor is going through — not just what they're asking for.
+BOOK 1 — DEFINED: THE LEGACY by D.L. Ford — Route: visitor mentions building a legacy, seeking purpose, or starting a mission.
+BOOK 2 — DEFINED LIFE: BOOK II by D.L. Ford — Route: visitor mentions failing plans or a pivot point.
+BOOK 3 — DEFINED AFFAIR: A PRELUDE by DL Ford — Route: visitor asks about the "why" behind the Andre Method.
+BOOK 4 — HADDER: ISABELLA HADDER by Atlas Parks — Route: visitor feels exploited by vendors or trapped in schemes.
+BOOK 5 — ANDRE GO: THE ULTIMATE USER GUIDE by D.L. Ford — Route: visitor needs technical support for the browser tool.
+
+SECTION 5: BUSINESS SIDE KNOWLEDGE
+
+CORE MISSION: "Before you pay a vendor, we tell you what's unnecessary, overpriced, or risky."
+Drive every business-side exchange toward a consult. The Get Started button is the only conversion goal on this side.
+
+VENDOR AUDIT — Flag the practice, never the vendor by name. One sharp observation per exchange.
+
+WEB DESIGN & DEVELOPMENT: Flag: "The question is whether what you're paying for is tied to an outcome, or just to keeping the lights on."
+CRM & SALES TOOLS: Flag: "If you can't point to a direct revenue outcome from that tool, it's overhead — not infrastructure."
+PAID ADS: Flag: "Percentage-of-spend models mean your agency profits more when your budget goes up — regardless of your results."
+SAAS SUBSCRIPTIONS: Flag: "Most businesses are paying for 30–40% more SaaS than they actively use."
+HOSTING & DOMAINS: Flag: "Hosting is largely a commodity. If it's bundled into an agency retainer, it's almost always marked up."
+LLM-REPLACEABLE SERVICES: Flag: "Has anyone shown you what this looks like built with AI? The recurring cost model for this type of work has changed significantly."
+
+THE CONSULT PUSH — after ONE exchange where waste, misalignment, or a capability gap is identified:
+Standard push: "This is exactly what a consult is built for. We look at what you're paying, what you actually need, and what we can build instead — before you sign anything. Hit the Get Started button and let's map it out."
+If they hesitate: "There's no pitch in the consult. You walk away knowing exactly what's worth keeping, what to cut, and what's possible. That's the value before anything else."
+
+CAPABILITY GAP RULE: When a visitor asks about something digital we haven't explicitly built yet — never say "we don't do that." Say: "That's something we'd want to look at in a consult. If it's buildable — and most digital services are now — we'll tell you what it takes and what it should actually cost. Hit Get Started."
+
+GET STARTED IS THE ONLY CTA ON THE BUSINESS SIDE. Every conversation ends there.
+
+SECTION 6: SITE NAVIGATION
+
+The website is a 3D interactive galaxy built in Three.js at www.andremethod.com. Every product is a clickable node. Andre Go sits at the center.
+- Rotate: click and drag the canvas
+- Zoom: +/- buttons bottom left, scroll wheel, or pinch mobile
+- Open a tool: click any glowing sphere
+- Menu: MENU button top right — quick-access to every tool
+- Visitor lost: "Hit the MENU button in the top right — every tool has a direct launch button in there."
+
+SECTION 7: HARD RULES
+
+1. Never analyze, narrate, or explain your own process
+2. Route first, respond second — every single time
+3. Never push the consult in response to a tools question
+4. Never push a tool in response to a business spend question
+5. Never say "we can't do that" — say "that's a consult conversation"
+6. One question at a time. One recommendation at a time.
+7. No filler: no "Great question!", no "Absolutely!", no "Certainly!"
+8. Match their energy — brief if they're brief, deep if they go deep
+9. Never open with a theatrical phrase — just respond to what they said
+10. Don't announce what you're about to do — just do it
+11. If input is unclear: "Are you here to solve a specific problem, explore a tool, or look at what you're spending?"
+12. If they say "I don't know": "No problem — are you here to learn something, fix something, or find out if you're overpaying for something?"
+13. Never dump all tools at once unprompted — surface only what fits the visitor's situation`;
+
+    // ── LOCKED INITIALIZATION STRING ──────────────────────────────────────────
+    const DRE_INIT = "DRE loaded ✓. I'm your guide to the Galaxy. Are we looking for a specific tool like ANDRE Go, seeking strategic guidance from Kleara Studios, or do you need help with site navigation?";
+
+    // ── GROQ CONFIG ───────────────────────────────────────────────────────────
+    const GROQ_ENDPOINT = '/api/chat'; // Netlify function proxy — key never exposed in client
+    const GROQ_MODEL = 'llama-3.3-70b-versatile';
+
+    // ── STATE ─────────────────────────────────────────────────────────────────
+    let conversationHistory = [
+      { role: 'assistant', content: DRE_INIT }
+    ];
+    let isWaiting = false;
+
+    // ── DOM REFS ──────────────────────────────────────────────────────────────
+    const chatBody  = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn   = document.getElementById('sendBtn');
+
+    // ── RENDER HELPERS ────────────────────────────────────────────────────────
+    function renderMessage(role, text) {
+      const wrap = document.createElement('div');
+      wrap.className = `message ${role === 'assistant' ? 'dre' : 'user'}`;
+
+      const label = document.createElement('div');
+      label.className = 'msg-label';
+      label.textContent = role === 'assistant' ? 'DRE' : 'YOU';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.textContent = text;
+
+      wrap.appendChild(label);
+      wrap.appendChild(bubble);
+      chatBody.appendChild(wrap);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function showTyping() {
+      const wrap = document.createElement('div');
+      wrap.className = 'message dre';
+      wrap.id = 'typingWrap';
+
+      const label = document.createElement('div');
+      label.className = 'msg-label';
+      label.textContent = 'DRE';
+
+      const indicator = document.createElement('div');
+      indicator.className = 'typing-indicator visible';
+      indicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+      wrap.appendChild(label);
+      wrap.appendChild(indicator);
+      chatBody.appendChild(wrap);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function removeTyping() {
+      const el = document.getElementById('typingWrap');
+      if (el) el.remove();
+    }
+
+    // ── INIT — render locked greeting on load ─────────────────────────────────
+    renderMessage('assistant', DRE_INIT);
+
+    // ── SEND MESSAGE ──────────────────────────────────────────────────────────
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text || isWaiting) return;
+
+      // Render user message
+      renderMessage('user', text);
+      conversationHistory.push({ role: 'user', content: text });
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+
+      // Lock UI
+      isWaiting = true;
+      sendBtn.disabled = true;
+      showTyping();
+
+      try {
+        const response = await fetch(GROQ_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            messages: [
+              { role: 'system', content: DRE_SYSTEM_PROMPT },
+              ...conversationHistory
+            ],
+            max_tokens: 1024,
+            temperature: 0.7
+          })
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || `Server error ${response.status}`);
         }
-      });
+
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content?.trim();
+
+        if (!reply) throw new Error('Empty response from DRE.');
+
+        removeTyping();
+        renderMessage('assistant', reply);
+        conversationHistory.push({ role: 'assistant', content: reply });
+
+      } catch (err) {
+        removeTyping();
+        renderMessage('assistant', `Connection issue — ${err.message}. Please try again or hit Get Started to reach us directly.`);
+        console.error('DRE error:', err);
+      } finally {
+        isWaiting = false;
+        sendBtn.disabled = false;
+        chatInput.focus();
+      }
     }
 
-    // Auto-resize textarea
-    const textarea = document.querySelector('.chat-input');
-    textarea.addEventListener('input', function() {
+    // ── EVENT LISTENERS ───────────────────────────────────────────────────────
+    sendBtn.addEventListener('click', sendMessage);
+
+    chatInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    chatInput.addEventListener('input', function() {
       this.style.height = 'auto';
       this.style.height = Math.min(this.scrollHeight, 200) + 'px';
     });
 
-    // Send button interaction
-    const sendBtn = document.querySelector('.send-btn');
-    sendBtn.addEventListener('click', function() {
-      const input = document.querySelector('.chat-input');
-      if (input.value.trim()) {
-        // Placeholder for chat functionality
-        console.log('Message sent:', input.value);
-        input.value = '';
-        input.style.height = 'auto';
-      }
-    });
-
-    // Enter to send (Shift+Enter for new line)
-    textarea.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendBtn.click();
-      }
-    });
+    // ── ARCHIVE FILTER ────────────────────────────────────────────────────────
+    function filterArchive(category, event) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      if (event && event.target) event.target.classList.add('active');
+      document.querySelectorAll('.archive-card').forEach(card => {
+        card.style.display =
+          (category === 'all' || card.dataset.category === category) ? 'block' : 'none';
+      });
+    }
   </script>
 
 </body>
