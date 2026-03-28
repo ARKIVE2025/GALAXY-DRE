@@ -971,13 +971,14 @@ window.addEventListener('mousemove',(e)=>{
     }else{if(hoveredNode){resetNodeScale(hoveredNode);hoveredNode=null;}document.body.style.cursor='grab';tip.style.display='none';}
 });
 
-window.addEventListener('click',()=>{if(hoveredNode)openModal(hoveredNode.userData.nodeData);});
+window.addEventListener('click',(e)=>{ if(window.tutorialActive)return; if(hoveredNode)openModal(hoveredNode.userData.nodeData); });
 
 // Mobile touch tap
 let tsTime=0,tsX=0,tsY=0,tsMoved=false;
 renderer.domElement.addEventListener('touchstart',(e)=>{tsTime=Date.now();tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;tsMoved=false;},{passive:true});
 renderer.domElement.addEventListener('touchmove',(e)=>{if(Math.abs(e.touches[0].clientX-tsX)>8||Math.abs(e.touches[0].clientY-tsY)>8)tsMoved=true;},{passive:true});
 renderer.domElement.addEventListener('touchend',(e)=>{
+    if(window.tutorialActive)return;
     if(tsMoved||Date.now()-tsTime>500)return;
     const t=e.changedTouches[0];
     mouse.x=(t.clientX/window.innerWidth)*2-1;
@@ -1206,9 +1207,9 @@ window.replayTutorial=function(){
     updateTutorialUI();
 };
 
-document.getElementById('tutorialNextBtn').addEventListener('click',nextStep);
-document.getElementById('tutorialPrevBtn').addEventListener('click',prevStep);
-document.getElementById('tutorialSkipBtn').addEventListener('click',completeTutorial);
+document.getElementById('tutorialNextBtn').addEventListener('click',(e)=>{e.stopPropagation();nextStep();});
+document.getElementById('tutorialPrevBtn').addEventListener('click',(e)=>{e.stopPropagation();prevStep();});
+document.getElementById('tutorialSkipBtn').addEventListener('click',(e)=>{e.stopPropagation();completeTutorial();});
 
 // FIX #5: RAF loop only updates 3D highlights (DOM highlights don't need per-frame updates)
 function trackHighlights(){
@@ -1240,8 +1241,4 @@ window.enterGalaxy=function(){
     },{once:true});
 };
 
-window.toggleMute=function(){ music.muted=!music.muted; muteBtn.textContent=music.muted?'🔇':'🔊'; };
-window.setVolume=function(v){ music.volume=parseFloat(v); music.muted=false; muteBtn.textContent='🔊'; };
-</script>
-</body>
-</html>
+window.toggleMute=function(){ music.muted=!music.muted; muteBtn.textCon
