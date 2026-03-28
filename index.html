@@ -587,7 +587,7 @@
             <button class="portal-btn" style="background: linear-gradient(135deg, #00d4ff 0%, #005f7a 100%); color: #000; font-weight: 800; letter-spacing: 1px;" onclick="window.location.href='DRE_Interface_v4.html'">
                 OPEN DRE INTERFACE
             </button>
-            <button class="portal-btn" onclick="window.location.href='andre.html'">
+            <button class="portal-btn" onclick="window.location.href='https://brilliant-lebkuchen-b41306.netlify.app/andre.html'">
                 OPEN EVALUATION PORTAL
             </button>
             <button class="portal-btn" style="background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%); color: #fff;" onclick="window.location.href='Dre_Go_lndpage.html'">
@@ -702,7 +702,7 @@
                 public_desc: "Stop overpaying. Click here to analyze a service, quote, or contract against our independent standards.",
                 public_protocol: "Action: Open Evaluation Tool",
                 isPortal: true,
-                portalFile: "andre.html"
+                portalFile: "https://brilliant-lebkuchen-b41306.netlify.app/andre.html"
             },
 
             { 
@@ -1135,7 +1135,6 @@
                 });
 
                 // ── 7. NEBULA ATMOSPHERE / GALAXY BLEED HALO ──
-                // Outer nebula glow — deep purple, makes it feel part of the galaxy
                 const nebula1 = new THREE.Mesh(
                     new THREE.SphereGeometry(size * 5.5, 16, 16),
                     new THREE.MeshBasicMaterial({ color: 0x2a004a, transparent: true, opacity: 0.18, side: THREE.BackSide })
@@ -1177,11 +1176,9 @@
 
                 parentGroup.add(stationGroup);
 
-                // Store refs — NO rotation animation, fully static
                 scene.userData.kleara      = stationGroup;
-                scene.userData.klearaRing  = null; // no spinning ring
+                scene.userData.klearaRing  = null;
 
-                // Slight fixed tilt — looks natural, not robotic
                 stationGroup.rotation.x = 0.18;
                 stationGroup.rotation.z = 0.08;
                 
@@ -1193,7 +1190,6 @@
                 planet.position.copy(pos);
                 parentGroup.add(planet);
 
-                // Standard planet glows
                 const innerGlow = new THREE.Mesh(
                     new THREE.SphereGeometry(size * 1.2, 32, 32),
                     new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.4, side: THREE.BackSide })
@@ -1212,7 +1208,6 @@
 
                 // ── DRE Interface Planet Customization ──
                 if (n.id === 'DRE_INTERFACE') {
-                    // Deep teal base layer
                     const b1 = new THREE.Mesh(
                         new THREE.SphereGeometry(size, 64, 64),
                         new THREE.MeshBasicMaterial({ color: 0x003344 })
@@ -1220,19 +1215,16 @@
                     b1.position.copy(pos);
                     parentGroup.add(b1);
 
-                    // Equatorial band
                     const bandGeo = new THREE.TorusGeometry(size * 0.72, size * 0.28, 4, 64);
                     const band = new THREE.Mesh(bandGeo, new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.45 }));
                     band.position.copy(pos);
                     parentGroup.add(band);
 
-                    // Secondary stripe
                     const band2Geo = new THREE.TorusGeometry(size * 0.3, size * 0.18, 4, 64);
                     const band2 = new THREE.Mesh(band2Geo, new THREE.MeshBasicMaterial({ color: 0x88eeff, transparent: true, opacity: 0.3 }));
                     band2.position.copy(pos);
                     parentGroup.add(band2);
 
-                    // Inner atmosphere halo
                     const atmo = new THREE.Mesh(
                         new THREE.SphereGeometry(size * 1.35, 32, 32),
                         new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.08, side: THREE.BackSide })
@@ -1240,7 +1232,6 @@
                     atmo.position.copy(pos);
                     parentGroup.add(atmo);
 
-                    // Outer atmosphere (very faint)
                     const atmo2 = new THREE.Mesh(
                         new THREE.SphereGeometry(size * 1.7, 32, 32),
                         new THREE.MeshBasicMaterial({ color: 0x00aacc, transparent: true, opacity: 0.04, side: THREE.BackSide })
@@ -1248,7 +1239,6 @@
                     atmo2.position.copy(pos);
                     parentGroup.add(atmo2);
 
-                    // Primary orbital ring — flat disc tilted like Saturn
                     const ring = new THREE.Mesh(
                         new THREE.RingGeometry(size * 1.7, size * 2.9, 80),
                         new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
@@ -1257,7 +1247,6 @@
                     ring.position.copy(pos);
                     parentGroup.add(ring);
 
-                    // Faint outer ring band
                     const ring2 = new THREE.Mesh(
                         new THREE.RingGeometry(size * 3.0, size * 3.5, 80),
                         new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.12, side: THREE.DoubleSide })
@@ -1266,18 +1255,15 @@
                     ring2.position.copy(pos);
                     parentGroup.add(ring2);
 
-                    // Store refs for animation
                     parentGroup.userData.interfacePlanet = b1;
                     parentGroup.userData.interfaceRing   = ring;
                     parentGroup.userData.interfaceRing2  = ring2;
                 }
             }
             
-            // Assign hover data and tracking properties to whatever the click target is
             planet.userData = { nodeId: n.id, nodeData: n };
             clickableNodes.push(planet);
 
-            // Text Label
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             ctx.font = 'bold 48px Arial';
@@ -1298,7 +1284,6 @@
             sprite.position.set(n.x, n.y + (size + 3), n.z);
             parentGroup.add(sprite);
             
-            // Store properties for scaling
             if(nodeObjects.has(n.id)) {
                 nodeObjects.get(n.id).planet = planet;
                 nodeObjects.get(n.id).label = sprite;
@@ -1364,7 +1349,6 @@
 
         function scaleNode(mesh, targetSize) {
             const obj = nodeObjects.get(mesh.userData.nodeId);
-            // Kleara station handles scale via its primary parent group separately, skip resizing on hover so it stays static
             if (obj && mesh.userData.nodeId !== "KLEARA") {
                 const s = targetSize / obj.originalSize;
                 obj.planet.scale.set(s, s, s);
@@ -1416,7 +1400,7 @@
                     btn.textContent = data.portalLabel;
                 } else {
                     const labelMap = {
-                        'andre.html':                'ENTER EVALUATION PORTAL',
+                        'https://brilliant-lebkuchen-b41306.netlify.app/andre.html': 'ENTER EVALUATION PORTAL',
                         'dre-extractor-v2.html':     'OPEN DRE EXTRACTOR',
                         'dre-os-v2__1_.html':        'OPEN DRE OS',
                         'ATS_Config_Pro_v_3_0.html': 'OPEN REPRIZAL AI',
@@ -1448,7 +1432,6 @@
             const isFounder = document.getElementById('founderToggle').checked;
             document.getElementById('modeDisplay').textContent = isFounder ? "FOUNDER" : "PUBLIC";
             document.getElementById('modeDisplay').style.color = isFounder ? "#00FF41" : "#00d4ff";
-            // Show connection lines only in Founder Mode
             connectionLines.forEach(line => { line.visible = isFounder; });
         };
 
@@ -1498,12 +1481,9 @@
             mainGroup.rotation.y += CONFIG.rotationSpeed;
             starField.rotation.y += CONFIG.rotationSpeed * 0.2;
 
-            // DRE Interface planet — slow atmospheric rotation
             if (mainGroup.userData.interfacePlanet) {
                 mainGroup.userData.interfacePlanet.rotation.y += 0.002;
             }
-
-            // Kleara Studios space station — fully static, no animation
 
             controls.update();
             renderer.render(scene, camera);
