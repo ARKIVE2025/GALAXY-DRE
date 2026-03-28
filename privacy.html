@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Andre Method</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0e27;
+      --bg-mid: #151b3d;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #3b82f6;
+      --accent-tertiary: #8b5cf6;
+      --accent-glow: rgba(0, 212, 255, 0.4);
+      --accent-soft: rgba(0, 212, 255, 0.12);
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+      --text-muted: #718096;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --success: #10b981;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .bg-gradient {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 60% 60%, rgba(0, 212, 255, 0.06) 0%, transparent 40%),
+        linear-gradient(135deg, #0a0e27 0%, #151b3d 50%, #0f1a35 100%);
+      z-index: 0;
+      animation: gradientShift 20s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.9; transform: scale(1.05) rotate(1deg); }
+    }
+
+    .grid-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 1; pointer-events: none; opacity: 0.3;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative; z-index: 100;
+      padding: 20px 40px;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(10, 14, 39, 0.8);
+    }
+
+    .header-content {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .logo-section { display: flex; align-items: center; gap: 16px; }
+
+    .logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 28px; font-weight: 700; letter-spacing: 4px;
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradientFlow 6s ease infinite;
+      text-decoration: none;
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .tagline {
+      font-size: 11px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500;
+    }
+
+    nav { display: flex; gap: 12px; align-items: center; }
+
+    .nav-btn {
+      padding: 10px 20px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px; background: var(--glass-bg);
+      color: var(--text-secondary); cursor: pointer;
+      font-size: 13px; font-weight: 500; letter-spacing: 0.3px;
+      transition: all 0.3s ease; text-decoration: none; display: inline-block;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-soft); border-color: var(--accent-primary);
+      color: var(--accent-primary); transform: translateY(-1px);
+    }
+
+    .nav-btn.primary {
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%; border: none; color: #000;
+      font-weight: 600; box-shadow: 0 0 20px var(--accent-glow);
+      animation: gradientFlow 6s ease infinite;
+    }
+
+    .nav-btn.primary:hover {
+      box-shadow: 0 0 30px var(--accent-glow), 0 0 50px rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* ── MAIN ── */
+    .container {
+      position: relative; z-index: 10;
+      max-width: 860px; margin: 0 auto; padding: 70px 40px 100px;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-eyebrow {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 3px;
+      color: var(--accent-primary); text-transform: uppercase;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 20px; padding: 6px 16px;
+      margin-bottom: 24px;
+      background: rgba(0, 212, 255, 0.06);
+    }
+
+    .page-title {
+      font-size: 44px; font-weight: 700; line-height: 1.2;
+      margin-bottom: 16px; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #00d4ff 60%, #3b82f6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradientFlow 8s ease infinite;
+    }
+
+    .page-meta {
+      font-size: 13px; color: var(--text-muted);
+      font-family: 'Space Mono', monospace; letter-spacing: 0.5px;
+      margin-bottom: 52px; padding-bottom: 32px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    /* ── POLICY CARD ── */
+    .policy-card {
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 20px;
+      padding: 48px; margin-bottom: 28px;
+      position: relative; overflow: hidden;
+    }
+
+    .policy-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 100%;
+    }
+
+    .policy-section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--accent-primary); margin-bottom: 12px;
+    }
+
+    .policy-section-title {
+      font-size: 22px; font-weight: 700;
+      color: var(--text-primary); margin-bottom: 18px;
+    }
+
+    .policy-body {
+      font-size: 15px; color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .policy-body p { margin-bottom: 16px; }
+    .policy-body p:last-child { margin-bottom: 0; }
+
+    .policy-body strong { color: var(--text-primary); font-weight: 600; }
+
+    .policy-list {
+      list-style: none; margin: 16px 0;
+    }
+
+    .policy-list li {
+      font-size: 15px; color: var(--text-secondary);
+      padding: 10px 0 10px 28px; position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      line-height: 1.6;
+    }
+
+    .policy-list li:last-child { border-bottom: none; }
+
+    .policy-list li::before {
+      content: '✓'; position: absolute; left: 0;
+      color: var(--success); font-weight: bold; font-size: 16px; top: 10px;
+    }
+
+    .policy-list.no-check li::before {
+      content: '→'; color: var(--accent-primary); font-size: 14px; top: 11px;
+    }
+
+    .highlight-box {
+      background: rgba(0, 212, 255, 0.06);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 10px; padding: 20px 24px;
+      margin: 20px 0;
+      font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+    }
+
+    .highlight-box strong { color: var(--accent-primary); }
+
+    .contact-block {
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 16px;
+      padding: 32px 40px; text-align: center; margin-top: 48px;
+    }
+
+    .contact-block h3 {
+      font-size: 20px; font-weight: 700; margin-bottom: 10px;
+    }
+
+    .contact-block p {
+      font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;
+    }
+
+    .contact-link {
+      display: inline-block;
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      background-size: 200% 200%; border: none; border-radius: 8px;
+      color: #000; font-weight: 600; font-size: 14px;
+      text-decoration: none; cursor: pointer;
+      box-shadow: 0 0 20px var(--accent-glow);
+      animation: gradientFlow 6s ease infinite;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .contact-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px var(--accent-glow), 0 8px 30px rgba(59, 130, 246, 0.3);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 10;
+      border-top: 1px solid var(--glass-border);
+      padding: 40px; text-align: center;
+      background: rgba(10, 14, 39, 0.8); backdrop-filter: blur(20px);
+    }
+
+    .footer-content { max-width: 1400px; margin: 0 auto; color: var(--text-muted); font-size: 14px; }
+
+    .footer-brand {
+      font-family: 'Space Mono', monospace; font-size: 12px;
+      color: var(--accent-primary); letter-spacing: 2px; margin-bottom: 12px;
+    }
+
+    .footer-links {
+      display: flex; gap: 24px; justify-content: center;
+      margin-bottom: 12px; flex-wrap: wrap;
+    }
+
+    .footer-link { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+    .footer-link:hover { color: var(--accent-primary); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .container { padding: 40px 20px 80px; }
+      .page-title { font-size: 32px; }
+      .policy-card { padding: 28px 24px; }
+      header { padding: 16px 20px; }
+      .header-content { flex-direction: column; gap: 16px; align-items: flex-start; }
+      nav { width: 100%; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-gradient"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-content">
+      <div class="logo-section">
+        <a href="andre.html" class="logo">ANDRE</a>
+        <div class="tagline">Andre Method</div>
+      </div>
+      <nav>
+        <a href="andre.html#how-it-works" class="nav-btn">How It Works</a>
+        <a href="andre.html#research" class="nav-btn">Research</a>
+        <a href="https://www.andremethod.com" class="nav-btn">The Galaxy</a>
+        <a href="reprizal.html" class="nav-btn primary">Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <div class="container">
+
+    <div class="page-eyebrow">Legal & Privacy</div>
+    <h1 class="page-title">Privacy Policy</h1>
+    <div class="page-meta">Andre Method · Effective Date: January 1, 2026 · Last Updated: March 2026</div>
+
+    <!-- SECTION 1 -->
+    <div class="policy-card">
+      <div class="policy-section-label">01 — Overview</div>
+      <h2 class="policy-section-title">The Short Version</h2>
+      <div class="policy-body">
+        <p>Andre Method and the Galaxy-DRE ecosystem are built on a single operating principle: <strong>your data belongs to you.</strong> We do not sell it, rent it, broker it, or use it to build advertising profiles.</p>
+        <p>Most of the tools in the Galaxy ecosystem run entirely in your browser — nothing is uploaded, nothing is transmitted, nothing leaves your device unless you explicitly choose to export it.</p>
+        <div class="highlight-box">
+          <strong>The foundation:</strong> Every tool, every consult, every conversation in this ecosystem is built on integrity. That is not a marketing statement. It is the operating principle behind every decision made here — including this policy.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="policy-card">
+      <div class="policy-section-label">02 — What We Collect</div>
+      <h2 class="policy-section-title">Information We May Receive</h2>
+      <div class="policy-body">
+        <p>We collect only what is necessary to provide the service you requested. Here is exactly what that means for each part of the ecosystem:</p>
+
+        <p><strong>DRE Chat (this page)</strong></p>
+        <ul class="policy-list">
+          <li>Messages you type in the chat are sent to our secure backend proxy, which forwards them to the Groq AI API to generate a response. Your messages are not stored on our servers after the response is returned.</li>
+          <li>Your API key (if applicable) is never transmitted through this interface. All keys are stored in Netlify environment variables server-side only and are never visible in client code.</li>
+          <li>Conversation history exists only in your browser session memory. It is cleared when you close or refresh the page.</li>
+        </ul>
+
+        <p><strong>Andre Go Chrome Extension</strong></p>
+        <ul class="policy-list">
+          <li>All captured AI conversations are stored in Chrome local storage on your device only.</li>
+          <li>No session data, conversation content, or usage analytics is transmitted to Andre Method servers.</li>
+          <li>Internet connectivity is required only for AI analysis features (Premium) and payment processing.</li>
+          <li>Your API key (if using BYO key) is stored locally in your browser. It is never sent to Andre Method.</li>
+        </ul>
+
+        <p><strong>Browser-Based Tools (DRE Extractor, DRE OS, ZIP Tool, Loan Shark)</strong></p>
+        <ul class="policy-list">
+          <li>All processing runs entirely on your device. No files, data, or results are uploaded or transmitted.</li>
+          <li>No account is required. No login, no cookies tied to identity.</li>
+        </ul>
+
+        <p><strong>Consult Requests (Get Started)</strong></p>
+        <ul class="policy-list">
+          <li>When you submit a consult request, we collect your name, contact information, and the details you provide about your project or situation.</li>
+          <li>This information is used solely to respond to your inquiry and conduct the consult.</li>
+          <li>It is never sold, shared with third parties, or used for marketing without your explicit consent.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="policy-card">
+      <div class="policy-section-label">03 — What We Don't Do</div>
+      <h2 class="policy-section-title">Hard Limits — No Exceptions</h2>
+      <div class="policy-body">
+        <ul class="policy-list">
+          <li>We do not sell your data to any third party — ever.</li>
+          <li>We do not use your data to build advertising profiles or retargeting audiences.</li>
+          <li>We do not share your information with vendors, data brokers, or analytics platforms for commercial purposes.</li>
+          <li>We do not use third-party tracking pixels, behavioral analytics tools, or surveillance SDKs on this site.</li>
+          <li>We do not store your AI conversation content on our servers after it has been processed.</li>
+          <li>We do not require account creation for any of the free tools in the Galaxy ecosystem.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="policy-card">
+      <div class="policy-section-label">04 — Third-Party Services</div>
+      <h2 class="policy-section-title">Services We Use and Why</h2>
+      <div class="policy-body">
+        <p>To deliver the DRE chat experience on this page, we use the following third-party services:</p>
+
+        <p><strong>Groq (AI Inference)</strong></p>
+        <ul class="policy-list no-check">
+          <li>Your chat messages are processed by Groq's API to generate DRE's responses. Groq's privacy policy governs how they handle API request data. We do not send any personally identifying information with API requests — only the conversation text you provide.</li>
+        </ul>
+
+        <p><strong>Netlify (Hosting & Functions)</strong></p>
+        <ul class="policy-list no-check">
+          <li>This site is hosted on Netlify. Standard server logs (IP address, request type, timestamp) may be retained by Netlify in accordance with their privacy policy. We do not use these logs for profiling or marketing.</li>
+        </ul>
+
+        <p><strong>Google Fonts</strong></p>
+        <ul class="policy-list no-check">
+          <li>This page loads fonts from Google Fonts. Google may log font requests. No personal data from this site is shared with Google beyond the standard font request.</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>Note:</strong> Andre Method has no affiliate relationships with any of the services analyzed or discussed on this site. We do not receive referral fees or compensation for recommending or flagging any vendor, tool, or service. Our analysis is independent by design.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="policy-card">
+      <div class="policy-section-label">05 — Cookies</div>
+      <h2 class="policy-section-title">Cookie Usage</h2>
+      <div class="policy-body">
+        <p>This site uses <strong>no tracking cookies</strong> and <strong>no advertising cookies.</strong></p>
+        <p>The only browser storage used on this page is session-level JavaScript memory for maintaining your active DRE conversation. This is not a cookie — it exists only in the current browser tab and is cleared automatically when you navigate away or close the tab.</p>
+        <p>Chrome extension tools (Andre Go) use Chrome's local storage API on your device. This is separate from browser cookies and is not accessible to this website or any third party.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="policy-card">
+      <div class="policy-section-label">06 — Your Rights</div>
+      <h2 class="policy-section-title">What You Can Always Do</h2>
+      <div class="policy-body">
+        <ul class="policy-list">
+          <li><strong>Access:</strong> You can request a copy of any personal information we hold about you from a consult inquiry.</li>
+          <li><strong>Deletion:</strong> You can request deletion of any consult or contact information we have on file at any time.</li>
+          <li><strong>Correction:</strong> You can ask us to correct any inaccurate information associated with your inquiry.</li>
+          <li><strong>Opt-out:</strong> You can opt out of any follow-up communication from us at any time by replying to any email with "remove" or by contacting us directly.</li>
+          <li><strong>Portability:</strong> Andre Go session data is already fully portable — it lives on your device and you control when and how it is exported.</li>
+        </ul>
+        <p>To exercise any of these rights, use the contact information below. We will respond within 5 business days.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div class="policy-card">
+      <div class="policy-section-label">07 — Children</div>
+      <h2 class="policy-section-title">Age Requirement</h2>
+      <div class="policy-body">
+        <p>The Andre Method ecosystem and all tools within it are intended for users 18 years of age or older. We do not knowingly collect any information from individuals under 18. If you believe a minor has submitted personal information through our consult form, please contact us immediately and we will delete it.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 8 -->
+    <div class="policy-card">
+      <div class="policy-section-label">08 — Changes to This Policy</div>
+      <h2 class="policy-section-title">How We Handle Updates</h2>
+      <div class="policy-body">
+        <p>If we make material changes to this policy — meaning changes that affect how we collect, use, or share your information — we will update the effective date at the top of this page and, where appropriate, notify users who have provided contact information.</p>
+        <p>We will never change our core principle: <strong>your data is yours.</strong> Any updates to this policy will be consistent with that foundation.</p>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="contact-block">
+      <h3>Questions About This Policy?</h3>
+      <p>If you have questions about how your data is handled, want to exercise your rights, or believe something in this policy needs clarification — reach out directly. We read every message.</p>
+      <a href="reprizal.html" class="contact-link">Contact Andre Method</a>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">ANDRE METHOD</div>
+      <div class="footer-links">
+        <a href="https://www.andremethod.com" class="footer-link">The Galaxy</a>
+        <a href="andre.html#how-it-works" class="footer-link">How It Works</a>
+        <a href="andre.html#research" class="footer-link">Research</a>
+        <a href="reprizal.html" class="footer-link">Get Started</a>
+        <a href="authorpage.html" class="footer-link">Kleara Studios</a>
+        <a href="privacy.html" class="footer-link">Privacy</a>
+      </div>
+      <p>&copy; 2026 Donyell Ford · Andre Method™ · All rights reserved · Built on integrity, not on a sales script.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
