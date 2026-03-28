@@ -1241,4 +1241,8 @@ window.enterGalaxy=function(){
     },{once:true});
 };
 
-window.toggleMute=function(){ music.muted=!music.muted; muteBtn.textCon
+window.toggleMute=function(){ music.muted=!music.muted; muteBtn.textContent=music.muted?'🔇':'🔊'; };
+window.setVolume=function(v){ music.volume=parseFloat(v); music.muted=false; muteBtn.textContent='🔊'; };
+</script>
+</body>
+</html>
