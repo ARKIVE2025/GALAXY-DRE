@@ -650,7 +650,7 @@ select option { background:#000; }
   </div>
   <div class="chat-messages" id="chat-messages">
     <div class="chat-msg system">
-      <div class="msg-body">// I know your loan situation and can help you think through decisions, understand your plan, or figure out next steps.<br><br>// Add your API key in the Settings tab to turn me on.</div>
+      <div class="msg-body">// I know your loan situation and can help you think through decisions, understand your plan, or figure out next steps.<br><br>// Add your API key in the Settings tab to turn me on.<br><br>// Every response I give will follow: REALITY CHECK → THE LOOP → BREAK THE CYCLE.</div>
     </div>
   </div>
   <div class="typing-indicator" id="typing-indicator">● AI is thinking...</div>
@@ -739,12 +739,12 @@ select option { background:#000; }
 // STATE
 // ═══════════════════════════════════════════════
 let loans        = [];
-let extraIncomes = [];   // [{label, amount, date, type}]
+let extraIncomes = [];
 let cycleCounts  = {};
 let cycleLog     = [];
 let lastResult   = null;
 let chatHistory  = [];
-let paydayDates  = [];   // computed Date objects for cycles 1-3
+let paydayDates  = [];
 
 const DEFAULT_APPS = [
   { name:'Earnin',  owed:203.97, max:200,    fee:3.99,  reuse:'instant', pullTiming:'immediate', dueDateMode:'cycle', dueCycle:1, dueDate:'' },
@@ -758,7 +758,6 @@ const DEFAULT_APPS = [
 // DATE HELPERS
 // ═══════════════════════════════════════════════
 function parseLocalDate(str) {
-  // 'YYYY-MM-DD' → local midnight Date (avoids UTC offset shift)
   if (!str) return null;
   const [y, m, d] = str.split('-').map(Number);
   return new Date(y, m - 1, d);
@@ -826,24 +825,21 @@ function recomputePaydayDates() {
   });
 }
 
-// Which cycle (1/2/3) does a date fall into? Returns 0 if before cycle 1, 4 if after cycle 3
 function dateToCycle(dateStr) {
   if (!dateStr || !paydayDates.length) return 1;
   const d    = parseLocalDate(dateStr);
   const freq = document.getElementById('pay-freq').value;
   const days = getPayFreqDays(freq);
-  // cycle window: [payday[i], payday[i+1])
   for (let i = 0; i < paydayDates.length; i++) {
     const windowEnd = i < paydayDates.length - 1
       ? paydayDates[i + 1]
       : addDays(paydayDates[i], days);
-    if (d < paydayDates[i]) return i === 0 ? 0 : i; // before this payday
+    if (d < paydayDates[i]) return i === 0 ? 0 : i;
     if (d < windowEnd) return i + 1;
   }
-  return 4; // after all known paychecks
+  return 4;
 }
 
-// Whether a due date falls BEFORE the given payday
 function isDueBeforePayday(dateStr, cycleIndex) {
   if (!dateStr || !paydayDates.length || cycleIndex >= paydayDates.length) return false;
   const d = parseLocalDate(dateStr);
@@ -938,7 +934,6 @@ function loadData() {
   } catch(e) { console.error('Load error', e); }
 }
 
-// Migrate older loan shapes to new schema
 function migrateLoanData(rawLoans) {
   return rawLoans.map(l => {
     if (!l.dueDateMode) l.dueDateMode = 'cycle';
@@ -1006,7 +1001,6 @@ function renderLoans() {
     const card = document.createElement('div');
     card.className = 'loan-card';
 
-    // Compute a helpful due note if date mode is set
     let dueNote = '';
     if (modeIsDate && loan.dueDate && paydayDates.length) {
       const c = dateToCycle(loan.dueDate);
@@ -1142,27 +1136,22 @@ function renderExtraIncomes() {
 // SIMULATION ENGINE  (date-aware)
 // ═══════════════════════════════════════════════
 function resolveLoanDueCycle(loan) {
-  // Returns the cycle number (1, 2, 3) when this loan is due,
-  // and whether it pulls BEFORE the payday of that cycle.
   if (loan.dueDateMode === 'date' && loan.dueDate) {
     const c = dateToCycle(loan.dueDate);
-    if (c === 0) return { cycle: 1, isBefore: true };   // overdue — treat as due NOW before payday
+    if (c === 0) return { cycle: 1, isBefore: true };
     if (c > 3)   return { cycle: 3, isBefore: false };
     const isBefore = isDueBeforePayday(loan.dueDate, c - 1);
     return { cycle: c, isBefore };
   }
-  // Fallback: cycle-based mode — respect the pullTiming field
   return { cycle: loan.dueCycle || 1, isBefore: loan.pullTiming === 'before' };
 }
 
 function resolveExtraIncomeCycle(ei) {
   if (!ei.date || !paydayDates.length) return 1;
   const d = parseLocalDate(ei.date);
-  // Extra income is added to the cycle it arrives in.
-  // If it arrives before first payday it boosts pre-payday cash (cycle 0 → treat as before cycle 1).
   const freq = document.getElementById('pay-freq').value;
   const days = getPayFreqDays(freq);
-  if (d < paydayDates[0]) return 0;  // before first payday
+  if (d < paydayDates[0]) return 0;
   for (let i = 0; i < paydayDates.length; i++) {
     const windowEnd = i < paydayDates.length - 1
       ? paydayDates[i + 1]
@@ -1194,7 +1183,6 @@ function runForecast() {
   saveData();
   switchTab('simulation');
 
-  // Resolve due cycle for each loan using date-aware logic
   let debts = loans.map(l => {
     const resolved = resolveLoanDueCycle(l);
     return {
@@ -1203,12 +1191,10 @@ function runForecast() {
       paidThisCycle:   0,
       resolvedCycle:   resolved.cycle,
       resolvedBefore:  resolved.isBefore,
-      // Override pullTiming if exact date resolution says 'before'
       effectiveTiming: resolved.isBefore ? 'before' : (l.pullTiming === 'before' ? 'immediate' : l.pullTiming)
     };
   });
 
-  // Bucket extra incomes by cycle
   const extraByCycle = { 0:[], 1:[], 2:[], 3:[], 4:[] };
   extraIncomes.forEach(ei => {
     const c = resolveExtraIncomeCycle(ei);
@@ -1222,13 +1208,11 @@ function runForecast() {
 
   const line = (text, cls = 'out-ok') => logLines.push({ text, cls });
 
-  // Apply pre-cycle 1 extra income (arrives before first payday)
   extraByCycle[0].forEach(ei => {
     balance += ei.amount;
     line(`  + Pre-payday extra: ${ei.label || 'income'} +$${ei.amount.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-warn');
   });
 
-  // Sort helper
   function sortedDebts(arr) {
     if (mode === 'liquidity') {
       return [...arr].sort((a, b) =>
@@ -1250,7 +1234,7 @@ function runForecast() {
     debts.forEach(d => { d.paidThisCycle = 0; });
     let failedThisCycle = [];
 
-    // ── STEP 1: Pre-payday pulls (due before this payday) ──
+    // STEP 1: Pre-payday pulls
     const prePay = sortedDebts(debts.filter(d =>
       d.resolvedCycle === cycle &&
       d.resolvedBefore &&
@@ -1274,11 +1258,10 @@ function runForecast() {
       }
     }
 
-    // ── STEP 2: Paycheck arrives ──
+    // STEP 2: Paycheck arrives
     balance += income;
     line(`  + Paycheck ${cycle}: +$${income.toFixed(2)} → $${balance.toFixed(2)}`, 'out-ok');
 
-    // ── STEP 2b: Extra income arriving in this cycle window ──
     extraByCycle[cycle].forEach(ei => {
       if (ei.amount > 0) {
         balance += ei.amount;
@@ -1287,7 +1270,7 @@ function runForecast() {
       }
     });
 
-    // ── STEP 3: Immediate (same-day) auto-pulls ──
+    // STEP 3: Immediate auto-pulls
     const immediate = sortedDebts(debts.filter(d =>
       d.resolvedCycle === cycle &&
       !d.resolvedBefore &&
@@ -1312,14 +1295,14 @@ function runForecast() {
       }
     }
 
-    // ── STEP 4: Bills ──
+    // STEP 4: Bills
     if (bills > 0) {
       balance -= bills;
       if (balance < 0) stressTotal += 10;
       line(`  - Bills: -$${bills.toFixed(2)} → $${balance.toFixed(2)}`, balance >= 0 ? 'out-warn' : 'out-danger');
     }
 
-    // ── STEP 5: Manual payments (due this cycle) ──
+    // STEP 5: Manual payments
     const manual = sortedDebts(debts.filter(d =>
       d.resolvedCycle === cycle &&
       !d.resolvedBefore &&
@@ -1348,7 +1331,7 @@ function runForecast() {
       }
     }
 
-    // Also show overdue loans deferred from earlier cycles
+    // Deferred from earlier cycles
     const deferred = sortedDebts(debts.filter(d =>
       d.resolvedCycle < cycle &&
       d.currentOwed > 0
@@ -1369,16 +1352,14 @@ function runForecast() {
       }
     }
 
-    // ── STEP 6: Emergency re-borrow ──
-    // Only trigger if balance is negative AND there's an instant-reuse app just paid off
+    // STEP 6: Emergency re-borrow
     if (balance < 0) {
       const available = debts.filter(d =>
         d.currentOwed === 0 &&
         d.reuse === 'instant' &&
         d.max > 0 &&
-        d.max > d.fee          // net positive borrow possible
+        d.max > d.fee
       );
-      // Sort by largest net borrow available
       available.sort((a, b) => (b.max - b.fee) - (a.max - a.fee));
       for (const app of available) {
         if (balance >= 0) break;
@@ -1388,9 +1369,8 @@ function runForecast() {
         const netReceived = Math.min(need, netMax);
         const grossOwed   = netReceived + app.fee;
         balance          += netReceived;
-        // Store as a fresh debt due NEXT cycle
         app.currentOwed   = grossOwed;
-        app.resolvedCycle = cycle + 1;  // due next cycle
+        app.resolvedCycle = cycle + 1;
         app.resolvedBefore = false;
         app.effectiveTiming = 'manual';
         stressTotal      += 10;
@@ -1398,7 +1378,6 @@ function runForecast() {
       }
     }
 
-    // ── END OF CYCLE ──
     if (balance < 0) {
       stressTotal += 40;
       line(`  ☠ ENDED CYCLE ${cycle} AT -$${Math.abs(balance).toFixed(2)}. No more credit available. (+40 stress)`, 'out-danger');
@@ -1406,7 +1385,6 @@ function runForecast() {
       line(`  → Ended cycle ${cycle} with $${balance.toFixed(2)} remaining.`, 'out-dim');
     }
 
-    // Capture cycle-1 outcomes
     if (cycle === 1) {
       debts.forEach(d => {
         if (d.resolvedCycle > 1)                               loanResults[d.name] = `Not due until cycle ${d.resolvedCycle}`;
@@ -1429,12 +1407,12 @@ function runForecast() {
     }
   }
 
-  // ── RENDER OUTPUT ──
+  // RENDER OUTPUT
   const outputEl = document.getElementById('output');
   outputEl.innerHTML = logLines.map(l => `<span class="${l.cls}">${l.text}</span>`).join('\n');
   outputEl.scrollTop = outputEl.scrollHeight;
 
-  // ── STRESS METER ──
+  // STRESS METER
   const stress      = Math.min(100, Math.max(0, stressTotal));
   const stressLabel = stress > 60 ? 'HIGH STRESS' : stress > 30 ? 'SOME PRESSURE' : 'UNDER CONTROL';
   const stressColor = stress > 60 ? 'var(--red)' : stress > 30 ? 'var(--amber)' : 'var(--green)';
@@ -1444,7 +1422,7 @@ function runForecast() {
   bar.style.width      = stress + '%';
   bar.style.background = stressColor;
 
-  // ── LOAN OUTCOMES ──
+  // LOAN OUTCOMES
   document.getElementById('loan-status').innerHTML = Object.entries(loanResults).map(([name, status]) => {
     const cls = status.includes('Full') ? 'out-ok'
               : status.includes('Partial') ? 'out-warn'
@@ -1453,7 +1431,7 @@ function runForecast() {
     return `<div class="${cls}">${name} → ${status}</div>`;
   }).join('');
 
-  // ── PLAIN ENGLISH SUMMARY ──
+  // PLAIN ENGLISH SUMMARY  ← PATCHED
   renderPlainSummary(incomes, billsArr, cashOnHand, balance, stress, loanResults, loans);
 
   lastResult = {
@@ -1474,7 +1452,7 @@ function runForecast() {
 }
 
 // ═══════════════════════════════════════════════
-// PLAIN ENGLISH SUMMARY
+// PLAIN ENGLISH SUMMARY  ← PATCH 1
 // ═══════════════════════════════════════════════
 function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress, loanResults, allLoans) {
   const totalIncome    = incomes.reduce((a, b) => a + b, 0);
@@ -1486,6 +1464,28 @@ function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress,
   const missed         = Object.values(loanResults).filter(v => v.includes('Missed')).length;
   const isOk           = finalBalance >= 0;
 
+  // ── THE GAP: Cycle-1-specific reality check ──
+  const c1Income   = incomes[0];
+  const c1Bills    = billsArr[0];
+  const c1Loans    = allLoans.filter(l => (l.dueCycle || 1) === 1);
+  const c1Owed     = c1Loans.reduce((s, l) => s + l.owed, 0);
+  const c1Fees     = c1Loans.reduce((s, l) => s + l.fee, 0);
+  const gap        = c1Income + cashOnHand - c1Bills - c1Owed - c1Fees;
+  const gapIsShort = gap < 0;
+
+  let gapHtml = '';
+  if (c1Loans.length > 0) {
+    const gapColor = gapIsShort ? 'var(--red)' : 'var(--green)';
+    const gapLabel = gapIsShort
+      ? `<strong style="color:var(--red)">You are $${Math.abs(gap).toFixed(2)} short on Cycle 1 alone.</strong> Your first paycheck ($${c1Income.toFixed(2)}) + cash on hand ($${cashOnHand.toFixed(2)}) minus bills ($${c1Bills.toFixed(2)}) and loans due this cycle ($${(c1Owed + c1Fees).toFixed(2)}) leaves you at <strong style="color:var(--red)">-$${Math.abs(gap).toFixed(2)}</strong>.`
+      : `Your first paycheck ($${c1Income.toFixed(2)}) + cash on hand ($${cashOnHand.toFixed(2)}) covers Cycle 1 with <strong style="color:var(--green)">$${gap.toFixed(2)} to spare</strong>.`;
+    gapHtml = `<div style="margin:0 0 14px;padding:10px 13px;border:1px solid ${gapColor};background:${gapIsShort ? 'rgba(255,60,60,0.06)' : 'rgba(0,255,65,0.04)'}">
+      <div style="font-size:9px;letter-spacing:2px;color:${gapColor};margin-bottom:5px">▸ THE GAP — CYCLE 1 REALITY CHECK</div>
+      <div style="font-size:12px;line-height:1.85">${gapLabel}</div>
+      ${gapIsShort ? '<div style="margin-top:7px;font-size:11px;color:var(--amber)">This is the loop: borrowing to close the gap adds fees, making the next check even shorter. See WHAT TO DO to start breaking it.</div>' : ''}
+    </div>`;
+  }
+
   let html = '';
   const extraNote = totalExtraInc > 0 ? ` Plus <strong style="color:var(--amber)">$${totalExtraInc.toFixed(2)}</strong> in expected extra money.` : '';
   if (isOk) {
@@ -1495,7 +1495,8 @@ function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress,
     html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks,${extraNote} but you owe <strong style="color:var(--red)">$${totalOwed.toFixed(2)}</strong> to loan apps plus $${totalBills.toFixed(2)} in bills. <strong style="color:var(--red)">You come up $${Math.abs(finalBalance).toFixed(2)} short</strong> — some payments will be missed or deferred.`;
   }
   html += `<br><br><em style="color:var(--green-dim)">Stress level: ${stress}/100 — ${stress > 60 ? 'tough cycle. Check WHAT TO DO for help.' : stress > 30 ? 'manageable but tight.' : 'breathing room. Consider dropping one app permanently.'}</em>`;
-  document.getElementById('plain-summary').innerHTML = html;
+
+  document.getElementById('plain-summary').innerHTML = gapHtml + html;
 
   const cards = document.getElementById('summary-cards');
   cards.innerHTML = `
@@ -1518,6 +1519,11 @@ function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress,
       <div class="sc-label">TOTAL BILLS</div>
       <div class="sc-value sc-amber">$${totalBills.toFixed(0)}</div>
       <div class="sc-sub">3 paychecks</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">CYCLE 1 GAP</div>
+      <div class="sc-value ${gapIsShort ? 'sc-red' : 'sc-green'}">${gapIsShort ? '-' : '+'}$${Math.abs(gap).toFixed(0)}</div>
+      <div class="sc-sub">${gapIsShort ? 'short this check' : 'first check ok'}</div>
     </div>
     <div class="summary-card">
       <div class="sc-label">END BALANCE</div>
@@ -1558,7 +1564,6 @@ function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) 
     html += `<div class="tl-row"><div class="tl-label">Pre-Pay</div>${bar(l.owed, 'tl-debt', l.name, ds)}</div>`;
   });
 
-  // Extra incomes arriving before payday
   extraIncomes.filter(ei => resolveExtraIncomeCycle(ei) === 0).forEach(ei => {
     const ds = ei.date ? fmtDateShort(parseLocalDate(ei.date)) : '';
     html += `<div class="tl-row"><div class="tl-label">Inflow</div>${bar(ei.amount, 'tl-extra', ei.label || 'extra', ds)}</div>`;
@@ -1566,7 +1571,6 @@ function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) 
 
   html += `<div class="tl-row"><div class="tl-label">${p1date||'Payday'}</div>${bar(income, 'tl-income', 'Paycheck')}</div>`;
 
-  // Extra incomes in cycle 1
   extraIncomes.filter(ei => resolveExtraIncomeCycle(ei) === 1).forEach(ei => {
     const ds = ei.date ? fmtDateShort(parseLocalDate(ei.date)) : '';
     html += `<div class="tl-row"><div class="tl-label">Inflow</div>${bar(ei.amount, 'tl-extra', ei.label || 'extra', ds)}</div>`;
@@ -1662,7 +1666,7 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failedNam
 }
 
 // ═══════════════════════════════════════════════
-// DECISION GATE  (now includes fee + date math)
+// DECISION GATE
 // ═══════════════════════════════════════════════
 function runDecisionGate() {
   const amount   = parseFloat(document.getElementById('gate-amount').value) || 0;
@@ -1684,7 +1688,6 @@ function runDecisionGate() {
   const totalOwed  = loans.reduce((s, l) => s + l.owed, 0);
   const totalCost  = amount + fee;
 
-  // Extra income available before due date
   let extraBeforeDue = 0;
   if (paydayDates[0]) {
     extraIncomes.forEach(ei => {
@@ -2047,8 +2050,43 @@ async function sendChat() {
   if (provider === 'groq'     && model.startsWith('claude'))         model = 'llama-3.3-70b-versatile';
   if (provider === 'deepseek' && !model.startsWith('deepseek'))      model = 'deepseek-chat';
 
-  const context      = buildContextSummary();
-  const systemPrompt = `You are a financial advisor inside the Survival Engine app, which helps people stuck in payday loan app cycles (Earnin, CashApp, etc.) break free. ${tone} Here is the user's exact financial data:\n${context}\nGive specific, practical advice based on this data. Be honest and on their side.`;
+  const context = buildContextSummary();
+
+  // ── PATCH 2: Structured AI system prompt ──────────────────────────────────
+  // Compute Cycle-1 gap for the AI's reality check
+  const _c1Inc   = parseFloat(document.getElementById('income-c1').value) || 0;
+  const _c1Bil   = parseFloat(document.getElementById('bills-c1').value) || 0;
+  const _c1Cash  = parseFloat(document.getElementById('cash-on-hand').value) || 0;
+  const _c1Loans = loans.filter(l => (l.dueCycle || 1) === 1);
+  const _c1Owed  = _c1Loans.reduce((s, l) => s + l.owed + l.fee, 0);
+  const _c1Gap   = _c1Inc + _c1Cash - _c1Bil - _c1Owed;
+  const _gapNote = _c1Gap < 0
+    ? `THE GAP (Cycle 1): First paycheck $${_c1Inc.toFixed(2)} + cash $${_c1Cash.toFixed(2)} minus bills $${_c1Bil.toFixed(2)} and Cycle-1 debt+fees $${_c1Owed.toFixed(2)} = SHORTAGE of $${Math.abs(_c1Gap).toFixed(2)}. User cannot repay Cycle-1 loans without re-borrowing.`
+    : `THE GAP (Cycle 1): First paycheck covers Cycle 1 with $${_c1Gap.toFixed(2)} remaining after loans and bills.`;
+  const _simNote = lastResult
+    ? `Simulation result: 3-cycle end balance $${lastResult.balance.toFixed(2)}, stress score ${lastResult.damageScore}/100.`
+    : 'Simulation not yet run — work from the raw numbers above.';
+
+  const systemPrompt = `You are the financial advisor inside Survival Engine, an app that helps people escape payday loan app cycles (Earnin, CashApp, Klover, Genie, Grant, etc.). ${tone}
+
+Structure EVERY response with these three labeled sections. Keep each section tight and specific — never generic:
+
+REALITY CHECK
+State the user's actual numbers plainly. Lead with the Cycle-1 gap: exactly how much their first paycheck + cash on hand covers vs. what is owed right now (loans + fees due in Cycle 1 + bills). Name the specific apps and dollar amounts. Don't soften it, but don't dramatize it.
+
+THE LOOP
+In 2–3 sentences, explain exactly why this cycle keeps repeating for THIS user using their data. Show the mechanism: the check is short → they borrow to cover the gap → the fee gets added to what they owe next cycle → next check is even shorter → forced to borrow again. Reference their actual fee amounts and app names.
+
+BREAK THE CYCLE
+Give 1–3 numbered, concrete actions for THIS paycheck. Be specific: name the exact app, exact dollar amount, exact order to pay. If they can't pay everything, tell them which app to prioritize and why (e.g. "Pay Klover ($50 + $2.99 fee) first because it unlocks instant re-borrow as a safety valve"). Close with one action they can take AFTER this cycle to reduce the total amount they owe over time.
+
+User's live financial data:
+${context}
+${_gapNote}
+${_simNote}
+
+Answer the user's question using their real numbers only. Never give generic advice — always reference their specific apps, amounts, and dates.`;
+  // ── END PATCH 2 ───────────────────────────────────────────────────────────
 
   try {
     const result = await callAI(provider, key, model, systemPrompt, chatHistory, 1000);
