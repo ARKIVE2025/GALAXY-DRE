@@ -29,7 +29,6 @@ body {
   overflow-x: hidden;
 }
 
-/* scanlines */
 body::before {
   content:'';
   position:fixed;
@@ -44,7 +43,6 @@ body::before {
 }
 body { animation: flicker 10s infinite; }
 
-/* ── HEADER ── */
 .header {
   border-bottom: 2px solid var(--green);
   padding: 10px 16px;
@@ -63,7 +61,6 @@ body { animation: flicker 10s infinite; }
 #clock { color:var(--green); }
 #auto-save-status { font-size:10px; color:var(--green-dim); }
 
-/* ── TABS ── */
 .tabs {
   display:flex;
   border-bottom:1px solid var(--green-dark);
@@ -89,11 +86,9 @@ body { animation: flicker 10s infinite; }
 .tab-settings { color:var(--amber) !important; }
 .tab-settings.active { border-bottom-color:var(--amber) !important; color:var(--amber) !important; text-shadow:0 0 8px var(--amber) !important; background:rgba(255,179,0,.08) !important; }
 
-/* ── TAB CONTENT ── */
 .tab-content { display:none; }
 .tab-content.active { display:block; }
 
-/* ── GRID ── */
 .main {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -131,7 +126,6 @@ body { animation: flicker 10s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
 .dot { animation:pulse 2s infinite; }
 
-/* ── FORM ELEMENTS ── */
 label {
   display:block;
   font-size:10px;
@@ -162,8 +156,8 @@ select option { background:#000; }
 
 .field-row   { display:grid; grid-template-columns:1fr 1fr;     gap:10px; }
 .field-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;  }
+.field-row-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;  }
 
-/* ── BUTTONS ── */
 .btn {
   background:transparent;
   color:var(--green);
@@ -198,7 +192,7 @@ select option { background:#000; }
 }
 .btn-remove:hover { background:rgba(255,60,60,.15); }
 
-/* ── LOAN CARDS ── */
+/* LOAN CARDS */
 .loan-list { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
 .loan-card {
   background:var(--panel);
@@ -207,19 +201,32 @@ select option { background:#000; }
   transition:border-color .2s;
 }
 .loan-card:hover { border-color:var(--green-dim); }
-.loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.loan-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px; }
 .loan-name { font-size:15px; font-family:'VT323',monospace; letter-spacing:2px; }
 .reuse-badge { font-size:9px; padding:2px 7px; border:1px solid; letter-spacing:1px; }
 .reuse-instant { border-color:var(--green); color:var(--green); }
 .reuse-delayed { border-color:var(--amber); color:var(--amber); }
-.loan-fields { display:grid; grid-template-columns:1.2fr 1fr 1fr 0.8fr auto; gap:6px; align-items:end; }
+.loan-fields-top { display:grid; grid-template-columns:1.2fr 1fr 1fr 0.8fr auto; gap:6px; align-items:end; }
+.loan-fields-date { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; align-items:end; margin-top:8px; border-top:1px dashed var(--green-dark); padding-top:8px; }
 .loan-card label { margin-bottom:2px; }
 .loan-card input, .loan-card select { margin-bottom:0; padding:5px 7px; font-size:12px; }
 .loan-options { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
 .loan-options select { flex:1; min-width:110px; margin:0; padding:4px 6px; font-size:10px; }
 .loan-options select:nth-child(2) { border-color:var(--amber); }
+.due-date-highlight { border-color:var(--amber) !important; }
 
-/* ── TERMINAL OUTPUT ── */
+/* EXPECTED INCOME */
+.income-entry-list { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+.income-entry-card {
+  background:var(--panel);
+  border:1px solid var(--green-dark);
+  padding:8px 10px;
+}
+.income-entry-fields { display:grid; grid-template-columns:1.5fr 1fr 1fr auto; gap:6px; align-items:end; }
+.income-entry-fields input, .income-entry-fields select { margin-bottom:0; padding:5px 7px; font-size:12px; }
+.income-entry-fields label { margin-bottom:2px; }
+
+/* TERMINAL OUTPUT */
 .terminal-output {
   background:#000;
   border:1px solid var(--green-dark);
@@ -243,7 +250,7 @@ select option { background:#000; }
 .out-dim    { color:var(--green-dim); }
 .out-cycle  { color:var(--amber); font-family:'VT323',monospace; font-size:15px; letter-spacing:2px; border-top:1px dashed var(--amber); margin-top:12px; padding-top:6px; display:block; }
 
-/* ── SUMMARY CARDS ── */
+/* SUMMARY CARDS */
 .summary-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
@@ -264,26 +271,13 @@ select option { background:#000; }
 .sc-red    { color:var(--red); }
 .sc-blue   { color:var(--blue); }
 
-.result-box {
-  border:1px solid var(--green-dark);
-  padding:12px;
-  margin-bottom:10px;
-  background:#000;
-  font-size:12px;
-  line-height:1.8;
-}
-.result-box.ok     { border-color:var(--green); }
-.result-box.warn   { border-color:var(--amber); }
-.result-box.danger { border-color:var(--red); }
-.result-box .rb-title { font-family:'VT323',monospace; font-size:16px; letter-spacing:2px; margin-bottom:6px; }
-
-/* ── STRESS METER ── */
+/* STRESS METER */
 .meter-wrap { border:1px solid var(--green-dark); padding:10px; margin:10px 0; }
 .meter-label { display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; }
 .meter-track { height:10px; background:#001a05; border:1px solid var(--green-dark); overflow:hidden; }
 .meter-fill { height:100%; transition:width .6s ease, background .6s; box-shadow:0 0 6px currentColor; }
 
-/* ── TIMELINE ── */
+/* TIMELINE */
 .timeline { font-size:11px; margin:8px 0; }
 .tl-row { display:grid; grid-template-columns:70px 1fr; gap:6px; margin-bottom:3px; align-items:center; }
 .tl-label { color:var(--green-dim); font-size:10px; }
@@ -292,8 +286,10 @@ select option { background:#000; }
 .tl-income { background:rgba(0,255,65,.22); color:var(--green); }
 .tl-debt   { background:rgba(255,60,60,.18); color:var(--red); }
 .tl-borrow { background:rgba(0,204,255,.18); color:var(--blue); }
+.tl-extra  { background:rgba(255,179,0,.18); color:var(--amber); }
+.tl-date-label { font-size:9px; color:var(--green-dim); margin-left:4px; }
 
-/* ── STRATEGY CARDS ── */
+/* STRATEGY CARDS */
 .strategy-cards { display:flex; flex-direction:column; gap:8px; }
 .strategy-card { border:1px solid var(--green-dark); padding:12px; background:var(--panel); }
 .s-title { font-family:'VT323',monospace; font-size:17px; letter-spacing:2px; margin-bottom:5px; }
@@ -303,7 +299,7 @@ select option { background:#000; }
 .s-danger { color:var(--red); }
 .s-blue   { color:var(--blue); }
 
-/* ── CYCLE TRACKER ── */
+/* CYCLE TRACKER */
 .cycle-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:8px; margin-bottom:12px; }
 .cycle-item { border:1px solid var(--green-dark); padding:8px; text-align:center; background:var(--panel); }
 .cycle-count { font-family:'VT323',monospace; font-size:30px; line-height:1; margin:3px 0; }
@@ -311,7 +307,7 @@ select option { background:#000; }
 .cycle-warn   { color:var(--amber); }
 .cycle-danger { color:var(--red); }
 
-/* ── EXPORT ── */
+/* EXPORT */
 .export-bar { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
 .btn-export {
   background:transparent; color:var(--amber); border:1px solid var(--amber);
@@ -323,7 +319,11 @@ select option { background:#000; }
 .export-confirm { font-size:10px; color:var(--green); margin-top:5px; display:none; }
 .export-confirm.show { display:block; }
 
-/* ── CHAT ── */
+/* DATE LEGEND */
+.date-legend { font-size:10px; color:var(--green-dim); margin:6px 0 10px; padding:6px 8px; border:1px solid var(--green-dark); line-height:1.7; }
+.date-legend span { color:var(--amber); }
+
+/* CHAT */
 .chat-wrap { display:flex; flex-direction:column; height:calc(100vh - 115px); max-width:900px; margin:0 auto; padding:14px; }
 .chat-context-bar { background:var(--panel); border:1px solid var(--green-dark); padding:7px 12px; font-size:10px; color:var(--green-dim); margin-bottom:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .ctx-pill { background:var(--green-dark); color:var(--green); padding:2px 7px; font-size:9px; letter-spacing:1px; }
@@ -348,7 +348,7 @@ select option { background:#000; }
 .typing-indicator.visible { display:block; animation:blink 1s infinite; }
 @keyframes blink { 0%,100%{opacity:.7} 50%{opacity:.2} }
 
-/* ── SETTINGS ── */
+/* SETTINGS */
 .settings-wrap { max-width:700px; margin:0 auto; padding:20px 16px; }
 .settings-section { border:1px solid var(--green-dark); background:var(--panel); padding:18px; margin-bottom:16px; }
 .settings-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -364,7 +364,7 @@ select option { background:#000; }
 .api-status.info  { color:var(--amber); }
 .data-preview { background:#000; border:1px solid var(--green-dark); padding:10px; font-size:10px; color:var(--green-dim); white-space:pre-wrap; max-height:180px; overflow-y:auto; margin-top:6px; }
 
-/* ── SPLASH ── */
+/* SPLASH */
 #splash {
   position:fixed; inset:0; background:#000; z-index:9000;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -378,12 +378,13 @@ select option { background:#000; }
 .splash-fill { height:100%; background:var(--green); box-shadow:0 0 8px var(--green); animation:loadBar 2.2s ease forwards; }
 @keyframes loadBar { from{width:0} to{width:100%} }
 
-/* ── FOOTER ── */
 .footer { border-top:1px solid var(--green-dark); padding:12px 16px; text-align:center; background:var(--panel); font-size:11px; color:var(--green-dim); letter-spacing:2px; }
 .footer a { color:var(--green); text-decoration:none; text-shadow:0 0 8px var(--green); }
 
 @media(max-width:600px){
-  .loan-fields { grid-template-columns:1fr 1fr; }
+  .loan-fields-top { grid-template-columns:1fr 1fr; }
+  .loan-fields-date { grid-template-columns:1fr 1fr; }
+  .income-entry-fields { grid-template-columns:1fr 1fr; }
   .logo { font-size:18px; }
   .splash-logo { font-size:38px; }
   .summary-grid { grid-template-columns:1fr 1fr; }
@@ -392,16 +393,14 @@ select option { background:#000; }
 </head>
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="splash-logo">SURVIVAL ENGINE</div>
   <div class="splash-sub">YOUR PAYCHECK SIMULATOR</div>
   <div class="splash-bar"><div class="splash-fill"></div></div>
 </div>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="logo">SURVIVAL<span>ENGINE</span> <sup>BETA</sup></div>
+  <div class="logo">SURVIVAL<span>ENGINE</span> <sup>BETA v2</sup></div>
   <div class="header-right">
     <div id="auto-save-status">✓ Autosaved</div>
     <div id="clock">--:--:--</div>
@@ -409,30 +408,45 @@ select option { background:#000; }
   </div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
-  <button type="button" class="tab active"      onclick="switchTab('setup')">[ MY INFO ]</button>
-  <button type="button" class="tab"             onclick="switchTab('simulation')">[ MY PLAN ]</button>
-  <button type="button" class="tab"             onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
-  <button type="button" class="tab"             onclick="switchTab('tracker')">[ MY HISTORY ]</button>
-  <button type="button" class="tab tab-chat"    onclick="switchTab('chat')">[ ASK AI ]</button>
+  <button type="button" class="tab active"       onclick="switchTab('setup')">[ MY INFO ]</button>
+  <button type="button" class="tab"              onclick="switchTab('simulation')">[ MY PLAN ]</button>
+  <button type="button" class="tab"              onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
+  <button type="button" class="tab"              onclick="switchTab('tracker')">[ MY HISTORY ]</button>
+  <button type="button" class="tab tab-chat"     onclick="switchTab('chat')">[ ASK AI ]</button>
   <button type="button" class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS ]</button>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB: MY INFO (SETUP)
-══════════════════════════════════════════════ -->
+<!-- ══ TAB: MY INFO ══ -->
 <div id="tab-setup" class="tab-content active">
 <div class="main">
 
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> YOUR INCOME &amp; BILLS</div>
 
-    <label>Your Paychecks ($) — enter the same amount if it doesn't change</label>
+    <div class="field-row">
+      <div>
+        <label>First Payday Date</label>
+        <input type="date" id="payday" onchange="recomputePaydayDates(); saveData()">
+      </div>
+      <div>
+        <label>Pay Frequency</label>
+        <select id="pay-freq" onchange="recomputePaydayDates(); saveData()">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly" selected>Every 2 Weeks</option>
+          <option value="semimonthly">Twice a Month</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="date-legend" id="payday-legend">Set your first payday above to see your next 3 paycheck dates.</div>
+
+    <label>Your Paychecks ($) — enter same amount if it doesn't change</label>
     <div class="field-row-3">
-      <div><label>Paycheck 1</label><input type="number" id="income-c1" value="310" step="0.01" min="0" onchange="saveData()"></div>
-      <div><label>Paycheck 2</label><input type="number" id="income-c2" value="310" step="0.01" min="0" onchange="saveData()"></div>
-      <div><label>Paycheck 3</label><input type="number" id="income-c3" value="310" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label id="p1-label">Paycheck 1</label><input type="number" id="income-c1" value="310" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label id="p2-label">Paycheck 2</label><input type="number" id="income-c2" value="310" step="0.01" min="0" onchange="saveData()"></div>
+      <div><label id="p3-label">Paycheck 3</label><input type="number" id="income-c3" value="310" step="0.01" min="0" onchange="saveData()"></div>
     </div>
 
     <label>Total Bills ($) — rent, phone, utilities, etc. per paycheck</label>
@@ -442,30 +456,19 @@ select option { background:#000; }
       <div><label>Bills — Paycheck 3</label><input type="number" id="bills-c3" value="0" step="0.01" min="0" onchange="saveData()"></div>
     </div>
 
-    <div class="field-row">
-      <div>
-        <label>Next Payday Date</label>
-        <input type="date" id="payday" onchange="saveData()">
-      </div>
-      <div>
-        <label>Pay Frequency</label>
-        <select id="pay-freq" onchange="saveData()">
-          <option value="weekly">Weekly</option>
-          <option value="biweekly" selected>Every 2 Weeks</option>
-          <option value="semimonthly">Twice a Month</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
-    </div>
-
     <label>Cash on hand right now ($)</label>
     <input type="number" id="cash-on-hand" value="0" step="0.01" min="0" onchange="saveData()">
 
-    <div class="panel-title" style="margin-top:14px"><div class="dot"></div> YOUR GOAL</div>
+    <div class="panel-title" style="margin-top:14px"><div class="dot"></div> EXTRA MONEY EXPECTED</div>
+    <div style="font-size:10px;color:var(--green-dim);margin-bottom:10px;line-height:1.6">
+      Gig work, Zelle from family, tax refund, etc. — anything you expect to receive on a specific date.
+    </div>
+    <div class="income-entry-list" id="extra-income-list"></div>
+    <button type="button" class="btn btn-secondary" onclick="addExtraIncome()">+ ADD EXPECTED MONEY</button>
 
+    <div class="panel-title" style="margin-top:14px"><div class="dot"></div> YOUR GOAL</div>
     <label>How many months until you want to be free of loan apps? (0 = skip)</label>
     <input type="number" id="exit-months" value="0" min="0" onchange="saveData()">
-
     <label>How should the plan prioritize payments?</label>
     <select id="priority-mode" onchange="saveData()">
       <option value="liquidity">Keep cash flowing — pay apps I can re-borrow from first</option>
@@ -476,6 +479,9 @@ select option { background:#000; }
 
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> YOUR LOAN APPS</div>
+    <div style="font-size:10px;color:var(--green-dim);margin-bottom:10px;line-height:1.6">
+      Set the exact due date for each loan. If you don't know the exact date, use the cycle selector — but exact dates give better results.
+    </div>
     <div class="loan-list" id="loan-list"></div>
     <button type="button" class="btn btn-secondary" onclick="addLoan()">+ ADD ANOTHER APP</button>
     <button type="button" class="btn btn-secondary" onclick="loadPreset()">⟳ LOAD EXAMPLE DATA</button>
@@ -483,18 +489,14 @@ select option { background:#000; }
 
   <div class="panel full-panel" style="text-align:center; padding:18px;">
     <button type="button" class="btn btn-run" onclick="runForecast()">▶ RUN FORECAST</button>
-    <div style="font-size:10px;color:var(--green-dim);margin-top:6px;letter-spacing:1px">SHOWS YOUR NEXT 3 PAYCHECKS — WHAT YOU CAN PAY AND WHAT YOU CAN'T</div>
+    <div style="font-size:10px;color:var(--green-dim);margin-top:6px;letter-spacing:1px">SHOWS YOUR NEXT 3 PAYCHECKS WITH DATE-ACCURATE TIMING</div>
   </div>
 
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB: MY PLAN (SIMULATION)
-══════════════════════════════════════════════ -->
+<!-- ══ TAB: MY PLAN ══ -->
 <div id="tab-simulation" class="tab-content">
-
-  <!-- Top: Run button + plain summary -->
   <div style="max-width:1200px;margin:0 auto;padding:16px;border-bottom:1px solid var(--green-dark);">
     <button type="button" class="btn btn-run" style="max-width:400px;margin:0 auto 14px;display:block" onclick="runForecast()">▶ RUN FORECAST</button>
 
@@ -502,12 +504,10 @@ select option { background:#000; }
     <div id="plain-summary" style="font-size:12px;color:var(--green-dim);line-height:1.9">
       Run the forecast above to see a simple breakdown of your situation.
     </div>
-
     <div class="summary-grid" id="summary-cards" style="margin-top:14px"></div>
   </div>
 
   <div class="main">
-
     <div class="panel">
       <div class="panel-title"><div class="dot"></div> 3-PAYCHECK DETAILED LOG</div>
       <div class="terminal-output" id="output">
@@ -535,7 +535,7 @@ select option { background:#000; }
         </div>
       </div>
 
-      <div class="panel-title" style="margin-top:14px"><div class="dot"></div> PAYCHECK 1 TIMELINE</div>
+      <div class="panel-title" style="margin-top:14px"><div class="dot"></div> PAYCHECK 1 — DATE TIMELINE</div>
       <div class="timeline" id="timeline">
         <span class="out-dim" style="font-size:11px">// Run forecast to generate timeline</span>
       </div>
@@ -545,13 +545,10 @@ select option { background:#000; }
         <span class="out-dim">// Run forecast to see each loan's result</span>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB: WHAT TO DO (STRATEGY)
-══════════════════════════════════════════════ -->
+<!-- ══ TAB: WHAT TO DO ══ -->
 <div id="tab-strategy" class="tab-content">
 <div class="main" style="max-width:1200px;margin:0 auto;">
 
@@ -572,11 +569,16 @@ select option { background:#000; }
     <label>Which app?</label>
     <input type="text" id="gate-app" placeholder="e.g. Earnin, CashApp...">
 
-    <label>How many days until you have to pay it back?</label>
-    <input type="number" id="gate-days" value="14" min="1">
+    <label>Fee for this borrow ($)</label>
+    <input type="number" id="gate-fee" value="0" step="0.01" min="0">
+
+    <label>Due date (or days until payback)</label>
+    <div class="field-row">
+      <input type="date" id="gate-due-date">
+      <input type="number" id="gate-days" value="14" min="1" placeholder="or # days">
+    </div>
 
     <button type="button" class="btn" onclick="runDecisionGate()">▶ CHECK IF THIS IS SMART</button>
-
     <div class="terminal-output" id="gate-output" style="min-height:100px">
       <span class="out-dim">// Answer appears here</span>
     </div>
@@ -592,9 +594,7 @@ select option { background:#000; }
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB: MY HISTORY (TRACKER)
-══════════════════════════════════════════════ -->
+<!-- ══ TAB: MY HISTORY ══ -->
 <div id="tab-tracker" class="tab-content">
 <div class="main" style="max-width:1200px;margin:0 auto;">
 
@@ -611,10 +611,8 @@ select option { background:#000; }
 
   <div class="panel">
     <div class="panel-title"><div class="dot"></div> RECORD WHAT JUST HAPPENED</div>
-
     <label>Which app?</label>
     <select id="cycle-loan-select"></select>
-
     <label>What did you do?</label>
     <select id="cycle-action">
       <option value="paid">I paid it back</option>
@@ -622,13 +620,10 @@ select option { background:#000; }
       <option value="partial">I made a partial payment</option>
       <option value="missed">I missed the payment</option>
     </select>
-
     <label>Amount ($)</label>
     <input type="number" id="cycle-amount" value="0" step="0.01" min="0">
-
     <label>Notes (optional)</label>
     <input type="text" id="cycle-notes" placeholder="e.g. paid late, called support...">
-
     <button type="button" class="btn" onclick="logCycleEvent()">▶ SAVE THIS EVENT</button>
   </div>
 
@@ -643,9 +638,7 @@ select option { background:#000; }
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB: ASK AI (CHAT)
-══════════════════════════════════════════════ -->
+<!-- ══ TAB: ASK AI ══ -->
 <div id="tab-chat" class="tab-content">
 <div class="chat-wrap">
   <div class="chat-context-bar">
@@ -668,9 +661,7 @@ select option { background:#000; }
 </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB: SETTINGS
-══════════════════════════════════════════════ -->
+<!-- ══ TAB: SETTINGS ══ -->
 <div id="tab-settings" class="tab-content">
 <div class="settings-wrap">
 
@@ -731,7 +722,7 @@ select option { background:#000; }
 
   <div class="settings-section">
     <div class="panel-title"><div class="dot"></div> WHAT THE AI CAN SEE</div>
-    <div style="font-size:11px;color:var(--green-dim);margin-bottom:8px">The AI receives this snapshot so it can give specific advice — not generic tips.</div>
+    <div style="font-size:11px;color:var(--green-dim);margin-bottom:8px">The AI receives this snapshot so it can give specific advice.</div>
     <button type="button" class="btn btn-secondary" onclick="refreshDataPreview()">⟳ REFRESH PREVIEW</button>
     <div class="data-preview" id="data-preview">// Click refresh to preview</div>
   </div>
@@ -739,34 +730,132 @@ select option { background:#000; }
 </div>
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
   BUILT BY <a href="https://www.andremethod.com" target="_blank">ANDREMETHOD.COM</a>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 let loans        = [];
+let extraIncomes = [];   // [{label, amount, date, type}]
 let cycleCounts  = {};
 let cycleLog     = [];
 let lastResult   = null;
 let chatHistory  = [];
+let paydayDates  = [];   // computed Date objects for cycles 1-3
 
 const DEFAULT_APPS = [
-  { name:'Earnin',  owed:203.97, max:200,    fee:3.99, reuse:'instant', pullTiming:'immediate', dueCycle:1 },
-  { name:'Genie',   owed:114.99, max:0,      fee:0,    reuse:'delayed',  pullTiming:'before',    dueCycle:1 },
-  { name:'Klover',  owed:50,     max:50,     fee:2.99, reuse:'instant', pullTiming:'manual',    dueCycle:1 },
-  { name:'Grant',   owed:200,    max:200,    fee:0,    reuse:'instant', pullTiming:'manual',    dueCycle:1 },
-  { name:'CashApp', owed:200,    max:124.75, fee:0,    reuse:'instant', pullTiming:'manual',    dueCycle:1 },
+  { name:'Earnin',  owed:203.97, max:200,    fee:3.99,  reuse:'instant', pullTiming:'immediate', dueDateMode:'cycle', dueCycle:1, dueDate:'' },
+  { name:'Genie',   owed:114.99, max:0,      fee:0,     reuse:'delayed', pullTiming:'before',    dueDateMode:'cycle', dueCycle:1, dueDate:'' },
+  { name:'Klover',  owed:50,     max:50,     fee:2.99,  reuse:'instant', pullTiming:'manual',    dueDateMode:'cycle', dueCycle:1, dueDate:'' },
+  { name:'Grant',   owed:200,    max:200,    fee:0,     reuse:'instant', pullTiming:'manual',    dueDateMode:'cycle', dueCycle:1, dueDate:'' },
+  { name:'CashApp', owed:200,    max:124.75, fee:0,     reuse:'instant', pullTiming:'manual',    dueDateMode:'cycle', dueCycle:1, dueDate:'' },
 ];
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════════
+function parseLocalDate(str) {
+  // 'YYYY-MM-DD' → local midnight Date (avoids UTC offset shift)
+  if (!str) return null;
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+
+function fmtDateShort(d) {
+  if (!d) return '';
+  return (d.getMonth()+1) + '/' + d.getDate();
+}
+
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+
+function getPayFreqDays(freq) {
+  return { weekly:7, biweekly:14, semimonthly:15, monthly:30 }[freq] || 14;
+}
+
+function computePaydayDates() {
+  const baseStr = document.getElementById('payday').value;
+  if (!baseStr) return [];
+  const freq  = document.getElementById('pay-freq').value;
+  const base  = parseLocalDate(baseStr);
+  const days  = getPayFreqDays(freq);
+  const dates = [base];
+  for (let i = 1; i < 3; i++) {
+    if (freq === 'semimonthly') {
+      const prev = dates[i - 1];
+      const next = new Date(prev);
+      if (prev.getDate() < 15) {
+        next.setDate(15);
+      } else {
+        next.setMonth(next.getMonth() + 1, 1);
+      }
+      dates.push(next);
+    } else {
+      dates.push(addDays(dates[i - 1], days));
+    }
+  }
+  return dates;
+}
+
+function recomputePaydayDates() {
+  paydayDates = computePaydayDates();
+  const legendEl = document.getElementById('payday-legend');
+  if (!paydayDates.length) {
+    legendEl.innerHTML = 'Set your first payday above to see your next 3 paycheck dates.';
+    ['p1-label','p2-label','p3-label'].forEach((id,i) => {
+      document.getElementById(id).textContent = `Paycheck ${i+1}`;
+    });
+    return;
+  }
+  legendEl.innerHTML = paydayDates.map((d, i) =>
+    `Paycheck ${i+1}: <span>${fmtDate(d)}</span>`
+  ).join('  |  ');
+  paydayDates.forEach((d, i) => {
+    document.getElementById(`p${i+1}-label`).textContent = `Paycheck ${i+1} — ${fmtDate(d)}`;
+  });
+}
+
+// Which cycle (1/2/3) does a date fall into? Returns 0 if before cycle 1, 4 if after cycle 3
+function dateToCycle(dateStr) {
+  if (!dateStr || !paydayDates.length) return 1;
+  const d    = parseLocalDate(dateStr);
+  const freq = document.getElementById('pay-freq').value;
+  const days = getPayFreqDays(freq);
+  // cycle window: [payday[i], payday[i+1])
+  for (let i = 0; i < paydayDates.length; i++) {
+    const windowEnd = i < paydayDates.length - 1
+      ? paydayDates[i + 1]
+      : addDays(paydayDates[i], days);
+    if (d < paydayDates[i]) return i === 0 ? 0 : i; // before this payday
+    if (d < windowEnd) return i + 1;
+  }
+  return 4; // after all known paychecks
+}
+
+// Whether a due date falls BEFORE the given payday
+function isDueBeforePayday(dateStr, cycleIndex) {
+  if (!dateStr || !paydayDates.length || cycleIndex >= paydayDates.length) return false;
+  const d = parseLocalDate(dateStr);
+  return d < paydayDates[cycleIndex];
+}
+
+// ═══════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function init() {
   document.getElementById('payday').value = new Date().toISOString().split('T')[0];
+  recomputePaydayDates();
 
   if (localStorage.getItem('survivalData')) {
     loadData();
@@ -788,15 +877,18 @@ function updateClock() {
 }
 
 function loadPreset() {
-  loans = DEFAULT_APPS.map(a => ({...a}));
+  loans       = DEFAULT_APPS.map(a => ({...a}));
+  extraIncomes = [];
   renderLoans();
+  renderExtraIncomes();
   updateCycleTrackerUI();
+  recomputePaydayDates();
   saveData();
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // SAVE / LOAD
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function saveData() {
   const data = {
     incomeC1:     document.getElementById('income-c1').value,
@@ -810,7 +902,7 @@ function saveData() {
     cashOnHand:   document.getElementById('cash-on-hand').value,
     exitMonths:   document.getElementById('exit-months').value,
     priorityMode: document.getElementById('priority-mode').value,
-    loans, cycleCounts, cycleLog
+    loans, extraIncomes, cycleCounts, cycleLog
   };
   localStorage.setItem('survivalData', JSON.stringify(data));
   const el = document.getElementById('auto-save-status');
@@ -829,18 +921,35 @@ function loadData() {
     document.getElementById('bills-c1').value      = data.billsC1      || '0';
     document.getElementById('bills-c2').value      = data.billsC2      || '0';
     document.getElementById('bills-c3').value      = data.billsC3      || '0';
-    document.getElementById('payday').value        = data.payday        || '';
+    document.getElementById('payday').value        = data.payday        || new Date().toISOString().split('T')[0];
     document.getElementById('pay-freq').value      = data.payFreq       || 'biweekly';
     document.getElementById('cash-on-hand').value  = data.cashOnHand    || '0';
     document.getElementById('exit-months').value   = data.exitMonths    || '0';
     document.getElementById('priority-mode').value = data.priorityMode  || 'liquidity';
-    loans       = data.loans       || [];
-    cycleCounts = data.cycleCounts || {};
-    cycleLog    = data.cycleLog    || [];
+    loans        = migrateLoanData(data.loans || []);
+    extraIncomes = data.extraIncomes || [];
+    cycleCounts  = data.cycleCounts || {};
+    cycleLog     = data.cycleLog    || [];
+    recomputePaydayDates();
     renderLoans();
+    renderExtraIncomes();
     updateCycleTrackerUI();
     renderCycleLog();
   } catch(e) { console.error('Load error', e); }
+}
+
+// Migrate older loan shapes to new schema
+function migrateLoanData(rawLoans) {
+  return rawLoans.map(l => {
+    if (!l.dueDateMode) l.dueDateMode = 'cycle';
+    if (!l.dueDate)     l.dueDate     = '';
+    if (!l.dueCycle)    l.dueCycle    = 1;
+    if (!l.pullTiming) {
+      l.pullTiming = l.dueBeforePayday ? 'before' : 'manual';
+    }
+    if (l.fee === undefined) l.fee = 0;
+    return l;
+  });
 }
 
 function importJSON(event) {
@@ -862,18 +971,20 @@ function importJSON(event) {
   reader.readAsText(file);
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // LOAN MANAGEMENT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function addLoan(data = {}) {
   loans.push({
-    name:        data.name        || 'New App',
-    owed:        data.owed        || 0,
-    max:         data.max         || 0,
-    fee:         data.fee         || 0,
-    reuse:       data.reuse       || 'instant',
-    pullTiming:  data.pullTiming  || 'manual',
-    dueCycle:    data.dueCycle    || 1
+    name:         data.name         || 'New App',
+    owed:         data.owed         || 0,
+    max:          data.max          || 0,
+    fee:          data.fee          || 0,
+    reuse:        data.reuse        || 'instant',
+    pullTiming:   data.pullTiming   || 'manual',
+    dueDateMode:  data.dueDateMode  || 'cycle',
+    dueCycle:     data.dueCycle     || 1,
+    dueDate:      data.dueDate      || ''
   });
   renderLoans();
   saveData();
@@ -890,20 +1001,29 @@ function renderLoans() {
   container.innerHTML = '';
 
   loans.forEach((loan, i) => {
-    // migrate old data shape
-    if (loan.dueBeforePayday === true)  loan.pullTiming = 'before';
-    if (!loan.pullTiming)               loan.pullTiming = 'manual';
-    if (!loan.dueCycle)                 loan.dueCycle   = 1;
-    if (loan.fee === undefined)         loan.fee        = 0;
-
+    const modeIsDate = loan.dueDateMode === 'date';
+    const dateHighlight = modeIsDate && loan.dueDate ? 'due-date-highlight' : '';
     const card = document.createElement('div');
     card.className = 'loan-card';
+
+    // Compute a helpful due note if date mode is set
+    let dueNote = '';
+    if (modeIsDate && loan.dueDate && paydayDates.length) {
+      const c = dateToCycle(loan.dueDate);
+      const d = parseLocalDate(loan.dueDate);
+      const isBefore = isDueBeforePayday(loan.dueDate, c - 1);
+      dueNote = c >= 1 && c <= 3
+        ? ` — falls in Cycle ${c}${isBefore ? ' (before payday)' : ''}`
+        : c === 0 ? ' — <span style="color:var(--red)">OVERDUE (before first payday)</span>'
+        : ' — after 3rd paycheck';
+    }
+
     card.innerHTML = `
       <div class="loan-header">
         <span class="loan-name">${loan.name}</span>
         <span class="reuse-badge reuse-${loan.reuse}">${loan.reuse === 'instant' ? 'CAN RE-BORROW' : 'WAITING PERIOD'}</span>
       </div>
-      <div class="loan-fields">
+      <div class="loan-fields-top">
         <div>
           <label>App Name</label>
           <input type="text" value="${loan.name}"
@@ -926,12 +1046,31 @@ function renderLoans() {
         </div>
         <button type="button" class="btn-remove" onclick="removeLoan(${i})">✕</button>
       </div>
+
+      <div class="loan-fields-date">
+        <div>
+          <label>Due Date Mode</label>
+          <select onchange="loans[${i}].dueDateMode=this.value; saveData(); renderLoans()">
+            <option value="cycle" ${!modeIsDate?'selected':''}>BY PAYCHECK CYCLE</option>
+            <option value="date"  ${modeIsDate ?'selected':''}>EXACT DATE</option>
+          </select>
+        </div>
+        <div ${modeIsDate ? 'style="display:none"' : ''} id="due-cycle-wrap-${i}">
+          <label>Due In</label>
+          <select onchange="loans[${i}].dueCycle=parseInt(this.value); saveData(); renderLoans()">
+            <option value="1" ${loan.dueCycle===1?'selected':''}>THIS PAYCHECK</option>
+            <option value="2" ${loan.dueCycle===2?'selected':''}>NEXT PAYCHECK</option>
+            <option value="3" ${loan.dueCycle===3?'selected':''}>3RD PAYCHECK</option>
+          </select>
+        </div>
+        <div ${!modeIsDate ? 'style="display:none"' : ''} id="due-date-wrap-${i}">
+          <label>Exact Due Date${dueNote ? '<span style="color:var(--amber);font-size:9px">'+dueNote+'</span>' : ''}</label>
+          <input type="date" value="${loan.dueDate}" class="${dateHighlight}"
+            onchange="loans[${i}].dueDate=this.value; saveData(); renderLoans()">
+        </div>
+      </div>
+
       <div class="loan-options">
-        <select onchange="loans[${i}].dueCycle=parseInt(this.value); saveData(); renderLoans()">
-          <option value="1" ${loan.dueCycle===1?'selected':''}>DUE THIS PAYCHECK</option>
-          <option value="2" ${loan.dueCycle===2?'selected':''}>DUE NEXT PAYCHECK</option>
-          <option value="3" ${loan.dueCycle===3?'selected':''}>DUE IN 3 PAYCHECKS</option>
-        </select>
         <select onchange="loans[${i}].pullTiming=this.value; saveData(); renderLoans()">
           <option value="before"    ${loan.pullTiming==='before'   ?'selected':''}>PULLS BEFORE PAYDAY</option>
           <option value="immediate" ${loan.pullTiming==='immediate'?'selected':''}>PULLS ON PAYDAY</option>
@@ -954,11 +1093,89 @@ function updateCycleSelectList() {
   sel.innerHTML = loans.map(l => `<option value="${l.name}">${l.name}</option>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-// SIMULATION ENGINE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// EXTRA INCOME
+// ═══════════════════════════════════════════════
+function addExtraIncome() {
+  extraIncomes.push({ label:'', amount:0, date:'', type:'gig' });
+  renderExtraIncomes();
+  saveData();
+}
+
+function removeExtraIncome(i) {
+  extraIncomes.splice(i, 1);
+  renderExtraIncomes();
+  saveData();
+}
+
+function renderExtraIncomes() {
+  const container = document.getElementById('extra-income-list');
+  container.innerHTML = '';
+  extraIncomes.forEach((ei, i) => {
+    const card = document.createElement('div');
+    card.className = 'income-entry-card';
+    card.innerHTML = `
+      <div class="income-entry-fields">
+        <div>
+          <label>Description</label>
+          <input type="text" value="${ei.label}" placeholder="e.g. Uber, tax refund..."
+            onchange="extraIncomes[${i}].label=this.value; saveData()">
+        </div>
+        <div>
+          <label>Amount ($)</label>
+          <input type="number" value="${ei.amount}" step="0.01" min="0"
+            onchange="extraIncomes[${i}].amount=parseFloat(this.value)||0; saveData()">
+        </div>
+        <div>
+          <label>Expected Date</label>
+          <input type="date" value="${ei.date}"
+            onchange="extraIncomes[${i}].date=this.value; saveData()">
+        </div>
+        <button type="button" class="btn-remove" onclick="removeExtraIncome(${i})">✕</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SIMULATION ENGINE  (date-aware)
+// ═══════════════════════════════════════════════
+function resolveLoanDueCycle(loan) {
+  // Returns the cycle number (1, 2, 3) when this loan is due,
+  // and whether it pulls BEFORE the payday of that cycle.
+  if (loan.dueDateMode === 'date' && loan.dueDate) {
+    const c = dateToCycle(loan.dueDate);
+    if (c === 0) return { cycle: 1, isBefore: true };   // overdue — treat as due NOW before payday
+    if (c > 3)   return { cycle: 3, isBefore: false };
+    const isBefore = isDueBeforePayday(loan.dueDate, c - 1);
+    return { cycle: c, isBefore };
+  }
+  // Fallback: cycle-based mode — respect the pullTiming field
+  return { cycle: loan.dueCycle || 1, isBefore: loan.pullTiming === 'before' };
+}
+
+function resolveExtraIncomeCycle(ei) {
+  if (!ei.date || !paydayDates.length) return 1;
+  const d = parseLocalDate(ei.date);
+  // Extra income is added to the cycle it arrives in.
+  // If it arrives before first payday it boosts pre-payday cash (cycle 0 → treat as before cycle 1).
+  const freq = document.getElementById('pay-freq').value;
+  const days = getPayFreqDays(freq);
+  if (d < paydayDates[0]) return 0;  // before first payday
+  for (let i = 0; i < paydayDates.length; i++) {
+    const windowEnd = i < paydayDates.length - 1
+      ? paydayDates[i + 1]
+      : addDays(paydayDates[i], days);
+    if (d >= paydayDates[i] && d < windowEnd) return i + 1;
+  }
+  return 4;
+}
+
 function runForecast() {
   if (!loans.length) { alert('Add at least one loan app first.'); return; }
+
+  recomputePaydayDates();
 
   const incomes = [
     parseFloat(document.getElementById('income-c1').value) || 0,
@@ -970,27 +1187,46 @@ function runForecast() {
     parseFloat(document.getElementById('bills-c2').value) || 0,
     parseFloat(document.getElementById('bills-c3').value) || 0,
   ];
-  const cashOnHand   = parseFloat(document.getElementById('cash-on-hand').value) || 0;
-  const mode         = document.getElementById('priority-mode').value;
+  const cashOnHand = parseFloat(document.getElementById('cash-on-hand').value) || 0;
+  const mode       = document.getElementById('priority-mode').value;
 
   document.getElementById('mode-display').textContent = 'CALCULATING...';
   saveData();
   switchTab('simulation');
 
-  // Deep-copy loan state for simulation
-  let debts = loans.map(l => ({
-    ...l,
-    currentOwed:   l.owed,
-    paidThisCycle: 0,
-    dueCycle:      l.dueCycle || 1
-  }));
+  // Resolve due cycle for each loan using date-aware logic
+  let debts = loans.map(l => {
+    const resolved = resolveLoanDueCycle(l);
+    return {
+      ...l,
+      currentOwed:     l.owed,
+      paidThisCycle:   0,
+      resolvedCycle:   resolved.cycle,
+      resolvedBefore:  resolved.isBefore,
+      // Override pullTiming if exact date resolution says 'before'
+      effectiveTiming: resolved.isBefore ? 'before' : (l.pullTiming === 'before' ? 'immediate' : l.pullTiming)
+    };
+  });
+
+  // Bucket extra incomes by cycle
+  const extraByCycle = { 0:[], 1:[], 2:[], 3:[], 4:[] };
+  extraIncomes.forEach(ei => {
+    const c = resolveExtraIncomeCycle(ei);
+    if (c >= 0 && c <= 4) extraByCycle[c].push(ei);
+  });
 
   let balance     = cashOnHand;
   let stressTotal = 0;
   let logLines    = [];
-  let loanResults = {};  // cycle-1 outcome per loan
+  let loanResults = {};
 
   const line = (text, cls = 'out-ok') => logLines.push({ text, cls });
+
+  // Apply pre-cycle 1 extra income (arrives before first payday)
+  extraByCycle[0].forEach(ei => {
+    balance += ei.amount;
+    line(`  + Pre-payday extra: ${ei.label || 'income'} +$${ei.amount.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-warn');
+  });
 
   // Sort helper
   function sortedDebts(arr) {
@@ -1004,124 +1240,185 @@ function runForecast() {
   }
 
   for (let cycle = 1; cycle <= 3; cycle++) {
-    const income = incomes[cycle - 1];
-    const bills  = billsArr[cycle - 1];
+    const income    = incomes[cycle - 1];
+    const bills     = billsArr[cycle - 1];
+    const paydayStr = paydayDates[cycle - 1] ? fmtDate(paydayDates[cycle - 1]) : `Cycle ${cycle}`;
 
-    line(`CYCLE ${cycle} — PAYCHECK ${cycle}`, 'out-cycle');
-    line(`  Start: $${balance.toFixed(2)} cash on hand`, 'out-dim');
+    line(`CYCLE ${cycle} — ${paydayStr}`, 'out-cycle');
+    line(`  Start: $${balance.toFixed(2)} on hand`, 'out-dim');
 
     debts.forEach(d => { d.paidThisCycle = 0; });
     let failedThisCycle = [];
 
-    // ── STEP 1: Pre-payday pulls ──
-    const prePay = sortedDebts(debts.filter(d => d.pullTiming === 'before' && d.currentOwed > 0 && cycle >= d.dueCycle));
+    // ── STEP 1: Pre-payday pulls (due before this payday) ──
+    const prePay = sortedDebts(debts.filter(d =>
+      d.resolvedCycle === cycle &&
+      d.resolvedBefore &&
+      d.currentOwed > 0
+    ));
     for (const d of prePay) {
+      const dueDateStr = (d.dueDateMode === 'date' && d.dueDate) ? ` (due ${fmtDate(parseLocalDate(d.dueDate))})` : '';
       if (balance >= d.currentOwed) {
         balance -= d.currentOwed;
-        d.paidThisCycle += d.currentOwed;
-        line(`  ✓ [Pre-pay] ${d.name}: paid $${d.currentOwed.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
+        d.paidThisCycle = d.currentOwed;
+        line(`  ✓ [Pre-pay${dueDateStr}] ${d.name}: paid $${d.currentOwed.toFixed(2)} → $${balance.toFixed(2)} left`, 'out-ok');
         d.currentOwed = 0;
       } else {
         const avail = Math.max(0, balance);
-        d.paidThisCycle += avail;
-        d.currentOwed   -= avail;
-        balance          = 0;
-        stressTotal     += 25;
-        failedThisCycle.push(d);
-        line(`  ✗ [Pre-pay] ${d.name}: needed $${(d.currentOwed + avail).toFixed(2)}, only had $${avail.toFixed(2)}. Still owe $${d.currentOwed.toFixed(2)}. (+25 stress)`, 'out-danger');
+        d.paidThisCycle = avail;
+        d.currentOwed  -= avail;
+        balance         = 0;
+        stressTotal    += 25;
+        failedThisCycle.push(d.name);
+        line(`  ✗ [Pre-pay${dueDateStr}] ${d.name}: needed $${(d.currentOwed + avail).toFixed(2)}, had $${avail.toFixed(2)}. Still owe $${d.currentOwed.toFixed(2)}. (+25 stress)`, 'out-danger');
       }
     }
 
     // ── STEP 2: Paycheck arrives ──
     balance += income;
-    line(`  + Paycheck: +$${income.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
+    line(`  + Paycheck ${cycle}: +$${income.toFixed(2)} → $${balance.toFixed(2)}`, 'out-ok');
+
+    // ── STEP 2b: Extra income arriving in this cycle window ──
+    extraByCycle[cycle].forEach(ei => {
+      if (ei.amount > 0) {
+        balance += ei.amount;
+        const dateStr = ei.date ? ` (${fmtDate(parseLocalDate(ei.date))})` : '';
+        line(`  + Extra income${dateStr}: ${ei.label || 'income'} +$${ei.amount.toFixed(2)} → $${balance.toFixed(2)}`, 'out-warn');
+      }
+    });
 
     // ── STEP 3: Immediate (same-day) auto-pulls ──
-    const immediate = sortedDebts(debts.filter(d => d.pullTiming === 'immediate' && d.currentOwed > 0 && cycle >= d.dueCycle));
+    const immediate = sortedDebts(debts.filter(d =>
+      d.resolvedCycle === cycle &&
+      !d.resolvedBefore &&
+      d.effectiveTiming === 'immediate' &&
+      d.currentOwed > 0
+    ));
     for (const d of immediate) {
+      const dueDateStr = (d.dueDateMode === 'date' && d.dueDate) ? ` (${fmtDate(parseLocalDate(d.dueDate))})` : '';
       if (balance >= d.currentOwed) {
         balance -= d.currentOwed;
-        d.paidThisCycle += d.currentOwed;
-        line(`  ✓ [Auto-pull] ${d.name}: $${d.currentOwed.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
+        d.paidThisCycle = d.currentOwed;
+        line(`  ✓ [Auto-pull${dueDateStr}] ${d.name}: $${d.currentOwed.toFixed(2)} → $${balance.toFixed(2)}`, 'out-ok');
         d.currentOwed = 0;
       } else {
         const paid = Math.max(0, balance);
-        d.paidThisCycle += paid;
-        d.currentOwed   -= paid;
-        balance          = 0;
-        stressTotal     += 15;
-        failedThisCycle.push(d);
-        line(`  ✗ [Auto-pull] ${d.name}: paid $${paid.toFixed(2)}, still owe $${d.currentOwed.toFixed(2)}. (+15 stress)`, 'out-danger');
+        d.paidThisCycle = paid;
+        d.currentOwed  -= paid;
+        balance         = 0;
+        stressTotal    += 15;
+        failedThisCycle.push(d.name);
+        line(`  ✗ [Auto-pull${dueDateStr}] ${d.name}: paid $${paid.toFixed(2)}, still owe $${d.currentOwed.toFixed(2)}. (+15 stress)`, 'out-danger');
       }
     }
 
     // ── STEP 4: Bills ──
     if (bills > 0) {
       balance -= bills;
-      line(`  - Bills: -$${bills.toFixed(2)} → balance $${balance.toFixed(2)}`, balance >= 0 ? 'out-warn' : 'out-danger');
+      if (balance < 0) stressTotal += 10;
+      line(`  - Bills: -$${bills.toFixed(2)} → $${balance.toFixed(2)}`, balance >= 0 ? 'out-warn' : 'out-danger');
     }
 
-    // ── STEP 5: Manual payments ──
-    const manual = sortedDebts(debts.filter(d => d.pullTiming === 'manual' && d.currentOwed > 0 && cycle >= d.dueCycle));
+    // ── STEP 5: Manual payments (due this cycle) ──
+    const manual = sortedDebts(debts.filter(d =>
+      d.resolvedCycle === cycle &&
+      !d.resolvedBefore &&
+      d.effectiveTiming !== 'immediate' &&
+      d.currentOwed > 0
+    ));
     for (const d of manual) {
+      const dueDateStr = (d.dueDateMode === 'date' && d.dueDate) ? ` (due ${fmtDate(parseLocalDate(d.dueDate))})` : '';
+      if (balance >= d.currentOwed) {
+        balance -= d.currentOwed;
+        d.paidThisCycle = d.currentOwed;
+        line(`  ✓ [Manual${dueDateStr}] ${d.name}: paid $${d.currentOwed.toFixed(2)} → $${balance.toFixed(2)}`, 'out-ok');
+        d.currentOwed = 0;
+      } else if (balance > 0) {
+        const paid = balance;
+        d.paidThisCycle = paid;
+        d.currentOwed  -= paid;
+        balance         = 0;
+        stressTotal    += 10;
+        failedThisCycle.push(d.name);
+        line(`  ~ [Manual${dueDateStr}] ${d.name}: partial $${paid.toFixed(2)}, deferred $${d.currentOwed.toFixed(2)}. (+10 stress)`, 'out-warn');
+      } else {
+        stressTotal += 15;
+        failedThisCycle.push(d.name);
+        line(`  ✗ [Manual${dueDateStr}] ${d.name}: can't pay $${d.currentOwed.toFixed(2)} — rolls over. (+15 stress)`, 'out-danger');
+      }
+    }
+
+    // Also show overdue loans deferred from earlier cycles
+    const deferred = sortedDebts(debts.filter(d =>
+      d.resolvedCycle < cycle &&
+      d.currentOwed > 0
+    ));
+    for (const d of deferred) {
       if (balance >= d.currentOwed) {
         balance -= d.currentOwed;
         d.paidThisCycle += d.currentOwed;
-        line(`  ✓ [Manual] ${d.name}: paid $${d.currentOwed.toFixed(2)} → balance $${balance.toFixed(2)}`, 'out-ok');
+        line(`  ✓ [Deferred] ${d.name}: paid overdue $${d.currentOwed.toFixed(2)} → $${balance.toFixed(2)}`, 'out-ok');
         d.currentOwed = 0;
       } else if (balance > 0) {
         const paid = balance;
         d.paidThisCycle += paid;
         d.currentOwed   -= paid;
         balance          = 0;
-        stressTotal     += 10;
-        failedThisCycle.push(d);
-        line(`  ~ [Manual] ${d.name}: partial $${paid.toFixed(2)}, deferred $${d.currentOwed.toFixed(2)}. (+10 stress)`, 'out-warn');
-      } else {
-        stressTotal += 15;
-        failedThisCycle.push(d);
-        line(`  ✗ [Manual] ${d.name}: can't pay $${d.currentOwed.toFixed(2)} — rolls to next cycle. (+15 stress)`, 'out-danger');
+        stressTotal     += 8;
+        line(`  ~ [Deferred] ${d.name}: partial $${paid.toFixed(2)}, still owe $${d.currentOwed.toFixed(2)}. (+8 stress)`, 'out-warn');
       }
     }
 
-    // ── STEP 6: Emergency re-borrow (only if negative) ──
+    // ── STEP 6: Emergency re-borrow ──
+    // Only trigger if balance is negative AND there's an instant-reuse app just paid off
     if (balance < 0) {
-      const available = debts.filter(d => d.currentOwed === 0 && d.reuse === 'instant' && d.max > 0);
+      const available = debts.filter(d =>
+        d.currentOwed === 0 &&
+        d.reuse === 'instant' &&
+        d.max > 0 &&
+        d.max > d.fee          // net positive borrow possible
+      );
+      // Sort by largest net borrow available
+      available.sort((a, b) => (b.max - b.fee) - (a.max - a.fee));
       for (const app of available) {
         if (balance >= 0) break;
-        const need          = Math.abs(balance);
-        const canBorrow     = app.max;                             // freshly paid off = full limit available
-        if (canBorrow <= app.fee) continue;
-        const grossBorrow   = Math.min(need + app.fee, canBorrow);
-        const netReceived   = grossBorrow - app.fee;
-        if (netReceived <= 0) continue;
-        balance        += netReceived;
-        app.currentOwed = grossBorrow;                            // owes gross next cycle
-        stressTotal    += 10;
-        line(`  ⚠ Re-borrowed $${grossBorrow.toFixed(2)} from ${app.name} (fee $${app.fee.toFixed(2)}, received $${netReceived.toFixed(2)}). Owe this back next cycle. (+10 stress)`, 'out-info');
+        const need        = Math.abs(balance);
+        const netMax      = app.max - app.fee;
+        if (netMax <= 0) continue;
+        const netReceived = Math.min(need, netMax);
+        const grossOwed   = netReceived + app.fee;
+        balance          += netReceived;
+        // Store as a fresh debt due NEXT cycle
+        app.currentOwed   = grossOwed;
+        app.resolvedCycle = cycle + 1;  // due next cycle
+        app.resolvedBefore = false;
+        app.effectiveTiming = 'manual';
+        stressTotal      += 10;
+        line(`  ⚠ Emergency re-borrow: $${netReceived.toFixed(2)} from ${app.name} (fee $${app.fee.toFixed(2)}, owe $${grossOwed.toFixed(2)} next cycle). (+10 stress)`, 'out-info');
       }
     }
 
     // ── END OF CYCLE ──
     if (balance < 0) {
       stressTotal += 40;
-      line(`  ☠ ENDED CYCLE ${cycle} AT -$${Math.abs(balance).toFixed(2)}. Nothing left to borrow. (+40 stress)`, 'out-danger');
+      line(`  ☠ ENDED CYCLE ${cycle} AT -$${Math.abs(balance).toFixed(2)}. No more credit available. (+40 stress)`, 'out-danger');
     } else {
       line(`  → Ended cycle ${cycle} with $${balance.toFixed(2)} remaining.`, 'out-dim');
     }
 
-    // Capture cycle-1 outcomes for the display panel
+    // Capture cycle-1 outcomes
     if (cycle === 1) {
       debts.forEach(d => {
-        if (d.dueCycle > 1)                                   loanResults[d.name] = 'Not due yet';
-        else if (d.currentOwed === 0 && d.paidThisCycle > 0) loanResults[d.name] = 'Paid in Full ✓';
-        else if (d.paidThisCycle > 0)                         loanResults[d.name] = `Partial — still owe $${d.currentOwed.toFixed(2)}`;
-        else                                                  loanResults[d.name] = `Missed — owe $${d.currentOwed.toFixed(2)}`;
+        if (d.resolvedCycle > 1)                               loanResults[d.name] = `Not due until cycle ${d.resolvedCycle}`;
+        else if (d.currentOwed <= 0 && d.paidThisCycle > 0)   loanResults[d.name] = 'Paid in Full ✓';
+        else if (d.paidThisCycle > 0)                          loanResults[d.name] = `Partial — still owe $${d.currentOwed.toFixed(2)}`;
+        else                                                   loanResults[d.name] = `Missed — owe $${d.currentOwed.toFixed(2)}`;
       });
 
-      const beforeLoans = debts.filter(d => d.pullTiming === 'before'    && d.dueCycle === 1);
-      const afterLoans  = debts.filter(d => d.pullTiming !== 'before'    && d.dueCycle === 1);
-      renderTimeline(incomes[0], cashOnHand, billsArr[0], debts.filter(d => d.dueCycle === 1), beforeLoans, afterLoans);
+      const cycle1Loans    = debts.filter(d => d.resolvedCycle === 1);
+      const beforePayday   = cycle1Loans.filter(d => d.resolvedBefore);
+      const afterPayday    = cycle1Loans.filter(d => !d.resolvedBefore);
+      renderTimeline(incomes[0], cashOnHand, billsArr[0], cycle1Loans, beforePayday, afterPayday);
       generateStrategies(incomes[0], cashOnHand, billsArr[0], loans, balance < 0, failedThisCycle, stressTotal);
     }
 
@@ -1132,31 +1429,33 @@ function runForecast() {
     }
   }
 
-  // ── RENDER TERMINAL OUTPUT ──
+  // ── RENDER OUTPUT ──
   const outputEl = document.getElementById('output');
   outputEl.innerHTML = logLines.map(l => `<span class="${l.cls}">${l.text}</span>`).join('\n');
   outputEl.scrollTop = outputEl.scrollHeight;
 
   // ── STRESS METER ──
-  const stress = Math.min(100, Math.max(0, stressTotal));
+  const stress      = Math.min(100, Math.max(0, stressTotal));
   const stressLabel = stress > 60 ? 'HIGH STRESS' : stress > 30 ? 'SOME PRESSURE' : 'UNDER CONTROL';
   const stressColor = stress > 60 ? 'var(--red)' : stress > 30 ? 'var(--amber)' : 'var(--green)';
   document.getElementById('stress-val').textContent = `${stress}/100 — ${stressLabel}`;
   document.getElementById('stress-val').style.color = stressColor;
   const bar = document.getElementById('stress-bar');
-  bar.style.width = stress + '%';
+  bar.style.width      = stress + '%';
   bar.style.background = stressColor;
 
   // ── LOAN OUTCOMES ──
   document.getElementById('loan-status').innerHTML = Object.entries(loanResults).map(([name, status]) => {
-    const cls = status.includes('Full') ? 'out-ok' : status.includes('Partial') ? 'out-warn' : status.includes('yet') ? 'out-dim' : 'out-danger';
+    const cls = status.includes('Full') ? 'out-ok'
+              : status.includes('Partial') ? 'out-warn'
+              : status.includes('Not due') ? 'out-dim'
+              : 'out-danger';
     return `<div class="${cls}">${name} → ${status}</div>`;
   }).join('');
 
   // ── PLAIN ENGLISH SUMMARY ──
   renderPlainSummary(incomes, billsArr, cashOnHand, balance, stress, loanResults, loans);
 
-  // ── SAVE RESULT ──
   lastResult = {
     income: incomes[0], cashOnHand, bills: billsArr[0],
     balance, damageScore: stress,
@@ -1174,43 +1473,41 @@ function runForecast() {
   updateChatContextBar();
 }
 
-// ── PLAIN ENGLISH SUMMARY RENDERER ──
+// ═══════════════════════════════════════════════
+// PLAIN ENGLISH SUMMARY
+// ═══════════════════════════════════════════════
 function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress, loanResults, allLoans) {
-  const totalIncome = incomes.reduce((a, b) => a + b, 0);
-  const totalBills  = billsArr.reduce((a, b) => a + b, 0);
-  const totalOwed   = allLoans.reduce((s, l) => s + l.owed, 0);
-  const paidFull    = Object.values(loanResults).filter(v => v.includes('Full')).length;
-  const missed      = Object.values(loanResults).filter(v => v.includes('Missed')).length;
-  const totalFees   = allLoans.reduce((s, l) => s + l.fee, 0);
-
-  const summaryEl = document.getElementById('plain-summary');
-  const isOk = finalBalance >= 0;
+  const totalIncome    = incomes.reduce((a, b) => a + b, 0);
+  const totalBills     = billsArr.reduce((a, b) => a + b, 0);
+  const totalOwed      = allLoans.reduce((s, l) => s + l.owed, 0);
+  const totalFees      = allLoans.reduce((s, l) => s + l.fee, 0);
+  const totalExtraInc  = extraIncomes.reduce((s, e) => s + e.amount, 0);
+  const paidFull       = Object.values(loanResults).filter(v => v.includes('Full')).length;
+  const missed         = Object.values(loanResults).filter(v => v.includes('Missed')).length;
+  const isOk           = finalBalance >= 0;
 
   let html = '';
+  const extraNote = totalExtraInc > 0 ? ` Plus <strong style="color:var(--amber)">$${totalExtraInc.toFixed(2)}</strong> in expected extra money.` : '';
   if (isOk) {
-    html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks. 
-After bills ($${totalBills.toFixed(2)}) and paying back your loan apps ($${totalOwed.toFixed(2)} owed + $${totalFees.toFixed(2)} in fees), 
-you end up with <strong style="color:var(--green)">$${finalBalance.toFixed(2)}</strong> left over.
-You paid off <strong>${paidFull} of ${allLoans.length}</strong> loans in full this first cycle.`;
+    html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks.${extraNote} After bills ($${totalBills.toFixed(2)}) and paying back your loan apps ($${totalOwed.toFixed(2)} owed + $${totalFees.toFixed(2)} in fees), you end up with <strong style="color:var(--green)">$${finalBalance.toFixed(2)}</strong> left over. You paid off <strong>${paidFull} of ${allLoans.length}</strong> loans in full this first cycle.`;
     if (missed > 0) html += ` <span style="color:var(--amber)">${missed} had to be skipped.</span>`;
   } else {
-    html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks, 
-but you owe <strong style="color:var(--red)">$${totalOwed.toFixed(2)}</strong> to loan apps plus $${totalBills.toFixed(2)} in bills. 
-<strong style="color:var(--red)">You come up $${Math.abs(finalBalance).toFixed(2)} short</strong> — meaning some payments will be missed or deferred. 
-You'll likely need to borrow again just to survive, which keeps the cycle going.`;
+    html = `You bring in <strong style="color:var(--green)">$${totalIncome.toFixed(2)}</strong> over your next 3 paychecks,${extraNote} but you owe <strong style="color:var(--red)">$${totalOwed.toFixed(2)}</strong> to loan apps plus $${totalBills.toFixed(2)} in bills. <strong style="color:var(--red)">You come up $${Math.abs(finalBalance).toFixed(2)} short</strong> — some payments will be missed or deferred.`;
   }
+  html += `<br><br><em style="color:var(--green-dim)">Stress level: ${stress}/100 — ${stress > 60 ? 'tough cycle. Check WHAT TO DO for help.' : stress > 30 ? 'manageable but tight.' : 'breathing room. Consider dropping one app permanently.'}</em>`;
+  document.getElementById('plain-summary').innerHTML = html;
 
-  html += `<br><br><em style="color:var(--green-dim)">Stress level: ${stress}/100 — ${stress > 60 ? 'this is a tough cycle. Check WHAT TO DO for help.' : stress > 30 ? 'manageable but tight. Watch for shortcuts.' : 'you have breathing room. Consider dropping one app permanently.'}</em>`;
-
-  summaryEl.innerHTML = html;
-
-  // Summary stat cards
   const cards = document.getElementById('summary-cards');
   cards.innerHTML = `
     <div class="summary-card">
       <div class="sc-label">3-CHECK INCOME</div>
       <div class="sc-value sc-green">$${totalIncome.toFixed(0)}</div>
       <div class="sc-sub">coming in</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-label">EXTRA INCOME</div>
+      <div class="sc-value sc-amber">$${totalExtraInc.toFixed(0)}</div>
+      <div class="sc-sub">expected</div>
     </div>
     <div class="summary-card">
       <div class="sc-label">TOTAL OWED</div>
@@ -1240,23 +1537,46 @@ You'll likely need to borrow again just to survive, which keeps the cycle going.
   `;
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // TIMELINE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) {
   const el   = document.getElementById('timeline');
   const maxV = Math.max(income, ...allLoans.map(l => l.owed), bills, 50);
-  const bar  = (val, cls, label) => {
-    const pct = Math.min(100, (val / maxV) * 100);
-    return `<div class="tl-bar-wrap"><div class="tl-bar ${cls}" style="width:${pct}%">${label} $${val.toFixed(0)}</div></div>`;
+  const bar  = (val, cls, label, dateStr = '') => {
+    const pct     = Math.min(100, (val / maxV) * 100);
+    const dateLbl = dateStr ? `<span class="tl-date-label">${dateStr}</span>` : '';
+    return `<div class="tl-bar-wrap"><div class="tl-bar ${cls}" style="width:${pct}%">${label} $${val.toFixed(0)}</div>${dateLbl}</div>`;
   };
 
   let html = '';
+  const p1date = paydayDates[0] ? fmtDateShort(paydayDates[0]) : '';
   html += `<div class="tl-row"><div class="tl-label">NOW</div>${bar(cash, 'tl-income', 'Cash')}</div>`;
-  beforeLoans.forEach(l => { html += `<div class="tl-row"><div class="tl-label">Pre-Pay</div>${bar(l.owed, 'tl-debt', l.name)}</div>`; });
-  html += `<div class="tl-row"><div class="tl-label">Payday</div>${bar(income, 'tl-income', 'Paycheck')}</div>`;
+
+  beforeLoans.forEach(l => {
+    const ds = l.dueDateMode === 'date' && l.dueDate ? fmtDateShort(parseLocalDate(l.dueDate)) : 'pre-pay';
+    html += `<div class="tl-row"><div class="tl-label">Pre-Pay</div>${bar(l.owed, 'tl-debt', l.name, ds)}</div>`;
+  });
+
+  // Extra incomes arriving before payday
+  extraIncomes.filter(ei => resolveExtraIncomeCycle(ei) === 0).forEach(ei => {
+    const ds = ei.date ? fmtDateShort(parseLocalDate(ei.date)) : '';
+    html += `<div class="tl-row"><div class="tl-label">Inflow</div>${bar(ei.amount, 'tl-extra', ei.label || 'extra', ds)}</div>`;
+  });
+
+  html += `<div class="tl-row"><div class="tl-label">${p1date||'Payday'}</div>${bar(income, 'tl-income', 'Paycheck')}</div>`;
+
+  // Extra incomes in cycle 1
+  extraIncomes.filter(ei => resolveExtraIncomeCycle(ei) === 1).forEach(ei => {
+    const ds = ei.date ? fmtDateShort(parseLocalDate(ei.date)) : '';
+    html += `<div class="tl-row"><div class="tl-label">Inflow</div>${bar(ei.amount, 'tl-extra', ei.label || 'extra', ds)}</div>`;
+  });
+
   if (bills > 0) html += `<div class="tl-row"><div class="tl-label">Bills</div>${bar(bills, 'tl-debt', 'Bills')}</div>`;
-  afterLoans.forEach(l => { html += `<div class="tl-row"><div class="tl-label">Pay Off</div>${bar(l.owed, 'tl-debt', l.name)}</div>`; });
+  afterLoans.forEach(l => {
+    const ds = l.dueDateMode === 'date' && l.dueDate ? fmtDateShort(parseLocalDate(l.dueDate)) : '';
+    html += `<div class="tl-row"><div class="tl-label">Pay Off</div>${bar(l.owed, 'tl-debt', l.name, ds)}</div>`;
+  });
   allLoans.filter(l => l.reuse === 'instant' && l.max > 0).forEach(l => {
     html += `<div class="tl-row"><div class="tl-label">Re-borrow</div>${bar(l.max, 'tl-borrow', l.name)}</div>`;
   });
@@ -1264,18 +1584,16 @@ function renderTimeline(income, cash, bills, allLoans, beforeLoans, afterLoans) 
   el.innerHTML = html;
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // STRATEGY GENERATOR
-// ═══════════════════════════════════════════════════════════
-function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, damage) {
-  const container    = document.getElementById('strategy-cards');
-  const cards        = [];
-  const net          = income - bills - allLoans.reduce((s, l) => s + l.owed, 0);
-  const instantLoans = allLoans.filter(l => l.reuse === 'instant');
-  const delayedLoans = allLoans.filter(l => l.reuse === 'delayed');
+// ═══════════════════════════════════════════════
+function generateStrategies(income, cash, bills, allLoans, isRecovery, failedNames, damage) {
+  const container       = document.getElementById('strategy-cards');
+  const cards           = [];
+  const net             = income - bills - allLoans.reduce((s, l) => s + l.owed, 0);
+  const instantLoans    = allLoans.filter(l => l.reuse === 'instant');
   const totalInstantMax = instantLoans.reduce((s, l) => s + l.max, 0);
 
-  // LIQUIDITY SHUFFLE
   if (instantLoans.length > 1) {
     const sorted  = [...instantLoans].sort((a, b) => b.max - a.max);
     const hub     = sorted[0];
@@ -1286,12 +1604,11 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
       if (others.length) steps += `2. Pay smaller flexible apps (${others.map(l => l.name).join(', ')}) and re-borrow only if needed.\n`;
       steps += `3. Quickly borrow from ${hub.name} to knock out the expensive or rigid apps`;
       if (targets.length) steps += ` (${targets.map(l => l.name).join(', ')})`;
-      steps += `.\n4. Stop there — don't max ${hub.name} out. Keep the remaining limit as your emergency cushion.\n\nWhy: funneling through your biggest flexible app lets you wipe out costly apps while keeping one safety valve open.`;
+      steps += `.\n4. Don't max ${hub.name} out. Keep the remaining limit as your emergency cushion.\n\nWhy: funneling through your biggest flexible app lets you wipe out costly apps while keeping one safety valve open.`;
       cards.push({ title:'ADVANCED: LIQUIDITY SHUFFLE', cls:'s-blue', steps });
     }
   }
 
-  // STANDARD RE-BORROW LOOP
   if (instantLoans.length > 0) {
     const steps = instantLoans.sort((a, b) => a.owed - b.owed).map((l, i) =>
       `${i + 1}. Pay ${l.name} ($${l.owed.toFixed(2)}) → re-borrow $${l.max.toFixed(2)} right back`
@@ -1303,8 +1620,7 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
     });
   }
 
-  // REDUCE LOAN COUNT
-  if (damage > 30 || failed.length > 0) {
+  if (damage > 30 || failedNames.length > 0) {
     const sorted = [...allLoans].sort((a, b) => a.owed - b.owed);
     const steps  = sorted.map((l, i) =>
       `${i + 1}. ${l.reuse === 'instant' ? '[Can re-borrow]' : '[One-time payoff]'} ${l.name} — $${l.owed.toFixed(2)}`
@@ -1312,17 +1628,16 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
     cards.push({
       title: 'DROP YOUR LOAN COUNT',
       cls:   's-warn',
-      steps: steps + '\n\nFewer active apps = less pressure every payday. Focus on clearing the smallest first, then stop re-borrowing from those.'
+      steps: steps + '\n\nFewer active apps = less pressure every payday. Clear smallest first, then stop re-borrowing from those.'
     });
   }
 
-  // EMERGENCY PLAN
   if (isRecovery) {
     const smallest = [...allLoans].sort((a, b) => a.owed - b.owed).slice(0, 2);
     cards.push({
       title: 'EMERGENCY PLAN — YOU\'RE SHORT',
       cls:   's-danger',
-      steps: `You don't have enough to cover everything. Some payments will be late — that's okay right now.\n\nWHEN YOUR CHECK ARRIVES — do this in order:\n` +
+      steps: `You don't have enough to cover everything. Some payments will be late — that's okay right now.\n\nWHEN YOUR CHECK ARRIVES:\n` +
         smallest.map((l, i) => `  ${i + 1}. Pay ${l.name} ($${l.owed.toFixed(2)}) first.`).join('\n') +
         `\n  3. Put whatever's left toward your biggest remaining balance.\n  4. Don't try to fix everything at once.\n\nOne step at a time.`
     });
@@ -1331,7 +1646,7 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
       <div style="color:var(--red);font-family:'VT323',monospace;font-size:16px;letter-spacing:2px;margin-bottom:8px">⚠ YOU ARE OVER-EXTENDED</div>
       <div>You have more owed than your paycheck can cover. Here's what to do when your check hits:</div><br>
       ${smallest.map((l, i) => `<div style="color:var(--green)">  ${i + 1}. Pay <strong>${l.name}</strong> ($${l.owed.toFixed(2)}) first — this re-opens your re-borrow option.</div>`).join('')}
-      <br><div style="color:var(--amber)">Do not try to pay everything. Clear the smallest ones and leave the rest for next cycle. You'll get out — just not all at once.</div>
+      <br><div style="color:var(--amber)">Do not try to pay everything. Clear the smallest ones and leave the rest for next cycle.</div>
     `;
   } else {
     document.getElementById('recovery-output').innerHTML = `<span style="color:var(--green)">✓ You're not in emergency territory this cycle. Keep going.</span>`;
@@ -1346,43 +1661,69 @@ function generateStrategies(income, cash, bills, allLoans, isRecovery, failed, d
     : '<div class="out-dim" style="font-size:11px;padding:8px">// Run your plan first to see options here.</div>';
 }
 
-// ═══════════════════════════════════════════════════════════
-// DECISION GATE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// DECISION GATE  (now includes fee + date math)
+// ═══════════════════════════════════════════════
 function runDecisionGate() {
-  const amount  = parseFloat(document.getElementById('gate-amount').value) || 0;
-  const appName = document.getElementById('gate-app').value.trim() || 'this app';
-  const days    = parseInt(document.getElementById('gate-days').value) || 14;
-  const income  = parseFloat(document.getElementById('income-c1').value) || 0;
-  const bills   = parseFloat(document.getElementById('bills-c1').value) || 0;
-  const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
+  const amount   = parseFloat(document.getElementById('gate-amount').value) || 0;
+  const appName  = document.getElementById('gate-app').value.trim() || 'this app';
+  const fee      = parseFloat(document.getElementById('gate-fee').value) || 0;
+  const dueDateV = document.getElementById('gate-due-date').value;
+  const daysV    = parseInt(document.getElementById('gate-days').value) || 14;
 
-  // After paying this back, how much do you have left?
-  const projectedBalance = income - bills - totalOwed - amount;
+  let daysUntilDue = daysV;
+  if (dueDateV) {
+    const now  = new Date();
+    now.setHours(0,0,0,0);
+    const due  = parseLocalDate(dueDateV);
+    daysUntilDue = Math.max(0, Math.round((due - now) / 86400000));
+  }
+
+  const income     = parseFloat(document.getElementById('income-c1').value) || 0;
+  const bills      = parseFloat(document.getElementById('bills-c1').value) || 0;
+  const totalOwed  = loans.reduce((s, l) => s + l.owed, 0);
+  const totalCost  = amount + fee;
+
+  // Extra income available before due date
+  let extraBeforeDue = 0;
+  if (paydayDates[0]) {
+    extraIncomes.forEach(ei => {
+      if (!ei.date) return;
+      const eiD = parseLocalDate(ei.date);
+      const dueD = dueDateV ? parseLocalDate(dueDateV) : addDays(new Date(), daysUntilDue);
+      if (eiD <= dueD) extraBeforeDue += ei.amount;
+    });
+  }
+
+  const projectedBalance = income + extraBeforeDue - bills - totalOwed - totalCost;
 
   let out = `<span class="out-dim">── BORROW CHECK: ${appName.toUpperCase()} ──</span>\n\n`;
   out += `<span class="out-info">You want: $${amount.toFixed(2)} from ${appName}</span>\n`;
-  out += `<span class="out-dim">Pay-back deadline: ~${days} days</span>\n\n`;
-  out += `<span class="out-dim">Your next paycheck:        $${income.toFixed(2)}</span>\n`;
-  out += `<span class="out-dim">Bills coming out:         -$${bills.toFixed(2)}</span>\n`;
-  out += `<span class="out-dim">Other apps you owe:       -$${totalOwed.toFixed(2)}</span>\n`;
-  out += `<span class="out-dim">This borrow you'd owe:    -$${amount.toFixed(2)}</span>\n`;
+  if (fee > 0) out += `<span class="out-warn">Fee: $${fee.toFixed(2)} — total cost $${totalCost.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">Due back in: ~${daysUntilDue} days${dueDateV ? ' ('+fmtDate(parseLocalDate(dueDateV))+')' : ''}</span>\n\n`;
+  out += `<span class="out-dim">Next paycheck:               $${income.toFixed(2)}</span>\n`;
+  if (extraBeforeDue > 0)
+    out += `<span class="out-warn">Extra income before due:    +$${extraBeforeDue.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">Bills due:                  -$${bills.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">Other apps owed:            -$${totalOwed.toFixed(2)}</span>\n`;
+  out += `<span class="out-dim">This borrow (+ fee):        -$${totalCost.toFixed(2)}</span>\n`;
   out += `<span class="out-dim">─────────────────────────────</span>\n`;
 
   if (projectedBalance >= 0) {
-    out += `<span class="out-ok">Estimated leftover:  +$${projectedBalance.toFixed(2)}</span>\n\n`;
+    out += `<span class="out-ok">Estimated leftover: +$${projectedBalance.toFixed(2)}</span>\n\n`;
     out += `<span class="out-ok">✓ LOOKS MANAGEABLE — you should be able to pay this back without going negative.</span>`;
+    if (fee > 0) out += `\n<span class="out-warn">Note: the $${fee.toFixed(2)} fee reduces your buffer. Borrow only what you actually need.</span>`;
   } else {
     out += `<span class="out-danger">Estimated shortfall: -$${Math.abs(projectedBalance).toFixed(2)}</span>\n\n`;
-    out += `<span class="out-danger">✗ DO NOT BORROW — after paying this back you'll be $${Math.abs(projectedBalance).toFixed(2)} short, which means you'll have to borrow again to survive. That makes the cycle worse.</span>`;
+    out += `<span class="out-danger">✗ DO NOT BORROW — you'll be $${Math.abs(projectedBalance).toFixed(2)} short after paying this back. That forces another borrow, making the cycle worse.</span>`;
   }
 
   document.getElementById('gate-output').innerHTML = out;
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // CYCLE TRACKER
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function updateCycleTrackerUI() {
   const grid = document.getElementById('cycle-grid');
   if (!loans.length) {
@@ -1424,10 +1765,7 @@ function logCycleEvent() {
 
 function renderCycleLog() {
   const el = document.getElementById('cycle-log');
-  if (!cycleLog.length) {
-    el.innerHTML = '<span class="out-dim">// Nothing recorded yet</span>';
-    return;
-  }
+  if (!cycleLog.length) { el.innerHTML = '<span class="out-dim">// Nothing recorded yet</span>'; return; }
   const labels = { paid:'Paid back', reborrowed:'Borrowed again from', partial:'Partial payment to', missed:'Missed payment on' };
   el.innerHTML = cycleLog.map(e => {
     const cls = e.action==='paid' ? 'out-ok' : e.action==='reborrowed' ? 'out-info' : e.action==='missed' ? 'out-danger' : 'out-warn';
@@ -1441,9 +1779,9 @@ function clearCycleLog() {
   renderCycleLog();
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // NAVIGATION
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1455,9 +1793,9 @@ function switchTab(id) {
   if (id === 'settings') { onProviderChange(); refreshDataPreview(); }
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // EXPORT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 function triggerDownload(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url  = URL.createObjectURL(blob);
@@ -1490,8 +1828,8 @@ function exportTXT() {
 }
 
 function exportCSV() {
-  const rows = ['App Name,Owed,Max Borrow,Fee,Timing,Due Cycle'];
-  loans.forEach(l => rows.push(`"${l.name}",${l.owed},${l.max},${l.fee},${l.pullTiming},${l.dueCycle}`));
+  const rows = ['App Name,Owed,Max Borrow,Fee,Due Date Mode,Due Date,Due Cycle,Timing'];
+  loans.forEach(l => rows.push(`"${l.name}",${l.owed},${l.max},${l.fee},"${l.dueDateMode}","${l.dueDate}",${l.dueCycle},"${l.pullTiming}"`));
   triggerDownload(`survival_loans_${new Date().toISOString().slice(0,10)}.csv`, rows.join('\n'), 'text/csv');
 }
 
@@ -1508,15 +1846,15 @@ function exportJSON() {
     cashOnHand:   document.getElementById('cash-on-hand').value,
     exitMonths:   document.getElementById('exit-months').value,
     priorityMode: document.getElementById('priority-mode').value,
-    loans, cycleCounts, cycleLog,
+    loans, extraIncomes, cycleCounts, cycleLog,
     exportedAt: new Date().toISOString()
   };
   triggerDownload(`survival_backup_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(data, null, 2), 'application/json');
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // AI / CHAT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 const PROVIDER_CONFIG = {
   anthropic: {
     label:'Anthropic (Claude)', keyLabel:'Anthropic API Key', placeholder:'sk-ant-...',
@@ -1556,10 +1894,6 @@ function getProvider() {
 function getApiKey() {
   return sessionStorage.getItem('se_key_' + getProvider()) || '';
 }
-function getDefaultModel(provider) {
-  const cfg = PROVIDER_CONFIG[provider];
-  return cfg ? cfg.models[0].v : 'claude-sonnet-4-20250514';
-}
 
 function onProviderChange() {
   const provider = getProvider();
@@ -1588,9 +1922,9 @@ function onProviderChange() {
 
   if (statusEl) {
     const key = getApiKey();
-    if (key.length > 10) { statusEl.textContent = cfg.label + ' key loaded.'; statusEl.className = 'api-status ok'; }
-    else if (cfg.corsBlocked) { statusEl.textContent = 'Note: ' + cfg.label + ' may be blocked by browser CORS. Try Groq for free.'; statusEl.className = 'api-status error'; }
-    else { statusEl.textContent = 'No key yet for ' + cfg.label + '.'; statusEl.className = 'api-status info'; }
+    if (key.length > 10)       { statusEl.textContent = cfg.label + ' key loaded.'; statusEl.className = 'api-status ok'; }
+    else if (cfg.corsBlocked)  { statusEl.textContent = 'Note: '+cfg.label+' may be blocked by browser CORS. Try Groq for free.'; statusEl.className = 'api-status error'; }
+    else                       { statusEl.textContent = 'No key yet for '+cfg.label+'.'; statusEl.className = 'api-status info'; }
   }
 
   updateApiIndicator();
@@ -1623,7 +1957,7 @@ function updateApiIndicator() {
 }
 
 function updateChatContextBar() {
-  const income   = parseFloat(document.getElementById('income-c1').value) || 0;
+  const income    = parseFloat(document.getElementById('income-c1').value) || 0;
   const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
   const p1 = document.getElementById('ctx-income-pill');
   const p2 = document.getElementById('ctx-loans-pill');
@@ -1640,9 +1974,13 @@ function buildContextSummary() {
   const cash = parseFloat(document.getElementById('cash-on-hand').value) || 0;
   const totalOwed = loans.reduce((s, l) => s + l.owed, 0);
   const totalMax  = loans.filter(l => l.reuse === 'instant').reduce((s, l) => s + l.max, 0);
-  const loanLines = loans.map(l => `  - ${l.name}: owe $${l.owed.toFixed(2)}, max $${l.max.toFixed(2)}, fee $${l.fee.toFixed(2)}, ${l.reuse}, due cycle ${l.dueCycle}`);
-  const simNote   = lastResult ? ` | After 3 cycles: $${lastResult.balance.toFixed(2)} balance, stress ${lastResult.damageScore}/100` : '';
-  return `Income: [${inc.map(v=>'$'+v.toFixed(2)).join(', ')}], Bills: [${bill.map(v=>'$'+v.toFixed(2)).join(', ')}], Cash: $${cash.toFixed(2)}, Total owed: $${totalOwed.toFixed(2)}, Total re-borrow capacity: $${totalMax.toFixed(2)}${simNote} | Loans:\n${loanLines.join('\n')}`;
+  const loanLines = loans.map(l => {
+    const due = l.dueDateMode === 'date' && l.dueDate ? `due ${l.dueDate}` : `cycle ${l.dueCycle}`;
+    return `  - ${l.name}: owe $${l.owed.toFixed(2)}, max $${l.max.toFixed(2)}, fee $${l.fee.toFixed(2)}, ${l.reuse}, ${due}`;
+  });
+  const extraLines = extraIncomes.map(e => `  - ${e.label||'income'}: $${e.amount.toFixed(2)} on ${e.date}`);
+  const simNote    = lastResult ? ` | After 3 cycles: $${lastResult.balance.toFixed(2)} balance, stress ${lastResult.damageScore}/100` : '';
+  return `Income: [${inc.map(v=>'$'+v.toFixed(2)).join(', ')}], Bills: [${bill.map(v=>'$'+v.toFixed(2)).join(', ')}], Cash: $${cash.toFixed(2)}, Total owed: $${totalOwed.toFixed(2)}, Total re-borrow capacity: $${totalMax.toFixed(2)}${simNote}\nLoans:\n${loanLines.join('\n')}${extraLines.length ? '\nExtra income:\n'+extraLines.join('\n') : ''}`;
 }
 
 function refreshDataPreview() {
@@ -1702,9 +2040,8 @@ async function sendChat() {
   const toneEl   = document.getElementById('ai-tone');
   const tone     = toneEl ? (toneMap[toneEl.value] || toneMap.friendly) : toneMap.friendly;
   const modelEl  = document.getElementById('ai-model');
-  let   model    = modelEl ? modelEl.value : getDefaultModel(provider);
+  let   model    = modelEl ? modelEl.value : 'claude-sonnet-4-20250514';
 
-  // Guard against mismatched model/provider
   if (provider === 'openai'   && !model.startsWith('gpt'))          model = 'gpt-4o';
   if (provider === 'google'   && !model.startsWith('gemini'))        model = 'gemini-1.5-flash';
   if (provider === 'groq'     && model.startsWith('claude'))         model = 'llama-3.3-70b-versatile';
@@ -1744,7 +2081,6 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
     if (!res.ok) return { ok:false, error:data.error?.message||'OpenAI error' };
     return { ok:true, text:data.choices?.[0]?.message?.content || '(no response)' };
   }
-
   if (provider === 'google') {
     const res  = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model||'gemini-1.5-flash'}:generateContent?key=${key}`, {
       method:'POST',
@@ -1759,7 +2095,6 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
     if (!res.ok) return { ok:false, error:data.error?.message||'Google API error' };
     return { ok:true, text:data.candidates?.[0]?.content?.parts?.[0]?.text || '(no response)' };
   }
-
   if (provider === 'groq') {
     const res  = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method:'POST',
@@ -1770,7 +2105,6 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
     if (!res.ok) return { ok:false, error:data.error?.message||'Groq error' };
     return { ok:true, text:data.choices?.[0]?.message?.content || '(no response)' };
   }
-
   if (provider === 'deepseek') {
     try {
       const res  = await fetch('https://api.deepseek.com/chat/completions', {
@@ -1783,7 +2117,6 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
       return { ok:true, text:data.choices?.[0]?.message?.content || '(no response)' };
     } catch { return { ok:false, error:'DeepSeek is blocked by browser CORS. Use Groq instead (free).' }; }
   }
-
   // Default: Anthropic
   const res  = await fetch('https://api.anthropic.com/v1/messages', {
     method:'POST',
@@ -1800,9 +2133,9 @@ async function callAI(provider, key, model, systemPrompt, messages, maxTokens) {
   return { ok:true, text:data.content?.[0]?.text || '(no response)' };
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // BOOT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
