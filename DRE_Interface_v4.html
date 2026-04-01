@@ -516,7 +516,7 @@ const PROVIDERS = {
   deepseek: { ep:'https://api.deepseek.com',                    model:'deepseek-chat',         key:'', label:'DEEPSEEK' },
   claude:   { ep:'https://api.anthropic.com',                   model:'claude-sonnet-4-20250514', key:'', label:'CLAUDE' },
   gemini:   { ep:'https://generativelanguage.googleapis.com',   model:'gemini-2.0-flash',      key:'', label:'GEMINI' },
-  groq:     { ep:'https://api.groq.com/openai/v1',              model:'llama3-8b-8192',        key:'', label:'GROQ' },
+  groq:     { ep:'https://api.groq.com/openai/v1',              model:'llama-3.3-70b-versatile', key:'', label:'GROQ' },
   custom:   { ep:'',                                            model:'',                      key:'', label:'CUSTOM' }
 };
 
@@ -615,14 +615,23 @@ async function send(){
     const provider=S.provider||'local';
 
     if(provider==='claude'){
-      const hdrs={'Content-Type':'application/json','x-api-key':S.key,'anthropic-version':'2023-06-01'};
+      // Anthropic supports direct browser access via a special header
+      const hdrs={
+        'Content-Type':'application/json',
+        'x-api-key':S.key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      };
       const sysMsg=history.find(m=>m.role==='system');
       const msgs=history.filter(m=>m.role!=='system');
       const body={model:S.model,max_tokens:4096,messages:msgs};
       if(sysMsg)body.system=sysMsg.content;
       const claudeBase=S.ep.replace(/\/(v1\/?)?$/,'');
       const res=await fetch(claudeBase+'/v1/messages',{method:'POST',mode:'cors',headers:hdrs,body:JSON.stringify(body)});
-      if(!res.ok)throw new Error('HTTP '+res.status);
+      if(!res.ok){
+        const errBody=await res.json().catch(()=>({}));
+        throw new Error('HTTP '+res.status+(errBody?.error?.message?' — '+errBody.error.message:''));
+      }
       const data=await res.json();
       reply=data.content?.[0]?.text||'No response.';
 
@@ -647,7 +656,10 @@ async function send(){
         method:'POST',mode:'cors',headers:hdrs,
         body:JSON.stringify({model:S.model,messages:history,temperature:0.7,max_tokens:4096,stream:false})
       });
-      if(!res.ok)throw new Error('HTTP '+res.status);
+      if(!res.ok){
+        const errBody=await res.json().catch(()=>({}));
+        throw new Error('HTTP '+res.status+(errBody?.error?.message?' — '+errBody.error.message:''));
+      }
       const data=await res.json();
       reply=data.choices?.[0]?.message?.content||'No response.';
     }
