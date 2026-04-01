@@ -722,10 +722,6 @@ function pinPress(digit){
   pinEntry += digit;
   updatePinDots();
   if(pinEntry.length === PIN_LENGTH) {
-    // Create & load audio RIGHT HERE inside the user gesture so browser grants permission
-    window._dreAudio = new Audio('dre_voice_intro.mp3');
-    window._dreAudio.volume = 1.0;
-    window._dreAudio.load();
     checkPin();
   }
 }
@@ -744,11 +740,30 @@ function updatePinDots(){
 }
 
 async function checkPin(){
+  // Start audio playback HERE — still within the synchronous user-gesture frame,
+  // before the await below suspends execution and forfeits gesture trust.
+  let audioPlayPromise = null;
+  try {
+    if (!window._dreAudio) {
+      window._dreAudio = new Audio('dre_voice_intro.mp3');
+      window._dreAudio.volume = 1.0;
+    }
+    audioPlayPromise = window._dreAudio.play();
+  } catch(e) {}
+
   const hash = await sha1(pinEntry);
   if(hash === PIN_HASH){
     document.getElementById('pin-screen').classList.add('hidden');
-    playWelcomeAudio();
+    // Audio already started above; nothing more needed.
   } else {
+    // Wrong PIN — pause and reset the audio so it's ready for the next correct attempt
+    if (audioPlayPromise) {
+      audioPlayPromise.then(() => {
+        window._dreAudio.pause();
+        window._dreAudio.currentTime = 0;
+      }).catch(()=>{});
+    }
+    window._dreAudio = null; // reset so it's recreated fresh on next attempt
     for(let i=0;i<PIN_LENGTH;i++) document.getElementById('pd'+i).className='pin-dot error';
     document.getElementById('pin-msg').textContent='INCORRECT PIN';
     setTimeout(()=>{
@@ -763,12 +778,6 @@ async function checkPin(){
 document.addEventListener('keydown', e=>{
   if(document.getElementById('pin-screen').classList.contains('hidden')) return;
   if(e.key>='0'&&e.key<='9') {
-    // Pre-load audio inside this keyboard gesture too
-    if(!window._dreAudio) {
-      window._dreAudio = new Audio('dre_voice_intro.mp3');
-      window._dreAudio.volume = 1.0;
-      window._dreAudio.load();
-    }
     pinPress(e.key);
   }
   if(e.key==='Backspace') pinDel();
