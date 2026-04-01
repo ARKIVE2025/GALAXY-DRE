@@ -6,7 +6,7 @@
   <title>Galaxy Dre — Coming Soon</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -24,6 +24,9 @@
       --text-dim:      #7a84aa;
       --accent-cyan:   #00f5ff;
       --graffiti-blue: #2255ee;
+      --terminal-green:#00ff88;
+      --terminal-dim:  #006633;
+      --danger-red:    #ff2244;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -53,7 +56,7 @@
       position: fixed;
       width: 32px; height: 32px;
       border-radius: 50%;
-      border: 1px solid rgba(0, 170, 255, 0.45);
+      border: 1px solid rgba(0,170,255,0.45);
       pointer-events: none;
       z-index: 99998;
       transform: translate(-50%, -50%);
@@ -80,7 +83,6 @@
         linear-gradient(180deg, #03020a 0%, #060318 40%, #03020a 100%);
     }
 
-    /* ── CONCRETE TEXTURE OVERLAY ── */
     .concrete-overlay {
       position: fixed;
       inset: 0;
@@ -91,22 +93,18 @@
       pointer-events: none;
     }
 
-    /* subtle horizontal scan lines — urban/screen feel */
     .scanlines {
       position: fixed;
       inset: 0;
       z-index: 2;
       pointer-events: none;
       background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0,0,0,0.08) 3px,
-        rgba(0,0,0,0.08) 4px
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px
       );
     }
 
-    /* ── MAIN WRAPPER ── */
+    /* ── MAIN PAGE ── */
     .page {
       position: relative;
       z-index: 10;
@@ -118,7 +116,7 @@
       padding: 40px 20px 60px;
     }
 
-    /* ── TOP NAV STRIP ── */
+    /* ── TOP NAV ── */
     .top-bar {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -155,11 +153,31 @@
       pointer-events: auto;
       cursor: none;
       transition: color 0.2s, text-shadow 0.2s;
+      position: relative;
     }
-    
+
     .access-trigger:hover {
       color: var(--accent-cyan);
       text-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    /* pulsing indicator on the button */
+    .access-trigger::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -14px;
+      transform: translateY(-50%);
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--terminal-green);
+      box-shadow: 0 0 8px var(--terminal-green);
+      animation: accessPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes accessPulse {
+      0%,100% { opacity:1; transform:translateY(-50%) scale(1); }
+      50%      { opacity:0.3; transform:translateY(-50%) scale(0.6); }
     }
 
     .nav-dot {
@@ -175,17 +193,12 @@
       50%       { opacity: 0.4; transform: scale(0.7); }
     }
 
-    /* ── GRAFFITI ACCENT (SVG path — subtle, decorative) ── */
-    .graffiti-tag {
-      position: absolute;
-      opacity: 0.12;
-      pointer-events: none;
-      filter: blur(0.4px);
-    }
+    /* ── GRAFFITI ── */
+    .graffiti-tag { position: absolute; opacity: 0.12; pointer-events: none; filter: blur(0.4px); }
     .graffiti-tag.left  { left: -10px; top: 18%; transform: rotate(-8deg); }
     .graffiti-tag.right { right: 20px; bottom: 22%; transform: rotate(5deg) scaleX(-1); }
 
-    /* ── HERO SECTION ── */
+    /* ── HERO ── */
     .hero {
       text-align: center;
       max-width: 900px;
@@ -193,7 +206,6 @@
       position: relative;
     }
 
-    /* ── GALAXY DRE eyebrow ── */
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -210,10 +222,8 @@
       margin-bottom: 32px;
       animation: fadeSlideUp 0.8s ease both;
     }
-
     .eyebrow-star { font-size: 0.6rem; color: var(--gold); }
 
-    /* ── MAIN TITLE BLOCK ── */
     .title-block {
       position: relative;
       margin-bottom: 14px;
@@ -227,16 +237,10 @@
       letter-spacing: 0.08em;
       line-height: 0.9;
       color: var(--text-main);
-      text-shadow:
-        0 0 60px rgba(26,111,255,0.3),
-        0 0 120px rgba(26,111,255,0.1);
+      text-shadow: 0 0 60px rgba(26,111,255,0.3), 0 0 120px rgba(26,111,255,0.1);
     }
 
-    /* DRE CODE — fiery gradient text, no canvas */
-    .title-drecode-wrap {
-      display: inline-block;
-      position: relative;
-    }
+    .title-drecode-wrap { display: inline-block; position: relative; }
 
     .title-drecode {
       display: block;
@@ -246,38 +250,24 @@
       line-height: 0.88;
       position: relative;
       z-index: 2;
-
-      /* Fiery gradient: deep red → orange → golden yellow → hint of electric blue at peak */
       background: linear-gradient(
         160deg,
-        #1a00ff  0%,
-        #3a00dd  4%,
-        #cc1100  10%,
-        #e83000  18%,
-        #ff4800  26%,
-        #ff7000  36%,
-        #ffaa00  48%,
-        #ffe040  60%,
-        #fff0a0  72%,
-        #ffe040  82%,
-        #ffaa00  90%,
-        #ff6000  96%,
-        #e83000  100%
+        #1a00ff 0%, #3a00dd 4%, #cc1100 10%, #e83000 18%,
+        #ff4800 26%, #ff7000 36%, #ffaa00 48%, #ffe040 60%,
+        #fff0a0 72%, #ffe040 82%, #ffaa00 90%, #ff6000 96%, #e83000 100%
       );
       background-size: 200% 200%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-
-      /* Outer fire glow */
       filter:
-        drop-shadow(0 0 12px rgba(255, 120, 0, 0.95))
-        drop-shadow(0 0 28px rgba(255, 60, 0, 0.75))
-        drop-shadow(0 0 55px rgba(255, 30, 0, 0.45))
-        drop-shadow(0 0 90px rgba(200, 10, 0, 0.25));
+        drop-shadow(0 0 12px rgba(255,120,0,0.95))
+        drop-shadow(0 0 28px rgba(255,60,0,0.75))
+        drop-shadow(0 0 55px rgba(255,30,0,0.45))
+        drop-shadow(0 0 90px rgba(200,10,0,0.25));
+      animation: fireShimmer 3s ease-in-out infinite;
     }
 
-    /* ── TAGLINE ── */
     .tagline {
       font-family: 'Orbitron', sans-serif;
       font-size: clamp(0.75rem, 2vw, 1.05rem);
@@ -299,7 +289,6 @@
       margin-bottom: 40px;
     }
 
-    /* ── DIVIDER ── */
     .divider {
       display: flex;
       align-items: center;
@@ -309,13 +298,8 @@
       animation: fadeSlideUp 1s ease 0.45s both;
     }
     .div-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(26,111,255,0.5), transparent); }
-    .div-icon {
-      font-size: 1rem;
-      color: var(--neon-blue);
-      filter: drop-shadow(0 0 6px var(--neon-blue));
-    }
+    .div-icon { font-size: 1rem; color: var(--neon-blue); filter: drop-shadow(0 0 6px var(--neon-blue)); }
 
-    /* ── FEATURE PILLS ── */
     .features {
       display: flex;
       flex-wrap: wrap;
@@ -354,19 +338,10 @@
     }
     .feat-pill:hover { border-color: rgba(0,245,255,0.5); transform: translateY(-2px); }
     .feat-pill:hover::before { opacity: 1; }
-
-    .feat-icon {
-      font-size: 0.95rem;
-      color: var(--accent-cyan);
-      filter: drop-shadow(0 0 4px var(--accent-cyan));
-    }
+    .feat-icon { font-size: 0.95rem; color: var(--accent-cyan); filter: drop-shadow(0 0 4px var(--accent-cyan)); }
 
     /* ── COUNTDOWN ── */
-    .countdown-section {
-      margin: 0 auto 48px;
-      animation: fadeSlideUp 1s ease 0.6s both;
-    }
-
+    .countdown-section { margin: 0 auto 48px; animation: fadeSlideUp 1s ease 0.6s both; }
     .countdown-label {
       font-family: 'Orbitron', sans-serif;
       font-size: 0.62rem;
@@ -376,21 +351,8 @@
       text-align: center;
       margin-bottom: 14px;
     }
-
-    .countdown {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      align-items: flex-end;
-    }
-
-    .cd-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
+    .countdown { display: flex; gap: 14px; justify-content: center; align-items: flex-end; }
+    .cd-unit { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .cd-num {
       font-family: 'Orbitron', sans-serif;
       font-size: clamp(1.8rem, 5vw, 3rem);
@@ -405,7 +367,6 @@
       padding: 10px 12px 8px;
       border-radius: 2px;
     }
-
     .cd-sep {
       font-family: 'Orbitron', sans-serif;
       font-size: 1.8rem;
@@ -413,7 +374,6 @@
       color: rgba(26,111,255,0.4);
       padding-bottom: 16px;
     }
-
     .cd-label {
       font-size: 0.6rem;
       letter-spacing: 0.2em;
@@ -429,7 +389,6 @@
       width: 100%;
       margin: 0 auto 20px;
     }
-
     .notify-label {
       font-family: 'Orbitron', sans-serif;
       font-size: 0.65rem;
@@ -439,7 +398,6 @@
       text-align: center;
       margin-bottom: 14px;
     }
-
     .notify-form {
       display: flex;
       gap: 0;
@@ -454,7 +412,6 @@
       border-color: rgba(0,170,255,0.7);
       box-shadow: 0 0 24px rgba(0,100,255,0.2);
     }
-
     .notify-input {
       flex: 1;
       background: transparent;
@@ -467,7 +424,6 @@
       letter-spacing: 0.05em;
     }
     .notify-input::placeholder { color: var(--text-dim); }
-
     .notify-btn {
       background: linear-gradient(135deg, #1a6fff, #0033cc);
       color: #fff;
@@ -487,7 +443,6 @@
       background: linear-gradient(135deg, #00aaff, #1a6fff);
       box-shadow: 0 0 20px rgba(0,170,255,0.4);
     }
-
     .notify-sub {
       text-align: center;
       margin-top: 10px;
@@ -520,7 +475,7 @@
       font-size: 0.65rem;
     }
 
-    /* ── FLOATING GALAXY PARTICLES ── */
+    /* ── PARTICLES ── */
     .particle {
       position: fixed;
       border-radius: 50%;
@@ -528,7 +483,6 @@
       animation: floatParticle linear infinite;
       z-index: 3;
     }
-
     @keyframes floatParticle {
       0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
       10%  { opacity: 0.6; }
@@ -536,18 +490,8 @@
       100% { transform: translateY(-10vh) translateX(var(--drift)) scale(1); opacity: 0; }
     }
 
-    /* ── ANIMATIONS ── */
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(22px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── URBAN CORNER MARKS ── */
-    .corner-mark {
-      position: absolute;
-      width: 20px; height: 20px;
-      pointer-events: none;
-    }
+    /* ── CORNER MARKS ── */
+    .corner-mark { position: absolute; width: 20px; height: 20px; pointer-events: none; }
     .corner-mark.tl { top: 0; left: 0; border-top: 2px solid rgba(0,245,255,0.4); border-left: 2px solid rgba(0,245,255,0.4); }
     .corner-mark.tr { top: 0; right: 0; border-top: 2px solid rgba(0,245,255,0.4); border-right: 2px solid rgba(0,245,255,0.4); }
     .corner-mark.bl { bottom: 0; left: 0; border-bottom: 2px solid rgba(0,245,255,0.4); border-left: 2px solid rgba(0,245,255,0.4); }
@@ -567,65 +511,435 @@
       color: var(--accent-cyan);
     }
 
-    /* ── PASSCODE MODAL ── */
-    .passcode-modal {
+    /* ── ANIMATIONS ── */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fireShimmer {
+      0%   { background-position: 0%   60%; filter: drop-shadow(0 0 12px rgba(255,120,0,0.95)) drop-shadow(0 0 28px rgba(255,60,0,0.75))  drop-shadow(0 0 55px rgba(255,30,0,0.45))  drop-shadow(0 0 90px rgba(200,10,0,0.25)); }
+      25%  { background-position: 60%  20%; filter: drop-shadow(0 0 16px rgba(255,160,0,1))    drop-shadow(0 0 36px rgba(255,80,0,0.85))  drop-shadow(0 0 70px rgba(255,50,0,0.5))   drop-shadow(0 0 110px rgba(220,20,0,0.3)); }
+      50%  { background-position: 100% 80%; filter: drop-shadow(0 0 10px rgba(255,100,0,0.9))  drop-shadow(0 0 22px rgba(255,40,0,0.65))  drop-shadow(0 0 45px rgba(220,10,0,0.38))  drop-shadow(0 0 75px rgba(180,0,0,0.2)); }
+      75%  { background-position: 30%  40%; filter: drop-shadow(0 0 18px rgba(255,180,0,1))    drop-shadow(0 0 40px rgba(255,100,0,0.9))  drop-shadow(0 0 80px rgba(255,60,0,0.55))  drop-shadow(0 0 120px rgba(230,30,0,0.32)); }
+      100% { background-position: 0%   60%; filter: drop-shadow(0 0 12px rgba(255,120,0,0.95)) drop-shadow(0 0 28px rgba(255,60,0,0.75))  drop-shadow(0 0 55px rgba(255,30,0,0.45))  drop-shadow(0 0 90px rgba(200,10,0,0.25)); }
+    }
+
+    /* ════════════════════════════════════════════════════════
+       PORTAL MODAL — FULL REDESIGN
+       Terminal-style classified system breach UI
+    ════════════════════════════════════════════════════════ */
+
+    .portal-modal {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 999999;
-      background: rgba(3,2,10,0.9);
-      backdrop-filter: blur(15px);
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      animation: fadeIn 0.3s ease;
     }
 
-    .passcode-modal-content {
-      max-width: 400px;
-      width: 100%;
-      padding: 30px;
-      text-align: center;
+    /* Dark void behind the terminal */
+    .portal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(6px) brightness(0.4);
+      animation: backdropIn 0.4s ease both;
     }
 
-    .close-btn {
-      margin-top: 25px;
-      background: none;
-      border: none;
-      color: var(--text-dim);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 0.8rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
+    @keyframes backdropIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Interference scanlines that sweep during open */
+    .portal-interference {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,255,136,0.015) 2px,
+        rgba(0,255,136,0.015) 4px
+      );
+      z-index: 1;
+    }
+
+    /* Main terminal window */
+    .portal-terminal {
+      position: relative;
+      z-index: 2;
+      width: min(520px, 92vw);
+      background: #010a05;
+      border: 1px solid rgba(0,255,136,0.25);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0,255,136,0.08),
+        0 0 40px rgba(0,255,136,0.12),
+        0 0 80px rgba(0,255,136,0.06),
+        inset 0 0 60px rgba(0,20,10,0.8);
+      animation: terminalIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes terminalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(16px); filter: blur(4px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0); }
+    }
+
+    /* Glitch flicker on open */
+    .portal-terminal.glitching {
+      animation: terminalIn 0.5s cubic-bezier(0.22,1,0.36,1) both, glitchFlicker 0.6s 0.1s ease both;
+    }
+
+    @keyframes glitchFlicker {
+      0%   { filter: blur(0) brightness(1); }
+      15%  { filter: blur(1px) brightness(2) hue-rotate(20deg); transform: translateX(-2px) scale(1); }
+      30%  { filter: blur(0) brightness(1); transform: translateX(0); }
+      45%  { filter: blur(0.5px) brightness(1.8); transform: translateX(3px); }
+      60%  { filter: blur(0) brightness(1); transform: translateX(0); }
+      75%  { filter: blur(0.3px) brightness(1.4); }
+      100% { filter: blur(0) brightness(1); }
+    }
+
+    /* Top chrome bar with traffic lights */
+    .terminal-chrome {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(0,20,10,0.9);
+      border-bottom: 1px solid rgba(0,255,136,0.1);
+    }
+
+    .chrome-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .chrome-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .chrome-dot.red    { background: #ff5f57; box-shadow: 0 0 6px rgba(255,95,87,0.5); cursor: none; pointer-events: auto; }
+    .chrome-dot.yellow { background: #ffbd2e; box-shadow: 0 0 6px rgba(255,189,46,0.4); }
+    .chrome-dot.green  { background: #28ca41; box-shadow: 0 0 6px rgba(40,202,65,0.4); }
+
+    .chrome-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: rgba(0,255,136,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .chrome-close-x {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: rgba(0,255,136,0.3);
       cursor: none;
       pointer-events: auto;
       transition: color 0.2s;
+      padding: 2px 6px;
+    }
+    .chrome-close-x:hover { color: var(--danger-red); }
+
+    /* The scrolling terminal output area */
+    .terminal-output {
+      padding: 20px 22px 16px;
+      min-height: 200px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem;
+      line-height: 1.8;
+      color: rgba(0,255,136,0.75);
+      overflow-y: auto;
+      max-height: 260px;
     }
 
-    .close-btn:hover {
-      color: var(--text-main);
+    .t-line {
+      display: block;
+      opacity: 0;
+      animation: tLineIn 0.01s forwards;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
+    @keyframes tLineIn {
       to { opacity: 1; }
     }
 
-    /* Fire shimmer — gradient shifts position to simulate heat movement */
-    @keyframes fireShimmer {
-      0%   { background-position: 0%   60%; filter: drop-shadow(0 0 12px rgba(255,120,0,0.95)) drop-shadow(0 0 28px rgba(255,60,0,0.75)) drop-shadow(0 0 55px rgba(255,30,0,0.45)) drop-shadow(0 0 90px rgba(200,10,0,0.25)); }
-      25%  { background-position: 60%  20%; filter: drop-shadow(0 0 16px rgba(255,160,0,1))    drop-shadow(0 0 36px rgba(255,80,0,0.85))  drop-shadow(0 0 70px rgba(255,50,0,0.5))  drop-shadow(0 0 110px rgba(220,20,0,0.3)); }
-      50%  { background-position: 100% 80%; filter: drop-shadow(0 0 10px rgba(255,100,0,0.9))  drop-shadow(0 0 22px rgba(255,40,0,0.65))  drop-shadow(0 0 45px rgba(220,10,0,0.38)) drop-shadow(0 0 75px rgba(180,0,0,0.2)); }
-      75%  { background-position: 30%  40%; filter: drop-shadow(0 0 18px rgba(255,180,0,1))    drop-shadow(0 0 40px rgba(255,100,0,0.9))  drop-shadow(0 0 80px rgba(255,60,0,0.55)) drop-shadow(0 0 120px rgba(230,30,0,0.32)); }
-      100% { background-position: 0%   60%; filter: drop-shadow(0 0 12px rgba(255,120,0,0.95)) drop-shadow(0 0 28px rgba(255,60,0,0.75))  drop-shadow(0 0 55px rgba(255,30,0,0.45)) drop-shadow(0 0 90px rgba(200,10,0,0.25)); }
+    .t-dim   { color: rgba(0,255,136,0.35); }
+    .t-bright{ color: var(--terminal-green); }
+    .t-warn  { color: var(--gold); }
+    .t-error { color: var(--danger-red); }
+    .t-cyan  { color: var(--accent-cyan); }
+    .t-white { color: rgba(255,255,255,0.85); }
+
+    /* blinking cursor */
+    .t-cursor {
+      display: inline-block;
+      width: 8px; height: 1em;
+      background: var(--terminal-green);
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+      margin-left: 2px;
     }
-    .title-drecode { animation: fireShimmer 3s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* Divider line in terminal */
+    .t-divider {
+      border: none;
+      border-top: 1px solid rgba(0,255,136,0.12);
+      margin: 12px 0;
+    }
+
+    /* ── INPUT ZONE ── */
+    .terminal-input-zone {
+      padding: 0 22px 22px;
+    }
+
+    .input-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: rgba(0,255,136,0.45);
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-label-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--terminal-green);
+      box-shadow: 0 0 6px var(--terminal-green);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    /* The passcode input row */
+    .pass-row {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid rgba(0,255,136,0.3);
+      border-radius: 2px;
+      overflow: hidden;
+      background: rgba(0,10,5,0.8);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .pass-row:focus-within {
+      border-color: rgba(0,255,136,0.7);
+      box-shadow: 0 0 20px rgba(0,255,136,0.15), inset 0 0 10px rgba(0,20,10,0.5);
+    }
+
+    .pass-row.error-shake {
+      animation: errorShake 0.4s ease;
+      border-color: var(--danger-red) !important;
+      box-shadow: 0 0 20px rgba(255,34,68,0.3) !important;
+    }
+
+    @keyframes errorShake {
+      0%,100% { transform: translateX(0); }
+      15%      { transform: translateX(-6px); }
+      30%      { transform: translateX(6px); }
+      45%      { transform: translateX(-4px); }
+      60%      { transform: translateX(4px); }
+      75%      { transform: translateX(-2px); }
+      90%      { transform: translateX(2px); }
+    }
+
+    .pass-row.success-flash {
+      border-color: var(--accent-cyan) !important;
+      box-shadow: 0 0 30px rgba(0,245,255,0.4) !important;
+      animation: successFlash 0.5s ease;
+    }
+
+    @keyframes successFlash {
+      0%   { background: rgba(0,10,5,0.8); }
+      40%  { background: rgba(0,40,30,0.9); }
+      100% { background: rgba(0,10,5,0.8); }
+    }
+
+    /* Prompt prefix */
+    .pass-prompt {
+      padding: 13px 12px 13px 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--terminal-green);
+      white-space: nowrap;
+      border-right: 1px solid rgba(0,255,136,0.1);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pass-prompt-arrow {
+      color: var(--accent-cyan);
+      animation: promptPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes promptPulse {
+      0%,100% { opacity:1; }
+      50%      { opacity:0.4; }
+    }
+
+    .pass-input-field {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 13px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--terminal-green);
+      letter-spacing: 0.25em;
+    }
+
+    .pass-input-field::placeholder {
+      color: rgba(0,255,136,0.2);
+      letter-spacing: 0.15em;
+    }
+
+    .pass-input-field::-webkit-input-placeholder { color: rgba(0,255,136,0.2); }
+
+    /* The unlock button */
+    .pass-unlock-btn {
+      background: transparent;
+      border: none;
+      border-left: 1px solid rgba(0,255,136,0.15);
+      padding: 13px 18px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(0,255,136,0.5);
+      letter-spacing: 0.12em;
+      cursor: none;
+      pointer-events: auto;
+      transition: all 0.2s;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pass-unlock-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,255,136,0.08), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .pass-unlock-btn:hover {
+      color: var(--terminal-green);
+      text-shadow: 0 0 8px var(--terminal-green);
+    }
+    .pass-unlock-btn:hover::before { opacity: 1; }
+
+    /* Status bar under input */
+    .pass-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(0,255,136,0.3);
+      letter-spacing: 0.08em;
+    }
+
+    .pass-status-msg {
+      transition: color 0.2s, opacity 0.2s;
+    }
+
+    .pass-status-msg.error { color: var(--danger-red); }
+    .pass-status-msg.success { color: var(--accent-cyan); }
+
+    /* ── LOADING BAR that plays on success ── */
+    .access-progress {
+      display: none;
+      margin-top: 18px;
+    }
+
+    .progress-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent-cyan);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar-outer {
+      height: 3px;
+      background: rgba(0,245,255,0.1);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--terminal-green), var(--accent-cyan));
+      box-shadow: 0 0 8px var(--accent-cyan);
+      transition: width 0.05s linear;
+      border-radius: 1px;
+    }
+
+    /* ── CORNER CIRCUIT DECORATION ── */
+    .terminal-corner-tl,
+    .terminal-corner-br {
+      position: absolute;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .terminal-corner-tl {
+      top: 38px; left: 0;
+      width: 60px; height: 60px;
+      border-top: 1px solid rgba(0,255,136,0.15);
+      border-left: 1px solid rgba(0,255,136,0.15);
+    }
+
+    .terminal-corner-br {
+      bottom: 0; right: 0;
+      width: 60px; height: 60px;
+      border-bottom: 1px solid rgba(0,255,136,0.15);
+      border-right: 1px solid rgba(0,255,136,0.15);
+    }
+
+    /* Scan sweep line that crosses terminal on open */
+    .scan-sweep {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,136,0.6), transparent);
+      animation: scanSweep 1.2s ease 0.2s both;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes scanSweep {
+      from { top: 0%;    opacity: 1; }
+      to   { top: 100%;  opacity: 0; }
+    }
+
+    /* Typing animation for terminal lines */
+    .typing-line {
+      overflow: hidden;
+      white-space: nowrap;
+      display: block;
+    }
 
     @media (max-width: 600px) {
       .top-bar, .bottom-strip { padding: 12px 18px; }
       .countdown { gap: 8px; }
       .cd-num { min-width: 54px; font-size: 1.6rem; padding: 8px; }
       .cd-sep { font-size: 1.4rem; }
+      .terminal-output { font-size: 0.72rem; }
     }
   </style>
 </head>
@@ -637,9 +951,9 @@
   <div class="nebula"></div>
   <div class="concrete-overlay"></div>
   <div class="scanlines"></div>
-
   <canvas id="starCanvas"></canvas>
 
+  <!-- TOP NAV -->
   <div class="top-bar">
     <div class="nav-brand">Galaxy Dre</div>
     <div class="nav-right">
@@ -648,42 +962,99 @@
     </div>
   </div>
 
-  <div class="passcode-modal" id="passcodeModal">
-    <div class="passcode-modal-content">
-      <div class="notify-label" style="font-size: 1rem; color: var(--accent-cyan);">Restricted Area</div>
-      <p class="tagline-sub" style="font-size: 0.8rem; margin-bottom: 25px;">Enter passcode to unlock the link.</p>
-      
-      <div class="notify-form">
-        <input class="notify-input" type="password" id="passcodeInput" placeholder="••••••••" style="text-align: center; letter-spacing: 0.2em; font-family: 'Orbitron', sans-serif;">
-        <button class="notify-btn" id="unlockBtn">Unlock</button>
-      </div>
-      
-      <div id="passcodeError" style="color: #ff3c3c; margin-top: 15px; font-size: 0.75rem; font-family: 'Orbitron', sans-serif; letter-spacing: 0.1em; display: none;">
-        [ ERROR: ACCESS DENIED ]
+  <!-- ═══════════════════════════════════════════════════
+       REDESIGNED PORTAL MODAL
+  ════════════════════════════════════════════════════ -->
+  <div class="portal-modal" id="passcodeModal">
+    <div class="portal-backdrop" id="portalBackdrop"></div>
+    <div class="portal-interference"></div>
+
+    <div class="portal-terminal" id="portalTerminal">
+
+      <!-- Scan sweep animation -->
+      <div class="scan-sweep"></div>
+
+      <!-- Corner circuit accents -->
+      <div class="terminal-corner-tl"></div>
+      <div class="terminal-corner-br"></div>
+
+      <!-- Top chrome bar -->
+      <div class="terminal-chrome">
+        <div class="chrome-dots">
+          <div class="chrome-dot red"    id="chromeDotRed"   title="Close"></div>
+          <div class="chrome-dot yellow"></div>
+          <div class="chrome-dot green"></div>
+        </div>
+        <div class="chrome-title">DRE_CORE :: RESTRICTED_ACCESS v9.0</div>
+        <div class="chrome-close-x" id="chromeCloseX">✕</div>
       </div>
 
-      <button class="close-btn" id="closeModalBtn">[ Close System ]</button>
+      <!-- Terminal output -->
+      <div class="terminal-output" id="terminalOutput">
+        <!-- Lines injected by JS -->
+      </div>
+
+      <hr class="t-divider" style="margin: 0 22px;">
+
+      <!-- Input zone -->
+      <div class="terminal-input-zone">
+        <div class="input-label" id="inputLabel">
+          <div class="input-label-dot"></div>
+          <span>AWAITING AUTH TOKEN</span>
+        </div>
+
+        <div class="pass-row" id="passRow">
+          <div class="pass-prompt">
+            <span class="pass-prompt-arrow">▶</span>
+            ROOT@DRE:~$
+          </div>
+          <input
+            class="pass-input-field"
+            type="password"
+            id="passcodeInput"
+            placeholder="enter token..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button class="pass-unlock-btn" id="unlockBtn">[ ENTER ]</button>
+        </div>
+
+        <div class="pass-status">
+          <span class="pass-status-msg" id="passStatusMsg">ENCRYPTION: AES-256 · SESSION KEYED</span>
+          <span id="attemptCount">ATTEMPTS: 0/3</span>
+        </div>
+
+        <!-- Progress bar on success -->
+        <div class="access-progress" id="accessProgress">
+          <div class="progress-label">
+            <span id="progressLabel">ESTABLISHING SECURE TUNNEL...</span>
+            <span id="progressPct">0%</span>
+          </div>
+          <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="progressBarInner"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
+  <!-- MAIN PAGE -->
   <div class="page">
-
-    <svg class="graffiti-tag left" width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg class="graffiti-tag left" width="120" height="60" viewBox="0 0 120 60" fill="none" aria-hidden="true">
       <path d="M8 48 C12 20, 22 8, 35 12 C48 16, 42 38, 55 28 C62 22, 70 14, 80 20 C90 26, 88 44, 96 40 C102 37, 108 28, 112 30" stroke="#2255ee" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.9"/>
       <path d="M14 50 C18 28, 28 14, 38 18" stroke="#1a6fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
       <path d="M60 44 C66 34, 72 26, 80 32 C86 37, 84 46, 90 42" stroke="#00aaff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7"/>
       <circle cx="35" cy="12" r="3" fill="#ffb700" opacity="0.8"/>
       <circle cx="80" cy="20" r="2" fill="#00f5ff" opacity="0.6"/>
     </svg>
-
-    <svg class="graffiti-tag right" width="100" height="50" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg class="graffiti-tag right" width="100" height="50" viewBox="0 0 100 50" fill="none" aria-hidden="true">
       <path d="M6 40 C10 18, 20 6, 30 10 C42 15, 36 32, 48 24 C56 18, 65 10, 74 16 C82 22, 80 38, 88 33" stroke="#2255ee" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.9"/>
       <path d="M18 42 C24 28, 34 16, 44 22" stroke="#1a6fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.5"/>
       <circle cx="30" cy="10" r="2.5" fill="#ffb700" opacity="0.7"/>
     </svg>
 
     <div class="hero">
-
       <div class="corner-mark tl" style="position:absolute;top:-8px;left:-8px;"></div>
       <div class="corner-mark tr" style="position:absolute;top:-8px;right:-8px;"></div>
       <div class="corner-mark bl" style="position:absolute;bottom:-8px;left:-8px;"></div>
@@ -697,12 +1068,10 @@
 
       <div class="title-block">
         <span class="title-galaxy">Tools to</span>
-
         <div class="title-drecode-wrap">
           <span class="title-drecode">Dre Code.</span>
         </div>
-
-        <span class="title-galaxy" style="display:block; font-size: clamp(3.5rem,9vw,7rem); color: var(--accent-cyan); text-shadow: 0 0 40px rgba(0,245,255,0.4);">Liberate.</span>
+        <span class="title-galaxy" style="display:block; font-size:clamp(3.5rem,9vw,7rem); color:var(--accent-cyan); text-shadow:0 0 40px rgba(0,245,255,0.4);">Liberate.</span>
       </div>
 
       <p class="tagline">The code editor built for creators who move different.</p>
@@ -726,25 +1095,13 @@
       <div class="countdown-section">
         <div class="countdown-label">Launching in</div>
         <div class="countdown">
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-days">00</div>
-            <div class="cd-label">Days</div>
-          </div>
+          <div class="cd-unit"><div class="cd-num" id="cd-days">00</div><div class="cd-label">Days</div></div>
           <div class="cd-sep">:</div>
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-hours">00</div>
-            <div class="cd-label">Hours</div>
-          </div>
+          <div class="cd-unit"><div class="cd-num" id="cd-hours">00</div><div class="cd-label">Hours</div></div>
           <div class="cd-sep">:</div>
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-mins">00</div>
-            <div class="cd-label">Mins</div>
-          </div>
+          <div class="cd-unit"><div class="cd-num" id="cd-mins">00</div><div class="cd-label">Mins</div></div>
           <div class="cd-sep">:</div>
-          <div class="cd-unit">
-            <div class="cd-num" id="cd-secs">00</div>
-            <div class="cd-label">Secs</div>
-          </div>
+          <div class="cd-unit"><div class="cd-num" id="cd-secs">00</div><div class="cd-label">Secs</div></div>
         </div>
       </div>
 
@@ -754,13 +1111,13 @@
           <input class="notify-input" type="email" id="emailInput" placeholder="your@email.com" autocomplete="email">
           <button class="notify-btn" id="notifyBtn">Notify Me</button>
         </div>
-        <div class="success-msg" id="successMsg">
-          ✦ You're on the list. The galaxy awaits. ✦
-        </div>
+        <div class="success-msg" id="successMsg">✦ You're on the list. The galaxy awaits. ✦</div>
         <p class="notify-sub">Join <span id="signupCount">1,247</span> others already waiting · No spam · Ever.</p>
       </div>
+    </div>
+  </div>
 
-    </div></div><div class="bottom-strip">
+  <div class="bottom-strip">
     <span>© 2025 Andremethod.com</span>
     <span class="brand-mark">Tools to Liberate</span>
     <span>Dre Code v9</span>
@@ -806,9 +1163,9 @@
     const count = Math.floor((starCanvas.width * starCanvas.height) / 3000);
     for (let i = 0; i < count; i++) {
       stars.push({
-        x:     Math.random() * starCanvas.width,
-        y:     Math.random() * starCanvas.height,
-        r:     Math.random() * 1.5 + 0.2,
+        x: Math.random() * starCanvas.width,
+        y: Math.random() * starCanvas.height,
+        r: Math.random() * 1.5 + 0.2,
         alpha: Math.random(),
         speed: Math.random() * 0.3 + 0.05,
         twinkle: Math.random() * Math.PI * 2,
@@ -827,12 +1184,11 @@
       sCtx.fillStyle = s.color;
       sCtx.globalAlpha = twinkle * s.alpha;
       sCtx.fill();
-      // subtle halo on bigger stars
       if (s.r > 1) {
         sCtx.beginPath();
         sCtx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
         const g = sCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 2.5);
-        g.addColorStop(0, s.color.replace(')', ',0.3)').replace('rgb', 'rgba').replace('#ffffff', 'rgba(255,255,255'));
+        g.addColorStop(0, 'rgba(255,255,255,0.3)');
         g.addColorStop(1, 'transparent');
         sCtx.fillStyle = g;
         sCtx.globalAlpha = twinkle * 0.3;
@@ -847,28 +1203,19 @@
   resizeStarCanvas();
   drawStars();
 
-
   // ══════════════════════════════════════════════════════════
-  // FLOATING GALAXY PARTICLES
+  // FLOATING PARTICLES
   // ══════════════════════════════════════════════════════════
   const colors = ['#1a6fff','#00f5ff','#0033cc','#ffffff','#ffb700'];
   for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
+    const p   = document.createElement('div');
     p.className = 'particle';
     const size  = Math.random() * 3 + 1;
     const col   = colors[Math.floor(Math.random() * colors.length)];
     const dur   = Math.random() * 18 + 10;
     const delay = Math.random() * 20;
     const drift = (Math.random() - 0.5) * 120 + 'px';
-    p.style.cssText = `
-      width: ${size}px; height: ${size}px;
-      background: ${col};
-      box-shadow: 0 0 ${size * 4}px ${col};
-      left: ${Math.random() * 100}%;
-      animation-duration: ${dur}s;
-      animation-delay: -${delay}s;
-      --drift: ${drift};
-    `;
+    p.style.cssText = `width:${size}px;height:${size}px;background:${col};box-shadow:0 0 ${size*4}px ${col};left:${Math.random()*100}%;animation-duration:${dur}s;animation-delay:-${delay}s;--drift:${drift};`;
     document.body.appendChild(p);
   }
 
@@ -877,8 +1224,6 @@
   // ══════════════════════════════════════════════════════════
   const currentYear = new Date().getFullYear();
   let launchTarget = new Date(`July 4, ${currentYear} 00:00:00`).getTime();
-
-  // If July 4th has already passed this year, point it to next year
   if (Date.now() > launchTarget) {
     launchTarget = new Date(`July 4, ${currentYear + 1} 00:00:00`).getTime();
   }
@@ -886,57 +1231,14 @@
   function pad(n) { return String(n).padStart(2, '0'); }
 
   function updateCountdown() {
-    const now  = Date.now();
-    const diff = Math.max(0, launchTarget - now);
-    const d    = Math.floor(diff / 86400000);
-    const h    = Math.floor((diff % 86400000) / 3600000);
-    const m    = Math.floor((diff % 3600000)  / 60000);
-    const s    = Math.floor((diff % 60000)    / 1000);
-    
-    document.getElementById('cd-days').textContent  = pad(d);
-    document.getElementById('cd-hours').textContent = pad(h);
-    document.getElementById('cd-mins').textContent  = pad(m);
-    document.getElementById('cd-secs').textContent  = pad(s);
+    const diff = Math.max(0, launchTarget - Date.now());
+    document.getElementById('cd-days').textContent  = pad(Math.floor(diff / 86400000));
+    document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 60000) / 1000));
   }
-
   updateCountdown();
   setInterval(updateCountdown, 1000);
-
-  // ══════════════════════════════════════════════════════════
-  // PASSCODE PORTAL MODAL LOGIC
-  // ══════════════════════════════════════════════════════════
-  const modal = document.getElementById('passcodeModal');
-  const openBtn = document.getElementById('openModalBtn');
-  const closeBtn = document.getElementById('closeModalBtn');
-  const unlockBtn = document.getElementById('unlockBtn');
-  const passInput = document.getElementById('passcodeInput');
-  const errorMsg = document.getElementById('passcodeError');
-
-  openBtn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-    passInput.focus();
-  });
-
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-    passInput.value = '';
-    errorMsg.style.display = 'none';
-  });
-
-  function verifyPasscode() {
-    // Current passcode is set to 'DRE'
-    if (passInput.value.toUpperCase() === 'DRE') {
-      window.location.href = 'https://genuine-torte-effe76.netlify.app';
-    } else {
-      errorMsg.style.display = 'block';
-      setTimeout(() => errorMsg.style.display = 'none', 2000);
-    }
-  }
-
-  unlockBtn.addEventListener('click', verifyPasscode);
-  passInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') verifyPasscode();
-  });
 
   // ══════════════════════════════════════════════════════════
   // NOTIFY FORM
@@ -950,8 +1252,8 @@
       setTimeout(() => document.getElementById('emailInput').style.borderColor = '', 1200);
       return;
     }
-    document.getElementById('notifyForm').style.display    = 'none';
-    document.getElementById('successMsg').style.display    = 'block';
+    document.getElementById('notifyForm').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
     count++;
     document.getElementById('signupCount').textContent = count.toLocaleString();
   });
@@ -961,12 +1263,232 @@
   });
 
   // ══════════════════════════════════════════════════════════
-  // PARALLAX NEBULA on mouse move
+  // PARALLAX NEBULA
   // ══════════════════════════════════════════════════════════
   document.addEventListener('mousemove', e => {
     const cx = (e.clientX / window.innerWidth  - 0.5) * 20;
     const cy = (e.clientY / window.innerHeight - 0.5) * 14;
     document.querySelector('.nebula').style.transform = `translate(${cx}px, ${cy}px) scale(1.05)`;
+  });
+
+  // ══════════════════════════════════════════════════════════
+  // PORTAL MODAL — REDESIGNED SYSTEM
+  // ══════════════════════════════════════════════════════════
+
+  const modal      = document.getElementById('passcodeModal');
+  const terminal   = document.getElementById('portalTerminal');
+  const output     = document.getElementById('terminalOutput');
+  const passInput  = document.getElementById('passcodeInput');
+  const passRow    = document.getElementById('passRow');
+  const statusMsg  = document.getElementById('passStatusMsg');
+  const attemptEl  = document.getElementById('attemptCount');
+  const progressEl = document.getElementById('accessProgress');
+  const progressBar = document.getElementById('progressBarInner');
+  const progressPct = document.getElementById('progressPct');
+  const progressLbl = document.getElementById('progressLabel');
+
+  let attempts = 0;
+  let terminalBooted = false;
+
+  // Boot sequence lines — terminal types these out on open
+  const bootLines = [
+    { text: '▸ DRE_CORE SYSTEM v9.0.1 — INITIALIZING...', cls: 'bright', delay: 0 },
+    { text: '▸ LOADING ENCRYPTION MODULE...', cls: 'dim', delay: 120 },
+    { text: '▸ SCANNING BIOMETRIC SIGNATURE...', cls: 'dim', delay: 260 },
+    { text: '▸ ESTABLISHING SECURE CHANNEL..........', cls: 'dim', delay: 400 },
+    { text: '▸ CHANNEL ESTABLISHED ✓', cls: 'bright', delay: 620 },
+    { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'dim', delay: 700 },
+    { text: '  CLASSIFICATION: RESTRICTED', cls: 'warn', delay: 780 },
+    { text: '  AUTHORIZED PERSONNEL ONLY', cls: 'warn', delay: 840 },
+    { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', cls: 'dim', delay: 900 },
+    { text: '  ENTER AUTH TOKEN TO PROCEED.', cls: 'white', delay: 1000 },
+  ];
+
+  function addLine(text, cls = '', delay = 0) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const span = document.createElement('span');
+        span.className = ['t-line', cls ? `t-${cls}` : ''].join(' ');
+        span.textContent = text;
+        output.appendChild(span);
+        output.scrollTop = output.scrollHeight;
+        resolve();
+      }, delay);
+    });
+  }
+
+  function clearOutput() {
+    output.innerHTML = '';
+  }
+
+  async function bootTerminal() {
+    clearOutput();
+    for (const line of bootLines) {
+      addLine(line.text, line.cls, line.delay);
+    }
+    // Add blinking cursor at end
+    setTimeout(() => {
+      const cur = document.createElement('span');
+      cur.className = 't-line t-bright';
+      cur.innerHTML = '<span class="t-cursor"></span>';
+      output.appendChild(cur);
+      output.scrollTop = output.scrollHeight;
+    }, 1100);
+  }
+
+  function openModal() {
+    modal.style.display = 'flex';
+    // Reset state
+    attempts = 0;
+    attemptEl.textContent = 'ATTEMPTS: 0/3';
+    statusMsg.textContent = 'ENCRYPTION: AES-256 · SESSION KEYED';
+    statusMsg.className = 'pass-status-msg';
+    passRow.className = 'pass-row';
+    passInput.value = '';
+    progressEl.style.display = 'none';
+    progressBar.style.width = '0%';
+
+    // Add glitch class to terminal
+    terminal.classList.add('glitching');
+    setTimeout(() => terminal.classList.remove('glitching'), 800);
+
+    // Boot terminal once
+    if (!terminalBooted) {
+      terminalBooted = true;
+    }
+    bootTerminal();
+
+    // Focus input after boot sequence
+    setTimeout(() => passInput.focus(), 1200);
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    passInput.value = '';
+    terminalBooted = false;
+  }
+
+  // Trigger open
+  document.getElementById('openModalBtn').addEventListener('click', openModal);
+  document.getElementById('chromeCloseX').addEventListener('click', closeModal);
+  document.getElementById('chromeDotRed').addEventListener('click', closeModal);
+
+  // Close on backdrop click
+  document.getElementById('portalBackdrop').addEventListener('click', closeModal);
+
+  // ── VERIFY PASSCODE (core system preserved) ──
+  function verifyPasscode() {
+    const val = passInput.value.trim();
+
+    if (!val) return;
+
+    attempts++;
+    attemptEl.textContent = `ATTEMPTS: ${attempts}/3`;
+
+    if (val.toUpperCase() === 'DRE') {
+      // SUCCESS
+      passRow.className = 'pass-row success-flash';
+      statusMsg.textContent = 'TOKEN VERIFIED ✓ — GRANTING ACCESS';
+      statusMsg.className = 'pass-status-msg success';
+      passInput.disabled = true;
+      document.getElementById('unlockBtn').style.opacity = '0';
+
+      // Log success to terminal
+      addLine('', '', 50);
+      addLine('▸ AUTH TOKEN RECEIVED...', 'bright', 100);
+      addLine('▸ DECRYPTING CREDENTIALS...', 'dim', 400);
+      addLine('▸ IDENTITY CONFIRMED ✓', 'bright', 700);
+      addLine('▸ UNLOCKING PORTAL...', 'cyan', 1000);
+
+      // Show progress bar
+      setTimeout(() => {
+        progressEl.style.display = 'block';
+        let pct = 0;
+        const phases = [
+          { label: 'ESTABLISHING SECURE TUNNEL...', target: 35 },
+          { label: 'AUTHENTICATING SESSION...', target: 65 },
+          { label: 'LOADING PORTAL...', target: 90 },
+          { label: 'ACCESS GRANTED — REDIRECTING', target: 100 },
+        ];
+        let phaseIdx = 0;
+
+        const interval = setInterval(() => {
+          pct++;
+          progressBar.style.width = pct + '%';
+          progressPct.textContent = pct + '%';
+
+          if (phaseIdx < phases.length && pct >= phases[phaseIdx].target - 5) {
+            progressLbl.textContent = phases[phaseIdx].label;
+            phaseIdx++;
+          }
+
+          if (pct >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              // CORE REDIRECT — preserved
+              window.location.href = 'https://genuine-torte-effe76.netlify.app';
+            }, 500);
+          }
+        }, 18);
+      }, 1200);
+
+    } else {
+      // FAILURE
+      passRow.className = 'pass-row error-shake';
+      setTimeout(() => { passRow.className = 'pass-row'; }, 500);
+
+      if (attempts >= 3) {
+        statusMsg.textContent = '⚠ MAX ATTEMPTS — LOCKOUT INITIATED';
+        statusMsg.className = 'pass-status-msg error';
+        passInput.disabled = true;
+        document.getElementById('unlockBtn').style.opacity = '0.3';
+
+        addLine('', '', 0);
+        addLine('⚠ MAXIMUM ATTEMPTS EXCEEDED', 'error', 50);
+        addLine('⚠ INITIATING SECURITY LOCKOUT...', 'error', 200);
+        addLine('⚠ SESSION TERMINATED.', 'error', 400);
+
+        setTimeout(() => {
+          // Auto-reset after lockout
+          passInput.disabled = false;
+          document.getElementById('unlockBtn').style.opacity = '';
+          attempts = 0;
+          attemptEl.textContent = 'ATTEMPTS: 0/3';
+          statusMsg.textContent = 'ENCRYPTION: AES-256 · SESSION KEYED';
+          statusMsg.className = 'pass-status-msg';
+          passInput.value = '';
+          bootTerminal();
+        }, 3500);
+      } else {
+        const remaining = 3 - attempts;
+        statusMsg.textContent = `⚠ INVALID TOKEN — ${remaining} ATTEMPT${remaining !== 1 ? 'S' : ''} REMAINING`;
+        statusMsg.className = 'pass-status-msg error';
+        setTimeout(() => {
+          if (statusMsg.className.includes('error')) {
+            statusMsg.textContent = 'ENCRYPTION: AES-256 · SESSION KEYED';
+            statusMsg.className = 'pass-status-msg';
+          }
+        }, 2000);
+
+        addLine('', '', 0);
+        addLine(`⚠ INVALID TOKEN — ${remaining} ATTEMPT${remaining!==1?'S':''} REMAINING`, 'error', 50);
+      }
+
+      passInput.value = '';
+      passInput.focus();
+    }
+  }
+
+  document.getElementById('unlockBtn').addEventListener('click', verifyPasscode);
+  passInput.addEventListener('keydown', e => { if (e.key === 'Enter') verifyPasscode(); });
+
+  // Live input feedback — glow as you type
+  passInput.addEventListener('input', () => {
+    if (passInput.value.length > 0) {
+      passRow.style.boxShadow = '0 0 12px rgba(0,255,136,0.2)';
+    } else {
+      passRow.style.boxShadow = '';
+    }
   });
   </script>
 </body>
