@@ -233,7 +233,6 @@
 <body>
 <canvas id="bg-canvas"></canvas>
 
-<!-- PIN SCREEN -->
 <div id="pin-screen">
   <div class="pin-orb"></div>
   <div class="pin-title">DRE OS</div>
@@ -283,8 +282,6 @@
     <div class="s-section">
       <div class="s-label">Controller Mode</div>
       <button class="ctrl-btn active" id="btn-default" onclick="setCtrl('default')"><span class="ctrl-dot"></span>DRE DEFAULT</button>
-      <button class="ctrl-btn" id="btn-ford"    onclick="setCtrl('ford')"><span class="ctrl-dot"></span>FORD — TECHNICAL</button>
-      <button class="ctrl-btn" id="btn-book"    onclick="setCtrl('book')"><span class="ctrl-dot"></span>BOOK WRITING</button>
     </div>
     <div class="s-section" style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-bottom:none;">
       <div class="s-label">Sessions</div>
@@ -331,6 +328,7 @@
       <button class="prov-btn"        data-p="deepseek" onclick="selectProvider('deepseek')">DEEPSEEK<br><span>DeepSeek API</span></button>
       <button class="prov-btn"        data-p="claude"   onclick="selectProvider('claude')">CLAUDE<br><span>Anthropic API</span></button>
       <button class="prov-btn"        data-p="gemini"   onclick="selectProvider('gemini')">GEMINI<br><span>Google AI</span></button>
+      <button class="prov-btn"        data-p="groq"     onclick="selectProvider('groq')">GROQ<br><span>Groq API</span></button>
       <button class="prov-btn"        data-p="custom"   onclick="selectProvider('custom')">CUSTOM<br><span>Any endpoint</span></button>
     </div>
     <div class="f-label" style="margin-top:14px;">ENDPOINT URL</div>
@@ -414,104 +412,7 @@ Permission seeking (asks if idea is good instead of testing): "What's the smalle
 ALIGNMENT ENFORCEMENT — only trigger when clearly warranted, never on short inputs, greetings, or test messages:
 Goal drift (user changes goal more than 2 times): "That's the third version of this goal. Original was [X], now it's [Y]. Which one are you actually building?"
 Broken commitment (user committed to X, returns without doing it): "Last time you committed to X. What happened? Because the answer tells me what we're actually dealing with."
-Impossible timeline (user proposes scope that clearly can't fit timeline): Call it immediately. "You listed [X features]. [Timeline] doesn't work — and you know that. What's the real version you can actually ship?"`,
-
-  ford:`You are DRE in FORD CONTROLLER mode — technical step-by-step execution only.
-
-CORE PRINCIPLES:
-- Minimal output unless user explicitly requests details
-- Always require user confirmation before proceeding to the next critical step
-- Responses focused on task completion rather than explanation unless needed
-- Avoid unnecessary verbosity or repeated instructions
-- Never attempt automatic fixes without explicit user approval
-
-STEP FORMAT — all steps must follow this structure:
-[Step Number] → [Action to Perform — copy-paste ready if a command] → [Expected Result — brief and clear] → Stop. Wait for confirmation.
-
-Status markers: ✅ completed | ⚠ needs attention
-
-CONFIRMATION PROTOCOL:
-Every critical action requires user confirmation.
-System proposes one focused step → user replies with confirmation → system proceeds to next step only after confirmation. No exceptions.
-
-ERROR HANDLING:
-- Identify the root cause precisely
-- Provide minimal context needed for resolution
-- Suggest exact command(s) or configuration change only
-- Do not attempt auto-fixes without explicit user approval
-- Summarize errors without extraneous details
-
-OUTPUT MANAGEMENT:
-- Default to short confirmation messages
-- Only show detailed logs or verbose output when user requests it
-- Suppress non-critical warnings unless they affect execution
-- Never repeat commands or explanations
-- Skip output of non-critical informational messages
-
-USER GUIDANCE:
-- Specify exact terminal, webpage, or menu location when needed
-- Provide single-sentence confirmations for each checkpoint
-- Include step numbers and clear instructions for reference
-- Ensure clarity — assume the user may be executing this for the first time`,
-
-  book:`You are DRE in BOOK WRITING CONTROLLER mode. v2.0
-
-ON LOAD — output immediately:
-"✅ Book Writing Controller loaded. Provide your project details and I will begin immediately."
-
-Then ask for: title (or TBD), genre, target author style, word count per chapter, and current chapter number if continuing. Wait for user to provide details before writing a single word. Do not ask more than 3 clarifying questions — use best judgment for anything not specified.
-
-CORE PRINCIPLES:
-- Fully write all content — never summarize, skip, outline, or placeholder any section
-- Honor the specified author's style as the primary creative constraint across every chapter without reminder
-- Track and report word count at every chapter milestone
-- Never write ahead — wait for user confirmation at each chapter boundary
-- Never offer options or multiple directions unless user asks — execute the most logical next action
-
-AUTHOR STYLE PROTOCOL:
-User declares the target author by name. You confirm the author and briefly list key style traits you will apply (voice, sentence structure, dialogue, pacing, description, themes, diction, internal monologue). Apply those traits consistently across every chapter.
-Confirmation format: "Writing as [Author Name]. Style: [3-5 trait summary]. Confirm to begin."
-If user changes author mid-project: confirm the switch, summarize the new style traits, apply from that point forward.
-
-WORD COUNT PROTOCOL:
-User declares target word count per chapter. Hold every chapter to that target before closing it.
-A chapter may NOT be closed if it is more than 200 words below target. Continue writing until target is met or user explicitly approves a short chapter.
-Do not pad with filler. Do not truncate scenes. Story integrity takes priority — word count is a floor, not a cage.
-Tracking format: "✅ Chapter [N] complete — [X] words | [Y] total | [Z] remaining. Reply NEXT or give instructions."
-
-FULL WRITING PROTOCOL:
-- Every chapter must be written in complete prose — no outlines, bullet summaries, or scene stubs
-- All dialogue must be fully written, not described or paraphrased
-- Scene transitions, internal monologue, and setting description must be rendered as the named author would write them
-- If a chapter cannot be completed in one response, continue across multiple responses until complete
-- Never end a response mid-scene without a clear stopping point and a status report
-- Never jump to a new chapter without completing the current one
-
-CONTINUATION — when a chapter cannot be completed in one response:
-End at a natural paragraph break only. State: "⚠️ Chapter [N] in progress — [X] words so far. Reply CONTINUE to proceed." Resume immediately on confirmation — do not repeat prior content.
-
-SCENE LOGIC — before writing any scene verify:
-- Who is present and where are they physically located?
-- What can each character see, hear, or know based on their position?
-- Does this scene contradict anything established in prior chapters?
-- Are any protected plot details being revealed prematurely?
-Resolve any inconsistency before writing — not after.
-
-PROTECTED PLOT PROTOCOL:
-User declares: "PROTECT: [detail]" — never reveal, hint beyond subtext, or resolve that detail until user explicitly lifts the protection.
-
-REVISION PROTOCOL:
-User specifies what needs to change. Confirm scope before rewriting — no auto-fixes. Rewrite only the affected section in the correct author style.
-
-STYLE DRIFT:
-If user flags that writing no longer sounds like the named author: identify which style dimensions diverged, rewrite the flagged passage correctly, confirm and resume.
-
-INTERACTION RULES:
-- No meta-commentary during active prose writing
-- No planning details unless user requests them
-- Status reports at chapter boundaries only
-- Never repeat prior chapter content
-- Confirmation required at every chapter boundary and critical decision`
+Impossible timeline (user proposes scope that clearly can't fit timeline): Call it immediately. "You listed [X features]. [Timeline] doesn't work — and you know that. What's the real version you can actually ship?"`
 };
 
 // ORB ENGINE
@@ -567,6 +468,21 @@ try{const sv=JSON.parse(localStorage.getItem('dreos')||'{}');S.ep=sv.ep||S.ep;S.
 function persist(){localStorage.setItem('dreos',JSON.stringify({ep:S.ep,model:S.model,key:S.key,ctrl:S.ctrl,provider:S.provider,sessions:S.sessions}));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,4);}
 
+// AUDIO WELCOME ENGINE — plays dre_voice_intro.mp3 (must be in same folder as this HTML file)
+function playWelcomeAudio() {
+  try {
+    if (window._dreAudio) {
+      // Already created inside the user gesture (PIN press) — just play it
+      window._dreAudio.play();
+    } else {
+      // Fallback: create fresh (works on page-load click unlock)
+      const a = new Audio('dre_voice_intro.mp3');
+      a.volume = 1.0;
+      a.play();
+    }
+  } catch(e) {}
+}
+
 // SESSIONS
 function newSess(){const id=uid();S.sessions[id]={id,name:'Session '+(Object.keys(S.sessions).length+1),ctrl:S.ctrl,msgs:[],ts:Date.now()};S.active=id;persist();renderSess();renderMsgs();updateLabel();}
 function saveSess(){if(!S.active){newSess();return;}const n=prompt('Name this session:',S.sessions[S.active].name);if(n){S.sessions[S.active].name=n;persist();renderSess();updateLabel();}}
@@ -585,21 +501,23 @@ function setCtrl(name,update=true){
   S.ctrl=name;
   document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('btn-'+name).classList.add('active');
-  const labels={default:'DRE DEFAULT',ford:'FORD — TECHNICAL',book:'BOOK WRITING'};
+  const labels={default:'DRE DEFAULT'};
   const badge=document.getElementById('mode-badge');
-  badge.textContent=labels[name];badge.className='mode-badge '+(name==='default'?'cyan':'red');
+  badge.textContent=labels[name] || 'DRE DEFAULT';
+  badge.className='mode-badge '+(name==='default'?'cyan':'red');
   persist();
   if(update&&S.active){S.sessions[S.active].ctrl=name;persist();}
 }
 
 // PROVIDER CONFIG
 const PROVIDERS = {
-  local:    { ep:'http://localhost:1234',                        model:'element',               key:'', label:'LOCAL' },
+  local:    { ep:'http://localhost:1234',                       model:'element',               key:'', label:'LOCAL' },
   openai:   { ep:'https://api.openai.com',                      model:'gpt-4o',                key:'', label:'CHATGPT' },
-  deepseek: { ep:'https://api.deepseek.com',                    model:'deepseek-chat',          key:'', label:'DEEPSEEK' },
+  deepseek: { ep:'https://api.deepseek.com',                    model:'deepseek-chat',         key:'', label:'DEEPSEEK' },
   claude:   { ep:'https://api.anthropic.com',                   model:'claude-sonnet-4-20250514', key:'', label:'CLAUDE' },
   gemini:   { ep:'https://generativelanguage.googleapis.com',   model:'gemini-2.0-flash',      key:'', label:'GEMINI' },
-  custom:   { ep:'',                                            model:'',                       key:'', label:'CUSTOM' }
+  groq:     { ep:'https://api.groq.com/openai/v1',              model:'llama3-8b-8192',        key:'', label:'GROQ' },
+  custom:   { ep:'',                                            model:'',                      key:'', label:'CUSTOM' }
 };
 
 let activeProvider = S.provider;
@@ -635,7 +553,7 @@ function saveConn(){
   persist();updateStatus();closeModal();
 }
 function updateStatus(){
-  const labels = { local:'LOCAL', openai:'CHATGPT', deepseek:'DEEPSEEK', claude:'CLAUDE', gemini:'GEMINI', custom:'CUSTOM' };
+  const labels = { local:'LOCAL', openai:'CHATGPT', deepseek:'DEEPSEEK', claude:'CLAUDE', gemini:'GEMINI', groq:'GROQ', custom:'CUSTOM' };
   document.getElementById('s-text').textContent = labels[S.provider||'local'] || 'LOCAL';
 }
 updateStatus();
@@ -782,6 +700,8 @@ function clearFile(){
 }
 
 // INIT
+// Because we start with default, ensure UI matches
+setCtrl('default', false);
 renderSess();renderMsgs();updateLabel();
 
 // ============================================================
@@ -801,7 +721,13 @@ function pinPress(digit){
   if(pinEntry.length >= PIN_LENGTH) return;
   pinEntry += digit;
   updatePinDots();
-  if(pinEntry.length === PIN_LENGTH) setTimeout(checkPin, 120);
+  if(pinEntry.length === PIN_LENGTH) {
+    // Create & load audio RIGHT HERE inside the user gesture so browser grants permission
+    window._dreAudio = new Audio('dre_voice_intro.mp3');
+    window._dreAudio.volume = 1.0;
+    window._dreAudio.load();
+    checkPin();
+  }
 }
 
 function pinDel(){
@@ -821,7 +747,7 @@ async function checkPin(){
   const hash = await sha1(pinEntry);
   if(hash === PIN_HASH){
     document.getElementById('pin-screen').classList.add('hidden');
-    sessionStorage.setItem('dre_auth','1');
+    playWelcomeAudio();
   } else {
     for(let i=0;i<PIN_LENGTH;i++) document.getElementById('pd'+i).className='pin-dot error';
     document.getElementById('pin-msg').textContent='INCORRECT PIN';
@@ -836,14 +762,21 @@ async function checkPin(){
 // Allow keyboard input on PIN screen
 document.addEventListener('keydown', e=>{
   if(document.getElementById('pin-screen').classList.contains('hidden')) return;
-  if(e.key>='0'&&e.key<='9') pinPress(e.key);
+  if(e.key>='0'&&e.key<='9') {
+    // Pre-load audio inside this keyboard gesture too
+    if(!window._dreAudio) {
+      window._dreAudio = new Audio('dre_voice_intro.mp3');
+      window._dreAudio.volume = 1.0;
+      window._dreAudio.load();
+    }
+    pinPress(e.key);
+  }
   if(e.key==='Backspace') pinDel();
 });
 
-// Check if already authenticated this session
-if(sessionStorage.getItem('dre_auth')==='1'){
-  document.getElementById('pin-screen').classList.add('hidden');
-}
+// On every page load: show PIN screen so user gesture unlocks audio each time
+// (localStorage remembers them, but we always ask PIN so audio can play)
+document.getElementById('pin-screen').classList.remove('hidden');
 </script>
 </body>
 </html>
