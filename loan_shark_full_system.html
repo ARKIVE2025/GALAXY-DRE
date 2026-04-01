@@ -85,6 +85,8 @@ body { animation: flicker 10s infinite; }
 .tab-chat.active { border-bottom-color:var(--blue) !important; color:var(--blue) !important; text-shadow:0 0 8px var(--blue) !important; background:rgba(0,204,255,.08) !important; }
 .tab-settings { color:var(--amber) !important; }
 .tab-settings.active { border-bottom-color:var(--amber) !important; color:var(--amber) !important; text-shadow:0 0 8px var(--amber) !important; background:rgba(255,179,0,.08) !important; }
+.tab-leverage { color:#ff9fff !important; }
+.tab-leverage.active { border-bottom-color:#ff9fff !important; color:#ff9fff !important; text-shadow:0 0 8px #ff9fff !important; background:rgba(255,159,255,.08) !important; }
 
 .tab-content { display:none; }
 .tab-content.active { display:block; }
@@ -270,6 +272,7 @@ select option { background:#000; }
 .sc-amber  { color:var(--amber); }
 .sc-red    { color:var(--red); }
 .sc-blue   { color:var(--blue); }
+.sc-purple { color:#ff9fff; }
 
 /* STRESS METER */
 .meter-wrap { border:1px solid var(--green-dark); padding:10px; margin:10px 0; }
@@ -364,6 +367,111 @@ select option { background:#000; }
 .api-status.info  { color:var(--amber); }
 .data-preview { background:#000; border:1px solid var(--green-dark); padding:10px; font-size:10px; color:var(--green-dim); white-space:pre-wrap; max-height:180px; overflow-y:auto; margin-top:6px; }
 
+/* LEVERAGE TAB */
+.leverage-wrap { max-width:1200px; margin:0 auto; padding:16px; }
+.leverage-hero {
+  border:1px solid #ff9fff;
+  background:rgba(255,159,255,0.04);
+  padding:18px;
+  margin-bottom:18px;
+  text-align:center;
+}
+.leverage-hero-title { font-family:'VT323',monospace; font-size:28px; letter-spacing:5px; color:#ff9fff; text-shadow:0 0 16px rgba(255,159,255,0.4); margin-bottom:8px; }
+.leverage-hero-sub { font-size:11px; color:var(--green-dim); line-height:1.8; max-width:700px; margin:0 auto; }
+
+/* Tier cards */
+.tier-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:18px; }
+@media(max-width:768px){ .tier-grid{ grid-template-columns:1fr; } }
+.tier-card {
+  border:1px solid var(--green-dark);
+  background:var(--panel);
+  padding:14px;
+  position:relative;
+}
+.tier-badge {
+  font-family:'VT323',monospace;
+  font-size:13px;
+  letter-spacing:2px;
+  padding:3px 10px;
+  border:1px solid;
+  display:inline-block;
+  margin-bottom:10px;
+}
+.tier-1-badge { border-color:#00ff41; color:#00ff41; background:rgba(0,255,65,0.08); }
+.tier-2-badge { border-color:var(--amber); color:var(--amber); background:rgba(255,179,0,0.08); }
+.tier-3-badge { border-color:var(--red); color:var(--red); background:rgba(255,60,60,0.08); }
+.tier-title { font-family:'VT323',monospace; font-size:18px; letter-spacing:2px; margin-bottom:6px; }
+.tier-1-title { color:#00ff41; }
+.tier-2-title { color:var(--amber); }
+.tier-3-title { color:var(--red); }
+.tier-desc { font-size:11px; color:var(--green-dim); line-height:1.7; margin-bottom:10px; }
+.tier-loan-list { display:flex; flex-direction:column; gap:4px; }
+.tier-loan-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:5px 8px;
+  border:1px solid var(--green-dark);
+  font-size:11px;
+}
+.tier-loan-name { color:var(--green); }
+.tier-loan-net { font-family:'VT323',monospace; font-size:15px; }
+.tier-loan-net.t1 { color:#00ff41; }
+.tier-loan-net.t2 { color:var(--amber); }
+.tier-loan-net.t3 { color:var(--red); }
+.tier-empty { font-size:10px; color:var(--green-dim); font-style:italic; padding:6px; }
+
+/* Leverage plan output */
+.leverage-plan-box {
+  background:#000;
+  border:1px solid #ff9fff;
+  padding:14px;
+  font-size:12px;
+  line-height:1.85;
+  white-space:pre-wrap;
+  word-break:break-word;
+  min-height:120px;
+  margin-bottom:14px;
+}
+.lev-step { display:block; padding:8px 10px; margin:4px 0; border-left:3px solid; font-size:12px; line-height:1.7; }
+.lev-step-t1 { border-color:#00ff41; background:rgba(0,255,65,0.05); }
+.lev-step-t2 { border-color:var(--amber); background:rgba(255,179,0,0.05); }
+.lev-step-t3 { border-color:var(--red); background:rgba(255,60,60,0.05); }
+.lev-step-info { border-color:var(--blue); background:rgba(0,204,255,0.05); }
+.lev-step-purple { border-color:#ff9fff; background:rgba(255,159,255,0.05); }
+
+/* Net value bar */
+.nv-bar-wrap { margin:12px 0; }
+.nv-bar-row { display:grid; grid-template-columns:90px 1fr 60px; gap:8px; align-items:center; margin-bottom:5px; font-size:11px; }
+.nv-bar-name { color:var(--green-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nv-bar-track { background:#001a05; height:14px; border:1px solid var(--green-dark); position:relative; }
+.nv-bar-fill { height:100%; display:flex; align-items:center; padding-left:5px; font-size:9px; transition:width .5s; }
+.nv-bar-val { text-align:right; font-family:'VT323',monospace; font-size:15px; }
+
+/* Explainer boxes */
+.explainer-box {
+  border:1px solid var(--green-dark);
+  background:rgba(0,255,65,0.03);
+  padding:12px 14px;
+  margin-bottom:14px;
+  font-size:11px;
+  line-height:1.8;
+  color:var(--green-dim);
+}
+.explainer-box strong { color:var(--green); }
+.explainer-title { font-family:'VT323',monospace; font-size:16px; letter-spacing:2px; color:var(--green); margin-bottom:6px; display:block; }
+
+/* Progress meter */
+.progress-section { margin-bottom:18px; }
+.exit-meter-wrap { border:1px solid var(--green-dark); padding:12px; background:var(--panel); }
+.exit-loan-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed var(--green-dark); font-size:11px; }
+.exit-loan-row:last-child { border-bottom:none; }
+.exit-loan-name { color:var(--green-dim); }
+.exit-status { font-family:'VT323',monospace; font-size:14px; }
+.exit-ok   { color:var(--green); }
+.exit-warn { color:var(--amber); }
+.exit-bad  { color:var(--red); }
+
 /* SPLASH */
 #splash {
   position:fixed; inset:0; background:#000; z-index:9000;
@@ -409,12 +517,13 @@ select option { background:#000; }
 </div>
 
 <div class="tabs">
-  <button type="button" class="tab active"       onclick="switchTab('setup')">[ MY INFO ]</button>
-  <button type="button" class="tab"              onclick="switchTab('simulation')">[ MY PLAN ]</button>
-  <button type="button" class="tab"              onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
-  <button type="button" class="tab"              onclick="switchTab('tracker')">[ MY HISTORY ]</button>
-  <button type="button" class="tab tab-chat"     onclick="switchTab('chat')">[ ASK AI ]</button>
-  <button type="button" class="tab tab-settings" onclick="switchTab('settings')">[ SETTINGS ]</button>
+  <button type="button" class="tab active"          onclick="switchTab('setup')">[ MY INFO ]</button>
+  <button type="button" class="tab"                 onclick="switchTab('simulation')">[ MY PLAN ]</button>
+  <button type="button" class="tab"                 onclick="switchTab('strategy')">[ WHAT TO DO ]</button>
+  <button type="button" class="tab tab-leverage"    onclick="switchTab('leverage')">[ USE LOANS SMART ]</button>
+  <button type="button" class="tab"                 onclick="switchTab('tracker')">[ MY HISTORY ]</button>
+  <button type="button" class="tab tab-chat"        onclick="switchTab('chat')">[ ASK AI ]</button>
+  <button type="button" class="tab tab-settings"    onclick="switchTab('settings')">[ SETTINGS ]</button>
 </div>
 
 <!-- ══ TAB: MY INFO ══ -->
@@ -590,6 +699,105 @@ select option { background:#000; }
       Run your plan first to see if an emergency plan applies to you.
     </div>
   </div>
+
+</div>
+</div>
+
+<!-- ══ TAB: USE LOANS SMART (LEVERAGE) ══ -->
+<div id="tab-leverage" class="tab-content">
+<div class="leverage-wrap">
+
+  <div class="leverage-hero">
+    <div class="leverage-hero-title">★ USE LOANS AS A TOOL ★</div>
+    <div class="leverage-hero-sub">
+      Just because you owe more than your paycheck doesn't mean you're stuck.<br>
+      With 6+ loan apps, you have something most people don't: <strong style="color:#ff9fff">options</strong>.<br>
+      This tab shows you how to use your apps in the RIGHT ORDER so each paycheck works harder for you.
+    </div>
+  </div>
+
+  <!-- Plain-English explainer -->
+  <div class="explainer-box">
+    <span class="explainer-title">🔑 THE BIG IDEA — EXPLAINED SIMPLY</span>
+    Not all loan apps are equal. Some cost you <strong>nothing to use</strong> (no fees, instant re-borrow). Others cost you <strong>$3–$15 every single time</strong>. The smart move: use your FREE apps to pay off your EXPENSIVE apps. Then you're only cycling through the free ones — and your total debt stops growing.
+    <br><br>
+    Think of it like this: if you had a credit card with 0% interest AND one with 25% interest, you'd pay off the 25% one first. Same idea here.
+  </div>
+
+  <!-- Tier cards (auto-populated) -->
+  <div class="panel-title" style="border-bottom:1px solid var(--green-dark);padding-bottom:8px;margin-bottom:14px"><div class="dot" style="background:#ff9fff;box-shadow:0 0 6px #ff9fff"></div> YOUR APPS — SORTED BY COST</div>
+
+  <div class="tier-grid" id="leverage-tier-grid">
+    <div class="tier-card">
+      <div class="tier-badge tier-1-badge">TIER 1 — FREE</div>
+      <div class="tier-title tier-1-title">Zero-Fee Apps</div>
+      <div class="tier-desc">These cost you nothing. Pay these first, then re-borrow right back as your safety net.</div>
+      <div class="tier-loan-list" id="tier1-list"><div class="tier-empty">Run forecast first or add loans.</div></div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-badge tier-2-badge">TIER 2 — LOW COST</div>
+      <div class="tier-title tier-2-title">Small-Fee Apps</div>
+      <div class="tier-desc">These cost a little. Pay second. Re-borrow only if you absolutely need to close a gap.</div>
+      <div class="tier-loan-list" id="tier2-list"><div class="tier-empty">Run forecast first or add loans.</div></div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-badge tier-3-badge">TIER 3 — EXPENSIVE</div>
+      <div class="tier-title tier-3-title">High-Cost or Rigid Apps</div>
+      <div class="tier-desc">These hurt you most. Pay last, and once you pay them off — stop re-borrowing from them.</div>
+      <div class="tier-loan-list" id="tier3-list"><div class="tier-empty">Run forecast first or add loans.</div></div>
+    </div>
+  </div>
+
+  <!-- Net value bar chart -->
+  <div class="panel-title" style="border-bottom:1px solid var(--green-dark);padding-bottom:8px;margin-bottom:10px"><div class="dot"></div> WHAT EACH APP IS ACTUALLY WORTH TO YOU</div>
+  <div class="explainer-box" style="margin-bottom:10px">
+    <strong>Net Value</strong> = how much cash you actually get to use after the fee. A $200 app with a $15 fee only gives you <strong>$185 of real value</strong>. The higher this number, the better the app is for you to rely on.
+  </div>
+  <div class="nv-bar-wrap" id="nv-bars">
+    <div class="tier-empty">Add loans and run forecast to see this chart.</div>
+  </div>
+
+  <!-- The Leverage Plan -->
+  <div class="panel-title" style="border-bottom:1px solid var(--green-dark);padding-bottom:8px;margin:18px 0 10px"><div class="dot" style="background:#ff9fff;box-shadow:0 0 6px #ff9fff"></div> YOUR STEP-BY-STEP LEVERAGE PLAN</div>
+  <div class="explainer-box" style="margin-bottom:10px">
+    This is the <strong>exact order</strong> to handle your apps this paycheck. Follow these steps and you'll get the most out of your money while keeping your safety net open.
+  </div>
+  <div id="leverage-plan-steps">
+    <div class="tier-empty" style="padding:14px;border:1px solid var(--green-dark)">// Run your forecast first (MY PLAN tab), then come back here to see your personalized leverage plan.</div>
+  </div>
+
+  <!-- Exit progress -->
+  <div class="panel-title" style="border-bottom:1px solid var(--green-dark);padding-bottom:8px;margin:18px 0 10px"><div class="dot"></div> YOUR ESCAPE PROGRESS</div>
+  <div class="explainer-box" style="margin-bottom:10px">
+    The goal is to slowly <strong>close apps you don't need anymore</strong>. Every app you stop using = less pressure every single paycheck. Here's where each one stands.
+  </div>
+  <div class="exit-meter-wrap" id="exit-progress">
+    <div class="tier-empty">Add loans to see your escape progress.</div>
+  </div>
+
+  <!-- The "Should I re-borrow?" guide -->
+  <div class="panel-title" style="border-bottom:1px solid var(--green-dark);padding-bottom:8px;margin:18px 0 10px"><div class="dot"></div> BEFORE YOU RE-BORROW — ASK YOURSELF THIS</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+    <div class="explainer-box" style="margin:0;border-color:var(--green)">
+      <span class="explainer-title" style="color:var(--green)">✓ OK TO RE-BORROW IF...</span>
+      • It's a Tier 1 (zero-fee) app<br>
+      • You need it to cover a real bill, not a want<br>
+      • You have a plan to pay it back next cycle<br>
+      • Re-borrowing lets you close a more expensive app<br>
+      • Your Cycle 1 gap is less than $50
+    </div>
+    <div class="explainer-box" style="margin:0;border-color:var(--red)">
+      <span class="explainer-title" style="color:var(--red)">✗ DO NOT RE-BORROW IF...</span>
+      • It's a Tier 3 (expensive) app you just paid off<br>
+      • You're borrowing to pay for non-essentials<br>
+      • You already have 3+ apps borrowed at once<br>
+      • You don't know when you'll pay it back<br>
+      • The fee eats more than 10% of what you borrow
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-run" style="max-width:400px;margin:0 auto 6px;display:block" onclick="runLeveragePlan()">▶ GENERATE MY LEVERAGE PLAN</button>
+  <div style="text-align:center;font-size:10px;color:var(--green-dim);margin-bottom:18px">Updates automatically after you run the forecast — or click above to refresh</div>
 
 </div>
 </div>
@@ -1080,6 +1288,8 @@ function renderLoans() {
   });
 
   updateCycleSelectList();
+  // Refresh leverage tier display whenever loans change
+  runLeveragePlan();
 }
 
 function updateCycleSelectList() {
@@ -1431,7 +1641,6 @@ function runForecast() {
     return `<div class="${cls}">${name} → ${status}</div>`;
   }).join('');
 
-  // PLAIN ENGLISH SUMMARY  ← PATCHED
   renderPlainSummary(incomes, billsArr, cashOnHand, balance, stress, loanResults, loans);
 
   lastResult = {
@@ -1449,10 +1658,13 @@ function runForecast() {
 
   document.getElementById('mode-display').textContent = 'DONE';
   updateChatContextBar();
+
+  // Auto-refresh leverage plan after forecast
+  runLeveragePlan();
 }
 
 // ═══════════════════════════════════════════════
-// PLAIN ENGLISH SUMMARY  ← PATCH 1
+// PLAIN ENGLISH SUMMARY
 // ═══════════════════════════════════════════════
 function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress, loanResults, allLoans) {
   const totalIncome    = incomes.reduce((a, b) => a + b, 0);
@@ -1464,7 +1676,6 @@ function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress,
   const missed         = Object.values(loanResults).filter(v => v.includes('Missed')).length;
   const isOk           = finalBalance >= 0;
 
-  // ── THE GAP: Cycle-1-specific reality check ──
   const c1Income   = incomes[0];
   const c1Bills    = billsArr[0];
   const c1Loans    = allLoans.filter(l => (l.dueCycle || 1) === 1);
@@ -1541,6 +1752,216 @@ function renderPlainSummary(incomes, billsArr, cashOnHand, finalBalance, stress,
       <div class="sc-sub">out of 100</div>
     </div>
   `;
+}
+
+// ═══════════════════════════════════════════════
+// LEVERAGE PLAN ENGINE
+// ═══════════════════════════════════════════════
+function getLoanTier(loan) {
+  // Tier 1: zero fee AND can re-borrow instantly
+  if (loan.fee === 0 && loan.reuse === 'instant') return 1;
+  // Tier 3: no re-borrow OR fee > 10% of max OR fee > $10
+  const feeRatio = loan.max > 0 ? loan.fee / loan.max : 1;
+  if (loan.reuse === 'delayed' || feeRatio > 0.1 || loan.fee > 10) return 3;
+  // Tier 2: everything in between
+  return 2;
+}
+
+function getLoanNetValue(loan) {
+  return Math.max(0, loan.max - loan.fee);
+}
+
+function runLeveragePlan() {
+  if (!loans.length) return;
+
+  const income    = parseFloat(document.getElementById('income-c1').value) || 0;
+  const cashOnHand = parseFloat(document.getElementById('cash-on-hand').value) || 0;
+  const bills     = parseFloat(document.getElementById('bills-c1').value) || 0;
+
+  // Sort loans into tiers
+  const tier1 = loans.filter(l => getLoanTier(l) === 1).sort((a, b) => b.max - a.max);
+  const tier2 = loans.filter(l => getLoanTier(l) === 2).sort((a, b) => a.fee - b.fee);
+  const tier3 = loans.filter(l => getLoanTier(l) === 3).sort((a, b) => a.owed - b.owed);
+
+  // Render tier cards
+  renderTierCard('tier1-list', tier1, 't1');
+  renderTierCard('tier2-list', tier2, 't2');
+  renderTierCard('tier3-list', tier3, 't3');
+
+  // Render net value bars
+  renderNetValueBars();
+
+  // Build leverage plan steps
+  buildLeverageSteps(tier1, tier2, tier3, income, cashOnHand, bills);
+
+  // Render exit progress
+  renderExitProgress(tier1, tier2, tier3);
+}
+
+function renderTierCard(containerId, tierLoans, cls) {
+  const el = document.getElementById(containerId);
+  if (!tierLoans.length) {
+    el.innerHTML = '<div class="tier-empty">No apps in this tier right now.</div>';
+    return;
+  }
+  el.innerHTML = tierLoans.map(l => {
+    const netVal = getLoanNetValue(l);
+    const feeNote = l.fee > 0 ? ` (fee $${l.fee.toFixed(2)})` : ' (no fee)';
+    return `<div class="tier-loan-row">
+      <span class="tier-loan-name">${l.name} — owe $${l.owed.toFixed(2)}</span>
+      <span class="tier-loan-net ${cls}" title="Net value = max borrow minus fee">$${netVal.toFixed(0)} net${feeNote}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderNetValueBars() {
+  const el = document.getElementById('nv-bars');
+  if (!loans.length) return;
+
+  // Sort by net value descending
+  const sorted = [...loans].sort((a, b) => getLoanNetValue(b) - getLoanNetValue(a));
+  const maxVal = Math.max(...sorted.map(l => getLoanNetValue(l)), 1);
+
+  el.innerHTML = sorted.map(l => {
+    const nv   = getLoanNetValue(l);
+    const pct  = Math.min(100, (nv / maxVal) * 100);
+    const tier = getLoanTier(l);
+    const color = tier === 1 ? '#00ff41' : tier === 2 ? 'var(--amber)' : 'var(--red)';
+    const tierLabel = tier === 1 ? 'FREE' : tier === 2 ? 'LOW-COST' : 'COSTLY';
+    return `<div class="nv-bar-row">
+      <div class="nv-bar-name" title="${l.name}">${l.name}</div>
+      <div class="nv-bar-track">
+        <div class="nv-bar-fill" style="width:${pct}%;background:${color};opacity:0.7">
+          <span style="font-size:9px;color:#000;font-weight:bold">${tierLabel}</span>
+        </div>
+      </div>
+      <div class="nv-bar-val" style="color:${color}">$${nv.toFixed(0)}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildLeverageSteps(tier1, tier2, tier3, income, cashOnHand, bills) {
+  const el = document.getElementById('leverage-plan-steps');
+  if (!loans.length) return;
+
+  const totalOwed   = loans.reduce((s, l) => s + l.owed, 0);
+  const totalT1Cap  = tier1.reduce((s, l) => s + getLoanNetValue(l), 0);
+  const gap         = income + cashOnHand - bills - totalOwed;
+  const isShort     = gap < 0;
+
+  let steps = [];
+  let stepNum = 1;
+
+  // Step 0: Context
+  steps.push({
+    cls: 'lev-step-purple',
+    html: `<strong style="color:#ff9fff">YOUR SITUATION:</strong> You bring in $${income.toFixed(2)} + $${cashOnHand.toFixed(2)} cash on hand. After bills ($${bills.toFixed(2)}) and total owed ($${totalOwed.toFixed(2)}), you are <strong style="color:${isShort ? 'var(--red)' : 'var(--green)'}">$${Math.abs(gap).toFixed(2)} ${isShort ? 'SHORT' : 'AHEAD'}</strong> this cycle.`
+  });
+
+  // Step 1: Always pay Tier 1 apps first (zero cost)
+  if (tier1.length > 0) {
+    const t1Names = tier1.map(l => l.name).join(', ');
+    const t1Total = tier1.reduce((s, l) => s + l.owed, 0);
+    steps.push({
+      cls: 'lev-step-t1',
+      html: `<strong>STEP ${stepNum++} — PAY YOUR FREE APPS FIRST:</strong> Pay off ${t1Names} (total: $${t1Total.toFixed(2)}). These have zero fees, so paying them costs you nothing extra. Once paid, you can borrow from them again immediately — they become your safety net.`
+    });
+
+    // Can T1 capacity cover T3 after being re-borrowed?
+    if (tier3.length > 0 && totalT1Cap > 0) {
+      const t3smallest = tier3[0];
+      if (totalT1Cap >= t3smallest.owed + t3smallest.fee) {
+        steps.push({
+          cls: 'lev-step-t1',
+          html: `<strong>STEP ${stepNum++} — USE FREE APPS TO KILL EXPENSIVE ONES:</strong> After re-borrowing from ${tier1.map(l=>l.name).join(' and ')}, use that money to pay off <strong>${t3smallest.name}</strong> ($${t3smallest.owed.toFixed(2)}). You're converting an expensive debt into a free one. ${t3smallest.fee > 0 ? `This saves you the $${t3smallest.fee.toFixed(2)} fee you'd pay to re-borrow from ${t3smallest.name}.` : 'Once done, stop re-borrowing from ' + t3smallest.name + '.'}`
+        });
+      }
+    }
+  }
+
+  // Step 2: Tier 2 guidance
+  if (tier2.length > 0) {
+    const t2Names = tier2.map(l => l.name).join(', ');
+    const t2Total = tier2.reduce((s, l) => s + l.owed, 0);
+    steps.push({
+      cls: 'lev-step-t2',
+      html: `<strong>STEP ${stepNum++} — LOW-COST APPS NEXT:</strong> Pay ${t2Names} (total: $${t2Total.toFixed(2)}). These have small fees. Only re-borrow from these if you still need cash after step 1. Every time you skip re-borrowing here, you save that fee.`
+    });
+  }
+
+  // Step 3: Tier 3 — pay but don't re-borrow
+  if (tier3.length > 0) {
+    const t3Names = tier3.map(l => `${l.name} ($${l.owed.toFixed(2)}${l.fee > 0 ? ` + $${l.fee.toFixed(2)} fee` : ''})`).join(', ');
+    steps.push({
+      cls: 'lev-step-t3',
+      html: `<strong>STEP ${stepNum++} — EXPENSIVE APPS LAST, THEN STOP:</strong> Pay ${t3Names}. These are your most costly apps. Once paid off, <strong style="color:var(--red)">DO NOT re-borrow from them again</strong>. This is how you permanently reduce your debt load each cycle.`
+    });
+  }
+
+  // Short gap emergency guidance
+  if (isShort && tier1.length > 0) {
+    const shortfall = Math.abs(gap);
+    const canCover  = totalT1Cap >= shortfall;
+    steps.push({
+      cls: 'lev-step-info',
+      html: canCover
+        ? `<strong style="color:var(--blue)">COVERING THE GAP:</strong> You're short $${shortfall.toFixed(2)} — but your Tier 1 apps can cover it (${tier1.map(l=>l.name+' $'+getLoanNetValue(l).toFixed(0)).join(', ')} = $${totalT1Cap.toFixed(0)} available). Pay them first, re-borrow, then use that cash to close the gap. No extra cost.`
+        : `<strong style="color:var(--amber)">GAP WARNING:</strong> You're short $${shortfall.toFixed(2)} and your free apps only cover $${totalT1Cap.toFixed(2)}. You may need to use a Tier 2 app too. Borrow the minimum needed — don't max out every app.`
+    });
+  }
+
+  // End goal reminder
+  const numApps = loans.length;
+  const exitTarget = loans.length > 3 ? Math.ceil(loans.length / 2) : 1;
+  steps.push({
+    cls: 'lev-step-purple',
+    html: `<strong style="color:#ff9fff">LONG-TERM GOAL:</strong> You currently use <strong>${numApps} apps</strong>. Each cycle, try to retire 1 expensive app permanently. Target: get down to ${exitTarget} app${exitTarget > 1 ? 's' : ''} total. Fewer apps = smaller total debt each cycle = more money in your pocket.`
+  });
+
+  el.innerHTML = steps.map(s =>
+    `<div class="lev-step ${s.cls}" style="font-size:12px;line-height:1.8">${s.html}</div>`
+  ).join('');
+}
+
+function renderExitProgress(tier1, tier2, tier3) {
+  const el = document.getElementById('exit-progress');
+  if (!loans.length) {
+    el.innerHTML = '<div class="tier-empty">Add loans to see your escape progress.</div>';
+    return;
+  }
+
+  const allSorted = [...tier3, ...tier2, ...tier1]; // worst first
+  el.innerHTML = allSorted.map(l => {
+    const tier    = getLoanTier(l);
+    const cycles  = cycleCounts[l.name] || 0;
+    let statusCls = 'exit-ok';
+    let statusTxt = '✓ KEEP — free to use';
+    let advice    = '';
+
+    if (tier === 3) {
+      statusCls = 'exit-bad';
+      statusTxt = '✗ TARGET — stop re-borrowing';
+      advice    = 'Once you pay this off, don\'t borrow again.';
+    } else if (tier === 2) {
+      statusCls = 'exit-warn';
+      statusTxt = '~ WATCH — use sparingly';
+      advice    = `Fee adds up. You've re-borrowed ${cycles} time${cycles !== 1 ? 's' : ''}.`;
+    } else {
+      advice    = `Free to cycle. Used ${cycles} time${cycles !== 1 ? 's' : ''}.`;
+    }
+
+    const tierLabel = tier === 1 ? 'TIER 1 FREE' : tier === 2 ? 'TIER 2 LOW-COST' : 'TIER 3 COSTLY';
+    const tierColor = tier === 1 ? 'var(--green)' : tier === 2 ? 'var(--amber)' : 'var(--red)';
+
+    return `<div class="exit-loan-row">
+      <div>
+        <span class="exit-loan-name">${l.name}</span>
+        <span style="font-size:9px;color:${tierColor};margin-left:8px;letter-spacing:1px">${tierLabel}</span>
+        <div style="font-size:10px;color:var(--green-dim);margin-top:2px">${advice}</div>
+      </div>
+      <span class="exit-status ${statusCls}">${statusTxt}</span>
+    </div>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════
@@ -1789,11 +2210,12 @@ function switchTab(id) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  const order = { setup:0, simulation:1, strategy:2, tracker:3, chat:4, settings:5 };
+  const order = { setup:0, simulation:1, strategy:2, leverage:3, tracker:4, chat:5, settings:6 };
   const tabBtns = document.querySelectorAll('.tab');
-  if (tabBtns[order[id]]) tabBtns[order[id]].classList.add('active');
+  if (tabBtns[order[id]] !== undefined) tabBtns[order[id]].classList.add('active');
   if (id === 'chat')     updateChatContextBar();
   if (id === 'settings') { onProviderChange(); refreshDataPreview(); }
+  if (id === 'leverage') runLeveragePlan();
 }
 
 // ═══════════════════════════════════════════════
@@ -1979,11 +2401,12 @@ function buildContextSummary() {
   const totalMax  = loans.filter(l => l.reuse === 'instant').reduce((s, l) => s + l.max, 0);
   const loanLines = loans.map(l => {
     const due = l.dueDateMode === 'date' && l.dueDate ? `due ${l.dueDate}` : `cycle ${l.dueCycle}`;
-    return `  - ${l.name}: owe $${l.owed.toFixed(2)}, max $${l.max.toFixed(2)}, fee $${l.fee.toFixed(2)}, ${l.reuse}, ${due}`;
+    const tier = getLoanTier(l);
+    return `  - ${l.name}: owe $${l.owed.toFixed(2)}, max $${l.max.toFixed(2)}, fee $${l.fee.toFixed(2)}, ${l.reuse}, ${due}, Tier ${tier}`;
   });
   const extraLines = extraIncomes.map(e => `  - ${e.label||'income'}: $${e.amount.toFixed(2)} on ${e.date}`);
   const simNote    = lastResult ? ` | After 3 cycles: $${lastResult.balance.toFixed(2)} balance, stress ${lastResult.damageScore}/100` : '';
-  return `Income: [${inc.map(v=>'$'+v.toFixed(2)).join(', ')}], Bills: [${bill.map(v=>'$'+v.toFixed(2)).join(', ')}], Cash: $${cash.toFixed(2)}, Total owed: $${totalOwed.toFixed(2)}, Total re-borrow capacity: $${totalMax.toFixed(2)}${simNote}\nLoans:\n${loanLines.join('\n')}${extraLines.length ? '\nExtra income:\n'+extraLines.join('\n') : ''}`;
+  return `Income: [${inc.map(v=>'$'+v.toFixed(2)).join(', ')}], Bills: [${bill.map(v=>'$'+v.toFixed(2)).join(', ')}], Cash: $${cash.toFixed(2)}, Total owed: $${totalOwed.toFixed(2)}, Total re-borrow capacity: $${totalMax.toFixed(2)}${simNote}\nLoans (Tier 1=free, Tier 2=low-cost, Tier 3=costly):\n${loanLines.join('\n')}${extraLines.length ? '\nExtra income:\n'+extraLines.join('\n') : ''}`;
 }
 
 function refreshDataPreview() {
@@ -2052,8 +2475,6 @@ async function sendChat() {
 
   const context = buildContextSummary();
 
-  // ── PATCH 2: Structured AI system prompt ──────────────────────────────────
-  // Compute Cycle-1 gap for the AI's reality check
   const _c1Inc   = parseFloat(document.getElementById('income-c1').value) || 0;
   const _c1Bil   = parseFloat(document.getElementById('bills-c1').value) || 0;
   const _c1Cash  = parseFloat(document.getElementById('cash-on-hand').value) || 0;
@@ -2067,26 +2488,34 @@ async function sendChat() {
     ? `Simulation result: 3-cycle end balance $${lastResult.balance.toFixed(2)}, stress score ${lastResult.damageScore}/100.`
     : 'Simulation not yet run — work from the raw numbers above.';
 
+  // Leverage tier context for AI
+  const _tier1 = loans.filter(l => getLoanTier(l) === 1).map(l => l.name).join(', ') || 'none';
+  const _tier2 = loans.filter(l => getLoanTier(l) === 2).map(l => l.name).join(', ') || 'none';
+  const _tier3 = loans.filter(l => getLoanTier(l) === 3).map(l => l.name).join(', ') || 'none';
+
   const systemPrompt = `You are the financial advisor inside Survival Engine, an app that helps people escape payday loan app cycles (Earnin, CashApp, Klover, Genie, Grant, etc.). ${tone}
 
 Structure EVERY response with these three labeled sections. Keep each section tight and specific — never generic:
 
 REALITY CHECK
-State the user's actual numbers plainly. Lead with the Cycle-1 gap: exactly how much their first paycheck + cash on hand covers vs. what is owed right now (loans + fees due in Cycle 1 + bills). Name the specific apps and dollar amounts. Don't soften it, but don't dramatize it.
+State the user's actual numbers plainly. Lead with the Cycle-1 gap. Name specific apps and dollar amounts.
 
 THE LOOP
-In 2–3 sentences, explain exactly why this cycle keeps repeating for THIS user using their data. Show the mechanism: the check is short → they borrow to cover the gap → the fee gets added to what they owe next cycle → next check is even shorter → forced to borrow again. Reference their actual fee amounts and app names.
+In 2-3 sentences, explain why this cycle keeps repeating using their actual data and fee amounts.
 
 BREAK THE CYCLE
-Give 1–3 numbered, concrete actions for THIS paycheck. Be specific: name the exact app, exact dollar amount, exact order to pay. If they can't pay everything, tell them which app to prioritize and why (e.g. "Pay Klover ($50 + $2.99 fee) first because it unlocks instant re-borrow as a safety valve"). Close with one action they can take AFTER this cycle to reduce the total amount they owe over time.
+Give 1-3 numbered, concrete actions using the leverage tier system:
+- Tier 1 apps (${_tier1}): zero-fee, pay first, re-borrow freely as safety net
+- Tier 2 apps (${_tier2}): small fee, use sparingly, try to stop re-borrowing
+- Tier 3 apps (${_tier3}): most costly or rigid, pay off and STOP re-borrowing permanently
+Always tell them which tier each app is in when giving advice. Use plain language — assume they have no financial background.
 
 User's live financial data:
 ${context}
 ${_gapNote}
 ${_simNote}
 
-Answer the user's question using their real numbers only. Never give generic advice — always reference their specific apps, amounts, and dates.`;
-  // ── END PATCH 2 ───────────────────────────────────────────────────────────
+Answer using their real numbers only. Never give generic advice.`;
 
   try {
     const result = await callAI(provider, key, model, systemPrompt, chatHistory, 1000);
