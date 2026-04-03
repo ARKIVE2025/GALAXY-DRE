@@ -273,8 +273,6 @@
         @media (hover: none) { #tooltip { display: none !important; } }
 
         /* ── TUTORIAL ── */
-
-        /* Independent dark backdrop — not inside the overlay stacking context */
         #tutorialBackdrop {
             position: fixed;
             inset: 0;
@@ -298,7 +296,6 @@
 
         .tutorial-overlay.active { display: block; }
 
-        /* Card wrapper — fully independent fixed layer, ABOVE everything including highlight */
         .tutorial-card-wrap {
             position: fixed;
             bottom: clamp(12px, 3vh, 28px);
@@ -313,7 +310,6 @@
 
         .tutorial-card-wrap.active { display: flex; }
 
-        /* Card pinned to bottom */
         .tutorial-card {
             pointer-events: all;
             background: #0a0a0a;
@@ -355,7 +351,6 @@
 
         .tutorial-arrow.active { display: block; }
 
-        /* Elevate highlighted DOM elements above the tutorial backdrop */
         .tutorial-elevated {
             position: relative;
             z-index: 10002 !important;
@@ -393,7 +388,6 @@
         .tutorial-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,212,255,0.4); }
         .tutorial-btn:active { transform: scale(0.96); }
 
-        /* PREV — secondary style */
         .tutorial-prev {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.25);
@@ -402,7 +396,6 @@
 
         .tutorial-prev:hover { background: rgba(255,255,255,0.07); color: #fff; box-shadow: none; }
 
-        /* SKIP — ghost style */
         .tutorial-skip {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.2);
@@ -605,7 +598,7 @@
 <div id="dataDisplay">
     <div class="data-line">→ Try Andre Go and leave a review! </div>
     <div class="data-line">→ 90-DAY GOAL: DRE CODE May 20th</div>
-    <div class="data-line">→ NODES ONLINE: 16</div>
+    <div class="data-line">→ NODES ONLINE: 17</div>
     <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
 </div>
 
@@ -639,6 +632,7 @@
         <button class="portal-btn" style="background:linear-gradient(135deg,#7C3AED 0%,#4C1D95 100%);color:#fff;" onclick="window.location.href='ATS_Config_Pro_v_3_0.html'">OPEN REPRIZAL AI</button>
         <button class="portal-btn" style="background:linear-gradient(135deg,#e83000 0%,#ffaa00 100%);color:#fff;" onclick="window.location.href='Coming_Soon_DreCode.html'">OPEN DRE CODE</button>
         <button class="portal-btn" style="background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" onclick="window.location.href='loan_shark_full_system.html'">OPEN LOAN SHARK</button>
+        <button class="portal-btn" style="background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;" onclick="window.location.href='24_HOURS_.HTML'">OPEN 24 HOURS →</button>
     </div>
 
     <div class="settings-section">
@@ -804,14 +798,24 @@ const nodesData = [
       public_desc:"DRE Interface is a live AI chat terminal running the full DRE Alignment Architect system.\n\nConnect your own AI provider and talk directly to DRE.\n\n⚡ Controller Modes:\n— DRE Default · General alignment\n— Ford Technical · Step-by-step execution\n— Book Writing · Narrative project support\n\n📎 Attach files: PDF, JSON, TXT, Markdown\n\n🔑 Requires your own API key. Stored locally only.",
       public_protocol:"⚠️ This tool requires your own API key from OpenAI, Anthropic, Google, DeepSeek, or a local model. No key = no chat.",
       isPortal:true, portalFile:"DRE_Interface_v4.html", portalLabel:"OPEN DRE INTERFACE",
-      portalStyle:"background:linear-gradient(135deg,#00d4ff 0%,#005f7a 100%);color:#000;font-weight:800;letter-spacing:2px;" }
+      portalStyle:"background:linear-gradient(135deg,#00d4ff 0%,#005f7a 100%);color:#000;font-weight:800;letter-spacing:2px;" },
+    // ── 24 HOURS ── Christ-centered daily rhythm & mental wellness tool
+    { id:"HOURS_24", x:-120, y:-60, z:130, name:"24 Hours", category:"Wellness · Daily Rhythm · Christ-Centered",
+      desc:"[FOUNDER] Christ-centered daily wellness and mental health app. Habit tracking, focus sessions, urge tracking, a built-in AI life coach grounded in scripture, and a full daily rhythm system.\n\nFeatures: Habit streaks · Bilateral focus sessions · Urge resistance tracker · AI Coach (OpenAI / Groq / DeepSeek / Anthropic) · Calendar · Daily check-in · Crisis support mode.\n\nAll data stored locally. No accounts required.",
+      protocol:"Use: Open → Set your API key in Settings → Log habits, run focus sessions, talk to the coach.\nAI Coach providers: OpenAI, Groq, DeepSeek, Anthropic.\nDesigned for daily use — morning check-in to evening reflection.",
+      public_desc:"24 Hours is a Christ-centered daily rhythm and wellness app.\n\nBuilt for people who want structure, accountability, and a coach rooted in truth — not algorithms.\n\n✝️ AI Life Coach — powered by scripture and your own API key\n📅 Daily habit tracking with streaks\n🧠 Bilateral focus sessions for deep work\n💪 Urge resistance tracker\n📖 Daily check-in and evening reflection\n🚨 Crisis support mode\n\n100% local. No account. No tracking.",
+      public_protocol:"Action: Open 24 Hours → Configure your API key → Start your daily rhythm\n\nProviders: OpenAI · Groq · DeepSeek · Anthropic",
+      isStar:true,
+      isPortal:true, portalFile:"24_HOURS_.HTML", portalLabel:"OPEN 24 HOURS →",
+      portalStyle:"background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;font-weight:800;letter-spacing:2px;" }
 ];
 
 const nodeColors = {
     "CORE":0x00d4ff,"CHRIST":0xFFFFFF,"EVALUATE":0x3b82f6,"DRE":0xd4af37,"CONSULT":0x50C878,
     "CONTENT":0xFF6B6B,"EXTENSION_DATA":0x9370DB,"DRE_INTERFACE":0x00d4ff,"ZIP_TOOL":0xf59e0b,
     "DRE_FLOW":0xFF2D78,"DRE_EXTRACTOR":0xFF8C00,"DRE_OS":0x00C853,"REPRIZAL":0x7C3AED,
-    "DRE_CODE":0xff4800,"LOAN_SHARK":0x00ff41,"KLEARA":0xff6600
+    "DRE_CODE":0xff4800,"LOAN_SHARK":0x00ff41,"KLEARA":0xff6600,
+    "HOURS_24":0x8b6fff
 };
 
 // ── SCENE ──
@@ -857,6 +861,40 @@ for (let i = 0; i < CONFIG.asteroidCount; i++) {
 // ── NODES ──
 const nodeObjects = new Map();
 const clickableNodes = [];
+
+// ── Helper: build a 5-point star shape geometry ──
+function createStarMesh(size, color) {
+    const starGroup = new THREE.Group();
+    const outerR = size * 1.8;
+    const innerR = size * 0.75;
+    const points = 5;
+    const shape = new THREE.Shape();
+    for (let i = 0; i < points * 2; i++) {
+        const angle = (i * Math.PI) / points - Math.PI / 2;
+        const r = i % 2 === 0 ? outerR : innerR;
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        i === 0 ? shape.moveTo(x, y) : shape.lineTo(x, y);
+    }
+    shape.closePath();
+    const extrudeSettings = { depth: size * 0.5, bevelEnabled: true, bevelThickness: size * 0.1, bevelSize: size * 0.08, bevelSegments: 3 };
+    const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    geo.center();
+    const mat = new THREE.MeshBasicMaterial({ color });
+    const mesh = new THREE.Mesh(geo, mat);
+    starGroup.add(mesh);
+    // inner glow halo
+    const igMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.35, side:THREE.BackSide });
+    const igGeo = new THREE.SphereGeometry(outerR * 1.15, 16, 16);
+    const ig = new THREE.Mesh(igGeo, igMat);
+    starGroup.add(ig);
+    // outer glow halo
+    const ogMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.15, side:THREE.BackSide });
+    const ogGeo = new THREE.SphereGeometry(outerR * 1.6, 16, 16);
+    const og = new THREE.Mesh(ogGeo, ogMat);
+    starGroup.add(og);
+    return { group: starGroup, mesh, innerGlow: ig, outerGlow: og };
+}
 
 nodesData.forEach(n => {
     const size = n.id==="KLEARA" ? 12 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
@@ -908,6 +946,39 @@ nodesData.forEach(n => {
         sg.rotation.x=0.18; sg.rotation.z=0.08;
         pg.add(sg);
         scene.userData.kleara = sg;
+
+    } else if (n.isStar) {
+        // ── STAR NODE (24 Hours) ──
+        const starData = createStarMesh(size, color);
+        const sg = starData.group;
+        sg.position.copy(pos);
+        // slow spin animation tag
+        sg.userData.isStar = true;
+        planet = starData.mesh;
+        planet.userData = { nodeId: n.id, nodeData: n };
+        pg.add(sg);
+        nodeObjects.set(n.id, {
+            planet: planet,
+            starGroup: sg,
+            innerGlow: starData.innerGlow,
+            outerGlow: starData.outerGlow,
+            originalSize: size
+        });
+        clickableNodes.push(planet);
+
+        // Label sprite
+        const lc=document.createElement('canvas'), lx=lc.getContext('2d');
+        lx.font='bold 48px Arial';
+        const tw=lx.measureText(n.name).width;
+        lc.width=tw+32; lc.height=64;
+        lx.font='bold 48px Arial'; lx.fillStyle='#FFFFFF'; lx.textAlign='left'; lx.textBaseline='middle';
+        lx.fillText(n.name,16,32);
+        const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:0.9}));
+        spr.scale.set((lc.width/lc.height)*4,4,1);
+        spr.position.set(n.x, n.y+(size*2+3), n.z);
+        pg.add(spr);
+        return; // skip the default planet path below
+
     } else {
         planet = new THREE.Mesh(new THREE.SphereGeometry(size,32,32), new THREE.MeshBasicMaterial({ color }));
         planet.position.copy(pos); pg.add(planet);
@@ -956,8 +1027,31 @@ nodesData.forEach(n=>{
 const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
 let hoveredNode=null;
 
-function scaleNode(mesh,ts){const o=nodeObjects.get(mesh.userData.nodeId);if(o&&mesh.userData.nodeId!=="KLEARA"){const s=ts/o.originalSize;o.planet.scale.set(s,s,s);if(o.innerGlow)o.innerGlow.scale.set(s,s,s);if(o.outerGlow)o.outerGlow.scale.set(s,s,s);}}
-function resetNodeScale(mesh){const o=nodeObjects.get(mesh.userData.nodeId);if(o&&mesh.userData.nodeId!=="KLEARA"){o.planet.scale.set(1,1,1);if(o.innerGlow)o.innerGlow.scale.set(1,1,1);if(o.outerGlow)o.outerGlow.scale.set(1,1,1);}}
+function scaleNode(mesh,ts){
+    const o=nodeObjects.get(mesh.userData.nodeId);
+    if(!o||mesh.userData.nodeId==="KLEARA") return;
+    if(o.starGroup){
+        const s=ts/o.originalSize;
+        o.starGroup.scale.set(s,s,s);
+    } else {
+        const s=ts/o.originalSize;
+        if(o.planet) o.planet.scale.set(s,s,s);
+        if(o.innerGlow) o.innerGlow.scale.set(s,s,s);
+        if(o.outerGlow) o.outerGlow.scale.set(s,s,s);
+    }
+}
+
+function resetNodeScale(mesh){
+    const o=nodeObjects.get(mesh.userData.nodeId);
+    if(!o||mesh.userData.nodeId==="KLEARA") return;
+    if(o.starGroup){
+        o.starGroup.scale.set(1,1,1);
+    } else {
+        if(o.planet) o.planet.scale.set(1,1,1);
+        if(o.innerGlow) o.innerGlow.scale.set(1,1,1);
+        if(o.outerGlow) o.outerGlow.scale.set(1,1,1);
+    }
+}
 
 // Desktop mouse
 window.addEventListener('mousemove',(e)=>{
@@ -1030,7 +1124,21 @@ document.addEventListener('click',(e)=>{
         const div=document.createElement('div');div.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 0;';
         const lbl=document.createElement('label');lbl.style.cssText='font-size:11px;color:rgba(255,255,255,0.5);';lbl.textContent=node.name;
         const inp=document.createElement('input');inp.type='color';inp.value='#'+(nodeColors[node.id]||0xFFFFFF).toString(16).padStart(6,'0');inp.style.cssText='border:none;background:transparent;cursor:pointer;width:36px;height:36px;';
-        inp.addEventListener('input',(e)=>{const c=parseInt(e.target.value.replace('#',''),16);nodeColors[node.id]=c;const o=nodeObjects.get(node.id);if(o&&o.planet)o.planet.material.color.setHex(c);if(o&&o.innerGlow)o.innerGlow.material.color.setHex(c);if(o&&o.outerGlow)o.outerGlow.material.color.setHex(c);});
+        inp.addEventListener('input',(e)=>{
+            const c=parseInt(e.target.value.replace('#',''),16);
+            nodeColors[node.id]=c;
+            const o=nodeObjects.get(node.id);
+            if(o){
+                if(o.starGroup){
+                    // update all mesh materials in the star group
+                    o.starGroup.traverse(child=>{ if(child.isMesh&&child.material&&!child.material.transparent) child.material.color.setHex(c); });
+                } else {
+                    if(o.planet) o.planet.material.color.setHex(c);
+                    if(o.innerGlow) o.innerGlow.material.color.setHex(c);
+                    if(o.outerGlow) o.outerGlow.material.color.setHex(c);
+                }
+            }
+        });
         div.appendChild(lbl);div.appendChild(inp);sec.appendChild(div);
     });
     cont.appendChild(sec);
@@ -1042,6 +1150,12 @@ function animate(){
     mainGroup.rotation.y+=CONFIG.rotationSpeed;
     starField.rotation.y+=CONFIG.rotationSpeed*0.2;
     if(mainGroup.userData.interfacePlanet)mainGroup.userData.interfacePlanet.rotation.y+=0.002;
+    // Slowly spin the 24 Hours star node
+    const hoursObj = nodeObjects.get('HOURS_24');
+    if(hoursObj && hoursObj.starGroup) {
+        hoursObj.starGroup.rotation.z += 0.004;
+        hoursObj.starGroup.rotation.y += 0.001;
+    }
     controls.update();
     renderer.render(scene,camera);
 }
@@ -1055,10 +1169,9 @@ window.addEventListener('resize',()=>{
 animate();
 
 // ══════════════════════════════════════════════════════════════════
-// TUTORIAL — 10 bugs fixed
+// TUTORIAL
 // ══════════════════════════════════════════════════════════════════
 
-// FIX #1: In-memory flag (no localStorage)
 let tutorialCompleted = false;
 window.tutorialActive = false;
 let currentStep = 0;
@@ -1073,7 +1186,6 @@ function getElPos(el) {
     return { x:r.left, y:r.top, width:r.width, height:r.height, is3D:false };
 }
 
-// FIX #5: Camera moves only in `action`, never inside getPosition
 const tutorialSteps = [
     {
         title:"Welcome to the DRE Galaxy",
@@ -1081,7 +1193,6 @@ const tutorialSteps = [
         getPosition:null, action:null
     },
     {
-        // FIX #8: Accurate description — tap opens modal, modal has install button
         title:"The Core: Andre Go",
         desc:"This bright blue planet is our Newest software tool. Tap it to open its card — from there you can get the Andre Go Chrome extension that captures all your AI conversations automatically.",
         getPosition:()=>{ const n=nodeObjects.get("CORE"); return(n&&n.planet)?getScreenPos(n.planet):null; },
@@ -1095,7 +1206,6 @@ const tutorialSteps = [
         action:null
     },
     {
-        // FIX #4: Close panel BEFORE pointing at MENU button
         title:"Access All Tools",
         desc:"Tap MENU to open the control deck — every tool in the ecosystem is listed there. DRE Interface, ZIP Tool, Loan Shark, Kleara Studios, and more.",
         getPosition:()=>getElPos(document.getElementById('settingsBtn')),
@@ -1120,14 +1230,10 @@ const tutorialSteps = [
 function updateHighlight(step){
     const hl=document.getElementById('tutorialHighlight');
     const arr=document.getElementById('tutorialArrow');
-
-    // Remove elevation from any previously elevated element
     document.querySelectorAll('.tutorial-elevated').forEach(el=>el.classList.remove('tutorial-elevated'));
-
     if(!step||!step.getPosition){ hl.classList.remove('active'); arr.classList.remove('active'); return; }
     const pos=step.getPosition();
     if(!pos){ hl.classList.remove('active'); arr.classList.remove('active'); return; }
-    // FIX #3: use is3D flag, not width===0 check
     if(pos.is3D){
         const r=38;
         hl.style.left=(pos.x-r)+'px'; hl.style.top=(pos.y-r)+'px';
@@ -1140,7 +1246,6 @@ function updateHighlight(step){
         hl.style.width=(pos.width+pad*2)+'px'; hl.style.height=(pos.height+pad*2)+'px';
         hl.style.borderRadius='10px';
         arr.style.left=(pos.x+pos.width/2-11)+'px'; arr.style.top=(pos.y+pos.height+pad+6)+'px';
-        // Elevate the target DOM element so it shows through the spotlight
         if(step.targetEl) step.targetEl.classList.add('tutorial-elevated');
     }
     hl.classList.add('active'); arr.classList.add('active');
@@ -1151,21 +1256,12 @@ function updateTutorialUI(){
     document.getElementById('tutorialStep').textContent=`STEP ${currentStep+1} OF ${tutorialSteps.length}`;
     document.getElementById('tutorialTitle').textContent=step.title;
     document.getElementById('tutorialDesc').textContent=step.desc;
-
-    // FIX #10: Re-trigger animation each step
     const card=document.getElementById('tutorialCard');
     card.style.animation='none'; void card.offsetWidth;
     card.style.animation='tutSlide 0.32s cubic-bezier(0.22,1,0.36,1)';
-
-    // Dots
     document.querySelectorAll('.tutorial-dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
-
-    // FIX #9: PREV button visibility
     document.getElementById('tutorialPrevBtn').style.display=currentStep===0?'none':'';
-
-    // Last step → FINISH label
     document.getElementById('tutorialNextBtn').textContent=currentStep===tutorialSteps.length-1?'FINISH ✓':'NEXT →';
-
     if(step.action) step.action();
     setTimeout(()=>updateHighlight(step),150);
 }
@@ -1196,7 +1292,6 @@ function startTutorial(){
     updateTutorialUI();
 }
 
-// replayTutorial ignores completion gate — always starts
 window.replayTutorial=function(){
     window.tutorialActive=true; currentStep=0;
     tutorialCompleted=false;
@@ -1211,7 +1306,6 @@ document.getElementById('tutorialNextBtn').addEventListener('click',(e)=>{e.stop
 document.getElementById('tutorialPrevBtn').addEventListener('click',(e)=>{e.stopPropagation();prevStep();});
 document.getElementById('tutorialSkipBtn').addEventListener('click',(e)=>{e.stopPropagation();completeTutorial();});
 
-// FIX #5: RAF loop only updates 3D highlights (DOM highlights don't need per-frame updates)
 function trackHighlights(){
     if(window.tutorialActive){
         const step=tutorialSteps[currentStep];
