@@ -276,7 +276,7 @@
         <div class="status-dot" id="s-dot"></div>
         <span id="s-text">LOCAL</span>
       </div>
-      <div class="status-pill" title="DRE CODE bridge connection">
+      <div class="status-pill" title="Click to pull code from DRE CODE" id="bridge-pill" style="cursor:pointer;" onclick="pullFromDreCode()">
         <div class="status-dot offline" id="bridge-dot"></div>
         <span id="bridge-text">NO CODE</span>
       </div>
@@ -619,6 +619,35 @@ function updateBridgeStatus() {
 }
 setInterval(updateBridgeStatus, 2000);
 updateBridgeStatus();
+
+// CROSS-ORIGIN PULL via postMessage — works across netlify/github domains
+let _dreWindow = null;
+
+function pullFromDreCode() {
+  const txt = document.getElementById('bridge-text');
+  if (!_dreWindow || _dreWindow.closed) {
+    _dreWindow = window.open('https://genuine-torte-effe76.netlify.app/', 'dreCodeTab');
+    txt.textContent = 'OPENING...';
+    setTimeout(() => {
+      _dreWindow.postMessage({ type: 'NWA_PULL_CODE' }, '*');
+      txt.textContent = 'REQUESTING...';
+    }, 3000);
+  } else {
+    _dreWindow.postMessage({ type: 'NWA_PULL_CODE' }, '*');
+    txt.textContent = 'REQUESTING...';
+  }
+}
+
+// Listen for DRE CODE response and store locally
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'NWA_CODE_CONTENT' && e.data.code) {
+    localStorage.setItem('drecode_editor_content', JSON.stringify({
+      code: e.data.code,
+      timestamp: Date.now()
+    }));
+    updateBridgeStatus();
+  }
+});
 
 // RETRY ENGINE (Fixes Groq 429 errors with exponential backoff)
 async function fetchWithRetry(url, options, maxRetries = 3) {
