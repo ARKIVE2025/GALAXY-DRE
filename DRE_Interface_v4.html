@@ -620,27 +620,24 @@ function updateBridgeStatus() {
 setInterval(updateBridgeStatus, 2000);
 updateBridgeStatus();
 
-// CROSS-ORIGIN BRIDGE via BroadcastChannel — works across different domains in same browser
-let _csBc = null;
+// CROSS-ORIGIN BRIDGE — dedicated request/response channels
+let _csOut = null; // we send requests on this
+let _csIn  = null; // we receive responses on this
 
 function initBridge() {
   try {
-    _csBc = new BroadcastChannel('nwa_dre_bridge');
-    _csBc.onmessage = (e) => {
-      if (e.data && e.data.type === 'NWA_CODE_CONTENT' && e.data.code) {
+    _csOut = new BroadcastChannel('dre_cs_request');
+    _csIn  = new BroadcastChannel('dre_cs_response');
+    _csIn.onmessage = (e) => {
+      if (e.data && e.data.type === 'CS_CODE_CONTENT' && e.data.code) {
         localStorage.setItem('drecode_editor_content', JSON.stringify({
           code: e.data.code,
           timestamp: Date.now()
         }));
         updateBridgeStatus();
       }
-      if (e.data && e.data.type === 'DRE_READY') {
-        // DRE CODE just loaded — auto-request code
-        _csBc.postMessage({ type: 'NWA_PULL_CODE' });
-        document.getElementById('bridge-text').textContent = 'REQUESTING...';
-      }
     };
-    console.log('[CS Interface] BroadcastChannel bridge active');
+    console.log('[CS Interface] Bridge ready on dre_cs_request/dre_cs_response');
   } catch(e) {
     console.warn('[CS Interface] BroadcastChannel unavailable:', e);
   }
@@ -649,13 +646,13 @@ initBridge();
 
 function pullFromDreCode() {
   const txt = document.getElementById('bridge-text');
-  if (!_csBc) { txt.textContent = 'NO SUPPORT'; return; }
-  _csBc.postMessage({ type: 'NWA_PULL_CODE' });
+  if (!_csOut) { txt.textContent = 'NO SUPPORT'; return; }
+  _csOut.postMessage({ type: 'CS_PULL_CODE' });
   txt.textContent = 'REQUESTING...';
-  // If no response in 3s, DRE CODE probably isn't open
   setTimeout(() => {
     const raw = localStorage.getItem('drecode_editor_content');
     if (!raw) txt.textContent = 'OPEN DRE FIRST';
+    else updateBridgeStatus();
   }, 3000);
 }
 
