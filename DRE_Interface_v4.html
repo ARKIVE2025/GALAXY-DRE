@@ -620,34 +620,44 @@ function updateBridgeStatus() {
 setInterval(updateBridgeStatus, 2000);
 updateBridgeStatus();
 
-// CROSS-ORIGIN PULL via postMessage — works across netlify/github domains
-let _dreWindow = null;
+// CROSS-ORIGIN BRIDGE via BroadcastChannel — works across different domains in same browser
+let _csBc = null;
+
+function initBridge() {
+  try {
+    _csBc = new BroadcastChannel('nwa_dre_bridge');
+    _csBc.onmessage = (e) => {
+      if (e.data && e.data.type === 'NWA_CODE_CONTENT' && e.data.code) {
+        localStorage.setItem('drecode_editor_content', JSON.stringify({
+          code: e.data.code,
+          timestamp: Date.now()
+        }));
+        updateBridgeStatus();
+      }
+      if (e.data && e.data.type === 'DRE_READY') {
+        // DRE CODE just loaded — auto-request code
+        _csBc.postMessage({ type: 'NWA_PULL_CODE' });
+        document.getElementById('bridge-text').textContent = 'REQUESTING...';
+      }
+    };
+    console.log('[CS Interface] BroadcastChannel bridge active');
+  } catch(e) {
+    console.warn('[CS Interface] BroadcastChannel unavailable:', e);
+  }
+}
+initBridge();
 
 function pullFromDreCode() {
   const txt = document.getElementById('bridge-text');
-  if (!_dreWindow || _dreWindow.closed) {
-    _dreWindow = window.open('https://genuine-torte-effe76.netlify.app/', 'dreCodeTab');
-    txt.textContent = 'OPENING...';
-    setTimeout(() => {
-      _dreWindow.postMessage({ type: 'NWA_PULL_CODE' }, '*');
-      txt.textContent = 'REQUESTING...';
-    }, 3000);
-  } else {
-    _dreWindow.postMessage({ type: 'NWA_PULL_CODE' }, '*');
-    txt.textContent = 'REQUESTING...';
-  }
+  if (!_csBc) { txt.textContent = 'NO SUPPORT'; return; }
+  _csBc.postMessage({ type: 'NWA_PULL_CODE' });
+  txt.textContent = 'REQUESTING...';
+  // If no response in 3s, DRE CODE probably isn't open
+  setTimeout(() => {
+    const raw = localStorage.getItem('drecode_editor_content');
+    if (!raw) txt.textContent = 'OPEN DRE FIRST';
+  }, 3000);
 }
-
-// Listen for DRE CODE response and store locally
-window.addEventListener('message', (e) => {
-  if (e.data && e.data.type === 'NWA_CODE_CONTENT' && e.data.code) {
-    localStorage.setItem('drecode_editor_content', JSON.stringify({
-      code: e.data.code,
-      timestamp: Date.now()
-    }));
-    updateBridgeStatus();
-  }
-});
 
 // RETRY ENGINE (Fixes Groq 429 errors with exponential backoff)
 async function fetchWithRetry(url, options, maxRetries = 3) {
