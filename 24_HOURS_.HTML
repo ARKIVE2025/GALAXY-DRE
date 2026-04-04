@@ -683,6 +683,33 @@ body::before {
   .stat-val { font-size:1.6rem; }
 }
 </style>
+
+<!-- Dynamic PWA Manifest and Icon generation -->
+<script>
+    const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%233b82f6'/><text x='50' y='68' font-family='Arial, sans-serif' font-size='50' font-weight='bold' fill='black' text-anchor='middle'>24</text></svg>`;
+    const manifest = {
+        name: "24 Hours Accountability",
+        short_name: "24 Hours",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#04040c",
+        theme_color: "#3b82f6",
+        icons: [{
+            src: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(iconSvg),
+            sizes: "512x512",
+            type: "image/svg+xml",
+            purpose: "any maskable"
+        }]
+    };
+    
+    // Use a data URI for the manifest to avoid blob URL issues in certain environments
+    const manifestString = JSON.stringify(manifest);
+    const manifestUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(manifestString);
+    
+    document.write(`<link rel="manifest" href="${manifestUrl}">`);
+    document.write(`<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconSvg)}">`);
+</script>
+
 </head>
 <body>
 
@@ -1299,7 +1326,9 @@ function startTimer() {
   state.slipCount = 0;
   saveState();
   updateTimerUI(true);
-  tickTimer();
+  
+  if (timerInterval) clearInterval(timerInterval); // Safety check so it doesn't double stack intervals
+  tickTimer(); // Call immediately to ensure it starts updating the display right away
   timerInterval = setInterval(tickTimer, 1000);
 }
 
@@ -1310,6 +1339,8 @@ function resumeTimer() {
     document.getElementById('slipBadge').style.display = 'block';
     document.getElementById('timerSlips').textContent = `${state.slipCount} slip${state.slipCount > 1 ? 's' : ''}`;
   }
+  
+  if (timerInterval) clearInterval(timerInterval);
   tickTimer();
   timerInterval = setInterval(tickTimer, 1000);
 }
@@ -1427,7 +1458,8 @@ function changeQuote() {
   currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
   renderQuote();
 }
-setInterval(changeQuote, 120000);
+// Change quote every 45 minutes (45 * 60 * 1000 ms)
+setInterval(changeQuote, 2700000);
 
 // ════════════════════════════════════════════
 // TASKS
@@ -1515,7 +1547,11 @@ function sendAccountabilityMessage() {
   const message = document.getElementById('acctMessage').value.trim();
   if (!message || !state.partners.length) return showToast('Add partners and message.', 'red');
   const allEmails = state.partners.map(p => p.email).join(',');
-  window.location.href = `mailto:${allEmails}?subject=${encodeURIComponent("Update")}&body=${encodeURIComponent(message)}`;
+  
+  // Attach the requested custom signature block to the email content
+  const fullMessage = message + "\n\n\n(THIS MESSAGE IS FROM 24 HOURS. YOU WERE PICKED AS A ACCOUNTABILITY PARTNER)";
+  
+  window.location.href = `mailto:${allEmails}?subject=${encodeURIComponent("Update")}&body=${encodeURIComponent(fullMessage)}`;
   showToast(`✓ Email app opened`, 'gold');
 }
 
