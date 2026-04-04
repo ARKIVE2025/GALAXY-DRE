@@ -1195,13 +1195,13 @@ function enterApp() {
   initApp();
 }
 
-// Auto-login from saved session
-(function checkSession() {
+// Auto-login — deferred until DOM is fully ready
+function checkSession() {
   try {
     const s = localStorage.getItem('24h_session');
     if (s) { currentUser = JSON.parse(s); enterApp(); }
   } catch(e) {}
-})();
+}
 
 /* ══ APP INIT ══ */
 function initApp() {
@@ -1795,15 +1795,17 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('visible'); });
-});
-
-// Coach Enter key
+// All DOM-dependent startup guaranteed after parse
 document.addEventListener('DOMContentLoaded', () => {
+  // Close modals on backdrop click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('visible'); });
+  });
+  // Coach Enter key
   const ci = document.getElementById('coachInput');
   if (ci) ci.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendToCoach(); } });
+  // Auto-login runs here so DOM is fully ready before initApp touches any elements
+  checkSession();
 });
 </script>
 </body>
