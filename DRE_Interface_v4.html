@@ -276,6 +276,10 @@
         <div class="status-dot" id="s-dot"></div>
         <span id="s-text">LOCAL</span>
       </div>
+      <div class="status-pill" title="DRE CODE bridge connection">
+        <div class="status-dot offline" id="bridge-dot"></div>
+        <span id="bridge-text">NO CODE</span>
+      </div>
     </div>
   </header>
   <aside id="sidebar">
@@ -590,6 +594,31 @@ function getBridgeContext() {
   } catch(e) {}
   return "";
 }
+
+// BRIDGE STATUS POLLER — checks every 2s and updates indicator
+function updateBridgeStatus() {
+  try {
+    const raw = localStorage.getItem('drecode_editor_content');
+    const dot  = document.getElementById('bridge-dot');
+    const txt  = document.getElementById('bridge-text');
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data.code && data.code.trim().length > 0) {
+        dot.className = 'status-dot';
+        const lines = data.code.trim().split('\n').length;
+        txt.textContent = 'EDITOR (' + lines + 'L)';
+        return;
+      }
+    }
+    dot.className = 'status-dot offline';
+    txt.textContent = 'NO CODE';
+  } catch(e) {
+    document.getElementById('bridge-dot').className = 'status-dot offline';
+    document.getElementById('bridge-text').textContent = 'NO CODE';
+  }
+}
+setInterval(updateBridgeStatus, 2000);
+updateBridgeStatus();
 
 // RETRY ENGINE (Fixes Groq 429 errors with exponential backoff)
 async function fetchWithRetry(url, options, maxRetries = 3) {
