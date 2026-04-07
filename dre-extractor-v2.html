@@ -2,35 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>DRE Extractor — Andre Method</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <!-- Added lamejs for MP3 encoding -->
   <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     :root{
       --bg:#F4F5F7;--surface:#fff;--panel:#1F2328;
-      --panel-nav:rgba(255,255,255,0.06);--panel-nav-active:rgba(255,255,255,0.12);
       --accent:#5B7CDD;--accent-soft:#EEF2FF;
       --green:#4CAF82;--green-soft:#EEF9F4;
-      --amber:#D4923A;--amber-soft:#FDF4E7;
-      --red:#E05C5C;--red-soft:#FEF0F0;
+      --amber:#D4923A;--red:#E05C5C;
       --gray:#B0BAC7;--gray-soft:#F1F3F5;
       --border:rgba(0,0,0,0.07);
       --text:#1F2328;--text2:#6B7585;--text3:#9AA3B0;
       --sh-sm:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
       --sh-md:0 4px 16px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.04);
-      --sh-lg:0 20px 48px rgba(0,0,0,0.12),0 8px 20px rgba(0,0,0,0.06);
-      --r-sm:10px;--r-md:16px;--r-lg:24px;--r-xl:32px;
+      --r-sm:10px;--r-md:16px;--r-lg:20px;
     }
-    html,body{height:100%;font-family:DM Sans,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+    html,body{
+      min-height:100%;
+      font-family:DM Sans,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
 
     /* ====== BOOT ====== */
-    #boot{position:fixed;inset:0;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1)}
+    #boot{position:fixed;inset:0;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.6s cubic-bezier(0.4,0,0.2,1);padding:24px}
     #boot.fade-out{opacity:0;pointer-events:none}
-    .boot-logo{font-size:15px;font-weight:500;letter-spacing:0.22em;color:rgba(255,255,255,0.9);text-transform:uppercase;margin-bottom:48px;opacity:0;animation:fadeUp 0.5s ease 0.3s forwards}
-    .boot-scan-lines{width:280px;display:flex;flex-direction:column;gap:16px;margin-bottom:40px}
+    .boot-logo{font-size:14px;font-weight:500;letter-spacing:0.22em;color:rgba(255,255,255,0.9);text-transform:uppercase;margin-bottom:40px;opacity:0;animation:fadeUp 0.5s ease 0.3s forwards}
+    .boot-scan-lines{width:min(280px,100%);display:flex;flex-direction:column;gap:14px;margin-bottom:32px}
     .boot-line{display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(6px)}
     .boot-line.show{animation:fadeUp 0.4s cubic-bezier(0.2,0,0,1) forwards}
     .boot-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;transform:scale(0);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
@@ -38,93 +40,126 @@
     .boot-line-text{font-family:DM Mono,monospace;font-size:12px;color:rgba(255,255,255,0.55);letter-spacing:0.04em}
     .boot-line-label{font-size:12px;color:rgba(255,255,255,0.4);margin-left:auto;font-family:DM Mono,monospace}
     .boot-line-label.done{color:var(--green)}
-    .boot-bar-wrap{width:280px;height:2px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;opacity:0;animation:fadeUp 0.4s ease 1.2s forwards}
+    .boot-bar-wrap{width:min(280px,100%);height:2px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;opacity:0;animation:fadeUp 0.4s ease 1.2s forwards}
     .boot-bar{height:100%;background:linear-gradient(90deg,var(--accent),#7B9EF7);border-radius:99px;width:0%;transition:width 1.8s cubic-bezier(0.4,0,0.2,1)}
-    .boot-status{margin-top:20px;font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);opacity:0;animation:fadeUp 0.4s ease 1.3s forwards}
+    .boot-status{margin-top:16px;font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.06em;color:rgba(255,255,255,0.25);opacity:0;animation:fadeUp 0.4s ease 1.3s forwards}
 
-    /* ====== SHELL ====== */
-    #shell{height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.5s ease}
+    /* ====== LAYOUT ====== */
+    #shell{min-height:100vh;display:flex;flex-direction:column;opacity:0;transition:opacity 0.5s ease}
     #shell.visible{opacity:1}
-    .device{width:1080px;height:680px;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--sh-lg),0 0 0 1px rgba(0,0,0,0.06);display:flex;overflow:hidden}
 
-    /* ====== LEFT PANEL ====== */
-    .left-panel{width:240px;flex-shrink:0;background:var(--panel);display:flex;flex-direction:column;padding:32px 0}
-    .panel-logo{padding:0 24px 28px;border-bottom:1px solid rgba(255,255,255,0.06)}
-    .panel-logo-name{font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em}
-    .panel-logo-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;margin-top:3px}
-    .panel-body{flex:1;padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow:hidden}
-    .panel-section-label{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:12px 12px 8px}
-
-    /* File info widget */
-    .file-widget{background:rgba(255,255,255,0.05);border-radius:var(--r-sm);padding:14px;margin-bottom:4px}
-    .file-widget-title{font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:10px}
-    .file-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-    .file-row:last-child{margin-bottom:0}
-    .file-key{font-size:11px;color:rgba(255,255,255,0.35)}
-    .file-val{font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);font-family:DM Mono,monospace;text-align:right;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-    /* Privacy note */
-    .privacy-note{background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.15);border-radius:var(--r-sm);padding:12px 14px}
-    .privacy-note-title{font-size:10px;font-weight:600;color:var(--green);margin-bottom:4px;display:flex;align-items:center;gap:6px}
-    .privacy-note-body{font-size:10px;color:rgba(255,255,255,0.3);line-height:1.5}
-
-    .panel-footer{padding:16px 24px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:auto}
-    .status-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-    .status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    /* Top bar (mobile) / Left panel (desktop) */
+    .top-bar{
+      background:var(--panel);
+      padding:16px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      flex-shrink:0;
+    }
+    .top-bar-name{font-size:15px;font-weight:600;color:#fff;letter-spacing:0.06em}
+    .top-bar-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
+    .top-bar-status{display:flex;align-items:center;gap:8px}
+    .status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
     .status-dot.green{background:var(--green);box-shadow:0 0 0 3px rgba(76,175,130,0.2);animation:pulse-green 2.5s ease infinite}
     .status-dot.amber{background:var(--amber);box-shadow:0 0 0 3px rgba(212,146,58,0.2);animation:pulse-amber 1s ease infinite}
-    .status-text{font-size:11px;color:rgba(255,255,255,0.3)}
-    .status-text strong{font-weight:500;color:rgba(255,255,255,0.55)}
-    .brand-link{font-size:10px;color:rgba(255,255,255,0.18);text-decoration:none;letter-spacing:0.04em;transition:color 0.2s}
-    .brand-link:hover{color:rgba(255,255,255,0.45)}
+    .status-text{font-size:12px;color:rgba(255,255,255,0.4)}
+    .status-text strong{font-weight:500;color:rgba(255,255,255,0.65)}
 
-    /* ====== HINGE ====== */
-    .hinge{width:1px;background:rgba(0,0,0,0.12);flex-shrink:0}
+    /* Meta strip */
+    .meta-strip{
+      background:rgba(255,255,255,0.04);
+      border-top:1px solid rgba(255,255,255,0.06);
+      padding:10px 20px;
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      overflow:hidden;
+    }
+    .meta-strip.hidden-strip{display:none}
+    .meta-item{display:flex;flex-direction:column;gap:2px}
+    .meta-key{font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em}
+    .meta-val{font-size:12px;color:rgba(255,255,255,0.7);font-family:DM Mono,monospace;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    /* ====== RIGHT PANEL ====== */
-    .right-panel{flex:1;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+    /* Main content */
+    .main-content{
+      flex:1;
+      padding:20px 16px 32px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      max-width:640px;
+      width:100%;
+      margin:0 auto;
+    }
 
-    /* ====== ANIMATIONS ====== */
-    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes pulse-green{0%,100%{box-shadow:0 0 0 3px rgba(76,175,130,0.2)}50%{box-shadow:0 0 0 5px rgba(76,175,130,0.06)}}
-    @keyframes pulse-amber{0%,100%{box-shadow:0 0 0 3px rgba(212,146,58,0.2)}50%{box-shadow:0 0 0 5px rgba(212,146,58,0.06)}}
-    @keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
-
-    /* ====== SHARED PANEL HEADER ====== */
-    .panel-header{padding:36px 44px 28px;border-bottom:1px solid var(--border);background:var(--surface)}
-    .panel-eyebrow{font-size:10.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
-    .panel-title{font-size:24px;font-weight:600;color:var(--text);letter-spacing:-0.02em}
+    /* Panel header */
+    .panel-header{padding-bottom:4px}
+    .panel-eyebrow{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+    .panel-title{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-0.02em;line-height:1.2}
     .panel-desc{font-size:13px;color:var(--text2);margin-top:5px;line-height:1.55}
 
-    /* ====== STATE: UPLOAD ====== */
-    #stateUpload .right-panel-body{padding:32px 44px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;flex:1}
-    .drop-zone{border:2px dashed var(--border);border-radius:var(--r-lg);background:var(--surface);padding:52px 32px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.22s ease;text-align:center;flex:1}
+    /* ====== DROP ZONE ====== */
+    .drop-zone{
+      border:2px dashed var(--border);
+      border-radius:var(--r-lg);
+      background:var(--surface);
+      padding:40px 24px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:all 0.22s ease;
+      text-align:center;
+    }
     .drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:var(--accent-soft)}
-    .drop-icon-wrap{width:60px;height:60px;background:var(--gray-soft);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1)}
+    .drop-icon-wrap{width:56px;height:56px;background:var(--gray-soft);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1)}
     .drop-zone:hover .drop-icon-wrap,.drop-zone.dragover .drop-icon-wrap{background:var(--accent-soft);transform:scale(1.08)}
     .drop-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
-    .drop-sub{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:22px}
-    .btn-select{background:var(--panel);color:#fff;border:none;padding:12px 28px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:opacity 0.18s,transform 0.18s;margin-bottom:20px}
+    .drop-sub{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:20px}
+    .btn-select{
+      background:var(--panel);color:#fff;border:none;
+      padding:14px 28px;border-radius:var(--r-sm);
+      font-family:DM Sans,sans-serif;font-size:15px;font-weight:600;
+      cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+      transition:opacity 0.18s,transform 0.18s;
+      margin-bottom:20px;
+      min-height:48px;
+      touch-action:manipulation;
+    }
     .btn-select:hover{opacity:0.88;transform:translateY(-1px)}
     .format-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
     .chip{background:var(--gray-soft);color:var(--text2);font-size:11px;font-weight:500;padding:4px 10px;border-radius:99px;font-family:DM Mono,monospace}
 
-    /* ====== STATE: PROCESSING ====== */
-    .processing-wrap{flex:1;padding:32px 44px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
-    .proc-card{background:var(--surface);border-radius:var(--r-md);padding:24px 26px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
-    .proc-top{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+    /* Privacy note */
+    .privacy-note{
+      background:rgba(76,175,130,0.08);
+      border:1px solid rgba(76,175,130,0.2);
+      border-radius:var(--r-sm);
+      padding:12px 14px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .privacy-icon{flex-shrink:0;margin-top:1px}
+    .privacy-note-title{font-size:11px;font-weight:600;color:var(--green);margin-bottom:3px}
+    .privacy-note-body{font-size:11px;color:var(--text2);line-height:1.5}
+
+    /* ====== PROCESSING ====== */
+    .proc-card{background:var(--surface);border-radius:var(--r-md);padding:20px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
+    .proc-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
     .proc-spinner-box{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .spinner{width:20px;height:20px;border:2.5px solid rgba(91,124,221,0.2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.75s linear infinite}
     .proc-stage-name{font-size:15px;font-weight:600;color:var(--text)}
     .proc-stage-sub{font-size:12px;color:var(--text3);margin-top:2px}
-    .prog-track{height:4px;background:var(--gray-soft);border-radius:99px;overflow:hidden;margin-bottom:10px}
+    .prog-track{height:4px;background:var(--gray-soft);border-radius:99px;overflow:hidden;margin-bottom:8px}
     .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#7B9EF7);width:0%;transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}
     .prog-row{display:flex;justify-content:space-between}
     .prog-pct{font-size:11px;font-weight:600;color:var(--accent);font-family:DM Mono,monospace}
     .prog-label{font-size:11px;color:var(--text3);font-family:DM Mono,monospace}
     .stage-list{display:flex;flex-direction:column;gap:8px}
-    .stage-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border);transition:all 0.25s}
+    .stage-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border);transition:all 0.25s}
     .stage-item.active{border-color:rgba(91,124,221,0.25);background:var(--accent-soft)}
     .stage-item.done{opacity:0.55}
     .stage-num{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;font-family:DM Mono,monospace;transition:all 0.25s}
@@ -134,101 +169,176 @@
     .stage-item.active .stage-text{color:var(--accent)}
     .stage-detail{font-size:11px;color:var(--text3);margin-top:1px}
 
-    /* ====== STATE: DOWNLOAD ====== */
-    .download-wrap{flex:1;padding:32px 44px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
-    .success-banner{background:linear-gradient(135deg,#1F2328,#2a3d5e);border-radius:var(--r-md);padding:22px 24px;display:flex;align-items:center;gap:18px}
-    .success-icon-box{width:46px;height:46px;background:rgba(76,175,130,0.18);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
-    .success-title{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px}
+    /* ====== DOWNLOAD ====== */
+    .success-banner{background:linear-gradient(135deg,#1F2328,#2a3d5e);border-radius:var(--r-md);padding:20px;display:flex;align-items:center;gap:16px}
+    .success-icon-box{width:44px;height:44px;background:rgba(76,175,130,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+    .success-title{font-size:16px;font-weight:600;color:#fff;margin-bottom:3px}
     .success-sub{font-size:12px;color:rgba(255,255,255,0.4)}
     .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .stat-card{background:var(--surface);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
-    .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px}
-    .stat-val{font-size:19px;font-weight:600;color:var(--text);font-family:DM Mono,monospace;letter-spacing:-0.01em}
+    .stat-card{background:var(--surface);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
+    .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px}
+    .stat-val{font-size:18px;font-weight:600;color:var(--text);font-family:DM Mono,monospace;letter-spacing:-0.01em}
     .stat-sub{font-size:11px;color:var(--text2);margin-top:2px}
-    .waveform-card{background:var(--surface);border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
+    .waveform-card{background:var(--surface);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--sh-sm);border:1px solid var(--border)}
     .waveform-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
     .waveform-bars{display:flex;align-items:center;gap:2px;height:36px}
-    .waveform-bar{flex:1;background:var(--accent);opacity:0.55;border-radius:2px;transition:height 0.3s ease}
-    .action-row{display:flex;gap:10px;margin-top:2px}
-    .btn-download{flex:1;background:var(--panel);color:#fff;border:none;padding:14px 24px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.18s,transform 0.18s}
+    .waveform-bar{flex:1;background:var(--accent);opacity:0.55;border-radius:2px}
+    .action-row{display:flex;flex-direction:column;gap:10px}
+    .btn-download{
+      width:100%;background:var(--panel);color:#fff;border:none;
+      padding:16px 24px;border-radius:var(--r-sm);
+      font-family:DM Sans,sans-serif;font-size:15px;font-weight:600;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+      transition:opacity 0.18s,transform 0.18s;
+      min-height:52px;touch-action:manipulation;
+    }
     .btn-download:hover{opacity:0.88;transform:translateY(-1px)}
-    .btn-again{background:var(--surface);color:var(--text2);border:1px solid var(--border);padding:14px 20px;border-radius:var(--r-sm);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s;white-space:nowrap}
+    .btn-again{
+      width:100%;background:var(--surface);color:var(--text2);
+      border:1px solid var(--border);
+      padding:14px 20px;border-radius:var(--r-sm);
+      font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;
+      cursor:pointer;transition:all 0.18s;
+      min-height:48px;touch-action:manipulation;
+    }
     .btn-again:hover{background:var(--gray-soft)}
 
+    .brand-link{display:block;text-align:center;padding:8px;font-size:11px;color:var(--text3);text-decoration:none;margin-top:4px}
+
+    /* ====== DESKTOP ====== */
+    @media(min-width:768px){
+      #shell{flex-direction:row;min-height:100vh}
+      .left-sidebar{
+        width:240px;
+        flex-shrink:0;
+        background:var(--panel);
+        display:flex;
+        flex-direction:column;
+        padding:28px 0;
+        position:sticky;
+        top:0;
+        height:100vh;
+        overflow-y:auto;
+      }
+      .top-bar{display:none}
+      .sidebar-logo{padding:0 22px 24px;border-bottom:1px solid rgba(255,255,255,0.06)}
+      .sidebar-logo-name{font-size:16px;font-weight:600;color:#fff;letter-spacing:0.06em}
+      .sidebar-logo-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;margin-top:3px}
+      .sidebar-body{flex:1;padding:18px 14px;display:flex;flex-direction:column;gap:4px;overflow:hidden}
+      .sidebar-section-label{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:10px 10px 6px}
+      .file-widget{background:rgba(255,255,255,0.05);border-radius:var(--r-sm);padding:12px;margin-bottom:4px}
+      .file-widget-title{font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:8px}
+      .file-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+      .file-row:last-child{margin-bottom:0}
+      .file-key{font-size:11px;color:rgba(255,255,255,0.35)}
+      .file-val{font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);font-family:DM Mono,monospace;text-align:right;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .sidebar-privacy{background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.15);border-radius:var(--r-sm);padding:10px 12px}
+      .sidebar-privacy-title{font-size:10px;font-weight:600;color:var(--green);margin-bottom:4px}
+      .sidebar-privacy-body{font-size:10px;color:rgba(255,255,255,0.3);line-height:1.5}
+      .sidebar-footer{padding:14px 22px 0;border-top:1px solid rgba(255,255,255,0.06);margin-top:auto}
+      .sidebar-status-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+      .right-area{flex:1;display:flex;flex-direction:column;background:var(--bg);overflow-y:auto}
+      .main-content{padding:28px 36px 40px;max-width:none}
+      .action-row{flex-direction:row}
+      .btn-again{width:auto;white-space:nowrap}
+      .drop-zone{padding:52px 32px}
+    }
+
+    /* ====== HIDDEN STATE ====== */
     .hidden{display:none!important}
+
+    /* ====== ANIMATIONS ====== */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse-green{0%,100%{box-shadow:0 0 0 3px rgba(76,175,130,0.2)}50%{box-shadow:0 0 0 5px rgba(76,175,130,0.06)}}
+    @keyframes pulse-amber{0%,100%{box-shadow:0 0 0 3px rgba(212,146,58,0.2)}50%{box-shadow:0 0 0 5px rgba(212,146,58,0.06)}}
+    @keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
   </style>
 </head>
 <body>
 
-<!-- ====== BOOT ====== -->
+<!-- BOOT -->
 <div id="boot">
   <div class="boot-logo">DRE Extractor</div>
   <div class="boot-scan-lines">
-    <div class="boot-line" id="bl0"><div class="boot-dot" id="bd0"></div><span class="boot-line-text">Loading audio engine</span><span class="boot-line-label" id="bs0">—</span></div>
-    <div class="boot-line" id="bl1"><div class="boot-dot" id="bd1"></div><span class="boot-line-text">Initializing MP3 encoder</span><span class="boot-line-label" id="bs1">—</span></div>
-    <div class="boot-line" id="bl2"><div class="boot-dot" id="bd2"></div><span class="boot-line-text">Verifying secure context</span><span class="boot-line-label" id="bs2">—</span></div>
+    <div class="boot-line" id="bl0"><div class="boot-dot" id="bd0"></div><span class="boot-line-text">Loading audio engine</span><span class="boot-line-label" id="bs0">&mdash;</span></div>
+    <div class="boot-line" id="bl1"><div class="boot-dot" id="bd1"></div><span class="boot-line-text">Initializing MP3 encoder</span><span class="boot-line-label" id="bs1">&mdash;</span></div>
+    <div class="boot-line" id="bl2"><div class="boot-dot" id="bd2"></div><span class="boot-line-text">Verifying secure context</span><span class="boot-line-label" id="bs2">&mdash;</span></div>
   </div>
   <div class="boot-bar-wrap"><div class="boot-bar" id="bootBar"></div></div>
-  <div class="boot-status" id="bootStatus">Initializing DRE Extractor…</div>
+  <div class="boot-status" id="bootStatus">Initializing DRE Extractor&hellip;</div>
 </div>
 
-<!-- ====== SHELL ====== -->
+<!-- SHELL -->
 <div id="shell">
-  <div class="device">
 
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-      <div class="panel-logo">
-        <div class="panel-logo-name">DRE Extractor</div>
-        <div class="panel-logo-sub">Andre Method</div>
+  <!-- DESKTOP LEFT SIDEBAR -->
+  <div class="left-sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-name">DRE Extractor</div>
+      <div class="sidebar-logo-sub">Andre Method</div>
+    </div>
+    <div class="sidebar-body">
+      <div class="sidebar-section-label">File Info</div>
+      <div class="file-widget">
+        <div class="file-widget-title">Source</div>
+        <div class="file-row"><span class="file-key">Name</span><span class="file-val" id="infoNameD">&mdash;</span></div>
+        <div class="file-row"><span class="file-key">Size</span><span class="file-val" id="infoSizeD">&mdash;</span></div>
+        <div class="file-row"><span class="file-key">Type</span><span class="file-val" id="infoTypeD">&mdash;</span></div>
       </div>
-
-      <div class="panel-body">
-        <div class="panel-section-label">File Info</div>
-        <div class="file-widget">
-          <div class="file-widget-title">Source</div>
-          <div class="file-row"><span class="file-key">Name</span><span class="file-val" id="infoName">—</span></div>
-          <div class="file-row"><span class="file-key">Size</span><span class="file-val" id="infoSize">—</span></div>
-          <div class="file-row"><span class="file-key">Type</span><span class="file-val" id="infoType">—</span></div>
-        </div>
-        <div class="file-widget">
-          <div class="file-widget-title">Output</div>
-          <div class="file-row"><span class="file-key">Format</span><span class="file-val">MP3</span></div>
-          <div class="file-row"><span class="file-key">Bitrate</span><span class="file-val">128 kbps</span></div>
-          <div class="file-row"><span class="file-key">Channels</span><span class="file-val" id="infoChannels">—</span></div>
-          <div class="file-row"><span class="file-key">Sample Rate</span><span class="file-val" id="infoSampleRate">—</span></div>
-        </div>
-
-        <div class="panel-section-label" style="padding-top:4px">Privacy</div>
-        <div class="privacy-note">
-          <div class="privacy-note-title">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="var(--green)"><path d="M5 0L9.33 2.5v5L5 10 .67 7.5v-5z"/></svg>
-            On-Device Only
-          </div>
-          <div class="privacy-note-body">No uploads. No servers. Audio is decoded and converted to MP3 entirely inside your browser.</div>
-        </div>
+      <div class="file-widget">
+        <div class="file-widget-title">Output</div>
+        <div class="file-row"><span class="file-key">Format</span><span class="file-val">MP3</span></div>
+        <div class="file-row"><span class="file-key">Bitrate</span><span class="file-val">128 kbps</span></div>
+        <div class="file-row"><span class="file-key">Channels</span><span class="file-val" id="infoChannelsD">&mdash;</span></div>
+        <div class="file-row"><span class="file-key">Sample Rate</span><span class="file-val" id="infoSampleRateD">&mdash;</span></div>
       </div>
-
-      <div class="panel-footer">
-        <div class="status-row">
-          <div class="status-dot green" id="statusDot"></div>
-          <div class="status-text">Engine: <strong id="engineStatus">Ready</strong></div>
-        </div>
-        <a href="https://andremethod.com" target="_blank" class="brand-link">andremethod.com</a>
+      <div class="sidebar-section-label">Privacy</div>
+      <div class="sidebar-privacy">
+        <div class="sidebar-privacy-title">&#x1F512; On-Device Only</div>
+        <div class="sidebar-privacy-body">No uploads. No servers. Audio is decoded and converted entirely inside your browser.</div>
       </div>
     </div>
-
-    <!-- HINGE -->
-    <div class="hinge"></div>
-
-    <!-- RIGHT PANEL — UPLOAD STATE -->
-    <div class="right-panel" id="stateUpload">
-      <div class="panel-header">
-        <div class="panel-eyebrow">Audio Engine</div>
-        <div class="panel-title">Extract & Convert</div>
-        <div class="panel-desc">Drop any video or audio file (including WAV). Decoded natively in your browser and exported as MP3.</div>
+    <div class="sidebar-footer">
+      <div class="sidebar-status-row">
+        <div class="status-dot green" id="statusDotD"></div>
+        <div class="status-text">Engine: <strong id="engineStatusD">Ready</strong></div>
       </div>
-      <div class="right-panel-body">
+      <a href="https://andremethod.com" target="_blank" rel="noopener noreferrer" class="brand-link">andremethod.com</a>
+    </div>
+  </div>
+
+  <!-- MOBILE TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-logo">
+      <div class="top-bar-name">DRE Extractor</div>
+      <div class="top-bar-sub">Andre Method</div>
+    </div>
+    <div class="top-bar-status">
+      <div class="status-dot green" id="statusDot"></div>
+      <div class="status-text"><strong id="engineStatus">Ready</strong></div>
+    </div>
+  </div>
+
+  <!-- RIGHT AREA -->
+  <div class="right-area" id="rightArea">
+
+    <!-- Mobile meta strip -->
+    <div class="meta-strip hidden-strip" id="metaStrip">
+      <div class="meta-item"><div class="meta-key">File</div><div class="meta-val" id="metaName">&mdash;</div></div>
+      <div class="meta-item"><div class="meta-key">Size</div><div class="meta-val" id="metaSize">&mdash;</div></div>
+      <div class="meta-item"><div class="meta-key">Type</div><div class="meta-val" id="metaType">&mdash;</div></div>
+      <div class="meta-item"><div class="meta-key">Output</div><div class="meta-val">MP3 &middot; 128k</div></div>
+    </div>
+
+    <!-- UPLOAD STATE -->
+    <div id="stateUpload">
+      <div class="main-content">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Audio Engine</div>
+          <div class="panel-title">Extract &amp; Convert</div>
+          <div class="panel-desc">Drop any video or audio file. Decoded in your browser and exported as MP3.</div>
+        </div>
         <div class="drop-zone" id="dropZone" onclick="fileInput.click()">
           <div class="drop-icon-wrap">
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -237,10 +347,10 @@
             </svg>
           </div>
           <div class="drop-title">Drop file here</div>
-          <div class="drop-sub">or click to select from your device</div>
+          <div class="drop-sub">or tap to select from your device</div>
           <button class="btn-select" onclick="event.stopPropagation();fileInput.click()">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.5 2v8M4 6l3.5-4L11 6"/><line x1="2" y1="13" x2="13" y2="13"/></svg>
-            Select Video or Audio File
+            Select File
           </button>
           <div class="format-chips">
             <span class="chip">WAV</span><span class="chip">MP4</span><span class="chip">MOV</span>
@@ -248,60 +358,57 @@
             <span class="chip">WEBM</span><span class="chip">M4A</span>
           </div>
         </div>
+        <div class="privacy-note">
+          <div class="privacy-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="var(--green)"><path d="M7 0L13 3.5v7L7 14 1 10.5v-7z"/></svg>
+          </div>
+          <div>
+            <div class="privacy-note-title">On-Device Only</div>
+            <div class="privacy-note-body">No uploads. No servers. Audio is decoded and converted to MP3 entirely inside your browser.</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL — PROCESSING STATE -->
-    <div class="right-panel hidden" id="stateProcessing">
-      <div class="panel-header">
-        <div class="panel-eyebrow">Audio Engine</div>
-        <div class="panel-title">Converting to MP3</div>
-        <div class="panel-desc">Browser native decoder is running. This happens entirely on your device.</div>
-      </div>
-      <div class="processing-wrap">
+    <!-- PROCESSING STATE -->
+    <div id="stateProcessing" class="hidden">
+      <div class="main-content">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Audio Engine</div>
+          <div class="panel-title">Converting to MP3</div>
+          <div class="panel-desc">Running entirely on your device.</div>
+        </div>
         <div class="proc-card">
           <div class="proc-top">
             <div class="proc-spinner-box"><div class="spinner"></div></div>
             <div>
-              <div class="proc-stage-name" id="stageName">Reading file…</div>
+              <div class="proc-stage-name" id="stageName">Reading file&hellip;</div>
               <div class="proc-stage-sub" id="stageSub">Buffering source data into memory</div>
             </div>
           </div>
           <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
           <div class="prog-row">
             <span class="prog-pct" id="progPct">0%</span>
-            <span class="prog-label" id="progLabel">Processing…</span>
+            <span class="prog-label" id="progLabel">Processing&hellip;</span>
           </div>
         </div>
         <div class="stage-list">
-          <div class="stage-item active" id="st0">
-            <div class="stage-num" id="sn0">1</div>
-            <div><div class="stage-text">Read source file</div><div class="stage-detail" id="sd0">In progress…</div></div>
-          </div>
-          <div class="stage-item" id="st1">
-            <div class="stage-num" id="sn1">2</div>
-            <div><div class="stage-text">Decode audio stream</div><div class="stage-detail" id="sd1">Pending</div></div>
-          </div>
-          <div class="stage-item" id="st2">
-            <div class="stage-num" id="sn2">3</div>
-            <div><div class="stage-text">Encode to MP3</div><div class="stage-detail" id="sd2">Pending</div></div>
-          </div>
-          <div class="stage-item" id="st3">
-            <div class="stage-num" id="sn3">4</div>
-            <div><div class="stage-text">Prepare download</div><div class="stage-detail" id="sd3">Pending</div></div>
-          </div>
+          <div class="stage-item active" id="st0"><div class="stage-num" id="sn0">1</div><div><div class="stage-text">Read source file</div><div class="stage-detail" id="sd0">In progress&hellip;</div></div></div>
+          <div class="stage-item" id="st1"><div class="stage-num" id="sn1">2</div><div><div class="stage-text">Decode audio stream</div><div class="stage-detail" id="sd1">Pending</div></div></div>
+          <div class="stage-item" id="st2"><div class="stage-num" id="sn2">3</div><div><div class="stage-text">Encode to MP3</div><div class="stage-detail" id="sd2">Pending</div></div></div>
+          <div class="stage-item" id="st3"><div class="stage-num" id="sn3">4</div><div><div class="stage-text">Prepare download</div><div class="stage-detail" id="sd3">Pending</div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL — DOWNLOAD STATE -->
-    <div class="right-panel hidden" id="stateDownload">
-      <div class="panel-header">
-        <div class="panel-eyebrow">Conversion Complete</div>
-        <div class="panel-title">Ready to Download</div>
-        <div class="panel-desc">Your audio has been encoded and packaged as an MP3 file.</div>
-      </div>
-      <div class="download-wrap">
+    <!-- DOWNLOAD STATE -->
+    <div id="stateDownload" class="hidden">
+      <div class="main-content">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Conversion Complete</div>
+          <div class="panel-title">Ready to Download</div>
+          <div class="panel-desc">Your audio has been encoded and packaged as an MP3 file.</div>
+        </div>
         <div class="success-banner">
           <div class="success-icon-box">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#4CAF82" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 11 8.5 15.5 18 6"/></svg>
@@ -311,19 +418,16 @@
             <div class="success-sub" id="fileNameDisplay">audio.mp3 is ready</div>
           </div>
         </div>
-
         <div class="waveform-card">
           <div class="waveform-label">Waveform Preview</div>
           <div class="waveform-bars" id="waveformBars"></div>
         </div>
-
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-label">Duration</div><div class="stat-val" id="statDur">—</div><div class="stat-sub">minutes : seconds</div></div>
-          <div class="stat-card"><div class="stat-label">File Size</div><div class="stat-val" id="statSize">—</div><div class="stat-sub">MP3 Compressed</div></div>
-          <div class="stat-card"><div class="stat-label">Sample Rate</div><div class="stat-val" id="statSR">—</div><div class="stat-sub" id="statChLabel">Stereo · 2ch</div></div>
-          <div class="stat-card"><div class="stat-label">Bit Rate</div><div class="stat-val" id="statBR">128k</div><div class="stat-sub">CBR Encoding</div></div>
+          <div class="stat-card"><div class="stat-label">Duration</div><div class="stat-val" id="statDur">&mdash;</div><div class="stat-sub">min : sec</div></div>
+          <div class="stat-card"><div class="stat-label">File Size</div><div class="stat-val" id="statSize">&mdash;</div><div class="stat-sub">MP3 Compressed</div></div>
+          <div class="stat-card"><div class="stat-label">Sample Rate</div><div class="stat-val" id="statSR">&mdash;</div><div class="stat-sub" id="statChLabel">Stereo &middot; 2ch</div></div>
+          <div class="stat-card"><div class="stat-label">Bit Rate</div><div class="stat-val">128k</div><div class="stat-sub">CBR Encoding</div></div>
         </div>
-
         <div class="action-row">
           <button class="btn-download" id="downloadBtn">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v9M4 8l4 4 4-4"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
@@ -334,41 +438,57 @@
       </div>
     </div>
 
-  </div><!-- .device -->
-</div><!-- #shell -->
+  </div><!-- right-area -->
+</div><!-- shell -->
 
 <input type="file" id="fileInput" accept="video/*,audio/*" hidden/>
 
 <script>
-  // ===== HELPERS =====
-  const G = id => document.getElementById(id);
-  const show = id => G(id).classList.remove('hidden');
-  const hide = id => G(id).classList.add('hidden');
+  const G = function(id) { return document.getElementById(id); };
+  const show = function(id) { G(id).classList.remove('hidden'); };
+  const hide = function(id) { G(id).classList.add('hidden'); };
+  const isMobile = function() { return window.innerWidth < 768; };
 
-  // ===== SIDEBAR UPDATE =====
   function setSidebar(name, size, type) {
-    G('infoName').textContent  = name.length > 15 ? name.slice(0,13) + '…' : name;
-    G('infoSize').textContent  = size;
-    G('infoType').textContent  = type;
+    var shortName = name.length > 15 ? name.slice(0, 13) + '...' : name;
+    G('infoNameD').textContent = shortName;
+    G('infoSizeD').textContent = size;
+    G('infoTypeD').textContent = type;
+    G('metaName').textContent = shortName;
+    G('metaSize').textContent = size;
+    G('metaType').textContent = type;
+    G('metaStrip').classList.remove('hidden-strip');
   }
+
   function setEngine(label, state) {
     G('engineStatus').textContent = label;
-    const dot = G('statusDot');
-    dot.className = 'status-dot ' + (state === 'busy' ? 'amber' : 'green');
+    G('engineStatusD').textContent = label;
+    ['statusDot', 'statusDotD'].forEach(function(id) {
+      var d = G(id);
+      if (d) d.className = 'status-dot ' + (state === 'busy' ? 'amber' : 'green');
+    });
   }
 
-  // ===== PROGRESS STAGES =====
+  function setChannelInfo(channels, sampleRate) {
+    var ch = channels === 2 ? 'Stereo' : 'Mono';
+    var sr = (sampleRate / 1000).toFixed(1) + ' kHz';
+    G('infoChannelsD').textContent = ch;
+    G('infoSampleRateD').textContent = sr;
+  }
+
   function setStage(active, pct, name, sub) {
-    for (let i = 0; i < 4; i++) {
-      const item = G('st' + i), num = G('sn' + i), det = G('sd' + i);
+    for (var i = 0; i < 4; i++) {
+      var item = G('st' + i);
+      var num  = G('sn' + i);
+      var det  = G('sd' + i);
       if (i < active) {
         item.className = 'stage-item done';
-        num.textContent = '✓';
+        num.textContent = '\u2713';
         det.textContent = 'Complete';
       } else if (i === active) {
         item.className = 'stage-item active';
         num.textContent = i + 1;
-        det.textContent = 'In progress…';
+        det.textContent = 'In progress\u2026';
       } else {
         item.className = 'stage-item';
         num.textContent = i + 1;
@@ -376,180 +496,154 @@
       }
     }
     G('progFill').style.width = pct + '%';
-    G('progPct').textContent   = pct + '%';
+    G('progPct').textContent = pct + '%';
     if (name) G('stageName').textContent = name;
     if (sub)  G('stageSub').textContent  = sub;
   }
 
-  // ===== DROP ZONE =====
-  const dz = G('dropZone');
-  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-  dz.addEventListener('drop', e => {
+  var dz = G('dropZone');
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
+  dz.addEventListener('drop', function(e) {
     e.preventDefault();
     dz.classList.remove('dragover');
-    const f = e.dataTransfer.files[0];
+    var f = e.dataTransfer.files[0];
     if (f) processFile(f);
   });
-  G('fileInput').addEventListener('change', e => {
-    const f = e.target.files[0];
+  G('fileInput').addEventListener('change', function(e) {
+    var f = e.target.files[0];
     if (f) processFile(f);
   });
 
-  // ===== MAIN PROCESS =====
   async function processFile(file) {
-    // Update sidebar
-    setSidebar(file.name, (file.size / 1024 / 1024).toFixed(1) + ' MB', file.type.split('/')[1]?.toUpperCase() || file.name.split('.').pop().toUpperCase());
+    var sizeMB = (file.size / 1024 / 1024).toFixed(1) + ' MB';
+    var ext    = file.name.split('.').pop().toUpperCase();
+    var type   = (file.type.split('/')[1] || ext).toUpperCase();
+    setSidebar(file.name, sizeMB, type);
     setEngine('Processing', 'busy');
-
-    // Switch to processing state
     hide('stateUpload');
     show('stateProcessing');
-    setStage(0, 10, 'Reading file…', 'Buffering ' + (file.size/1024/1024).toFixed(1) + ' MB into memory');
-
+    setStage(0, 10, 'Reading file\u2026', 'Buffering ' + sizeMB + ' into memory');
     try {
-      // 1. Read File
-      const arrayBuffer = await file.arrayBuffer();
-      setStage(1, 35, 'Decoding audio stream…', 'Browser native Web Audio API running');
-
-      // 2. Decode Audio
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-      // Update sidebar with decoded info
-      G('infoChannels').textContent  = audioBuffer.numberOfChannels === 2 ? 'Stereo' : 'Mono';
-      G('infoSampleRate').textContent = (audioBuffer.sampleRate / 1000).toFixed(1) + ' kHz';
-
-      setStage(2, 65, 'Encoding to MP3…', 'Compressing audio data with lamejs');
-
-      // 3. Convert to MP3 Blob using lamejs
-      // We must let UI update before doing heavy synchronous work
-      await new Promise(r => setTimeout(r, 50)); 
-      const mp3Blob = bufferToMp3(audioBuffer);
-      const url      = URL.createObjectURL(mp3Blob);
-      const newName  = file.name.replace(/\.[^/.]+$/, '') + '.mp3';
-
-      setStage(3, 90, 'Preparing download…', 'Generating object URL');
-      await new Promise(r => setTimeout(r, 280));
+      var arrayBuffer = await file.arrayBuffer();
+      setStage(1, 35, 'Decoding audio stream\u2026', 'Browser native Web Audio API running');
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      var audioCtx = new AudioCtx();
+      var audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+      setChannelInfo(audioBuffer.numberOfChannels, audioBuffer.sampleRate);
+      setStage(2, 65, 'Encoding to MP3\u2026', 'Compressing audio data with lamejs');
+      await new Promise(function(r) { setTimeout(r, 50); });
+      var mp3Blob = bufferToMp3(audioBuffer);
+      var url = URL.createObjectURL(mp3Blob);
+      var newName = file.name.replace(/\.[^/.]+$/, '') + '.mp3';
+      setStage(3, 90, 'Preparing download\u2026', 'Generating object URL');
+      await new Promise(function(r) { setTimeout(r, 280); });
       setStage(4, 100, 'Done', 'Complete');
-      await new Promise(r => setTimeout(r, 300));
-
-      // 4. Populate download state
-      const dur   = audioBuffer.duration;
-      const mm    = String(Math.floor(dur / 60)).padStart(2, '0');
-      const ss    = String(Math.floor(dur % 60)).padStart(2, '0');
-      const mb    = (mp3Blob.size / 1024 / 1024).toFixed(2);
-      const chLbl = audioBuffer.numberOfChannels === 2 ? 'Stereo · 2ch' : 'Mono · 1ch';
-
+      await new Promise(function(r) { setTimeout(r, 300); });
+      var dur = audioBuffer.duration;
+      var mm  = String(Math.floor(dur / 60)).padStart(2, '0');
+      var ss  = String(Math.floor(dur % 60)).padStart(2, '0');
+      var mb  = (mp3Blob.size / 1024 / 1024).toFixed(2);
+      var chLbl = audioBuffer.numberOfChannels === 2 ? 'Stereo \u00B7 2ch' : 'Mono \u00B7 1ch';
       G('fileNameDisplay').textContent = newName + ' is ready';
-      G('statDur').textContent   = mm + ':' + ss;
-      G('statSize').textContent  = mb + ' MB';
-      G('statSR').textContent    = (audioBuffer.sampleRate/1000).toFixed(1) + 'k';
+      G('statDur').textContent  = mm + ':' + ss;
+      G('statSize').textContent = mb + ' MB';
+      G('statSR').textContent   = (audioBuffer.sampleRate / 1000).toFixed(1) + 'k';
       G('statChLabel').textContent = chLbl;
-
-      // Waveform (decorative)
-      const bars = G('waveformBars');
+      var bars = G('waveformBars');
       bars.innerHTML = '';
-      for (let i = 0; i < 52; i++) {
-        const b = document.createElement('div');
+      for (var i = 0; i < 52; i++) {
+        var b = document.createElement('div');
         b.className = 'waveform-bar';
         b.style.height = (12 + Math.random() * 76) + '%';
         bars.appendChild(b);
       }
-
-      // Download button
-      G('downloadBtn').onclick = () => {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = newName;
-        a.click();
-      };
-
-      // Switch UI
+      // Capture url in closure for click handler
+      (function(dlUrl, dlName) {
+        G('downloadBtn').onclick = function() {
+          var a = document.createElement('a');
+          a.href = dlUrl;
+          a.download = dlName;
+          a.click();
+        };
+      })(url, newName);
       setEngine('Ready', 'ready');
       hide('stateProcessing');
       show('stateDownload');
-
+      if (isMobile()) window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error(err);
       setEngine('Error', 'ready');
       G('stageName').textContent = 'Extraction failed';
       G('stageSub').textContent  = 'File may be corrupted, DRM-protected, or unsupported';
       G('progFill').style.background = 'var(--red)';
-      setTimeout(() => { resetTool(); }, 3000);
+      setTimeout(function() { resetTool(); }, 3000);
     }
   }
 
-  // ===== RESET =====
   function resetTool() {
-    G('infoName').textContent = '—'; G('infoSize').textContent = '—';
-    G('infoType').textContent = '—'; G('infoChannels').textContent = '—';
-    G('infoSampleRate').textContent = '—';
+    ['infoNameD', 'infoSizeD', 'infoTypeD', 'infoChannelsD', 'infoSampleRateD'].forEach(function(id) {
+      G(id).textContent = '\u2014';
+    });
     G('fileInput').value = '';
+    G('metaStrip').classList.add('hidden-strip');
     setEngine('Ready', 'ready');
-    hide('stateProcessing'); hide('stateDownload');
+    hide('stateProcessing');
+    hide('stateDownload');
     show('stateUpload');
   }
 
-  // ===== MP3 ENCODER (Replaced WAV with lamejs) =====
   function bufferToMp3(abuffer) {
-    const channels = abuffer.numberOfChannels;
-    const sampleRate = abuffer.sampleRate;
-    const kbps = 128; // standard mp3 bitrate
-    const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
-    const mp3Data = [];
-
-    const left = abuffer.getChannelData(0);
-    const right = channels === 2 ? abuffer.getChannelData(1) : null;
-    const sampleBlockSize = 1152;
-    
-    // Convert Float32 arrays to Int16
-    const leftInt16 = new Int16Array(left.length);
-    const rightInt16 = right ? new Int16Array(right.length) : null;
-
-    for (let i = 0; i < left.length; i++) {
+    var channels   = abuffer.numberOfChannels;
+    var sampleRate = abuffer.sampleRate;
+    var kbps       = 128;
+    var mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
+    var mp3Data    = [];
+    var left       = abuffer.getChannelData(0);
+    var right      = channels === 2 ? abuffer.getChannelData(1) : null;
+    var sampleBlockSize = 1152;
+    var leftInt16  = new Int16Array(left.length);
+    var rightInt16 = right ? new Int16Array(right.length) : null;
+    for (var i = 0; i < left.length; i++) {
       leftInt16[i] = left[i] < 0 ? left[i] * 32768 : left[i] * 32767;
-      if (right) {
-        rightInt16[i] = right[i] < 0 ? right[i] * 32768 : right[i] * 32767;
-      }
+      if (right) rightInt16[i] = right[i] < 0 ? right[i] * 32768 : right[i] * 32767;
     }
-
-    for (let i = 0; i < leftInt16.length; i += sampleBlockSize) {
-      const leftChunk = leftInt16.subarray(i, i + sampleBlockSize);
-      let mp3buf;
-      if (right) {
-        const rightChunk = rightInt16.subarray(i, i + sampleBlockSize);
-        mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
-      } else {
-        mp3buf = mp3encoder.encodeBuffer(leftChunk);
-      }
-      if (mp3buf.length > 0) {
-        mp3Data.push(mp3buf);
-      }
+    for (var i = 0; i < leftInt16.length; i += sampleBlockSize) {
+      var lc     = leftInt16.subarray(i, i + sampleBlockSize);
+      var mp3buf = right
+        ? mp3encoder.encodeBuffer(lc, rightInt16.subarray(i, i + sampleBlockSize))
+        : mp3encoder.encodeBuffer(lc);
+      if (mp3buf.length > 0) mp3Data.push(mp3buf);
     }
-
-    const mp3buf = mp3encoder.flush();
-    if (mp3buf.length > 0) {
-      mp3Data.push(mp3buf);
-    }
-    
+    var finalBuf = mp3encoder.flush();
+    if (finalBuf.length > 0) mp3Data.push(finalBuf);
     return new Blob(mp3Data, { type: 'audio/mp3' });
   }
 
-  // ===== BOOT SEQUENCE =====
-  [400, 750, 1100].forEach((d, i) => {
-    setTimeout(() => {
-      const line = G('bl' + i), dot = G('bd' + i), stat = G('bs' + i);
+  // Boot sequence
+  [400, 750, 1100].forEach(function(d, i) {
+    setTimeout(function() {
+      var line = G('bl' + i);
+      var dot  = G('bd' + i);
+      var stat = G('bs' + i);
       line.classList.add('show');
-      setTimeout(() => { dot.classList.add('lit'); stat.textContent = '✓'; stat.classList.add('done'); }, 280);
+      setTimeout(function() {
+        dot.classList.add('lit');
+        stat.textContent = '\u2713';
+        stat.classList.add('done');
+      }, 280);
     }, d);
   });
-  setTimeout(() => { G('bootBar').style.width = '100%'; G('bootStatus').textContent = 'System ready.'; }, 1400);
-  setTimeout(() => {
-    const boot = G('boot'), shell = G('shell');
+  setTimeout(function() {
+    G('bootBar').style.width = '100%';
+    G('bootStatus').textContent = 'System ready.';
+  }, 1400);
+  setTimeout(function() {
+    var boot  = G('boot');
+    var shell = G('shell');
     boot.classList.add('fade-out');
     shell.classList.add('visible');
-    setTimeout(() => { boot.style.display = 'none'; }, 700);
+    setTimeout(function() { boot.style.display = 'none'; }, 700);
   }, 3000);
 </script>
 </body>
