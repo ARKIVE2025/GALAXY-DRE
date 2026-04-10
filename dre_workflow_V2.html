@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRE WORKFLOW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0e0e18;
+  --surface2: #13131f;
+  --surface3: #1a1a28;
+  --border: rgba(255,255,255,0.06);
+  --border-hi: rgba(255,255,255,0.12);
+  --text: #eeeef8;
+  --text-dim: #55556e;
+  --text-mid: #9090b0;
+  --accent: #7c6af7;
+  --accent-dim: rgba(124,106,247,0.15);
+  --accent-glow: rgba(124,106,247,0.4);
+  --green: #00d4aa;
+  --green-dim: rgba(0,212,170,0.12);
+  --green-glow: rgba(0,212,170,0.35);
+  --orange: #f7a84a;
+  --red: #ff4d6d;
+  --blue: #4a9eff;
+  --pink: #f76af0;
+  --node-bg: #13131f;
+  --node-border: rgba(255,255,255,0.08);
+  --shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+*{margin:0;padding:0;box-sizing:border-box;outline:none;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;width:100vw;overflow:hidden;-webkit-font-smoothing:antialiased;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:none;}
+
+/* ═══════════════════════════════ HEADER ═══════════════════════════════ */
+.header{
+  height:54px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:8px;z-index:1000;position:relative;
+  flex-shrink:0;
+}
+.logo{
+  font-family:'Space Mono',monospace;font-size:14px;font-weight:700;letter-spacing:.12em;
+  color:var(--text);display:flex;align-items:center;gap:10px;user-select:none;flex-shrink:0;margin-right:6px;
+}
+.logo-mark{
+  width:28px;height:28px;border-radius:7px;
+  background:linear-gradient(135deg,var(--accent),var(--green));
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:700;
+  box-shadow:0 0 14px var(--accent-glow);
+}
+.logo-text span{display:block;font-size:9px;font-weight:400;color:var(--text-dim);letter-spacing:.15em;margin-top:1px;}
+.vsep{width:1px;height:22px;background:var(--border);flex-shrink:0;}
+
+.hbtn{
+  height:30px;padding:0 10px;border-radius:6px;border:1px solid transparent;
+  background:transparent;color:var(--text-mid);font-size:12px;font-weight:500;
+  display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;flex-shrink:0;
+}
+.hbtn:hover{background:var(--surface2);color:var(--text);border-color:var(--border-hi);}
+.hbtn.active{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 0 10px var(--accent-glow);}
+.hbtn i{font-size:10px;}
+.hbtn.icon-only{padding:0;width:30px;justify-content:center;}
+
+.ai-status-pill{
+  display:flex;align-items:center;gap:6px;padding:0 10px;height:28px;
+  border-radius:20px;border:1px solid var(--border-hi);background:var(--surface2);
+  font-size:11px;color:var(--text-mid);font-family:'Space Mono',monospace;
+  flex-shrink:0;
+}
+.ai-status-dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);flex-shrink:0;transition:.3s;}
+.ai-status-dot.connected{background:var(--green);box-shadow:0 0 6px var(--green-glow);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+.header-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+
+.export-btn{
+  height:30px;padding:0 14px;border-radius:6px;
+  border:1px solid rgba(0,212,170,0.3);
+  background:linear-gradient(135deg,rgba(0,212,170,0.08),rgba(124,106,247,0.08));
+  color:var(--green);font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:7px;transition:all .2s;flex-shrink:0;
+}
+.export-btn:hover{border-color:var(--green);background:rgba(0,212,170,0.12);box-shadow:0 0 12px var(--green-glow);}
+
+/* ═══════════════════════════════ LAYOUT ═══════════════════════════════ */
+.main{display:flex;height:calc(100vh - 54px);}
+
+/* ═══════════════════════════════ LEFT PANEL ═══════════════════════════════ */
+.left-panel{
+  width:270px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease;
+}
+.left-panel.collapsed{width:0;border:none;}
+
+.panel-section{padding:16px;border-bottom:1px solid var(--border);}
+.panel-section:last-child{border-bottom:none;}
+.section-title{
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;
+  color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+
+/* Input area */
+.prompt-area{
+  width:100%;min-height:90px;max-height:160px;resize:vertical;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:10px;color:var(--text);font-size:12.5px;
+  line-height:1.5;font-family:'DM Sans',sans-serif;
+  transition:border .2s;
+}
+.prompt-area:focus{border-color:var(--accent);}
+.prompt-area::placeholder{color:var(--text-dim);}
+
+.generate-btn{
+  width:100%;height:36px;margin-top:10px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),#5a48e0);
+  color:#fff;font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;border:none;
+}
+.generate-btn:hover{opacity:.9;box-shadow:0 4px 20px var(--accent-glow);}
+.generate-btn:disabled{opacity:.4;cursor:not-allowed;}
+.generate-btn.loading{animation:shimmer 1.5s infinite;}
+@keyframes shimmer{0%,100%{opacity:.7;}50%{opacity:1;}}
+
+.reprompt-row{display:flex;gap:6px;margin-top:8px;}
+.reprompt-input{
+  flex:1;height:32px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:0 10px;color:var(--text);font-size:12px;
+  font-family:'DM Sans',sans-serif;transition:border .2s;
+}
+.reprompt-input:focus{border-color:var(--accent);}
+.reprompt-input::placeholder{color:var(--text-dim);}
+.reprompt-btn{
+  width:32px;height:32px;border-radius:6px;background:var(--surface3);
+  border:1px solid var(--border);color:var(--accent);font-size:12px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;
+}
+.reprompt-btn:hover{background:var(--accent-dim);border-color:var(--accent);}
+
+/* Upload */
+.upload-zone{
+  border:1px dashed var(--border-hi);border-radius:8px;padding:16px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);
+}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-dim);}
+.upload-zone i{font-size:18px;color:var(--text-dim);margin-bottom:6px;display:block;}
+.upload-zone p{font-size:11px;color:var(--text-mid);line-height:1.4;}
+.upload-zone .hint{font-size:10px;color:var(--text-dim);margin-top:4px;}
+.upload-zone.has-file{border-color:var(--green);background:var(--green-dim);}
+.upload-zone.has-file i{color:var(--green);}
+#file-input{display:none;}
+
+/* Templates */
+.template-grid{display:flex;flex-direction:column;gap:6px;}
+.tpl-btn{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  color:var(--text-mid);font-size:12px;font-weight:500;
+  transition:all .15s;text-align:left;
+}
+.tpl-btn:hover{border-color:var(--border-hi);color:var(--text);background:var(--surface3);}
+.tpl-icon{
+  width:26px;height:26px;border-radius:6px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;flex-shrink:0;
+}
+
+/* ═══════════════════════════════ CANVAS ═══════════════════════════════ */
+.canvas-wrap{
+  flex:1;position:relative;overflow:hidden;
+  background:var(--bg);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(124,106,247,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0,212,170,0.03) 0%, transparent 50%),
+    linear-gradient(var(--border) 1px,transparent 1px),
+    linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:100% 100%,100% 100%,28px 28px,28px 28px;
+}
+
+.canvas{
+  width:10000px;height:10000px;position:absolute;transform-origin:0 0;
+  cursor:grab;
+}
+.canvas.panning{cursor:grabbing;}
+
+#svg-layer{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:1;overflow:visible;
+}
+
+/* ═══════════════════════════════ NODES ═══════════════════════════════ */
+.node{
+  position:absolute;min-width:160px;
+  background:var(--node-bg);
+  border:1px solid var(--node-border);
+  border-radius:10px;
+  cursor:grab;
+  box-shadow:var(--shadow);
+  z-index:10;
+  user-select:none;
+  transition:box-shadow .2s, border-color .2s, transform .15s;
+  animation:nodeIn .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes nodeIn{from{opacity:0;transform:scale(0.7) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.node:hover{border-color:rgba(255,255,255,0.18);box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05);}
+.node.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-glow),var(--shadow);}
+.node-header{
+  padding:10px 12px 8px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.node-icon{
+  width:26px;height:26px;border-radius:6px;display:flex;
+  align-items:center;justify-content:center;font-size:11px;flex-shrink:0;
+}
+.node-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.2;}
+.node-tag{font-size:9px;font-family:'Space Mono',monospace;color:var(--text-dim);margin-top:2px;letter-spacing:.05em;text-transform:uppercase;}
+.node-body{padding:10px 12px;}
+.node-desc{font-size:11.5px;color:var(--text-mid);line-height:1.55;}
+.node-tools{
+  padding:6px 12px 10px;display:flex;flex-wrap:wrap;gap:4px;
+}
+.tool-chip{
+  font-size:9px;font-family:'Space Mono',monospace;
+  padding:3px 7px;border-radius:4px;border:1px solid var(--border-hi);
+  color:var(--text-dim);background:var(--surface3);letter-spacing:.04em;
+}
+
+.node-step-badge{
+  position:absolute;top:-9px;left:12px;
+  background:var(--accent);color:#fff;
+  font-size:9px;font-family:'Space Mono',monospace;font-weight:700;
+  padding:2px 8px;border-radius:10px;letter-spacing:.06em;
+  box-shadow:0 2px 8px var(--accent-glow);
+}
+
+/* Stage labels */
+.stage-label{
+  position:absolute;
+  font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;
+  color:var(--text-dim);text-transform:uppercase;pointer-events:none;
+  background:var(--surface);padding:3px 8px;border-radius:4px;border:1px solid var(--border);
+}
+
+/* ═══════════════════════════════ CONNECTIONS ═══════════════════════════════ */
+.conn-path{fill:none;stroke:rgba(255,255,255,0.12);stroke-width:1.5;pointer-events:all;cursor:pointer;transition:.2s;}
+.conn-path:hover{stroke:var(--accent);stroke-width:2.5;}
+.conn-path.selected{stroke:var(--accent);stroke-width:2.5;}
+.conn-path.type-and{stroke:var(--green);stroke-opacity:.5;}
+.conn-path.type-or{stroke:var(--orange);stroke-opacity:.5;}
+.conn-label-bg{fill:var(--surface2);rx:4;stroke:var(--border);}
+.conn-label-text{font-size:9px;fill:var(--text-dim);font-family:'Space Mono',monospace;pointer-events:none;}
+
+/* ═══════════════════════════════ STREAM CURSOR ═══════════════════════════════ */
+.stream-cursor{
+  position:absolute;pointer-events:none;z-index:100;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 14px var(--accent-glow);
+  animation:cursorPulse .6s ease-in-out infinite alternate;
+  display:none;
+}
+@keyframes cursorPulse{from{transform:scale(1);}to{transform:scale(1.6);}}
+
+/* ═══════════════════════════════ ZOOM CONTROLS ═══════════════════════════════ */
+.zoom-dock{
+  position:absolute;bottom:60px;right:16px;
+  display:flex;flex-direction:column;gap:4px;z-index:500;
+}
+.zoom-dock button{
+  width:32px;height:32px;border-radius:7px;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text-mid);font-size:12px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.zoom-dock button:hover{background:var(--surface2);color:var(--text);border-color:var(--border-hi);}
+.zoom-pct{font-size:9px;font-family:'Space Mono',monospace;text-align:center;color:var(--text-dim);margin-top:2px;}
+
+/* ═══════════════════════════════ MINIMAP ═══════════════════════════════ */
+.minimap{
+  position:absolute;bottom:60px;left:16px;
+  width:160px;height:110px;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;z-index:500;box-shadow:var(--shadow);
+}
+#minimap-cv{width:100%;height:100%;display:block;}
+.minimap-vp{
+  position:absolute;border:1px solid var(--accent);
+  background:rgba(124,106,247,.08);pointer-events:none;border-radius:2px;
+}
+
+/* ═══════════════════════════════ STATUS BAR ═══════════════════════════════ */
+.statusbar{
+  position:absolute;bottom:0;left:0;right:0;height:28px;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:20px;
+  font-size:10px;font-family:'Space Mono',monospace;color:var(--text-dim);z-index:400;
+}
+.status-item{display:flex;align-items:center;gap:5px;}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);}
+.status-dot.active{background:var(--green);box-shadow:0 0 4px var(--green-glow);}
+
+/* ═══════════════════════════════ MODALS ═══════════════════════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:2000;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border-hi);
+  border-radius:14px;width:480px;max-width:94vw;max-height:88vh;
+  overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.8);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(-16px) scale(.97);}to{opacity:1;transform:none;}}
+.modal-header{
+  padding:18px 20px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.06em;}
+.modal-close{
+  width:28px;height:28px;border-radius:6px;background:var(--surface2);
+  color:var(--text-dim);font-size:12px;display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+.modal-close:hover{background:var(--surface3);color:var(--text);}
+.modal-body{padding:20px;}
+
+.form-group{margin-bottom:16px;}
+.form-label{
+  font-size:10px;font-family:'Space Mono',monospace;letter-spacing:.1em;
+  color:var(--text-dim);text-transform:uppercase;margin-bottom:7px;display:block;
+}
+.form-input,.form-select{
+  width:100%;height:36px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:7px;padding:0 12px;color:var(--text);font-size:12.5px;
+  font-family:'DM Sans',sans-serif;transition:border .2s;
+}
+.form-input:focus,.form-select:focus{border-color:var(--accent);}
+.form-input::placeholder{color:var(--text-dim);}
+.form-select option{background:var(--surface2);}
+.form-input[type="password"]{letter-spacing:.1em;}
+
+.provider-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.provider-card{
+  padding:10px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;transition:all .15s;text-align:left;
+}
+.provider-card:hover{border-color:var(--border-hi);background:var(--surface3);}
+.provider-card.active{border-color:var(--accent);background:var(--accent-dim);}
+.provider-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.provider-model{font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;}
+
+.save-settings-btn{
+  width:100%;height:38px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),#5a48e0);
+  color:#fff;font-size:13px;font-weight:600;transition:.2s;margin-top:4px;
+}
+.save-settings-btn:hover{opacity:.9;box-shadow:0 4px 20px var(--accent-glow);}
+
+/* Export modal */
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.export-card{
+  padding:16px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);
+  cursor:pointer;transition:all .2s;text-align:left;
+}
+.export-card:hover{border-color:var(--border-hi);background:var(--surface3);}
+.export-card i{font-size:22px;margin-bottom:8px;display:block;}
+.export-card .fmt{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.export-card .desc{font-size:11px;color:var(--text-dim);line-height:1.35;}
+
+/* Toast */
+.toast-stack{position:fixed;bottom:44px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;align-items:center;}
+.toast{
+  background:var(--surface);border:1px solid var(--border-hi);
+  color:var(--text);padding:9px 18px;border-radius:20px;font-size:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);animation:toastIn .25s ease;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.toast.ok i{color:var(--green);}
+.toast.err i{color:var(--red);}
+.toast.info i{color:var(--accent);}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* Empty state */
+.empty-canvas{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;z-index:5;
+}
+.empty-canvas.hidden{display:none;}
+.empty-title{
+  font-family:'Space Mono',monospace;font-size:18px;font-weight:700;
+  color:rgba(255,255,255,.06);letter-spacing:.1em;text-align:center;
+}
+.empty-sub{font-size:12px;color:rgba(255,255,255,.04);margin-top:8px;font-family:'Space Mono',monospace;letter-spacing:.08em;}
+
+/* Node edit inline */
+.node-edit-btn{
+  position:absolute;top:6px;right:6px;
+  width:20px;height:20px;border-radius:4px;background:var(--surface3);
+  border:1px solid var(--border);color:var(--text-dim);font-size:9px;
+  display:none;align-items:center;justify-content:center;transition:.15s;z-index:20;
+}
+.node:hover .node-edit-btn,.node.selected .node-edit-btn{display:flex;}
+.node-edit-btn:hover{color:var(--accent);border-color:var(--accent);}
+
+/* Streaming overlay on canvas */
+.stream-log{
+  position:absolute;bottom:36px;right:60px;
+  background:var(--surface);border:1px solid var(--border-hi);
+  border-radius:8px;padding:8px 14px;font-size:11px;font-family:'Space Mono',monospace;
+  color:var(--green);max-width:320px;line-height:1.5;z-index:500;
+  display:none;box-shadow:var(--shadow);
+}
+.stream-log.show{display:block;}
+.stream-log .sl-line::after{content:'▋';animation:blink 1s infinite;}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+/* ═══════════════════════════════ BRIDGE PANEL ═══════════════════════════════ */
+.bridge-bar{
+  position:absolute;bottom:36px;right:200px;
+  display:flex;align-items:center;gap:6px;z-index:600;
+}
+.bridge-pill{
+  height:28px;padding:0 12px;border-radius:20px;
+  border:1px solid var(--border-hi);background:var(--surface2);
+  font-size:10px;font-family:'Space Mono',monospace;color:var(--text-mid);
+  display:flex;align-items:center;gap:6px;transition:all .2s;cursor:default;
+  white-space:nowrap;
+}
+.bridge-pill.connected{border-color:rgba(0,212,170,0.4);color:var(--green);}
+.bridge-pill.waiting{border-color:rgba(247,168,74,0.4);color:var(--orange);}
+.bridge-pill.error{border-color:rgba(255,77,109,0.4);color:var(--red);}
+.bridge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.bridge-dot.pulse{animation:blink 1.4s infinite;}
+
+/* Bridge send modal */
+.bridge-modal .modal{width:520px;}
+.bridge-tabs{display:flex;gap:2px;margin-bottom:18px;background:var(--surface2);padding:3px;border-radius:8px;}
+.bridge-tab{
+  flex:1;height:30px;border-radius:6px;font-size:11px;font-weight:600;
+  font-family:'Space Mono',monospace;letter-spacing:.05em;
+  color:var(--text-dim);transition:all .15s;
+}
+.bridge-tab.active{background:var(--surface3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.4);}
+.bridge-tab:hover:not(.active){color:var(--text-mid);}
+.bridge-pane{display:none;}
+.bridge-pane.active{display:block;}
+
+.bridge-target-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.bridge-target{
+  padding:12px 10px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;transition:all .15s;text-align:center;
+}
+.bridge-target:hover{border-color:var(--border-hi);background:var(--surface3);}
+.bridge-target.active{border-color:var(--accent);background:var(--accent-dim);}
+.bridge-target i{font-size:16px;margin-bottom:6px;display:block;}
+.bridge-target .bt-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.bridge-target .bt-sub{font-size:9px;color:var(--text-dim);font-family:'Space Mono',monospace;}
+
+.bridge-format-row{display:flex;gap:6px;margin-bottom:14px;}
+.bridge-fmt-btn{
+  flex:1;height:28px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text-dim);font-size:10px;
+  font-family:'Space Mono',monospace;transition:all .15s;
+}
+.bridge-fmt-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.bridge-fmt-btn:hover:not(.active){border-color:var(--border-hi);color:var(--text-mid);}
+
+.bridge-preview{
+  background:var(--bg);border:1px solid var(--border);border-radius:7px;
+  padding:10px 12px;font-size:10px;font-family:'Space Mono',monospace;
+  color:var(--text-mid);max-height:130px;overflow-y:auto;line-height:1.55;
+  white-space:pre-wrap;word-break:break-all;margin-bottom:14px;
+}
+.bridge-send-btn{
+  width:100%;height:38px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),var(--green));
+  color:#fff;font-size:13px;font-weight:600;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.bridge-send-btn:hover{opacity:.9;box-shadow:0 4px 20px var(--accent-glow);}
+.bridge-send-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.bridge-log{
+  background:var(--bg);border:1px solid var(--border);border-radius:7px;
+  padding:10px 12px;font-size:10px;font-family:'Space Mono',monospace;
+  color:var(--text-mid);max-height:200px;overflow-y:auto;line-height:1.8;
+}
+.bl-ok{color:var(--green);}
+.bl-err{color:var(--red);}
+.bl-info{color:var(--accent);}
+.bl-warn{color:var(--orange);}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ HEADER ════════════════════ -->
+<div class="header">
+  <button class="hbtn icon-only" id="sidebar-toggle" title="Toggle Panel"><i class="fas fa-sidebar" style="font-size:11px;"></i><i class="fas fa-bars"></i></button>
+  <div class="logo">
+    <div class="logo-mark">D</div>
+    <div class="logo-text">DRE WORKFLOW<span>AI-Powered Project Intelligence</span></div>
+  </div>
+  <div class="vsep"></div>
+
+  <div class="ai-status-pill">
+    <div class="ai-status-dot" id="ai-dot"></div>
+    <span id="ai-label">No Provider</span>
+  </div>
+  <div class="vsep"></div>
+
+  <button class="hbtn" id="tool-select-btn" title="Select"><i class="fas fa-mouse-pointer"></i> Select</button>
+  <button class="hbtn" id="tool-pan-btn" title="Pan"><i class="fas fa-hand-paper"></i> Pan</button>
+  <div class="vsep"></div>
+  <button class="hbtn" id="undo-btn" title="Undo" disabled><i class="fas fa-undo"></i></button>
+  <button class="hbtn" id="redo-btn" title="Redo" disabled><i class="fas fa-redo"></i></button>
+  <button class="hbtn danger-btn" id="clear-btn" title="Clear Canvas"><i class="fas fa-trash-alt"></i> Clear</button>
+
+  <div class="header-right">
+    <button class="hbtn" id="bridge-btn" title="Send to DRE Tools" style="border-color:rgba(124,106,247,0.3);color:var(--accent);"><i class="fas fa-paper-plane"></i> Send to DRE</button>
+    <button class="export-btn" id="export-btn"><i class="fas fa-arrow-up-from-bracket"></i> Export</button>
+    <div class="vsep"></div>
+    <button class="hbtn icon-only" id="settings-btn" title="AI Settings"><i class="fas fa-sliders"></i></button>
+  </div>
+</div>
+
+<!-- ════════════════════ MAIN ════════════════════ -->
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel" id="left-panel">
+
+    <!-- Prompt Input -->
+    <div class="panel-section">
+      <div class="section-title">Describe Your Project</div>
+      <textarea class="prompt-area" id="prompt-input" placeholder="e.g. A Next.js app with Supabase auth deployed to Vercel, managed via GitHub Actions CI/CD..."></textarea>
+      <button class="generate-btn" id="gen-btn"><i class="fas fa-wand-magic-sparkles"></i> Generate Workflow</button>
+      <div class="reprompt-row">
+        <input class="reprompt-input" id="reprompt-input" placeholder="Add or update the workflow..." />
+        <button class="reprompt-btn" id="reprompt-btn" title="Update workflow"><i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- File Upload -->
+    <div class="panel-section">
+      <div class="section-title">Analyze a File</div>
+      <div class="upload-zone" id="upload-zone">
+        <i class="fas fa-file-arrow-up"></i>
+        <p>Drop or click to upload</p>
+        <p class="hint">README · package.json · .env · any code file</p>
+      </div>
+      <input type="file" id="file-input" accept=".json,.md,.txt,.env,.js,.ts,.py,.yaml,.yml,.toml,.jsx,.tsx,.html,.css,.sh">
+    </div>
+
+    <!-- Templates -->
+    <div class="panel-section" style="flex:1;overflow-y:auto;">
+      <div class="section-title">Project Templates</div>
+      <div class="template-grid" id="template-grid"></div>
+    </div>
+
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap" id="canvas-wrap">
+    <div class="canvas" id="canvas">
+      <svg id="svg-layer">
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0,8 3,0 6" fill="rgba(255,255,255,0.2)"/>
+          </marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0,8 3,0 6" fill="#7c6af7"/>
+          </marker>
+          <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0,8 3,0 6" fill="#00d4aa"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-canvas" id="empty-state">
+      <div class="empty-title">DRE WORKFLOW</div>
+      <div class="empty-sub">Describe your project or pick a template to begin</div>
+    </div>
+
+    <!-- Stream log -->
+    <div class="stream-log" id="stream-log"><span class="sl-line" id="sl-text">Generating workflow</span></div>
+
+    <!-- Stream cursor -->
+    <div class="stream-cursor" id="stream-cursor"></div>
+
+    <!-- Zoom -->
+    <div class="zoom-dock">
+      <button id="zoom-in-btn" title="Zoom In"><i class="fas fa-plus"></i></button>
+      <button id="zoom-out-btn" title="Zoom Out"><i class="fas fa-minus"></i></button>
+      <button id="zoom-fit-btn" title="Fit to Screen" style="font-size:9px;">FIT</button>
+      <div class="zoom-pct" id="zoom-pct">100%</div>
+    </div>
+
+    <!-- Minimap -->
+    <div class="minimap" id="minimap">
+      <canvas id="minimap-cv" width="160" height="110"></canvas>
+      <div class="minimap-vp" id="minimap-vp"></div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="statusbar">
+      <div class="status-item"><div class="status-dot" id="gen-dot"></div><span id="status-text">Ready</span></div>
+      <div class="status-item"><i class="fas fa-circle-nodes" style="font-size:9px;"></i><span id="node-count">0 nodes</span></div>
+      <div class="status-item"><i class="fas fa-arrow-right-long" style="font-size:9px;"></i><span id="conn-count">0 connections</span></div>
+      <div class="status-item" style="margin-left:auto;">
+        <div class="bridge-pill" id="bridge-status-pill"><div class="bridge-dot" id="bridge-status-dot"></div><span id="bridge-status-text">Bridge idle</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ BRIDGE MODAL ════════════════════ -->
+<div class="overlay bridge-modal" id="bridge-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-paper-plane" style="color:var(--accent);margin-right:8px;"></i>SEND TO DRE TOOLS</div>
+      <button class="modal-close" onclick="closeModal('bridge-overlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+
+      <div class="bridge-tabs">
+        <button class="bridge-tab active" data-btab="send" onclick="switchBridgeTab('send')">Send Workflow</button>
+        <button class="bridge-tab" data-btab="push" onclick="switchBridgeTab('push')">Push to Editor</button>
+        <button class="bridge-tab" data-btab="log" onclick="switchBridgeTab('log')">Activity Log</button>
+      </div>
+
+      <!-- TAB: SEND WORKFLOW -->
+      <div class="bridge-pane active" id="btab-send">
+        <div class="form-label" style="margin-bottom:10px;">Select Target</div>
+        <div class="bridge-target-grid">
+          <div class="bridge-target active" id="bt-drecode" onclick="selectBridgeTarget('drecode')">
+            <i class="fas fa-code" style="color:var(--accent);"></i>
+            <div class="bt-name">DRE CODE</div>
+            <div class="bt-sub">Code Editor</div>
+          </div>
+          <div class="bridge-target" id="bt-dreinterface" onclick="selectBridgeTarget('dreinterface')">
+            <i class="fas fa-window-restore" style="color:var(--green);"></i>
+            <div class="bt-name">DRE Interface</div>
+            <div class="bt-sub">UI Builder</div>
+          </div>
+          <div class="bridge-target" id="bt-nwa" onclick="selectBridgeTarget('nwa')">
+            <i class="fas fa-network-wired" style="color:var(--orange);"></i>
+            <div class="bt-name">NWA</div>
+            <div class="bt-sub">Web Agent</div>
+          </div>
+        </div>
+
+        <div class="form-label" style="margin-bottom:8px;">Payload Format</div>
+        <div class="bridge-format-row">
+          <button class="bridge-fmt-btn active" data-fmt="prompt" onclick="selectBridgeFormat('prompt')">As Prompt</button>
+          <button class="bridge-fmt-btn" data-fmt="json" onclick="selectBridgeFormat('json')">As JSON</button>
+          <button class="bridge-fmt-btn" data-fmt="markdown" onclick="selectBridgeFormat('markdown')">As Markdown</button>
+          <button class="bridge-fmt-btn" data-fmt="code" onclick="selectBridgeFormat('code')">As Code Task</button>
+        </div>
+
+        <div class="form-label" style="margin-bottom:6px;">Preview</div>
+        <div class="bridge-preview" id="bridge-preview">// Generate a workflow first, then select a target and format.</div>
+
+        <button class="bridge-send-btn" id="bridge-send-btn" onclick="executeBridgeSend()">
+          <i class="fas fa-paper-plane"></i> Send Workflow
+        </button>
+      </div>
+
+      <!-- TAB: PUSH TO EDITOR -->
+      <div class="bridge-pane" id="btab-push">
+        <p style="font-size:12px;color:var(--text-mid);line-height:1.7;margin-bottom:16px;">
+          Push the current workflow directly into DRE CODE as a starter file or scaffold prompt. DRE CODE must be open in another tab.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Push Mode</label>
+          <select class="form-select" id="push-mode-select">
+            <option value="scaffold">HTML Scaffold — build from workflow structure</option>
+            <option value="task">AI Task — send as agent prompt</option>
+            <option value="json">Raw JSON — inject workflow data</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Additional Instructions (optional)</label>
+          <input type="text" class="form-input" id="push-instructions" placeholder="e.g. Use Tailwind, make it responsive...">
+        </div>
+        <button class="bridge-send-btn" onclick="executePushToEditor()" style="background:linear-gradient(135deg,var(--green),var(--blue));">
+          <i class="fas fa-code-branch"></i> Push to DRE CODE
+        </button>
+      </div>
+
+      <!-- TAB: ACTIVITY LOG -->
+      <div class="bridge-pane" id="btab-log">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span style="font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace;">BRIDGE ACTIVITY</span>
+          <button class="hbtn" style="height:24px;font-size:10px;padding:0 8px;" onclick="clearBridgeLog()">Clear</button>
+        </div>
+        <div class="bridge-log" id="bridge-log"><span style="color:var(--text-dim);">// No activity yet</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ SETTINGS MODAL ════════════════════ -->
+<div class="overlay" id="settings-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">AI PROVIDER SETTINGS</div>
+      <button class="modal-close" onclick="closeModal('settings-overlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="section-title" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;">Select Provider</div>
+      <div class="provider-grid" id="provider-grid"></div>
+
+      <div class="form-group" id="api-key-group">
+        <label class="form-label" id="api-key-label">API Key</label>
+        <input type="password" class="form-input" id="api-key-input" placeholder="Paste your API key here...">
+      </div>
+      <div class="form-group" id="model-group">
+        <label class="form-label">Model</label>
+        <select class="form-select" id="model-select"></select>
+      </div>
+      <div class="form-group" id="base-url-group" style="display:none;">
+        <label class="form-label">LM Studio Base URL</label>
+        <input type="text" class="form-input" id="base-url-input" placeholder="http://localhost:1234/v1">
+      </div>
+      <button class="save-settings-btn" id="save-settings-btn"><i class="fas fa-check"></i> Save & Connect</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ EXPORT MODAL ════════════════════ -->
+<div class="overlay" id="export-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">EXPORT WORKFLOW</div>
+      <button class="modal-close" onclick="closeModal('export-overlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">File Name</label>
+        <input type="text" class="form-input" id="export-name" placeholder="my-workflow" value="my-workflow">
+      </div>
+      <div class="export-grid">
+        <div class="export-card" onclick="doExport('png')">
+          <i class="fas fa-image" style="color:#f7a84a;"></i>
+          <div class="fmt">PNG Image</div>
+          <div class="desc">High-res canvas screenshot for sharing or docs</div>
+        </div>
+        <div class="export-card" onclick="doExport('svg')">
+          <i class="fas fa-bezier-curve" style="color:#7c6af7;"></i>
+          <div class="fmt">SVG Vector</div>
+          <div class="desc">Scalable vector, perfect for presentations</div>
+        </div>
+        <div class="export-card" onclick="doExport('json')">
+          <i class="fas fa-brackets-curly" style="color:#4a9eff;"></i>
+          <div class="fmt">JSON Data</div>
+          <div class="desc">Full workflow data, re-importable anytime</div>
+        </div>
+        <div class="export-card" onclick="doExport('md')">
+          <i class="fab fa-markdown" style="color:#00d4aa;"></i>
+          <div class="fmt">Markdown</div>
+          <div class="desc">Step-by-step text version of the workflow</div>
+        </div>
+        <div class="export-card" onclick="doExport('pdf')">
+          <i class="fas fa-file-pdf" style="color:#ff4d6d;"></i>
+          <div class="fmt">PDF Document</div>
+          <div class="desc">Printable workflow document with all steps</div>
+        </div>
+        <div class="export-card" onclick="doExport('html')">
+          <i class="fas fa-code" style="color:#f76af0;"></i>
+          <div class="fmt">HTML File</div>
+          <div class="desc">Standalone interactive workflow you can open anywhere</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DRE WORKFLOW ENGINE
+// ══════════════════════════════════════════════════════
+
+const PROVIDERS = {
+  claude:   { name:'Claude',    icon:'🤖', color:'#7c6af7', models:['claude-opus-4-5','claude-sonnet-4-5','claude-haiku-4-5'], endpoint:'https://api.anthropic.com/v1/messages',    keyLabel:'Anthropic API Key' },
+  openai:   { name:'ChatGPT',   icon:'🧠', color:'#00d4aa', models:['gpt-4o','gpt-4o-mini','gpt-4-turbo','gpt-3.5-turbo'],   endpoint:'https://api.openai.com/v1/chat/completions', keyLabel:'OpenAI API Key' },
+  deepseek: { name:'DeepSeek',  icon:'🔍', color:'#4a9eff', models:['deepseek-chat','deepseek-coder'],                        endpoint:'https://api.deepseek.com/v1/chat/completions',keyLabel:'DeepSeek API Key' },
+  groq:     { name:'Groq',      icon:'⚡', color:'#f7a84a', models:['llama-3.3-70b-versatile','mixtral-8x7b-32768','gemma2-9b-it'], endpoint:'https://api.groq.com/openai/v1/chat/completions', keyLabel:'Groq API Key' },
+  gemini:   { name:'Gemini',    icon:'✨', color:'#f76af0', models:['gemini-2.0-flash','gemini-1.5-pro','gemini-1.5-flash'],  endpoint:'https://generativelanguage.googleapis.com/v1beta/models', keyLabel:'Google AI API Key' },
+  lmstudio: { name:'LM Studio', icon:'🖥', color:'#ff4d6d', models:['local-model'],                                           endpoint:'http://localhost:1234/v1/chat/completions',  keyLabel:'(No Key Required)' }
+};
+
+const TEMPLATES = [
+  { id:'fullstack', label:'Full-Stack App',      icon:'🏗', color:'#7c6af7', desc:'Next.js + Supabase + Vercel + GitHub' },
+  { id:'github',    label:'GitHub CI/CD',        icon:'🔄', color:'#00d4aa', desc:'Repo → Actions → Tests → Deploy' },
+  { id:'docker',    label:'Docker Pipeline',     icon:'🐳', color:'#4a9eff', desc:'Build → Tag → Push → Orchestrate' },
+  { id:'database',  label:'Database Setup',      icon:'🗄',  color:'#f7a84a', desc:'Schema → Migrations → API → Cache' },
+  { id:'api',       label:'REST API Build',      icon:'⚡', color:'#f76af0', desc:'Design → Auth → Endpoints → Docs' },
+  { id:'mobile',    label:'Mobile App Deploy',   icon:'📱', color:'#00d4aa', desc:'Expo/RN → Build → TestFlight → Store' },
+  { id:'aiapp',     label:'AI-Powered App',      icon:'🤖', color:'#7c6af7', desc:'LLM Integration → RAG → Streaming → Deploy' },
+  { id:'monorepo',  label:'Monorepo Setup',      icon:'📦', color:'#4a9eff', desc:'Turborepo/Nx → Workspaces → Shared Libs' },
+];
+
+const TEMPLATE_PROMPTS = {
+  fullstack: 'Build a full-stack web application using Next.js for the frontend, Supabase for database and authentication, deployed to Vercel with a GitHub repository and CI/CD pipeline. Include environment setup, local development, testing, and production deployment steps.',
+  github:    'Set up a complete GitHub CI/CD pipeline including repository initialization, branch strategy, GitHub Actions workflows for testing, linting, building, and deploying to production with staging environments.',
+  docker:    'Create a Docker containerization pipeline from writing the Dockerfile, building images, tagging versions, pushing to a container registry, and deploying with Docker Compose or Kubernetes.',
+  database:  'Set up a production-ready database including schema design, migrations, seeding, API layer, connection pooling, backups, and caching with Redis.',
+  api:       'Build a REST API from scratch including design, authentication with JWT, CRUD endpoints, validation, rate limiting, documentation with Swagger, testing, and deployment.',
+  mobile:    'Deploy a React Native or Expo mobile app through development, testing on device, building for iOS/Android, submitting to TestFlight, and releasing to App Store and Play Store.',
+  aiapp:     'Build an AI-powered application integrating an LLM API, implementing RAG with vector databases, streaming responses, prompt engineering, cost optimization, and deploying with monitoring.',
+  monorepo:  'Set up a monorepo using Turborepo or Nx with multiple apps and shared packages, workspace dependencies, unified CI/CD, versioning, and automated publishing.'
+};
+
+// ──────────── STATE ────────────
+const state = {
+  nodes: [],
+  connections: [],
+  selectedNode: null,
+  tool: 'select',
+  scale: 1,
+  offset: { x: 0, y: 0 },
+  isPanning: false,
+  isDragging: false,
+  lastMouse: { x:0, y:0 },
+  nodeIdCounter: 0,
+  connIdCounter: 0,
+  undoStack: [],
+  redoStack: [],
+  provider: null,
+  apiKey: '',
+  model: '',
+  baseUrl: '',
+  isGenerating: false,
+  uploadedFileContent: null,
+  uploadedFileName: null,
+};
+
+const canvas      = document.getElementById('canvas');
+const canvasWrap  = document.getElementById('canvas-wrap');
+const svgLayer    = document.getElementById('svg-layer');
+const streamLog   = document.getElementById('stream-log');
+const slText      = document.getElementById('sl-text');
+const emptyState  = document.getElementById('empty-state');
+
+// ──────────── INIT ────────────
+function init() {
+  buildProviderGrid();
+  buildTemplateGrid();
+  loadSettingsFromSession();
+  bindEvents();
+  centerView();
+  updateStatus();
+}
+
+// ──────────── PROVIDER GRID ────────────
+function buildProviderGrid() {
+  const grid = document.getElementById('provider-grid');
+  grid.innerHTML = '';
+  for (const [id, p] of Object.entries(PROVIDERS)) {
+    const card = document.createElement('button');
+    card.className = 'provider-card' + (state.provider === id ? ' active' : '');
+    card.dataset.id = id;
+    card.innerHTML = `<div class="provider-name">${p.icon} ${p.name}</div><div class="provider-model">${p.models[0]}</div>`;
+    card.onclick = () => selectProvider(id);
+    grid.appendChild(card);
+  }
+}
+
+function selectProvider(id) {
+  state.provider = id;
+  document.querySelectorAll('.provider-card').forEach(c => c.classList.toggle('active', c.dataset.id === id));
+  const p = PROVIDERS[id];
+  document.getElementById('api-key-label').textContent = p.keyLabel;
+  document.getElementById('api-key-input').placeholder = id === 'lmstudio' ? 'Not required' : 'Paste your API key...';
+  document.getElementById('base-url-group').style.display = id === 'lmstudio' ? 'block' : 'none';
+
+  const sel = document.getElementById('model-select');
+  sel.innerHTML = p.models.map(m => `<option value="${m}">${m}</option>`).join('');
+
+  // Restore saved key
+  const saved = sessionStorage.getItem('dre_key_' + id);
+  if (saved) document.getElementById('api-key-input').value = saved;
+  else document.getElementById('api-key-input').value = '';
+}
+
+function loadSettingsFromSession() {
+  const provider = sessionStorage.getItem('dre_provider');
+  if (provider && PROVIDERS[provider]) {
+    state.provider = provider;
+    state.apiKey   = sessionStorage.getItem('dre_key_' + provider) || '';
+    state.model    = sessionStorage.getItem('dre_model') || PROVIDERS[provider].models[0];
+    state.baseUrl  = sessionStorage.getItem('dre_baseurl') || '';
+    updateAIStatus(true);
+  }
+}
+
+document.getElementById('save-settings-btn').onclick = () => {
+  if (!state.provider) return toast('Select a provider first', 'err');
+  const key   = document.getElementById('api-key-input').value.trim();
+  const model = document.getElementById('model-select').value;
+  const burl  = document.getElementById('base-url-input').value.trim();
+
+  if (state.provider !== 'lmstudio' && !key) return toast('API key required', 'err');
+
+  state.apiKey  = key;
+  state.model   = model;
+  state.baseUrl = burl;
+
+  sessionStorage.setItem('dre_provider', state.provider);
+  sessionStorage.setItem('dre_key_' + state.provider, key);
+  sessionStorage.setItem('dre_model', model);
+  if (burl) sessionStorage.setItem('dre_baseurl', burl);
+
+  updateAIStatus(true);
+  closeModal('settings-overlay');
+  toast(`Connected to ${PROVIDERS[state.provider].name}`, 'ok');
+};
+
+function updateAIStatus(connected) {
+  const dot   = document.getElementById('ai-dot');
+  const label = document.getElementById('ai-label');
+  if (connected && state.provider) {
+    dot.classList.add('connected');
+    label.textContent = PROVIDERS[state.provider].name + ' · ' + (state.model || PROVIDERS[state.provider].models[0]);
+  } else {
+    dot.classList.remove('connected');
+    label.textContent = 'No Provider';
+  }
+}
+
+// ──────────── TEMPLATES ────────────
+function buildTemplateGrid() {
+  const grid = document.getElementById('template-grid');
+  TEMPLATES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tpl-btn';
+    btn.innerHTML = `<div class="tpl-icon" style="background:${t.color}22;color:${t.color}">${t.icon}</div><div><div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">${t.label}</div><div style="font-size:10px;color:var(--text-dim);">${t.desc}</div></div>`;
+    btn.onclick = () => {
+      document.getElementById('prompt-input').value = TEMPLATE_PROMPTS[t.id];
+      generateWorkflow();
+    };
+    grid.appendChild(btn);
+  });
+}
+
+// ──────────── GENERATE ────────────
+async function generateWorkflow(isReprompt = false) {
+  if (!state.provider || !PROVIDERS[state.provider]) {
+    openModal('settings-overlay');
+    return toast('Configure an AI provider first', 'info');
+  }
+  if (state.provider !== 'lmstudio' && !state.apiKey) {
+    openModal('settings-overlay');
+    return toast('API key required', 'err');
+  }
+  if (state.isGenerating) return;
+
+  const promptEl    = document.getElementById('prompt-input');
+  const repromptEl  = document.getElementById('reprompt-input');
+  const basePrompt  = promptEl.value.trim();
+  const addPrompt   = repromptEl.value.trim();
+
+  if (!basePrompt && !state.uploadedFileContent && !addPrompt) {
+    return toast('Describe your project first', 'info');
+  }
+
+  state.isGenerating = true;
+  setGenLoading(true);
+
+  if (!isReprompt) {
+    saveUndo();
+    clearCanvas(false);
+  }
+
+  // Build the AI prompt
+  let userMsg = '';
+  if (isReprompt && addPrompt) {
+    userMsg = `Current workflow context: ${basePrompt || 'existing workflow'}
+
+User wants to update/extend: "${addPrompt}"
+
+Existing nodes: ${JSON.stringify(state.nodes.map(n => ({ id:n.id, title:n.title, stage:n.stage })))}
+
+Generate ONLY the new/updated nodes needed. Use the same JSON format.`;
+  } else {
+    userMsg = basePrompt || '';
+    if (state.uploadedFileContent) {
+      userMsg += `\n\nAdditionally, here is a project file to analyze:\nFilename: ${state.uploadedFileName}\n\n${state.uploadedFileContent}`;
+    }
+  }
+
+  const systemPrompt = `You are DRE Workflow, an expert AI that analyzes software projects and generates detailed visual workflow maps.
+
+Your task: Generate a comprehensive workflow for the described project as structured JSON.
+
+Return ONLY valid JSON (no markdown, no explanation) in this exact format:
+{
+  "title": "Workflow title",
+  "stages": [
+    {
+      "id": "stage_1",
+      "label": "Stage Name",
+      "x": 100,
+      "y": 100
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node_1",
+      "stage": "stage_1",
+      "title": "Step Title",
+      "description": "Clear explanation of what happens here and why",
+      "tools": ["Tool1", "Tool2"],
+      "type": "action",
+      "x": 150,
+      "y": 200,
+      "width": 220,
+      "height": 110
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_1",
+      "from": "node_1",
+      "to": "node_2",
+      "label": "",
+      "type": "sequential"
+    }
+  ]
+}
+
+Rules:
+- Generate 8-18 nodes representing real, actionable steps
+- Group into 2-5 stages (e.g., Setup, Development, Testing, Deployment)
+- Use realistic x/y coordinates to layout a left-to-right flow starting at x:200, y:300
+- Each stage shifts x by ~350px, nodes within a stage are spaced ~160px vertically
+- node types: "action" | "decision" | "tool" | "milestone"
+- connection types: "sequential" | "parallel" | "conditional"
+- tools array: real tool names (GitHub, Vercel, Docker, npm, etc.)
+- Descriptions should be practical and informative (1-2 sentences)
+- Node width: 220, height: 100-120 depending on description length`;
+
+  try {
+    streamLog.classList.add('show');
+    setStatus('Generating workflow...');
+
+    let rawJSON = '';
+    rawJSON = await callAI(systemPrompt, userMsg, (chunk) => {
+      rawJSON += chunk;
+      slText.textContent = 'Generating workflow' + (rawJSON.length > 20 ? ` · ${rawJSON.length} chars` : '');
+    });
+
+    streamLog.classList.remove('show');
+
+    // Parse JSON
+    const cleaned = rawJSON.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    let data;
+    try {
+      data = JSON.parse(cleaned);
+    } catch(e) {
+      // Try to extract JSON from response
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      if (match) data = JSON.parse(match[0]);
+      else throw new Error('Could not parse AI response as JSON');
+    }
+
+    await renderWorkflowFromData(data, isReprompt);
+    repromptEl.value = '';
+    toast(`Workflow generated · ${data.nodes.length} nodes`, 'ok');
+    setStatus('Ready');
+
+  } catch(err) {
+    streamLog.classList.remove('show');
+    console.error(err);
+    toast('Generation failed: ' + (err.message || 'Unknown error'), 'err');
+    setStatus('Error — check console');
+  } finally {
+    state.isGenerating = false;
+    setGenLoading(false);
+  }
+}
+
+// ──────────── AI API CALLER ────────────
+async function callAI(system, userMsg, onChunk) {
+  const p = PROVIDERS[state.provider];
+  const model = state.model || p.models[0];
+  const key   = state.apiKey;
+  const burl  = state.baseUrl;
+
+  // ── Claude ──
+  if (state.provider === 'claude') {
+    const resp = await fetch(p.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({ model, max_tokens:4096, stream:true, system, messages:[{ role:'user', content:userMsg }] })
+    });
+    if (!resp.ok) throw new Error(`Claude API error: ${resp.status} ${await resp.text()}`);
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    let full = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const lines = dec.decode(value).split('\n');
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const d = JSON.parse(line.slice(6));
+            if (d.type === 'content_block_delta' && d.delta?.text) {
+              full += d.delta.text;
+              onChunk(d.delta.text);
+            }
+          } catch(_) {}
+        }
+      }
+    }
+    return full;
+  }
+
+  // ── Gemini ──
+  if (state.provider === 'gemini') {
+    const url = `${p.endpoint}/${model}:generateContent?key=${key}`;
+    const resp = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ contents:[{ parts:[{ text: system + '\n\n' + userMsg }] }] })
+    });
+    if (!resp.ok) throw new Error(`Gemini error: ${resp.status} ${await resp.text()}`);
+    const data = await resp.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    onChunk(text);
+    return text;
+  }
+
+  // ── OpenAI-compatible (OpenAI, DeepSeek, Groq, LM Studio) ──
+  const endpoint = state.provider === 'lmstudio' ? (burl || p.endpoint).replace(/\/?$/, '/chat/completions') : p.endpoint;
+  const headers = { 'Content-Type':'application/json' };
+  if (state.provider !== 'lmstudio') headers['Authorization'] = 'Bearer ' + key;
+
+  const resp = await fetch(endpoint, {
+    method:'POST',
+    headers,
+    body: JSON.stringify({
+      model,
+      messages:[{ role:'system', content:system },{ role:'user', content:userMsg }],
+      stream: true,
+      max_tokens: 4096
+    })
+  });
+  if (!resp.ok) throw new Error(`${PROVIDERS[state.provider].name} error: ${resp.status} ${await resp.text()}`);
+
+  const reader = resp.body.getReader();
+  const dec = new TextDecoder();
+  let full = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const lines = dec.decode(value).split('\n');
+    for (const line of lines) {
+      if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+        try {
+          const d = JSON.parse(line.slice(6));
+          const chunk = d.choices?.[0]?.delta?.content || '';
+          if (chunk) { full += chunk; onChunk(chunk); }
+        } catch(_) {}
+      }
+    }
+  }
+  return full;
+}
+
+// ──────────── RENDER WORKFLOW ────────────
+async function renderWorkflowFromData(data, append = false) {
+  if (!append) clearCanvas(false);
+
+  emptyState.classList.add('hidden');
+
+  const baseOffX = append ? 600 : 0;
+
+  // Animate nodes in one by one
+  for (let i = 0; i < data.nodes.length; i++) {
+    const nd = data.nodes[i];
+    await delay(80);
+    const node = {
+      id:    nd.id || ('n_' + (++state.nodeIdCounter)),
+      title: nd.title,
+      desc:  nd.description || '',
+      tools: nd.tools || [],
+      type:  nd.type || 'action',
+      stage: nd.stage || '',
+      x:     (nd.x || 200) + baseOffX,
+      y:     nd.y || 300,
+      width: nd.width || 220,
+      height:nd.height || 110,
+    };
+    state.nodes.push(node);
+    renderNodeEl(node, i);
+  }
+
+  // Connections
+  if (data.connections) {
+    data.connections.forEach(c => {
+      const conn = {
+        id:    c.id || ('c_' + (++state.connIdCounter)),
+        from:  c.from,
+        to:    c.to,
+        label: c.label || '',
+        type:  c.type || 'sequential',
+      };
+      state.connections.push(conn);
+    });
+    renderConnections();
+  }
+
+  // Stage labels
+  if (data.stages) {
+    data.stages.forEach(s => renderStageLabel(s, baseOffX));
+  }
+
+  updateStatus();
+  renderMinimap();
+  fitView();
+  saveUndo();
+}
+
+// ──────────── NODE ELEMENT ────────────
+const TYPE_COLORS = {
+  action:    { bg:'#7c6af722', border:'#7c6af7', icon:'⚙', iconBg:'#7c6af7' },
+  decision:  { bg:'#f7a84a22', border:'#f7a84a', icon:'◆', iconBg:'#f7a84a' },
+  tool:      { bg:'#4a9eff22', border:'#4a9eff', icon:'🔧', iconBg:'#4a9eff' },
+  milestone: { bg:'#00d4aa22', border:'#00d4aa', icon:'🏁', iconBg:'#00d4aa' },
+};
+
+function renderNodeEl(node, idx = 0) {
+  const c = TYPE_COLORS[node.type] || TYPE_COLORS.action;
+  const el = document.createElement('div');
+  el.className = 'node';
+  el.id = 'node-' + node.id;
+  el.style.cssText = `
+    left:${node.x}px; top:${node.y}px;
+    width:${node.width}px;
+    border-color:${c.border}44;
+    animation-delay:${idx * 0.04}s;
+  `;
+
+  const toolChips = node.tools.map(t => `<span class="tool-chip">${t}</span>`).join('');
+
+  el.innerHTML = `
+    <div class="node-step-badge">STEP ${idx + 1}</div>
+    <div class="node-header">
+      <div class="node-icon" style="background:${c.iconBg}22;color:${c.iconBg}">${c.icon}</div>
+      <div>
+        <div class="node-title">${node.title}</div>
+        <div class="node-tag">${node.type}</div>
+      </div>
+    </div>
+    <div class="node-body">
+      <div class="node-desc">${node.desc}</div>
+    </div>
+    ${toolChips ? `<div class="node-tools">${toolChips}</div>` : ''}
+    <button class="node-edit-btn" data-id="${node.id}" title="Edit"><i class="fas fa-pencil"></i></button>
+  `;
+
+  el.addEventListener('mousedown', onNodeMouseDown);
+  el.querySelector('.node-edit-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openNodeEdit(node);
+  });
+
+  canvas.appendChild(el);
+}
+
+function renderStageLabel(s, offX = 0) {
+  const el = document.createElement('div');
+  el.className = 'stage-label';
+  el.style.cssText = `left:${(s.x || 0) + offX}px; top:${(s.y || 260) - 10}px;`;
+  el.textContent = s.label || '';
+  canvas.appendChild(el);
+}
+
+// ──────────── CONNECTIONS ────────────
+function renderConnections() {
+  // Clear existing paths (keep defs/markers)
+  const existing = svgLayer.querySelectorAll('.conn-path, .conn-label-bg, .conn-label-text');
+  existing.forEach(e => e.remove());
+
+  state.connections.forEach(conn => {
+    const fromNode = state.nodes.find(n => n.id === conn.from);
+    const toNode   = state.nodes.find(n => n.id === conn.to);
+    if (!fromNode || !toNode) return;
+
+    const x1 = fromNode.x + fromNode.width;
+    const y1 = fromNode.y + fromNode.height / 2;
+    const x2 = toNode.x;
+    const y2 = toNode.y + toNode.height / 2;
+
+    const mx = (x1 + x2) / 2;
+    const d  = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
+
+    const strokeMap = { sequential:'arrow', parallel:'arrow-green', conditional:'arrow-accent' };
+    const colorMap  = { sequential:'rgba(255,255,255,0.15)', parallel:'rgba(0,212,170,0.35)', conditional:'rgba(124,106,247,0.5)' };
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    path.setAttribute('class', 'conn-path type-' + conn.type);
+    path.setAttribute('stroke', colorMap[conn.type] || 'rgba(255,255,255,0.15)');
+    path.setAttribute('marker-end', `url(#${strokeMap[conn.type] || 'arrow'})`);
+    path.dataset.id = conn.id;
+    svgLayer.appendChild(path);
+
+    if (conn.label) {
+      const lx = mx, ly = (y1 + y2) / 2 - 4;
+      const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      bg.setAttribute('x', lx - 20); bg.setAttribute('y', ly - 10);
+      bg.setAttribute('width', 40); bg.setAttribute('height', 14);
+      bg.setAttribute('class','conn-label-bg'); bg.setAttribute('rx','3');
+      svgLayer.appendChild(bg);
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x', lx); txt.setAttribute('y', ly);
+      txt.setAttribute('text-anchor','middle'); txt.setAttribute('class','conn-label-text');
+      txt.textContent = conn.label;
+      svgLayer.appendChild(txt);
+    }
+  });
+}
+
+// ──────────── NODE EDIT ────────────
+function openNodeEdit(node) {
+  // Simple inline prompt for now
+  const newTitle = prompt('Node title:', node.title);
+  if (newTitle === null) return;
+  const newDesc = prompt('Description:', node.desc);
+  if (newDesc === null) return;
+  node.title = newTitle;
+  node.desc  = newDesc;
+  const el = document.getElementById('node-' + node.id);
+  if (el) {
+    el.querySelector('.node-title').textContent = newTitle;
+    el.querySelector('.node-desc').textContent  = newDesc;
+  }
+  saveUndo();
+  toast('Node updated', 'ok');
+}
+
+// ──────────── DRAG ────────────
+function onNodeMouseDown(e) {
+  if (e.button !== 0) return;
+  e.stopPropagation();
+
+  const id = e.currentTarget.id.replace('node-','');
+  const node = state.nodes.find(n => n.id == id || n.id === id);
+  if (!node) return;
+
+  selectNode(node);
+  state.isDragging = true;
+  state.lastMouse = { x:e.clientX, y:e.clientY };
+}
+
+function selectNode(node) {
+  if (state.selectedNode) {
+    document.getElementById('node-' + state.selectedNode.id)?.classList.remove('selected');
+  }
+  state.selectedNode = node;
+  document.getElementById('node-' + node.id)?.classList.add('selected');
+}
+
+function deselectAll() {
+  if (state.selectedNode) {
+    document.getElementById('node-' + state.selectedNode.id)?.classList.remove('selected');
+    state.selectedNode = null;
+  }
+}
+
+// ──────────── CANVAS EVENTS ────────────
+function bindEvents() {
+  // Tool buttons
+  document.getElementById('tool-select-btn').onclick = () => setTool('select');
+  document.getElementById('tool-pan-btn').onclick    = () => setTool('pan');
+  document.getElementById('gen-btn').onclick         = () => generateWorkflow(false);
+  document.getElementById('reprompt-btn').onclick    = () => generateWorkflow(true);
+  document.getElementById('reprompt-input').addEventListener('keydown', e => { if(e.key==='Enter') generateWorkflow(true); });
+  document.getElementById('prompt-input').addEventListener('keydown', e => { if(e.ctrlKey && e.key==='Enter') generateWorkflow(false); });
+  document.getElementById('clear-btn').onclick       = () => { if(confirm('Clear the canvas?')) clearCanvas(true); };
+  document.getElementById('undo-btn').onclick        = () => undo();
+  document.getElementById('redo-btn').onclick        = () => redo();
+  document.getElementById('settings-btn').onclick    = () => { buildProviderGrid(); if(state.provider) selectProvider(state.provider); openModal('settings-overlay'); };
+  document.getElementById('export-btn').onclick      = () => openModal('export-overlay');
+  document.getElementById('sidebar-toggle').onclick  = () => document.getElementById('left-panel').classList.toggle('collapsed');
+
+  // Zoom
+  document.getElementById('zoom-in-btn').onclick  = () => zoom(1.15);
+  document.getElementById('zoom-out-btn').onclick = () => zoom(0.87);
+  document.getElementById('zoom-fit-btn').onclick = () => fitView();
+
+  // Upload
+  const uploadZone = document.getElementById('upload-zone');
+  uploadZone.onclick = () => document.getElementById('file-input').click();
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.style.borderColor='var(--accent)'; });
+  uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor=''; });
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); });
+  document.getElementById('file-input').onchange = e => handleFile(e.target.files[0]);
+
+  // Canvas panning
+  canvasWrap.addEventListener('mousedown', e => {
+    if (e.button === 1 || (e.button === 0 && state.tool === 'pan')) {
+      state.isPanning = true;
+      state.lastMouse = { x:e.clientX, y:e.clientY };
+      canvas.classList.add('panning');
+    }
+    if (e.target === canvasWrap || e.target === canvas || e.target === svgLayer) {
+      deselectAll();
+    }
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (state.isPanning) {
+      state.offset.x += e.clientX - state.lastMouse.x;
+      state.offset.y += e.clientY - state.lastMouse.y;
+      state.lastMouse = { x:e.clientX, y:e.clientY };
+      applyTransform();
+    }
+    if (state.isDragging && state.selectedNode) {
+      const dx = (e.clientX - state.lastMouse.x) / state.scale;
+      const dy = (e.clientY - state.lastMouse.y) / state.scale;
+      state.selectedNode.x += dx;
+      state.selectedNode.y += dy;
+      const el = document.getElementById('node-' + state.selectedNode.id);
+      if (el) { el.style.left = state.selectedNode.x + 'px'; el.style.top = state.selectedNode.y + 'px'; }
+      state.lastMouse = { x:e.clientX, y:e.clientY };
+      renderConnections();
+      renderMinimap();
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (state.isDragging) { saveUndo(); }
+    state.isPanning = false;
+    state.isDragging = false;
+    canvas.classList.remove('panning');
+    renderMinimap();
+  });
+
+  canvasWrap.addEventListener('wheel', e => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      zoom(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
+    } else {
+      state.offset.x -= e.deltaX;
+      state.offset.y -= e.deltaY;
+      applyTransform();
+    }
+  }, { passive:false });
+
+  window.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+    if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+    if (e.key === 'Delete' && state.selectedNode) deleteNode(state.selectedNode);
+    if (e.key === 'Escape') document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
+  });
+}
+
+// ──────────── TOOL ────────────
+function setTool(t) {
+  state.tool = t;
+  document.getElementById('tool-select-btn').classList.toggle('active', t === 'select');
+  document.getElementById('tool-pan-btn').classList.toggle('active', t === 'pan');
+  canvas.style.cursor = t === 'pan' ? 'grab' : 'default';
+}
+
+// ──────────── FILE UPLOAD ────────────
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    state.uploadedFileContent = ev.target.result;
+    state.uploadedFileName    = file.name;
+    const zone = document.getElementById('upload-zone');
+    zone.classList.add('has-file');
+    zone.innerHTML = `<i class="fas fa-file-check"></i><p style="color:var(--green)">${file.name}</p><p class="hint">Click to change file</p>`;
+    toast(`File loaded: ${file.name}`, 'ok');
+    if (!document.getElementById('prompt-input').value.trim()) {
+      document.getElementById('prompt-input').value = `Analyze this project file and generate a complete workflow: ${file.name}`;
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ──────────── ZOOM / TRANSFORM ────────────
+function zoom(factor, cx, cy) {
+  const rect = canvasWrap.getBoundingClientRect();
+  const pivotX = (cx ?? rect.left + rect.width/2) - rect.left;
+  const pivotY = (cy ?? rect.top + rect.height/2) - rect.top;
+  const newScale = Math.max(0.15, Math.min(3, state.scale * factor));
+  state.offset.x = pivotX - (pivotX - state.offset.x) * (newScale / state.scale);
+  state.offset.y = pivotY - (pivotY - state.offset.y) * (newScale / state.scale);
+  state.scale = newScale;
+  applyTransform();
+}
+
+function applyTransform() {
+  canvas.style.transform = `translate(${state.offset.x}px,${state.offset.y}px) scale(${state.scale})`;
+  document.getElementById('zoom-pct').textContent = Math.round(state.scale * 100) + '%';
+  renderMinimap();
+}
+
+function centerView() {
+  state.offset = { x: -600, y: -400 };
+  state.scale = 1;
+  applyTransform();
+}
+
+function fitView() {
+  if (state.nodes.length === 0) { centerView(); return; }
+  const pad = 80;
+  const minX = Math.min(...state.nodes.map(n => n.x)) - pad;
+  const minY = Math.min(...state.nodes.map(n => n.y)) - pad;
+  const maxX = Math.max(...state.nodes.map(n => n.x + n.width)) + pad;
+  const maxY = Math.max(...state.nodes.map(n => n.y + n.height)) + pad;
+  const rect  = canvasWrap.getBoundingClientRect();
+  const scaleX = rect.width / (maxX - minX);
+  const scaleY = rect.height / (maxY - minY);
+  state.scale = Math.min(scaleX, scaleY, 1.2);
+  state.offset.x = -minX * state.scale + (rect.width - (maxX - minX) * state.scale) / 2;
+  state.offset.y = -minY * state.scale + (rect.height - (maxY - minY) * state.scale) / 2;
+  applyTransform();
+}
+
+// ──────────── MINIMAP ────────────
+function renderMinimap() {
+  const cv  = document.getElementById('minimap-cv');
+  const vp  = document.getElementById('minimap-vp');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const SCALE = 0.016;
+
+  ctx.clearRect(0, 0, W, H);
+  state.nodes.forEach(n => {
+    const c = TYPE_COLORS[n.type] || TYPE_COLORS.action;
+    ctx.fillStyle = c.iconBg + '88';
+    ctx.beginPath();
+    ctx.roundRect(n.x * SCALE, n.y * SCALE, n.width * SCALE, n.height * SCALE, 2);
+    ctx.fill();
+  });
+
+  const rect = canvasWrap.getBoundingClientRect();
+  const vW = (rect.width / state.scale) * SCALE;
+  const vH = (rect.height / state.scale) * SCALE;
+  const vX = (-state.offset.x / state.scale) * SCALE;
+  const vY = (-state.offset.y / state.scale) * SCALE;
+  vp.style.width  = vW + 'px'; vp.style.height = vH + 'px';
+  vp.style.left   = vX + 'px'; vp.style.top    = vY + 'px';
+}
+
+// ──────────── CLEAR ────────────
+function clearCanvas(showEmpty = true) {
+  // Remove DOM nodes
+  canvas.querySelectorAll('.node, .stage-label').forEach(el => el.remove());
+  // Clear connections from SVG
+  svgLayer.querySelectorAll('.conn-path, .conn-label-bg, .conn-label-text').forEach(el => el.remove());
+  state.nodes = [];
+  state.connections = [];
+  state.selectedNode = null;
+  if (showEmpty) emptyState.classList.remove('hidden');
+  updateStatus();
+  renderMinimap();
+}
+
+// ──────────── DELETE NODE ────────────
+function deleteNode(node) {
+  saveUndo();
+  state.connections = state.connections.filter(c => c.from !== node.id && c.to !== node.id);
+  state.nodes = state.nodes.filter(n => n.id !== node.id);
+  document.getElementById('node-' + node.id)?.remove();
+  state.selectedNode = null;
+  renderConnections();
+  updateStatus();
+  renderMinimap();
+}
+
+// ──────────── UNDO / REDO ────────────
+function saveUndo() {
+  const snap = JSON.stringify({ nodes: state.nodes, connections: state.connections });
+  state.undoStack.push(snap);
+  if (state.undoStack.length > 30) state.undoStack.shift();
+  state.redoStack = [];
+  updateHistoryBtns();
+}
+
+function undo() {
+  if (!state.undoStack.length) return;
+  state.redoStack.push(JSON.stringify({ nodes: state.nodes, connections: state.connections }));
+  const snap = JSON.parse(state.undoStack.pop());
+  restoreSnap(snap);
+  updateHistoryBtns();
+}
+
+function redo() {
+  if (!state.redoStack.length) return;
+  state.undoStack.push(JSON.stringify({ nodes: state.nodes, connections: state.connections }));
+  const snap = JSON.parse(state.redoStack.pop());
+  restoreSnap(snap);
+  updateHistoryBtns();
+}
+
+function restoreSnap(snap) {
+  clearCanvas(false);
+  snap.nodes.forEach((n, i) => { state.nodes.push(n); renderNodeEl(n, i); });
+  state.connections = snap.connections;
+  renderConnections();
+  if (state.nodes.length === 0) emptyState.classList.remove('hidden');
+  else emptyState.classList.add('hidden');
+  updateStatus();
+  renderMinimap();
+}
+
+function updateHistoryBtns() {
+  document.getElementById('undo-btn').disabled = state.undoStack.length === 0;
+  document.getElementById('redo-btn').disabled = state.redoStack.length === 0;
+}
+
+// ──────────── STATUS ────────────
+function updateStatus() {
+  document.getElementById('node-count').textContent = state.nodes.length + ' nodes';
+  document.getElementById('conn-count').textContent = state.connections.length + ' connections';
+}
+
+function setStatus(txt) {
+  document.getElementById('status-text').textContent = txt;
+  const dot = document.getElementById('gen-dot');
+  dot.classList.toggle('active', txt !== 'Ready' && txt !== 'Error — check console');
+}
+
+function setGenLoading(loading) {
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = loading;
+  btn.classList.toggle('loading', loading);
+  btn.innerHTML = loading
+    ? '<i class="fas fa-circle-notch fa-spin"></i> Generating...'
+    : '<i class="fas fa-wand-magic-sparkles"></i> Generate Workflow';
+}
+
+// ──────────── EXPORT ────────────
+async function doExport(fmt) {
+  const name = (document.getElementById('export-name').value || 'my-workflow').replace(/[^a-z0-9_-]/gi, '_');
+
+  if (fmt === 'json') {
+    const data = { nodes: state.nodes, connections: state.connections, meta: { provider: state.provider, model: state.model, exported: new Date().toISOString() } };
+    download(JSON.stringify(data, null, 2), name + '.json', 'application/json');
+    toast('Exported JSON', 'ok');
+    closeModal('export-overlay');
+
+  } else if (fmt === 'md') {
+    let md = `# ${name}\n\nGenerated by DRE Workflow\n\n`;
+    md += `**Provider:** ${state.provider ? PROVIDERS[state.provider].name : 'N/A'} · **Model:** ${state.model || 'N/A'}\n\n---\n\n`;
+    state.nodes.forEach((n, i) => {
+      md += `## Step ${i+1}: ${n.title}\n\n`;
+      md += `**Type:** ${n.type}\n\n`;
+      if (n.desc) md += `${n.desc}\n\n`;
+      if (n.tools.length) md += `**Tools:** ${n.tools.join(', ')}\n\n`;
+      md += `---\n\n`;
+    });
+    if (state.connections.length) {
+      md += `## Connections\n\n`;
+      state.connections.forEach(c => {
+        const from = state.nodes.find(n=>n.id===c.from)?.title || c.from;
+        const to   = state.nodes.find(n=>n.id===c.to)?.title || c.to;
+        md += `- **${from}** → **${to}** *(${c.type})*${c.label ? ` — ${c.label}` : ''}\n`;
+      });
+    }
+    download(md, name + '.md', 'text/markdown');
+    toast('Exported Markdown', 'ok');
+    closeModal('export-overlay');
+
+  } else if (fmt === 'svg') {
+    exportSVG(name);
+
+  } else if (fmt === 'png') {
+    exportPNG(name);
+
+  } else if (fmt === 'pdf') {
+    exportPDF(name);
+
+  } else if (fmt === 'html') {
+    exportHTML(name);
+  }
+}
+
+function exportSVG(name) {
+  if (state.nodes.length === 0) return toast('Nothing to export', 'err');
+  const pad = 60;
+  const minX = Math.min(...state.nodes.map(n => n.x)) - pad;
+  const minY = Math.min(...state.nodes.map(n => n.y)) - pad;
+  const maxX = Math.max(...state.nodes.map(n => n.x + n.width)) + pad;
+  const maxY = Math.max(...state.nodes.map(n => n.y + n.height)) + pad;
+  const W = maxX - minX, H = maxY - minY;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${minX} ${minY} ${W} ${H}" style="background:#080810;font-family:DM Sans,sans-serif;">`;
+  svg += `<defs><marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="rgba(255,255,255,0.2)"/></marker></defs>`;
+
+  // Connections
+  state.connections.forEach(c => {
+    const fn = state.nodes.find(n=>n.id===c.from), tn=state.nodes.find(n=>n.id===c.to);
+    if(!fn||!tn) return;
+    const x1=fn.x+fn.width, y1=fn.y+fn.height/2, x2=tn.x, y2=tn.y+tn.height/2, mx=(x1+x2)/2;
+    svg += `<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" marker-end="url(#a)"/>`;
+  });
+
+  // Nodes
+  state.nodes.forEach((n,i) => {
+    const col = (TYPE_COLORS[n.type]||TYPE_COLORS.action).iconBg;
+    svg += `<rect x="${n.x}" y="${n.y}" width="${n.width}" height="${n.height}" rx="10" fill="#13131f" stroke="${col}44" stroke-width="1.5"/>`;
+    svg += `<text x="${n.x+12}" y="${n.y+24}" fill="${col}" font-size="11" font-weight="600">${escapeXML(n.title)}</text>`;
+    if(n.desc) svg += `<text x="${n.x+12}" y="${n.y+42}" fill="#9090b0" font-size="10">${escapeXML(n.desc.substring(0,50))}${n.desc.length>50?'...':''}</text>`;
+    n.tools.forEach((t,ti) => {
+      svg += `<rect x="${n.x+12+ti*60}" y="${n.y+n.height-20}" width="54" height="14" rx="3" fill="#1a1a28" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+      svg += `<text x="${n.x+39+ti*60}" y="${n.y+n.height-10}" fill="#55556e" font-size="8" text-anchor="middle">${escapeXML(t)}</text>`;
+    });
+  });
+
+  svg += '</svg>';
+  download(svg, name + '.svg', 'image/svg+xml');
+  toast('Exported SVG', 'ok');
+  closeModal('export-overlay');
+}
+
+function exportPNG(name) {
+  if (state.nodes.length === 0) return toast('Nothing to export', 'err');
+  toast('Preparing PNG...', 'info');
+  const pad = 80;
+  const minX = Math.min(...state.nodes.map(n => n.x)) - pad;
+  const minY = Math.min(...state.nodes.map(n => n.y)) - pad;
+  const maxX = Math.max(...state.nodes.map(n => n.x + n.width)) + pad;
+  const maxY = Math.max(...state.nodes.map(n => n.y + n.height)) + pad;
+  const W = maxX - minX, H = maxY - minY;
+  const scale = 2;
+
+  const cv = document.createElement('canvas');
+  cv.width = W * scale; cv.height = H * scale;
+  const ctx = cv.getContext('2d');
+  ctx.scale(scale, scale);
+
+  // Background
+  ctx.fillStyle = '#080810';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Connections
+  state.connections.forEach(c => {
+    const fn = state.nodes.find(n=>n.id===c.from), tn=state.nodes.find(n=>n.id===c.to);
+    if(!fn||!tn) return;
+    const x1=(fn.x+fn.width)-minX, y1=(fn.y+fn.height/2)-minY;
+    const x2=tn.x-minX, y2=(tn.y+tn.height/2)-minY;
+    const mx=(x1+x2)/2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x1,y1); ctx.bezierCurveTo(mx,y1,mx,y2,x2,y2);
+    ctx.stroke();
+  });
+
+  // Nodes
+  state.nodes.forEach(n => {
+    const col = (TYPE_COLORS[n.type]||TYPE_COLORS.action).iconBg;
+    const nx = n.x - minX, ny = n.y - minY;
+
+    // Shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 20;
+    roundRect(ctx, nx, ny, n.width, n.height, 10);
+    ctx.fillStyle = '#13131f'; ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Border
+    ctx.strokeStyle = col + '66'; ctx.lineWidth = 1.5;
+    roundRect(ctx, nx, ny, n.width, n.height, 10); ctx.stroke();
+
+    // Title
+    ctx.fillStyle = '#eeeef8'; ctx.font = '600 12px DM Sans, sans-serif';
+    ctx.fillText(n.title, nx + 12, ny + 26);
+
+    // Desc
+    if (n.desc) {
+      ctx.fillStyle = '#9090b0'; ctx.font = '10px DM Sans, sans-serif';
+      const words = n.desc.split(' '); let line='', lineY=ny+44;
+      for (const w of words) {
+        const test = line + w + ' ';
+        if (ctx.measureText(test).width > n.width - 24 && line) {
+          ctx.fillText(line.trim(), nx+12, lineY); line = w + ' '; lineY += 14;
+          if (lineY > ny + n.height - 20) { ctx.fillText(line.trim()+'...', nx+12, lineY); break; }
+        } else line = test;
+      }
+      if (lineY <= ny + n.height - 20) ctx.fillText(line.trim(), nx+12, lineY);
+    }
+
+    // Tools
+    ctx.font = '9px Space Mono, monospace';
+    n.tools.forEach((t, ti) => {
+      if (ti > 3) return;
+      const tw = ctx.measureText(t).width + 12;
+      ctx.fillStyle = '#1a1a28';
+      roundRect(ctx, nx+12+(tw+6)*ti, ny+n.height-20, tw, 14, 3); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 0.5;
+      roundRect(ctx, nx+12+(tw+6)*ti, ny+n.height-20, tw, 14, 3); ctx.stroke();
+      ctx.fillStyle = '#55556e';
+      ctx.fillText(t, nx+12+6+(tw+6)*ti, ny+n.height-10);
+    });
+  });
+
+  cv.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=name+'.png'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('Exported PNG', 'ok');
+    closeModal('export-overlay');
+  }, 'image/png');
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+}
+
+function exportPDF(name) {
+  let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>${name}</title>
+<style>
+  body { font-family: 'DM Sans', Arial, sans-serif; background:#f8f8fc; color:#111; margin:0; padding:32px; }
+  h1 { font-size:22px; font-weight:700; margin-bottom:4px; }
+  .meta { font-size:11px; color:#888; margin-bottom:24px; font-family:monospace; }
+  .node-card { background:#fff; border:1px solid #e0e0ee; border-radius:10px; padding:16px 20px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); page-break-inside:avoid; }
+  .node-step { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#7c6af7; margin-bottom:4px; }
+  .node-title { font-size:15px; font-weight:700; margin-bottom:6px; }
+  .node-desc { font-size:12px; color:#555; line-height:1.55; margin-bottom:8px; }
+  .node-tools { display:flex; flex-wrap:wrap; gap:5px; }
+  .tool { font-size:10px; background:#f0eeff; border:1px solid #ddd; border-radius:4px; padding:2px 8px; color:#666; font-family:monospace; }
+  .connections { background:#fff; border:1px solid #e0e0ee; border-radius:10px; padding:16px 20px; margin-top:24px; }
+  .conn-item { font-size:12px; padding:5px 0; border-bottom:1px solid #f0f0f0; color:#555; }
+  @media print { body { background: #fff; } }
+</style></head><body>`;
+  html += `<h1>${name}</h1><div class="meta">Generated by DRE Workflow · ${new Date().toLocaleString()}</div>`;
+  state.nodes.forEach((n, i) => {
+    html += `<div class="node-card"><div class="node-step">Step ${i+1} · ${n.type}</div><div class="node-title">${n.title}</div>`;
+    if (n.desc) html += `<div class="node-desc">${n.desc}</div>`;
+    if (n.tools.length) html += `<div class="node-tools">${n.tools.map(t=>`<span class="tool">${t}</span>`).join('')}</div>`;
+    html += `</div>`;
+  });
+  if (state.connections.length) {
+    html += `<div class="connections"><h3 style="margin:0 0 10px;font-size:13px;">Flow Connections</h3>`;
+    state.connections.forEach(c => {
+      const fn = state.nodes.find(n=>n.id===c.from)?.title||c.from;
+      const tn = state.nodes.find(n=>n.id===c.to)?.title||c.to;
+      html += `<div class="conn-item"><b>${fn}</b> → <b>${tn}</b> (${c.type})</div>`;
+    });
+    html += `</div>`;
+  }
+  html += `</body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => { w.print(); }, 500);
+  toast('PDF print dialog opened', 'ok');
+  closeModal('export-overlay');
+}
+
+function exportHTML(name) {
+  const data = { nodes: state.nodes, connections: state.connections };
+  const escapedData = JSON.stringify(data).replace(/</g,'\\u003c');
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${name} — DRE Workflow</title>
+<style>
+  body { margin:0; background:#080810; color:#eeeef8; font-family: system-ui, sans-serif; }
+  .wrap { max-width:900px; margin:0 auto; padding:40px 20px; }
+  h1 { font-size:20px; margin-bottom:4px; }
+  .sub { font-size:11px; color:#555; margin-bottom:32px; font-family:monospace; }
+  .node { background:#13131f; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:16px 20px; margin-bottom:14px; }
+  .step { font-size:9px; color:#7c6af7; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
+  .title { font-size:15px; font-weight:700; margin-bottom:6px; }
+  .desc { font-size:12px; color:#9090b0; line-height:1.5; margin-bottom:8px; }
+  .tools { display:flex; flex-wrap:wrap; gap:5px; }
+  .tool { font-size:10px; background:#1a1a28; border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:2px 8px; color:#55556e; font-family:monospace; }
+  .footer { font-size:10px; color:#333; margin-top:32px; text-align:center; }
+</style>
+</head><body><div class="wrap">
+<h1>${name}</h1><div class="sub">DRE Workflow Export · ${new Date().toLocaleString()}</div>
+<script>
+const data=${escapedData};
+data.nodes.forEach((n,i)=>{
+  document.write('<div class="node"><div class="step">Step '+(i+1)+' · '+n.type+'</div><div class="title">'+n.title+'</div>'+(n.desc?'<div class="desc">'+n.desc+'</div>':'')+(n.tools.length?'<div class="tools">'+n.tools.map(t=>'<span class="tool">'+t+'</span>').join('')+'</div>':'')+'</div>');
+});
+<\/script>
+<div class="footer">Generated by DRE Workflow</div>
+</div></body></html>`;
+  download(html, name + '.html', 'text/html');
+  toast('Exported HTML', 'ok');
+  closeModal('export-overlay');
+}
+
+// ──────────── HELPERS ────────────
+function download(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function escapeXML(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function toast(msg, type='ok') {
+  const icons = { ok:'check-circle', err:'exclamation-circle', info:'info-circle' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fas fa-${icons[type]||'info-circle'}"></i>${msg}`;
+  document.getElementById('toast-stack').appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// Close overlays on backdrop click
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target === o) o.classList.remove('show'); });
+});
+
+// ──────────── START ────────────
+window.addEventListener('DOMContentLoaded', init);
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  DRE WORKFLOW BRIDGE v1
+//  Sends workflows to: DRE CODE · DRE Interface · NWA
+//  Channels: BroadcastChannel 'nwa_dre_bridge' · localStorage · postMessage
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Bridge state ─────────────────────────────────────────────────────────────
+const bridge = {
+  target:  'drecode',   // 'drecode' | 'dreinterface' | 'nwa'
+  format:  'prompt',    // 'prompt' | 'json' | 'markdown' | 'code'
+  bc:      null,        // BroadcastChannel instance
+  dreReady: false,
+  nwaReady: false,
+  logLines: [],
+};
+
+// ── BroadcastChannel setup ───────────────────────────────────────────────────
+(function initBridgeChannel() {
+  try {
+    bridge.bc = new BroadcastChannel('nwa_dre_bridge');
+    bridge.bc.onmessage = (e) => {
+      const { type } = e.data || {};
+      if (type === 'DRE_READY') {
+        bridge.dreReady = true;
+        bridgeLog('DRE CODE connected via BroadcastChannel', 'ok');
+        updateBridgeStatus('connected', 'DRE CODE ready');
+      }
+      if (type === 'NWA_READY' || type === 'DRE_PONG') {
+        bridge.nwaReady = true;
+        bridgeLog('NWA responded', 'ok');
+      }
+      if (type === 'DRE_PONG') {
+        bridgeLog('Ping roundtrip OK', 'info');
+        updateBridgeStatus('connected', 'Bridge active');
+      }
+    };
+    // Announce workflow tool is online
+    bridge.bc.postMessage({ type: 'DRE_WORKFLOW_READY', ts: Date.now() });
+    bridgeLog('BroadcastChannel "nwa_dre_bridge" open', 'info');
+  } catch(e) {
+    bridgeLog('BroadcastChannel unavailable — using localStorage only', 'warn');
+    bridge.bc = null;
+  }
+})();
+
+// ── Listen for DRE CODE to acknowledge via localStorage ──────────────────────
+window.addEventListener('storage', (e) => {
+  if (e.key === 'drecode_editor_content' && e.newValue) {
+    if (!bridge.dreReady) {
+      bridge.dreReady = true;
+      bridgeLog('DRE CODE detected via localStorage sync', 'ok');
+      updateBridgeStatus('connected', 'DRE CODE detected');
+    }
+  }
+  if (e.key === 'dre_debugger_sync' && e.newValue) {
+    try {
+      const d = JSON.parse(e.newValue);
+      bridgeLog('DRE CODE agent run: ' + (d.status || '?') + (d.prompt ? ' — "' + d.prompt.slice(0, 40) + '…"' : ''), 'info');
+    } catch(_) {}
+  }
+});
+
+// ── Poll for DRE CODE editor content presence (same-tab fallback) ─────────────
+setInterval(() => {
+  try {
+    const snap = localStorage.getItem('drecode_editor_content');
+    if (snap && !bridge.dreReady) {
+      bridge.dreReady = true;
+      bridgeLog('DRE CODE detected (poll)', 'ok');
+      updateBridgeStatus('connected', 'DRE CODE ready');
+    }
+  } catch(_) {}
+}, 3000);
+
+// ── UI wiring (runs after DOMContentLoaded) ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('bridge-btn').onclick = () => {
+    refreshBridgePreview();
+    openModal('bridge-overlay');
+  };
+});
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchBridgeTab(tab) {
+  document.querySelectorAll('.bridge-tab').forEach(b => b.classList.toggle('active', b.dataset.btab === tab));
+  document.querySelectorAll('.bridge-pane').forEach(p => p.classList.toggle('active', p.id === 'btab-' + tab));
+  if (tab === 'log') renderBridgeLog();
+}
+
+// ── Target / format selection ─────────────────────────────────────────────────
+function selectBridgeTarget(t) {
+  bridge.target = t;
+  ['drecode','dreinterface','nwa'].forEach(id => {
+    document.getElementById('bt-' + id)?.classList.toggle('active', id === t);
+  });
+  refreshBridgePreview();
+}
+
+function selectBridgeFormat(f) {
+  bridge.format = f;
+  document.querySelectorAll('.bridge-fmt-btn').forEach(b => b.classList.toggle('active', b.dataset.fmt === f));
+  refreshBridgePreview();
+}
+
+// ── Build payload string in selected format ───────────────────────────────────
+function buildBridgePayload(format) {
+  if (!state.nodes.length) return '// No workflow generated yet.';
+
+  if (format === 'json') {
+    return JSON.stringify({ nodes: state.nodes, connections: state.connections }, null, 2);
+  }
+
+  if (format === 'markdown') {
+    let md = '# Workflow\n\n';
+    state.nodes.forEach((n, i) => {
+      md += `## Step ${i+1}: ${n.title}\n`;
+      md += `**Type:** ${n.type}  |  **Tools:** ${n.tools.join(', ') || 'none'}\n\n`;
+      if (n.desc) md += `${n.desc}\n\n`;
+    });
+    if (state.connections.length) {
+      md += '## Flow\n';
+      state.connections.forEach(c => {
+        const f = state.nodes.find(n => n.id === c.from)?.title || c.from;
+        const t = state.nodes.find(n => n.id === c.to)?.title   || c.to;
+        md += `- **${f}** → **${t}** (${c.type})\n`;
+      });
+    }
+    return md;
+  }
+
+  if (format === 'code') {
+    const steps = state.nodes.map((n, i) =>
+      `// Step ${i+1}: ${n.title}\n// Tools: ${n.tools.join(', ') || 'none'}\n// ${n.desc || ''}`
+    ).join('\n\n');
+    return `/**\n * Workflow generated by DRE Workflow\n * ${state.nodes.length} steps\n */\n\n${steps}`;
+  }
+
+  // Default: 'prompt'
+  const stepList = state.nodes.map((n, i) =>
+    `  ${i+1}. ${n.title} (${n.type})${n.tools.length ? ' — tools: ' + n.tools.join(', ') : ''}${n.desc ? '\n     ' + n.desc : ''}`
+  ).join('\n');
+  const connList = state.connections.length
+    ? '\n\nFlow connections:\n' + state.connections.map(c => {
+        const f = state.nodes.find(n => n.id === c.from)?.title || c.from;
+        const t = state.nodes.find(n => n.id === c.to)?.title   || c.to;
+        return `  ${f} → ${t} (${c.type})`;
+      }).join('\n')
+    : '';
+  return `I have a ${state.nodes.length}-step workflow. Please build this:\n\n${stepList}${connList}\n\nUse the workflow above as the full specification.`;
+}
+
+// ── Preview refresh ───────────────────────────────────────────────────────────
+function refreshBridgePreview() {
+  const el = document.getElementById('bridge-preview');
+  if (!el) return;
+  if (!state.nodes.length) {
+    el.textContent = '// Generate a workflow first, then send it.';
+    return;
+  }
+  el.textContent = buildBridgePayload(bridge.format).slice(0, 800) + (buildBridgePayload(bridge.format).length > 800 ? '\n…(truncated for preview)' : '');
+}
+
+// ── MAIN SEND ─────────────────────────────────────────────────────────────────
+function executeBridgeSend() {
+  if (!state.nodes.length) {
+    toast('Generate a workflow first', 'err');
+    return;
+  }
+  const payload = buildBridgePayload(bridge.format);
+  const ts      = Date.now();
+
+  if (bridge.target === 'drecode') {
+    sendToDreCode(payload, ts);
+  } else if (bridge.target === 'dreinterface') {
+    sendToDreInterface(payload, ts);
+  } else if (bridge.target === 'nwa') {
+    sendToNwa(payload, ts);
+  }
+
+  closeModal('bridge-overlay');
+}
+
+// ── Send to DRE CODE ──────────────────────────────────────────────────────────
+function sendToDreCode(payload, ts) {
+  const isCodePush = (bridge.format === 'code' || bridge.format === 'json');
+
+  if (isCodePush) {
+    // Push as code directly into the editor via nwa_push_code
+    const packet = JSON.stringify({ code: payload, ts, source: 'dre_workflow' });
+    try { localStorage.setItem('nwa_push_code', packet); } catch(_) {}
+    if (bridge.bc) bridge.bc.postMessage({ type: 'NWA_PUSH_CODE', code: payload, ts, source: 'dre_workflow' });
+    bridgeLog('→ DRE CODE: pushed ' + bridge.format + ' (' + payload.length + ' chars)', 'ok');
+    updateBridgeStatus('connected', 'Sent to DRE CODE');
+    toast('Workflow pushed to DRE CODE editor', 'ok');
+
+  } else {
+    // Send as agent task via dre_debugger_fix channel (fires into chat/agent)
+    const fixPacket = { prompt: payload, timestamp: ts, source: 'dre_workflow' };
+    try { localStorage.setItem('dre_debugger_fix', JSON.stringify(fixPacket)); } catch(_) {}
+    if (bridge.bc) bridge.bc.postMessage({ type: 'DRE_WORKFLOW_TASK', prompt: payload, ts, source: 'dre_workflow' });
+    bridgeLog('→ DRE CODE: sent as agent task (' + payload.length + ' chars)', 'ok');
+    updateBridgeStatus('connected', 'Task sent to DRE CODE');
+    toast('Workflow task sent to DRE CODE agent', 'ok');
+  }
+}
+
+// ── Send to DRE Interface ─────────────────────────────────────────────────────
+function sendToDreInterface(payload, ts) {
+  // DRE Interface uses the dre_companion_sync channel
+  const packet = {
+    code:      payload,
+    name:      'DRE Workflow — ' + state.nodes.length + ' steps',
+    timestamp: ts,
+    source:    'dre_workflow',
+    nodes:     state.nodes,
+    connections: state.connections,
+    format:    bridge.format,
+  };
+  try { localStorage.setItem('dre_companion_sync', JSON.stringify(packet)); } catch(_) {}
+  if (bridge.bc) bridge.bc.postMessage({ type: 'DRE_COMPANION_SYNC', ...packet });
+  bridgeLog('→ DRE Interface: sent via companion sync (' + bridge.format + ')', 'ok');
+  updateBridgeStatus('connected', 'Sent to DRE Interface');
+  toast('Workflow sent to DRE Interface', 'ok');
+}
+
+// ── Send to NWA ───────────────────────────────────────────────────────────────
+function sendToNwa(payload, ts) {
+  const CHUNK_SIZE = 3000;
+  if (payload.length <= CHUNK_SIZE) {
+    // Single push
+    const packet = JSON.stringify({ code: payload, ts, source: 'dre_workflow', format: bridge.format });
+    try { localStorage.setItem('nwa_push_code', packet); } catch(_) {}
+    if (bridge.bc) bridge.bc.postMessage({ type: 'NWA_PUSH_CODE', code: payload, ts, source: 'dre_workflow' });
+    bridgeLog('→ NWA: sent payload (' + payload.length + ' chars)', 'ok');
+    updateBridgeStatus('connected', 'Sent to NWA');
+    toast('Workflow sent to NWA', 'ok');
+  } else {
+    // Chunked delivery for large payloads
+    const session = ts.toString(36);
+    const chunks  = [];
+    for (let i = 0; i < payload.length; i += CHUNK_SIZE) {
+      chunks.push(payload.slice(i, i + CHUNK_SIZE));
+    }
+    let delay = 0;
+    chunks.forEach((chunk, idx) => {
+      setTimeout(() => {
+        const chunkPacket = JSON.stringify({ chunk, idx, total: chunks.length, session, ts: Date.now() });
+        try { localStorage.setItem('nwa_push_chunk', chunkPacket); } catch(_) {}
+        if (bridge.bc) bridge.bc.postMessage({ type: 'NWA_PUSH_CHUNK', chunk, idx, total: chunks.length, session, ts: Date.now() });
+        bridgeLog(`→ NWA: chunk ${idx+1}/${chunks.length} sent`, 'info');
+      }, delay);
+      delay += 150;
+    });
+    updateBridgeStatus('connected', 'Chunked send to NWA');
+    toast('Workflow sent to NWA (' + chunks.length + ' chunks)', 'ok');
+  }
+}
+
+// ── Push scaffold/task directly to DRE CODE editor ───────────────────────────
+function executePushToEditor() {
+  if (!state.nodes.length) { toast('Generate a workflow first', 'err'); return; }
+
+  const mode         = document.getElementById('push-mode-select').value;
+  const instructions = document.getElementById('push-instructions').value.trim();
+  const ts           = Date.now();
+  let   content      = '';
+
+  if (mode === 'json') {
+    content = buildBridgePayload('json');
+
+  } else if (mode === 'task') {
+    const base = buildBridgePayload('prompt');
+    content    = instructions ? base + '\n\nAdditional instructions: ' + instructions : base;
+    // Fire as agent task
+    const fixPacket = { prompt: content, timestamp: ts, source: 'dre_workflow' };
+    try { localStorage.setItem('dre_debugger_fix', JSON.stringify(fixPacket)); } catch(_) {}
+    if (bridge.bc) bridge.bc.postMessage({ type: 'DRE_WORKFLOW_TASK', prompt: content, ts });
+    bridgeLog('→ DRE CODE: pushed as AI task', 'ok');
+    updateBridgeStatus('connected', 'AI task sent');
+    toast('Sent to DRE CODE agent', 'ok');
+    closeModal('bridge-overlay');
+    return;
+
+  } else {
+    // scaffold: build an HTML starter
+    const stepComments = state.nodes.map((n, i) =>
+      `  <!-- Step ${i+1}: ${n.title} | ${n.type} | Tools: ${n.tools.join(', ') || 'none'} -->`
+    ).join('\n');
+    const connComments = state.connections.map(c => {
+      const f = state.nodes.find(n => n.id === c.from)?.title || c.from;
+      const t = state.nodes.find(n => n.id === c.to)?.title   || c.to;
+      return `  <!-- ${f} → ${t} (${c.type}) -->`;
+    }).join('\n');
+    content = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRE Workflow Scaffold</title>
+  <!--
+    Generated by DRE Workflow · ${state.nodes.length} steps · ${new Date().toLocaleString()}
+    ${instructions ? 'Instructions: ' + instructions : ''}
+  -->
+</head>
+<body>
+
+${stepComments}
+
+${connComments}
+
+  <!-- TODO: Build out each step above as a full implementation -->
+
+</body>
+</html>`;
+    if (instructions) {
+      const fullPrompt = buildBridgePayload('prompt') + '\n\nInstructions: ' + instructions + '\n\nScaffold above has been injected as a starting point.';
+      const fixPacket = { prompt: fullPrompt, timestamp: ts, source: 'dre_workflow' };
+      try { localStorage.setItem('dre_debugger_fix', JSON.stringify(fixPacket)); } catch(_) {}
+      if (bridge.bc) bridge.bc.postMessage({ type: 'DRE_WORKFLOW_TASK', prompt: fullPrompt, ts });
+    }
+  }
+
+  // Push the code content to DRE CODE editor
+  const packet = JSON.stringify({ code: content, ts, source: 'dre_workflow' });
+  try { localStorage.setItem('nwa_push_code', packet); } catch(_) {}
+  if (bridge.bc) bridge.bc.postMessage({ type: 'NWA_PUSH_CODE', code: content, ts, source: 'dre_workflow' });
+
+  bridgeLog('→ DRE CODE: pushed ' + mode + ' scaffold (' + content.length + ' chars)', 'ok');
+  updateBridgeStatus('connected', 'Scaffold sent');
+  toast('Scaffold pushed to DRE CODE', 'ok');
+  closeModal('bridge-overlay');
+}
+
+// ── Bridge status pill ────────────────────────────────────────────────────────
+function updateBridgeStatus(state_class, text) {
+  const pill = document.getElementById('bridge-status-pill');
+  const dot  = document.getElementById('bridge-status-dot');
+  const txt  = document.getElementById('bridge-status-text');
+  if (!pill || !dot || !txt) return;
+  pill.className = 'bridge-pill ' + (state_class || '');
+  dot.className  = 'bridge-dot' + (state_class === 'connected' ? ' pulse' : '');
+  txt.textContent = text || 'Bridge idle';
+}
+
+// ── Activity log ──────────────────────────────────────────────────────────────
+function bridgeLog(msg, type) {
+  const ts   = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const cls  = { ok:'bl-ok', err:'bl-err', info:'bl-info', warn:'bl-warn' }[type] || '';
+  bridge.logLines.unshift({ ts, msg, cls });
+  if (bridge.logLines.length > 60) bridge.logLines.pop();
+  renderBridgeLog();
+}
+
+function renderBridgeLog() {
+  const el = document.getElementById('bridge-log');
+  if (!el) return;
+  if (!bridge.logLines.length) { el.innerHTML = '<span style="color:var(--text-dim);">// No activity yet</span>'; return; }
+  el.innerHTML = bridge.logLines.map(l =>
+    `<div class="${l.cls}">[${l.ts}] ${l.msg}</div>`
+  ).join('');
+}
+
+function clearBridgeLog() {
+  bridge.logLines = [];
+  renderBridgeLog();
+  toast('Log cleared', 'ok');
+}
+
+// ── Ping DRE CODE to check if it's alive ─────────────────────────────────────
+function pingBridge() {
+  if (bridge.bc) bridge.bc.postMessage({ type: 'NWA_PING', ts: Date.now(), source: 'dre_workflow' });
+  try {
+    // Also check localStorage presence
+    const snap = localStorage.getItem('drecode_editor_content');
+    if (snap) {
+      bridge.dreReady = true;
+      updateBridgeStatus('connected', 'DRE CODE ready');
+    }
+  } catch(_) {}
+}
+
+// Ping on load and every 10s
+setTimeout(pingBridge, 1200);
+setInterval(pingBridge, 10000);
+
+// Also publish workflow snapshots to localStorage so DRE tools can poll
+let _lastWorkflowSnap = '';
+setInterval(() => {
+  try {
+    if (!state.nodes.length) return;
+    const snap = JSON.stringify({ nodes: state.nodes, connections: state.connections, ts: Date.now() });
+    if (snap === _lastWorkflowSnap) return;
+    _lastWorkflowSnap = snap;
+    localStorage.setItem('dre_workflow_snap', snap);
+  } catch(_) {}
+}, 2500);
+
+console.log('[DRE WORKFLOW] Bridge v1 ready. Channels: BroadcastChannel "nwa_dre_bridge", localStorage, postMessage');
+</script>
+</body>
+</html>
