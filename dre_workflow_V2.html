@@ -422,6 +422,84 @@ button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:no
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
 
+/* ═══════════════════════════════ NOVICE TEMPLATE ═══════════════════════════════ */
+.tpl-btn.novice-tpl{
+  border-color:rgba(247,201,72,0.25);
+  background:linear-gradient(135deg,rgba(247,201,72,0.06),rgba(247,168,74,0.04));
+}
+.tpl-btn.novice-tpl:hover{
+  border-color:rgba(247,201,72,0.5);
+  background:linear-gradient(135deg,rgba(247,201,72,0.12),rgba(247,168,74,0.08));
+}
+.tpl-btn.novice-tpl .tpl-label{ color:#f7c948; }
+
+.novice-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:8px;font-family:'Space Mono',monospace;letter-spacing:.1em;
+  background:rgba(247,201,72,0.15);border:1px solid rgba(247,201,72,0.3);
+  color:#f7c948;padding:2px 7px;border-radius:10px;text-transform:uppercase;
+  margin-left:4px;vertical-align:middle;
+}
+
+/* Novice modal specifics */
+.novice-modal .modal{ width:560px; }
+.novice-intro{
+  background:linear-gradient(135deg,rgba(247,201,72,0.08),rgba(247,168,74,0.04));
+  border:1px solid rgba(247,201,72,0.2);border-radius:10px;
+  padding:14px 16px;margin-bottom:20px;
+}
+.novice-intro-title{
+  font-size:13px;font-weight:700;color:#f7c948;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+.novice-intro p{ font-size:12px;color:var(--text-mid);line-height:1.65; }
+
+.platform-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;
+}
+.platform-card{
+  padding:12px 10px;border-radius:9px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;transition:all .15s;text-align:center;
+}
+.platform-card:hover{ border-color:var(--border-hi);background:var(--surface3); }
+.platform-card.active{ border-color:#f7c948;background:rgba(247,201,72,0.08); }
+.platform-card .pc-icon{ font-size:20px;margin-bottom:6px;display:block; }
+.platform-card .pc-name{ font-size:11px;font-weight:600;color:var(--text); }
+.platform-card .pc-sub{ font-size:9px;color:var(--text-dim);font-family:'Space Mono',monospace;margin-top:2px; }
+
+.novice-upload-zone{
+  border:1px dashed rgba(247,201,72,0.3);border-radius:8px;padding:14px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);margin-bottom:14px;
+}
+.novice-upload-zone:hover{ border-color:#f7c948;background:rgba(247,201,72,0.06); }
+.novice-upload-zone i{ font-size:18px;color:#f7c948;margin-bottom:6px;display:block; }
+.novice-upload-zone p{ font-size:11px;color:var(--text-mid);line-height:1.4; }
+.novice-upload-zone .hint{ font-size:10px;color:var(--text-dim);margin-top:3px; }
+.novice-upload-zone.has-file{ border-color:var(--green);background:var(--green-dim); }
+.novice-upload-zone.has-file i{ color:var(--green); }
+
+.novice-goal-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;
+}
+.novice-goal{
+  padding:10px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;transition:all .15s;text-align:left;
+}
+.novice-goal:hover{ border-color:var(--border-hi);background:var(--surface3); }
+.novice-goal.active{ border-color:#f7c948;background:rgba(247,201,72,0.08); }
+.novice-goal .ng-title{ font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px; }
+.novice-goal .ng-sub{ font-size:10px;color:var(--text-dim); }
+
+.novice-gen-btn{
+  width:100%;height:40px;border-radius:9px;
+  background:linear-gradient(135deg,#f7c948,#f7a84a);
+  color:#111;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;border:none;
+}
+.novice-gen-btn:hover{ opacity:.9;box-shadow:0 4px 20px rgba(247,201,72,0.35); }
+.novice-gen-btn:disabled{ opacity:.4;cursor:not-allowed; }
+
 /* ═══════════════════════════════ BRIDGE PANEL ═══════════════════════════════ */
 .bridge-bar{
   position:absolute;bottom:36px;right:200px;
@@ -786,6 +864,107 @@ button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:no
   </div>
 </div>
 
+<!-- ════════════════════ NOVICE MODAL ════════════════════ -->
+<div class="overlay novice-modal" id="novice-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🌱 NOVICE WEBSITE GUIDE <span class="novice-badge">Beginner Friendly</span></div>
+      <button class="modal-close" onclick="closeModal('novice-overlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Intro banner -->
+      <div class="novice-intro">
+        <div class="novice-intro-title"><i class="fas fa-lightbulb"></i> How this works</div>
+        <p>Tell us where you built your site and what you want to learn. Optionally upload your project file (exported ZIP, HTML, or config) so the AI can analyze exactly what you have. DRE will map out every step — from what your drag-and-drop tool did behind the scenes to how to build or own it properly.</p>
+      </div>
+
+      <!-- Step 1: Platform -->
+      <div class="form-group">
+        <label class="form-label">Step 1 — Where did you build your site?</label>
+        <div class="platform-grid" id="novice-platform-grid">
+          <div class="platform-card active" data-platform="wix">
+            <span class="pc-icon">🔵</span>
+            <div class="pc-name">Wix</div>
+            <div class="pc-sub">Drag & Drop</div>
+          </div>
+          <div class="platform-card" data-platform="squarespace">
+            <span class="pc-icon">⬛</span>
+            <div class="pc-name">Squarespace</div>
+            <div class="pc-sub">Design-first</div>
+          </div>
+          <div class="platform-card" data-platform="weebly">
+            <span class="pc-icon">🟠</span>
+            <div class="pc-name">Weebly</div>
+            <div class="pc-sub">Simple Builder</div>
+          </div>
+          <div class="platform-card" data-platform="webflow">
+            <span class="pc-icon">🔷</span>
+            <div class="pc-name">Webflow</div>
+            <div class="pc-sub">Visual CMS</div>
+          </div>
+          <div class="platform-card" data-platform="wordpress">
+            <span class="pc-icon">🔵</span>
+            <div class="pc-name">WordPress</div>
+            <div class="pc-sub">CMS / Blocks</div>
+          </div>
+          <div class="platform-card" data-platform="aibuilder">
+            <span class="pc-icon">🤖</span>
+            <div class="pc-name">AI Builder</div>
+            <div class="pc-sub">Claude / ChatGPT</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Goal -->
+      <div class="form-group">
+        <label class="form-label">Step 2 — What do you want to understand or do?</label>
+        <div class="novice-goal-grid" id="novice-goal-grid">
+          <div class="novice-goal active" data-goal="understand">
+            <div class="ng-title">🔍 Understand What I Built</div>
+            <div class="ng-sub">Learn what each part of my site does</div>
+          </div>
+          <div class="novice-goal" data-goal="rebuild">
+            <div class="ng-title">🏗 Rebuild It With Real Code</div>
+            <div class="ng-sub">Recreate my site using HTML/CSS/JS or a framework</div>
+          </div>
+          <div class="novice-goal" data-goal="migrate">
+            <div class="ng-title">🚀 Migrate to a Better Platform</div>
+            <div class="ng-sub">Move off the builder to a proper hosting setup</div>
+          </div>
+          <div class="novice-goal" data-goal="own">
+            <div class="ng-title">🔑 Own My Site Fully</div>
+            <div class="ng-sub">Domain, hosting, custom code — full control</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Upload (optional) -->
+      <div class="form-group">
+        <label class="form-label">Step 3 — Upload Your Project File <span style="color:var(--text-dim);font-size:9px;">(optional but recommended)</span></label>
+        <div class="novice-upload-zone" id="novice-upload-zone">
+          <i class="fas fa-file-arrow-up"></i>
+          <p>Drop or click to upload your exported site file</p>
+          <p class="hint">Wix export · HTML · ZIP · CSS · config.json · any file from your builder</p>
+        </div>
+        <input type="file" id="novice-file-input" accept=".html,.css,.js,.json,.zip,.xml,.txt,.md,.yaml,.yml">
+      </div>
+
+      <!-- Step 4: Extra context -->
+      <div class="form-group">
+        <label class="form-label">Step 4 — Any extra details? <span style="color:var(--text-dim);font-size:9px;">(optional)</span></label>
+        <input type="text" class="form-input" id="novice-extra"
+          placeholder="e.g. It's a portfolio site, I want to add a contact form and blog...">
+      </div>
+
+      <button class="novice-gen-btn" id="novice-gen-btn" onclick="launchNoviceWorkflow()">
+        <i class="fas fa-wand-magic-sparkles"></i> Generate My Workflow Guide
+      </button>
+
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast-stack" id="toast-stack"></div>
 
@@ -812,6 +991,7 @@ const TEMPLATES = [
   { id:'mobile',    label:'Mobile App Deploy',   icon:'📱', color:'#00d4aa', desc:'Expo/RN → Build → TestFlight → Store' },
   { id:'aiapp',     label:'AI-Powered App',      icon:'🤖', color:'#7c6af7', desc:'LLM Integration → RAG → Streaming → Deploy' },
   { id:'monorepo',  label:'Monorepo Setup',      icon:'📦', color:'#4a9eff', desc:'Turborepo/Nx → Workspaces → Shared Libs' },
+  { id:'novice',    label:'Novice Website Guide', icon:'🌱', color:'#f7c948', desc:'Wix · Squarespace · AI Builder → Real Dev', isNovice:true },
 ];
 
 const TEMPLATE_PROMPTS = {
@@ -822,7 +1002,8 @@ const TEMPLATE_PROMPTS = {
   api:       'Build a REST API from scratch including design, authentication with JWT, CRUD endpoints, validation, rate limiting, documentation with Swagger, testing, and deployment.',
   mobile:    'Deploy a React Native or Expo mobile app through development, testing on device, building for iOS/Android, submitting to TestFlight, and releasing to App Store and Play Store.',
   aiapp:     'Build an AI-powered application integrating an LLM API, implementing RAG with vector databases, streaming responses, prompt engineering, cost optimization, and deploying with monitoring.',
-  monorepo:  'Set up a monorepo using Turborepo or Nx with multiple apps and shared packages, workspace dependencies, unified CI/CD, versioning, and automated publishing.'
+  monorepo:  'Set up a monorepo using Turborepo or Nx with multiple apps and shared packages, workspace dependencies, unified CI/CD, versioning, and automated publishing.',
+  novice:    'I am a beginner who built or is building a website using a drag-and-drop or AI website builder such as Wix, Squarespace, Weebly, or a custom AI tool. I want to fully understand what I have built, what each part does, and how to properly build or rebuild it using real web development tools and practices. Walk me through every stage: understanding what a website is made of, what my current builder is doing behind the scenes, how to recreate it with HTML/CSS/JavaScript or a modern framework, how to connect a domain, how to host it properly, and how to manage and grow it over time. Assume I know nothing about code.'
 };
 
 // ──────────── STATE ────────────
@@ -947,11 +1128,15 @@ function buildTemplateGrid() {
   const grid = document.getElementById('template-grid');
   TEMPLATES.forEach(t => {
     const btn = document.createElement('button');
-    btn.className = 'tpl-btn';
-    btn.innerHTML = `<div class="tpl-icon" style="background:${t.color}22;color:${t.color}">${t.icon}</div><div><div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">${t.label}</div><div style="font-size:10px;color:var(--text-dim);">${t.desc}</div></div>`;
+    btn.className = 'tpl-btn' + (t.isNovice ? ' novice-tpl' : '');
+    btn.innerHTML = `<div class="tpl-icon" style="background:${t.color}22;color:${t.color}">${t.icon}</div><div><div class="tpl-label" style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">${t.label}${t.isNovice ? '<span class="novice-badge">NEW</span>' : ''}</div><div style="font-size:10px;color:var(--text-dim);">${t.desc}</div></div>`;
     btn.onclick = () => {
-      document.getElementById('prompt-input').value = TEMPLATE_PROMPTS[t.id];
-      generateWorkflow();
+      if (t.isNovice) {
+        openNoviceModal();
+      } else {
+        document.getElementById('prompt-input').value = TEMPLATE_PROMPTS[t.id];
+        generateWorkflow();
+      }
     };
     grid.appendChild(btn);
   });
@@ -2317,6 +2502,127 @@ function clearBridgeLog() {
   bridge.logLines = [];
   renderBridgeLog();
   toast('Log cleared', 'ok');
+}
+
+// ══════════════════════════════════════════════════════
+//  NOVICE WORKFLOW — Modal, Pickers, Launch
+// ══════════════════════════════════════════════════════
+
+const noviceState = {
+  platform: 'wix',
+  goal: 'understand',
+  fileContent: null,
+  fileName: null,
+};
+
+function openNoviceModal() {
+  document.querySelectorAll('.platform-card').forEach(c =>
+    c.classList.toggle('active', c.dataset.platform === noviceState.platform)
+  );
+  document.querySelectorAll('.novice-goal').forEach(g =>
+    g.classList.toggle('active', g.dataset.goal === noviceState.goal)
+  );
+  openModal('novice-overlay');
+}
+
+// Wire up novice modal interactive elements after DOM is ready
+(function wireNovice() {
+  function doWire() {
+    document.querySelectorAll('.platform-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        noviceState.platform = card.dataset.platform;
+      });
+    });
+    document.querySelectorAll('.novice-goal').forEach(goal => {
+      goal.addEventListener('click', () => {
+        document.querySelectorAll('.novice-goal').forEach(g => g.classList.remove('active'));
+        goal.classList.add('active');
+        noviceState.goal = goal.dataset.goal;
+      });
+    });
+    const nZone  = document.getElementById('novice-upload-zone');
+    const nInput = document.getElementById('novice-file-input');
+    if (nZone && nInput) {
+      nZone.addEventListener('click', () => nInput.click());
+      nZone.addEventListener('dragover', e => { e.preventDefault(); nZone.style.borderColor='#f7c948'; });
+      nZone.addEventListener('dragleave', () => { nZone.style.borderColor=''; });
+      nZone.addEventListener('drop', e => { e.preventDefault(); handleNoviceFile(e.dataTransfer.files[0]); });
+      nInput.addEventListener('change', e => handleNoviceFile(e.target.files[0]));
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', doWire);
+  } else {
+    doWire();
+  }
+})();
+
+function handleNoviceFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    noviceState.fileContent = ev.target.result;
+    noviceState.fileName    = file.name;
+    const zone = document.getElementById('novice-upload-zone');
+    zone.classList.add('has-file');
+    zone.innerHTML = '<i class="fas fa-file-check"></i><p style="color:var(--green);font-weight:600;">' + file.name + ' loaded</p><p class="hint">Click to replace</p>';
+    toast('File loaded: ' + file.name, 'ok');
+  };
+  reader.readAsText(file);
+}
+
+const PLATFORM_LABELS = {
+  wix:'Wix', squarespace:'Squarespace', weebly:'Weebly',
+  webflow:'Webflow', wordpress:'WordPress',
+  aibuilder:'an AI Website Builder (Claude / ChatGPT)',
+};
+
+const GOAL_LABELS = {
+  understand: 'understand every component, feature, and technology that makes up what I built, with plain-English explanations of what each part does',
+  rebuild:    'rebuild this site from scratch using real web development tools (HTML, CSS, JavaScript, and optionally a modern framework like React or Next.js), learning proper coding as I go',
+  migrate:    'migrate off the website builder entirely onto a proper hosting solution with full control over my code, domain, and deployment pipeline',
+  own:        'take complete ownership — my own domain, my own hosting, my own code, and the ability to hire a developer or work with AI to improve it without being locked into any platform',
+};
+
+async function launchNoviceWorkflow() {
+  if (!state.provider || !PROVIDERS[state.provider]) {
+    closeModal('novice-overlay');
+    openModal('settings-overlay');
+    return toast('Configure an AI provider first', 'info');
+  }
+  if (state.provider !== 'lmstudio' && !state.apiKey) {
+    closeModal('novice-overlay');
+    openModal('settings-overlay');
+    return toast('API key required', 'err');
+  }
+
+  const platform = PLATFORM_LABELS[noviceState.platform] || noviceState.platform;
+  const goalText = GOAL_LABELS[noviceState.goal] || noviceState.goal;
+  const extra    = document.getElementById('novice-extra').value.trim();
+
+  let prompt = 'I am a complete beginner who built a website using ' + platform + '. I have little or no coding knowledge — I used the drag-and-drop or AI interface to create my site and I do not fully understand how it works under the hood.\n\n';
+  prompt += 'My goal is to: ' + goalText + '.\n\n';
+  prompt += 'Please generate a detailed, beginner-friendly workflow that covers:\n';
+  prompt += '1. What ' + platform + ' is doing behind the scenes (HTML, CSS, JS, hosting, DNS — explained simply)\n';
+  prompt += '2. The anatomy of a website — what are the parts (header, footer, pages, forms, images, fonts) and how do they work\n';
+  prompt += '3. A step-by-step path to achieve my goal above, starting from exactly where I am right now\n';
+  prompt += '4. The real tools, platforms, and concepts I will need to learn or use at each stage\n';
+  prompt += '5. Common beginner mistakes and how to avoid them\n';
+  prompt += '6. How AI tools like Claude or ChatGPT can assist at each step\n\n';
+  prompt += 'Assume I know nothing about code. Use plain language. Include real tool names at each step.';
+
+  if (noviceState.fileContent) {
+    prompt += '\n\nI have also uploaded my project file for analysis:\nFilename: ' + noviceState.fileName + '\n\nFile contents:\n' + noviceState.fileContent.substring(0, 8000) + (noviceState.fileContent.length > 8000 ? '\n...[truncated for length]' : '');
+  }
+  if (extra) {
+    prompt += '\n\nAdditional context about my site: ' + extra;
+  }
+
+  document.getElementById('prompt-input').value = prompt;
+  closeModal('novice-overlay');
+  await generateWorkflow(false);
 }
 
 // ── Ping DRE CODE to check if it's alive ─────────────────────────────────────
