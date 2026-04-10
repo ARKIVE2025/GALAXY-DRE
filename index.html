@@ -1122,6 +1122,385 @@ nodesData.forEach(n => {
 // ══════════════════════════════════════════════════════
 // MOON CONSTRUCTION — DRE Console
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// SPACESHIP BUILDER — DRE Console orbiting spacecraft
+// Full geometry: fuselage, swept wings, nacelles,
+// cockpit canopy, hull panels, exhaust glow, trail
+// ══════════════════════════════════════════════════════
+function buildSpaceship(moon, moonGroup) {
+    const S = moon.size; // base scale unit
+    const shipGroup = new THREE.Group();
+    moonGroup.add(shipGroup);
+
+    // ── Material palette ──
+    const matHull      = new THREE.MeshBasicMaterial({ color: 0xc8d8e8 });          // light grey hull
+    const matHullDark  = new THREE.MeshBasicMaterial({ color: 0x7a8fa0 });          // darker panel
+    const matHullMid   = new THREE.MeshBasicMaterial({ color: 0xa0b4c4 });          // mid panel
+    const matGold      = new THREE.MeshBasicMaterial({ color: 0xffc832 });          // gold trim
+    const matGoldDark  = new THREE.MeshBasicMaterial({ color: 0xb8860b });          // dark gold
+    const matCockpit   = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.75 });
+    const matCockpitRim= new THREE.MeshBasicMaterial({ color: 0x005577 });
+    const matEngine    = new THREE.MeshBasicMaterial({ color: 0x334455 });
+    const matExhaust   = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.9 });
+    const matExhaust2  = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.6 });
+    const matExhaustCore=new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
+    const matNav       = new THREE.MeshBasicMaterial({ color: 0xff2244, transparent: true, opacity: 0.9 });
+    const matNavGreen  = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.9 });
+    const matStrut     = new THREE.MeshBasicMaterial({ color: 0x556677 });
+    const matVent      = new THREE.MeshBasicMaterial({ color: 0x223344, transparent: true, opacity: 0.8 });
+
+    // ─────────────────────────────────────────────
+    // 1. MAIN FUSELAGE — elongated tapered body
+    //    Nose→mid→tail using CylinderGeometry segments
+    // ─────────────────────────────────────────────
+    // Nose cone (sharp forward point)
+    const noseConeGeo = new THREE.ConeGeometry(S * 0.38, S * 2.2, 12);
+    const noseCone = new THREE.Mesh(noseConeGeo, matHull);
+    noseCone.rotation.z = -Math.PI / 2;   // point along +X (forward)
+    noseCone.position.x = S * 2.8;
+    shipGroup.add(noseCone);
+
+    // Nose tip accent
+    const noseTipGeo = new THREE.ConeGeometry(S * 0.08, S * 0.6, 8);
+    const noseTip = new THREE.Mesh(noseTipGeo, matGold);
+    noseTip.rotation.z = -Math.PI / 2;
+    noseTip.position.x = S * 4.0;
+    shipGroup.add(noseTip);
+
+    // Main fuselage cylinder (mid section)
+    const fuseGeo = new THREE.CylinderGeometry(S * 0.42, S * 0.38, S * 3.8, 12);
+    const fuse = new THREE.Mesh(fuseGeo, matHull);
+    fuse.rotation.z = Math.PI / 2;
+    fuse.position.x = S * 0.4;
+    shipGroup.add(fuse);
+
+    // Rear fuselage (slightly wider, engine mount)
+    const rearGeo = new THREE.CylinderGeometry(S * 0.52, S * 0.42, S * 1.8, 12);
+    const rear = new THREE.Mesh(rearGeo, matHullMid);
+    rear.rotation.z = Math.PI / 2;
+    rear.position.x = -S * 1.8;
+    shipGroup.add(rear);
+
+    // Tail cone
+    const tailGeo = new THREE.ConeGeometry(S * 0.52, S * 0.9, 12);
+    const tail = new THREE.Mesh(tailGeo, matHullDark);
+    tail.rotation.z = Math.PI / 2;
+    tail.position.x = -S * 3.1;
+    shipGroup.add(tail);
+
+    // ─────────────────────────────────────────────
+    // 2. HULL PANEL DETAILS — raised rectangular panels
+    // ─────────────────────────────────────────────
+    [[S*1.2, S*0.44, S*0.04, S*0.8, S*0.16],
+     [S*0.2, S*0.44, S*0.04, S*1.2, S*0.14],
+     [-S*0.8, S*0.43, S*0.04, S*0.7, S*0.12]].forEach(([px,py,pz,pw,ph]) => {
+        const pGeo = new THREE.BoxGeometry(pw, S*0.04, ph);
+        const p = new THREE.Mesh(pGeo, matHullDark);
+        p.position.set(px, py, pz);
+        shipGroup.add(p);
+        // mirror bottom
+        const pb = p.clone(); pb.position.y = -py; shipGroup.add(pb);
+    });
+
+    // Gold stripe along fuselage top
+    const stripeGeo = new THREE.BoxGeometry(S * 4.5, S * 0.04, S * 0.1);
+    const stripe = new THREE.Mesh(stripeGeo, matGold);
+    stripe.position.set(S * 0.5, S * 0.43, 0);
+    shipGroup.add(stripe);
+
+    // ─────────────────────────────────────────────
+    // 3. COCKPIT CANOPY — bubble on top
+    // ─────────────────────────────────────────────
+    // Canopy base rim
+    const canopyRimGeo = new THREE.CylinderGeometry(S * 0.32, S * 0.38, S * 0.12, 10);
+    const canopyRim = new THREE.Mesh(canopyRimGeo, matCockpitRim);
+    canopyRim.position.set(S * 1.6, S * 0.46, 0);
+    shipGroup.add(canopyRim);
+
+    // Canopy glass dome (half sphere)
+    const canopyGeo = new THREE.SphereGeometry(S * 0.32, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+    const canopy = new THREE.Mesh(canopyGeo, matCockpit);
+    canopy.position.set(S * 1.6, S * 0.52, 0);
+    shipGroup.add(canopy);
+
+    // Canopy frame bars
+    [0, 72, 144, 216, 288].forEach(deg => {
+        const rad = (deg * Math.PI) / 180;
+        const fGeo = new THREE.BoxGeometry(S * 0.02, S * 0.34, S * 0.02);
+        const f = new THREE.Mesh(fGeo, matCockpitRim);
+        f.position.set(
+            S * 1.6 + Math.cos(rad) * S * 0.16,
+            S * 0.68,
+            Math.sin(rad) * S * 0.16
+        );
+        f.rotation.y = -rad;
+        shipGroup.add(f);
+    });
+
+    // ─────────────────────────────────────────────
+    // 4. SWEPT DELTA WINGS
+    // ─────────────────────────────────────────────
+    function makeWing(side) { // side = +1 or -1
+        const wGroup = new THREE.Group();
+
+        // Main wing slab — tapered box approximation
+        // Wing root at fuselage, tip swept back
+        const wingShape = new THREE.Shape();
+        wingShape.moveTo(0, 0);           // leading edge root (front)
+        wingShape.lineTo(S * 3.2, 0);     // leading edge tip (front, swept back)
+        wingShape.lineTo(S * 4.0, S * 0.6); // trailing tip
+        wingShape.lineTo(S * 0.6, S * 0.55); // trailing root
+        wingShape.lineTo(0, 0);
+
+        const wingExtSettings = { depth: S * 0.08, bevelEnabled: false };
+        const wingGeo = new THREE.ExtrudeGeometry(wingShape, wingExtSettings);
+        const wingMesh = new THREE.Mesh(wingGeo, matHullMid);
+        // rotate flat in XZ plane, then position
+        wingMesh.rotation.x = -Math.PI / 2;
+        wingMesh.position.set(-S * 0.6, 0, 0);
+        wGroup.add(wingMesh);
+
+        // Wing upper surface panel (darker)
+        const wpGeo = new THREE.BoxGeometry(S * 2.2, S * 0.02, S * 0.35);
+        const wp = new THREE.Mesh(wpGeo, matHullDark);
+        wp.position.set(S * 0.6, S * 0.05, S * 0.18);
+        wGroup.add(wp);
+
+        // Gold wing tip stripe
+        const wtGeo = new THREE.BoxGeometry(S * 0.06, S * 0.1, S * 0.55);
+        const wt = new THREE.Mesh(wtGeo, matGold);
+        wt.position.set(S * 2.58, 0, S * 0.28);
+        wGroup.add(wt);
+
+        // Wing leading edge gold accent
+        const wleGeo = new THREE.BoxGeometry(S * 3.2, S * 0.06, S * 0.06);
+        const wle = new THREE.Mesh(wleGeo, matGold);
+        wle.rotation.y = -0.22;
+        wle.position.set(S * 0.9, 0, -S * 0.04);
+        wGroup.add(wle);
+
+        // Ventral fin (small fin underneath)
+        const finGeo = new THREE.BoxGeometry(S * 0.06, S * 0.35, S * 0.7);
+        const fin = new THREE.Mesh(finGeo, matHullDark);
+        fin.position.set(S * 0.5, -S * 0.22, S * 0.18);
+        wGroup.add(fin);
+
+        wGroup.position.set(-S * 0.6, 0, 0);
+        wGroup.scale.z = side;
+        shipGroup.add(wGroup);
+    }
+
+    makeWing(1);   // starboard
+    makeWing(-1);  // port
+
+    // ─────────────────────────────────────────────
+    // 5. TWIN ENGINE NACELLES (mounted under wings)
+    // ─────────────────────────────────────────────
+    function makeNacelle(zOffset) {
+        const nGroup = new THREE.Group();
+
+        // Nacelle body
+        const nBodyGeo = new THREE.CylinderGeometry(S * 0.22, S * 0.18, S * 2.6, 10);
+        const nBody = new THREE.Mesh(nBodyGeo, matEngine);
+        nBody.rotation.z = Math.PI / 2;
+        nGroup.add(nBody);
+
+        // Nacelle intake ring (front)
+        const nIntakeGeo = new THREE.TorusGeometry(S * 0.23, S * 0.06, 8, 24);
+        const nIntake = new THREE.Mesh(nIntakeGeo, matGold);
+        nIntake.rotation.y = Math.PI / 2;
+        nIntake.position.x = S * 1.3;
+        nGroup.add(nIntake);
+
+        // Inner intake glow
+        const nIntGlowGeo = new THREE.CircleGeometry(S * 0.18, 12);
+        const nIntGlowMat = new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+        const nIntGlow = new THREE.Mesh(nIntGlowGeo, nIntGlowMat);
+        nIntGlow.rotation.y = Math.PI / 2;
+        nIntGlow.position.x = S * 1.3;
+        nGroup.add(nIntGlow);
+
+        // Nacelle mid ring stripe
+        const nRingGeo = new THREE.TorusGeometry(S * 0.225, S * 0.03, 6, 20);
+        const nRing = new THREE.Mesh(nRingGeo, matGold);
+        nRing.rotation.y = Math.PI / 2;
+        nRing.position.x = S * 0.1;
+        nGroup.add(nRing);
+
+        // Nacelle exhaust cone
+        const nExhGeo = new THREE.ConeGeometry(S * 0.22, S * 0.45, 10);
+        const nExh = new THREE.Mesh(nExhGeo, matEngine);
+        nExh.rotation.z = Math.PI / 2;
+        nExh.position.x = -S * 1.52;
+        nGroup.add(nExh);
+
+        // Engine exhaust glow — layered
+        const eGlow1Geo = new THREE.ConeGeometry(S * 0.2, S * 0.9, 10);
+        const eGlow1 = new THREE.Mesh(eGlow1Geo, matExhaust);
+        eGlow1.rotation.z = Math.PI / 2;
+        eGlow1.position.x = -S * 2.05;
+        nGroup.add(eGlow1);
+
+        const eGlow2Geo = new THREE.ConeGeometry(S * 0.14, S * 1.4, 10);
+        const eGlow2 = new THREE.Mesh(eGlow2Geo, matExhaust2);
+        eGlow2.rotation.z = Math.PI / 2;
+        eGlow2.position.x = -S * 2.5;
+        nGroup.add(eGlow2);
+
+        const eGlow3Geo = new THREE.ConeGeometry(S * 0.07, S * 0.7, 8);
+        const eGlow3 = new THREE.Mesh(eGlow3Geo, matExhaustCore);
+        eGlow3.rotation.z = Math.PI / 2;
+        eGlow3.position.x = -S * 2.1;
+        nGroup.add(eGlow3);
+
+        // Strut connecting nacelle to wing underside
+        const strutGeo = new THREE.CylinderGeometry(S * 0.05, S * 0.05, S * 0.55, 6);
+        const strut = new THREE.Mesh(strutGeo, matStrut);
+        strut.position.y = S * 0.35;
+        nGroup.add(strut);
+
+        nGroup.position.set(-S * 1.0, -S * 0.45, zOffset);
+        shipGroup.add(nGroup);
+
+        return { eGlow1, eGlow2, eGlow3, nIntGlow, nRing };
+    }
+
+    const nacelle1 = makeNacelle(S * 1.4);
+    const nacelle2 = makeNacelle(-S * 1.4);
+
+    // ─────────────────────────────────────────────
+    // 6. DORSAL FIN (top center tail fin)
+    // ─────────────────────────────────────────────
+    const dorsalShape = new THREE.Shape();
+    dorsalShape.moveTo(0, 0);
+    dorsalShape.lineTo(-S * 1.8, 0);
+    dorsalShape.lineTo(-S * 2.4, S * 1.0);
+    dorsalShape.lineTo(-S * 0.6, S * 0.9);
+    dorsalShape.lineTo(0, 0);
+
+    const dorsalExtSettings = { depth: S * 0.06, bevelEnabled: false };
+    const dorsalGeo = new THREE.ExtrudeGeometry(dorsalShape, dorsalExtSettings);
+    const dorsal = new THREE.Mesh(dorsalGeo, matHullDark);
+    dorsal.rotation.y = Math.PI / 2;
+    dorsal.position.set(-S * 0.8, S * 0.52, -S * 0.03);
+    shipGroup.add(dorsal);
+
+    // Dorsal fin gold edge
+    const dfEdgeGeo = new THREE.BoxGeometry(S * 2.0, S * 0.04, S * 0.04);
+    const dfEdge = new THREE.Mesh(dfEdgeGeo, matGold);
+    dfEdge.rotation.z = -0.5;
+    dfEdge.position.set(-S * 1.6, S * 1.0, 0);
+    shipGroup.add(dfEdge);
+
+    // ─────────────────────────────────────────────
+    // 7. VENTRAL KEEL (bottom spine)
+    // ─────────────────────────────────────────────
+    const keelGeo = new THREE.BoxGeometry(S * 3.8, S * 0.06, S * 0.28);
+    const keel = new THREE.Mesh(keelGeo, matHullDark);
+    keel.position.set(S * 0.2, -S * 0.44, 0);
+    shipGroup.add(keel);
+
+    // ─────────────────────────────────────────────
+    // 8. SENSOR ARRAY / ANTENNA (forward top)
+    // ─────────────────────────────────────────────
+    const ant1Geo = new THREE.CylinderGeometry(S * 0.02, S * 0.02, S * 0.9, 4);
+    const ant1 = new THREE.Mesh(ant1Geo, matGold);
+    ant1.position.set(S * 2.4, S * 0.55, 0);
+    shipGroup.add(ant1);
+
+    const ant2Geo = new THREE.CylinderGeometry(S * 0.02, S * 0.02, S * 0.6, 4);
+    const ant2 = new THREE.Mesh(ant2Geo, matStrut);
+    ant2.rotation.z = Math.PI / 4;
+    ant2.position.set(S * 2.1, S * 0.75, S * 0.18);
+    shipGroup.add(ant2);
+
+    // Sensor dish
+    const dishGeo = new THREE.SphereGeometry(S * 0.14, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2);
+    const dish = new THREE.Mesh(dishGeo, matHullMid);
+    dish.rotation.x = Math.PI;
+    dish.position.set(S * 2.4, S * 1.0, 0);
+    shipGroup.add(dish);
+
+    // ─────────────────────────────────────────────
+    // 9. NAVIGATION LIGHTS (wingtips + nose)
+    // ─────────────────────────────────────────────
+    // Port (left) — red
+    const navLGeo = new THREE.SphereGeometry(S * 0.08, 6, 6);
+    const navL = new THREE.Mesh(navLGeo, matNav);
+    navL.position.set(S * 2.55, 0.0, S * 0.58);
+    shipGroup.add(navL);
+
+    // Starboard (right) — green
+    const navRGeo = new THREE.SphereGeometry(S * 0.08, 6, 6);
+    const navR = new THREE.Mesh(navRGeo, matNavGreen);
+    navR.position.set(S * 2.55, 0.0, -S * 0.58);
+    shipGroup.add(navR);
+
+    // Nose beacon
+    const navNGeo = new THREE.SphereGeometry(S * 0.07, 6, 6);
+    const navNMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 });
+    const navN = new THREE.Mesh(navNGeo, navNMat);
+    navN.position.set(S * 3.9, 0, 0);
+    shipGroup.add(navN);
+
+    // ─────────────────────────────────────────────
+    // 10. VENTS on fuselage sides
+    // ─────────────────────────────────────────────
+    for (let i = 0; i < 4; i++) {
+        [1, -1].forEach(side => {
+            const vGeo = new THREE.BoxGeometry(S * 0.12, S * 0.06, S * 0.06);
+            const v = new THREE.Mesh(vGeo, matVent);
+            v.position.set(S * (0.8 - i * 0.45), S * 0.41, side * S * 0.36);
+            shipGroup.add(v);
+        });
+    }
+
+    // ─────────────────────────────────────────────
+    // 11. ENGINE PARTICLE TRAIL (point cloud behind)
+    // ─────────────────────────────────────────────
+    const trailCount = 60;
+    const trailPositions = new Float32Array(trailCount * 3);
+    for (let i = 0; i < trailCount; i++) {
+        trailPositions[i*3]   = -S * (2.5 + i * 0.08) - Math.random() * S * 0.4;
+        trailPositions[i*3+1] = (Math.random() - 0.5) * S * 0.2;
+        trailPositions[i*3+2] = (Math.random() - 0.5) * S * 0.2;
+    }
+    const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setAttribute('position', new THREE.Float32BufferAttribute(trailPositions, 3));
+    const trailMat = new THREE.PointsMaterial({
+        color: 0xff8800,
+        size: S * 0.12,
+        transparent: true,
+        opacity: 0.45,
+        sizeAttenuation: true
+    });
+    const trail = new THREE.Points(trailGeo, trailMat);
+    shipGroup.add(trail);
+
+    // ─────────────────────────────────────────────
+    // 12. GLOW HALO around entire ship
+    // ─────────────────────────────────────────────
+    const haloGeo = new THREE.SphereGeometry(S * 3.2, 16, 16);
+    const haloMat = new THREE.MeshBasicMaterial({ color: 0xffc832, transparent: true, opacity: 0.06, side: THREE.BackSide });
+    const halo = new THREE.Mesh(haloGeo, haloMat);
+    shipGroup.add(halo);
+
+    // Orient ship to fly forward along orbit tangent direction (nose along +X initially)
+    // Will be rotated each frame to face travel direction
+    shipGroup.rotation.y = Math.PI / 2;
+
+    return {
+        shipGroup,
+        exhaustParts: [nacelle1.eGlow1, nacelle1.eGlow2, nacelle1.eGlow3,
+                        nacelle2.eGlow1, nacelle2.eGlow2, nacelle2.eGlow3],
+        navLights: [navL, navR, navN],
+        halo,
+        trail,
+        trailMat,
+        intakeGlows: [nacelle1.nIntGlow, nacelle2.nIntGlow]
+    };
+}
+
 moonsData.forEach(moon => {
     const parentNode = nodesData.find(n => n.id === moon.parent);
     if (!parentNode) return;
@@ -1130,127 +1509,62 @@ moonsData.forEach(moon => {
     moonGroup.position.set(parentNode.x, parentNode.y, parentNode.z);
     mainGroup.add(moonGroup);
 
-    // ── Orbit ring (dashed visual) ──
+    // ── Orbit ring ──
     const orbitRingGeo = new THREE.RingGeometry(moon.orbitRadius - 0.15, moon.orbitRadius + 0.15, 128);
     const orbitRingMat = new THREE.MeshBasicMaterial({
-        color: 0xffc832,
-        transparent: true,
-        opacity: 0.18,
-        side: THREE.DoubleSide
+        color: 0xffc832, transparent: true, opacity: 0.18, side: THREE.DoubleSide
     });
     const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
     orbitRing.rotation.x = moon.orbitTilt;
     moonGroup.add(orbitRing);
 
-    // ── Secondary subtle ring ──
     const orbitRing2Geo = new THREE.RingGeometry(moon.orbitRadius - 0.5, moon.orbitRadius + 0.5, 128);
     const orbitRing2Mat = new THREE.MeshBasicMaterial({
-        color: 0xffc832,
-        transparent: true,
-        opacity: 0.06,
-        side: THREE.DoubleSide
+        color: 0xffc832, transparent: true, opacity: 0.05, side: THREE.DoubleSide
     });
     const orbitRing2 = new THREE.Mesh(orbitRing2Geo, orbitRing2Mat);
     orbitRing2.rotation.x = moon.orbitTilt;
     moonGroup.add(orbitRing2);
 
-    // ── Moon body: hexagonal prism (command terminal look) ──
-    const moonBodyGeo = new THREE.CylinderGeometry(moon.size, moon.size * 0.85, moon.size * 0.55, 6);
-    const moonBodyMat = new THREE.MeshBasicMaterial({ color: moon.color });
-    const moonBody = new THREE.Mesh(moonBodyGeo, moonBodyMat);
-    moonGroup.add(moonBody);
+    // ── Build the spaceship ──
+    const shipData = buildSpaceship(moon, moonGroup);
 
-    // ── Inner glow sphere ──
-    const igGeo = new THREE.SphereGeometry(moon.size * 1.5, 16, 16);
-    const igMat = new THREE.MeshBasicMaterial({ color: moon.color, transparent: true, opacity: 0.35, side: THREE.BackSide });
-    const innerGlow = new THREE.Mesh(igGeo, igMat);
-    moonGroup.add(innerGlow);
-
-    // ── Outer pulse sphere ──
-    const ogGeo = new THREE.SphereGeometry(moon.size * 2.5, 16, 16);
-    const ogMat = new THREE.MeshBasicMaterial({ color: moon.color, transparent: true, opacity: 0.12, side: THREE.BackSide });
-    const outerGlow = new THREE.Mesh(ogGeo, ogMat);
-    moonGroup.add(outerGlow);
-
-    // ── Top panel face (gold screen) ──
-    const faceGeo = new THREE.CylinderGeometry(moon.size * 0.78, moon.size * 0.78, 0.06, 6);
-    const faceMat = new THREE.MeshBasicMaterial({ color: 0xffe066, transparent: true, opacity: 0.85 });
-    const face = new THREE.Mesh(faceGeo, faceMat);
-    face.position.y = moon.size * 0.28;
-    moonGroup.add(face);
-
-    // ── Screen grid lines ──
-    for (let i = -1; i <= 1; i++) {
-        const lineGeo = new THREE.BoxGeometry(moon.size * 1.3, 0.05, 0.05);
-        const lineMat = new THREE.MeshBasicMaterial({ color: 0xb8860b, transparent: true, opacity: 0.6 });
-        const line = new THREE.Mesh(lineGeo, lineMat);
-        line.position.set(0, moon.size * 0.32, i * moon.size * 0.3);
-        moonGroup.add(line);
-    }
-
-    // ── Antenna spike ──
-    const antGeo = new THREE.CylinderGeometry(0.06, 0.1, moon.size * 1.1, 6);
-    const antMat = new THREE.MeshBasicMaterial({ color: 0xffc832 });
-    const antenna = new THREE.Mesh(antGeo, antMat);
-    antenna.position.y = moon.size * 0.85;
-    moonGroup.add(antenna);
-
-    // ── Antenna tip pulse ──
-    const tipGeo = new THREE.SphereGeometry(0.22, 8, 8);
-    const tipMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 });
-    const tip = new THREE.Mesh(tipGeo, tipMat);
-    tip.position.y = moon.size * 1.42;
-    moonGroup.add(tip);
-
-    // ── Bottom thruster nozzles (3 tiny) ──
-    [0, 120, 240].forEach(deg => {
-        const rad = (deg * Math.PI) / 180;
-        const nozzleGeo = new THREE.CylinderGeometry(0.12, 0.2, 0.4, 6);
-        const nozzleMat = new THREE.MeshBasicMaterial({ color: 0x8B6914 });
-        const nozzle = new THREE.Mesh(nozzleGeo, nozzleMat);
-        nozzle.position.set(Math.cos(rad) * moon.size * 0.5, -moon.size * 0.5, Math.sin(rad) * moon.size * 0.5);
-        moonGroup.add(nozzle);
-
-        // Thruster glow
-        const thrGeo = new THREE.SphereGeometry(0.18, 6, 6);
-        const thrMat = new THREE.MeshBasicMaterial({ color: 0xff8800, transparent: true, opacity: 0.7 });
-        const thr = new THREE.Mesh(thrGeo, thrMat);
-        thr.position.set(Math.cos(rad) * moon.size * 0.5, -moon.size * 0.75, Math.sin(rad) * moon.size * 0.5);
-        moonGroup.add(thr);
-    });
+    // Invisible hit sphere for raycasting (covers whole ship)
+    const hitGeo = new THREE.SphereGeometry(moon.size * 3.5, 8, 8);
+    const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+    const hitSphere = new THREE.Mesh(hitGeo, hitMat);
+    hitSphere.userData = { isMoon: true, moonData: moon };
+    moonGroup.add(hitSphere);
+    clickableMoons.push(hitSphere);
 
     // ── Label sprite ──
     const lc = document.createElement('canvas'), lx = lc.getContext('2d');
     const labelText = moon.name;
     lx.font = 'bold 36px Arial';
-    const tw = lx.measureText(labelText).width;
-    lc.width = tw + 24; lc.height = 50;
+    const tw2 = lx.measureText(labelText).width;
+    lc.width = tw2 + 24; lc.height = 50;
     lx.font = 'bold 36px Arial';
     lx.fillStyle = '#ffc832';
     lx.textAlign = 'left'; lx.textBaseline = 'middle';
     lx.fillText(labelText, 12, 25);
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(lc), transparent: true, opacity: 0.9 }));
-    spr.scale.set((lc.width / lc.height) * 3, 3, 1);
-    // label offset above — will be updated in animation loop
+    spr.scale.set((lc.width / lc.height) * 3.5, 3.5, 1);
     const labelOffset = new THREE.Group();
-    labelOffset.position.set(0, moon.size * 2.2, 0);
     labelOffset.add(spr);
     moonGroup.add(labelOffset);
 
-    // Make body clickable
-    moonBody.userData = { isMoon: true, moonData: moon };
-    clickableMoons.push(moonBody);
-
-    // Store all refs
     moonObjects.set(moon.id, {
         group: moonGroup,
-        body: moonBody,
-        innerGlow,
-        outerGlow,
-        face,
-        tip,
-        antenna,
+        body: hitSphere,
+        shipGroup: shipData.shipGroup,
+        exhaustParts: shipData.exhaustParts,
+        navLights: shipData.navLights,
+        halo: shipData.halo,
+        trail: shipData.trail,
+        trailMat: shipData.trailMat,
+        intakeGlows: shipData.intakeGlows,
         orbitRing,
+        labelOffset,
         moonData: moon,
         angle: moon.orbitPhase,
         parentPos: new THREE.Vector3(parentNode.x, parentNode.y, parentNode.z)
@@ -1300,7 +1614,8 @@ function resetNodeScale(mesh){
 
 function scaleMoon(moonRef, scale) {
     if (!moonRef) return;
-    moonRef.group.scale.set(scale, scale, scale);
+    if (moonRef.shipGroup) moonRef.shipGroup.scale.setScalar(scale);
+    if (moonRef.halo) moonRef.halo.scale.setScalar(scale > 1 ? 1.4 : 1);
 }
 
 // All intersect targets combined
@@ -1491,45 +1806,88 @@ function animate(){
         hoursObj.starGroup.rotation.y += 0.001;
     }
 
-    // ── MOON ORBIT ANIMATION ──
+    // ── SPACESHIP ORBIT ANIMATION ──
     moonObjects.forEach((moonRef, id) => {
         const moon = moonRef.moonData;
+        const prevAngle = moonRef.angle;
         moonRef.angle += moon.orbitSpeed;
 
-        // Tilted circular orbit
+        // Tilted circular orbit position
         const cosT = Math.cos(moon.orbitTilt);
         const sinT = Math.sin(moon.orbitTilt);
+
         const rawX = Math.cos(moonRef.angle) * moon.orbitRadius;
         const rawY = Math.sin(moonRef.angle) * moon.orbitRadius * sinT;
         const rawZ = Math.sin(moonRef.angle) * moon.orbitRadius * cosT;
 
-        moonRef.body.position.set(rawX, rawY, rawZ);
-        moonRef.innerGlow.position.set(rawX, rawY, rawZ);
-        moonRef.outerGlow.position.set(rawX, rawY, rawZ);
-        moonRef.face.position.set(rawX, rawY + moon.size * 0.28, rawZ);
-        moonRef.antenna.position.set(rawX, rawY + moon.size * 0.85, rawZ);
-        moonRef.tip.position.set(rawX, rawY + moon.size * 1.42, rawZ);
+        // Previous position for tangent direction
+        const prevX = Math.cos(prevAngle) * moon.orbitRadius;
+        const prevY = Math.sin(prevAngle) * moon.orbitRadius * sinT;
+        const prevZ = Math.sin(prevAngle) * moon.orbitRadius * cosT;
 
-        // Rotate the body itself
-        moonRef.body.rotation.y += 0.012;
+        // Move the entire ship group to orbit position
+        if (moonRef.shipGroup) {
+            moonRef.shipGroup.position.set(rawX, rawY, rawZ);
 
-        // Pulse antenna tip
-        const pulse = 0.6 + 0.4 * Math.sin(clock * 4);
-        moonRef.tip.material.opacity = pulse;
-        moonRef.tip.scale.setScalar(0.8 + 0.4 * pulse);
+            // Orient ship nose along travel direction (tangent of orbit)
+            const travelDir = new THREE.Vector3(rawX - prevX, rawY - prevY, rawZ - prevZ).normalize();
+            if (travelDir.length() > 0.0001) {
+                // Build rotation: ship's forward axis (+X) → travelDir
+                const up = new THREE.Vector3(0, 1, 0);
+                const right = new THREE.Vector3().crossVectors(travelDir, up).normalize();
+                const shipUp = new THREE.Vector3().crossVectors(right, travelDir).normalize();
+                const rotMatrix = new THREE.Matrix4().makeBasis(travelDir, shipUp, right);
+                moonRef.shipGroup.setRotationFromMatrix(rotMatrix);
+            }
 
-        // Pulse outer glow
-        const glowPulse = 0.08 + 0.06 * Math.sin(clock * 2);
-        moonRef.outerGlow.material.opacity = glowPulse;
-
-        // Update label position
-        const labelGroup = moonRef.group.children.find(c => c.isGroup);
-        if (labelGroup) {
-            labelGroup.position.set(rawX, rawY + moon.size * 2.2, rawZ);
+            // Gentle banking roll into the turn (feel of banking spacecraft)
+            moonRef.shipGroup.rotateX(Math.sin(clock * 0.3) * 0.05);
         }
 
-        // Update thruster glows (the last set of spheres added)
-        // They animate via overall opacity pulse handled by outer glow above
+        // Move hit sphere + label with ship
+        if (moonRef.body) moonRef.body.position.set(rawX, rawY, rawZ);
+
+        // Label floats above ship
+        if (moonRef.labelOffset) {
+            moonRef.labelOffset.position.set(rawX, rawY + moon.size * 3.8, rawZ);
+        }
+
+        // ── Animate engine exhausts (pulsing flame) ──
+        if (moonRef.exhaustParts) {
+            const exhaustPulse = 0.7 + 0.3 * Math.sin(clock * 12);
+            moonRef.exhaustParts.forEach((part, i) => {
+                if (i % 3 === 0) part.material.opacity = 0.75 * exhaustPulse;       // orange cone
+                else if (i % 3 === 1) part.material.opacity = 0.5 * exhaustPulse;   // wide glow
+                else part.material.opacity = 0.85 * exhaustPulse;                    // white core
+                part.scale.x = 0.85 + 0.3 * Math.sin(clock * 8 + i);
+            });
+        }
+
+        // ── Animate nav lights (strobe) ──
+        if (moonRef.navLights) {
+            const strobePort  = Math.sin(clock * 4) > 0 ? 0.9 : 0.1;
+            const strobeStarb = Math.sin(clock * 4 + Math.PI) > 0 ? 0.9 : 0.1;
+            const beaconPulse = 0.4 + 0.6 * Math.abs(Math.sin(clock * 2.5));
+            moonRef.navLights[0].material.opacity = strobePort;
+            moonRef.navLights[1].material.opacity = strobeStarb;
+            moonRef.navLights[2].material.opacity = beaconPulse;
+        }
+
+        // ── Animate halo glow pulse ──
+        if (moonRef.halo) {
+            moonRef.halo.material.opacity = 0.04 + 0.04 * Math.sin(clock * 1.5);
+        }
+
+        // ── Animate particle trail ──
+        if (moonRef.trailMat) {
+            moonRef.trailMat.opacity = 0.3 + 0.2 * Math.sin(clock * 3);
+        }
+
+        // ── Animate intake glows ──
+        if (moonRef.intakeGlows) {
+            const intakePulse = 0.35 + 0.2 * Math.sin(clock * 6);
+            moonRef.intakeGlows.forEach(ig => ig.material.opacity = intakePulse);
+        }
     });
 
     controls.update();
