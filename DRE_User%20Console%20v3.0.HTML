@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRE Console v3.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── DARK MODE ── */
+:root{
+  --bg:#04060d;--topbar-bg:rgba(4,6,13,0.98);--sidebar-bg:rgba(7,11,24,0.95);
+  --ws-header-bg:rgba(4,6,13,0.85);--ai-panel-bg:rgba(7,11,24,0.98);
+  --card-bg:rgba(255,255,255,0.03);--card-hover:rgba(212,175,55,0.06);
+  --input-bg:rgba(0,0,0,0.45);--step-key-bg:#0d1628;--msg-bg:rgba(0,0,0,0.2);
+  --border:rgba(90,140,255,0.11);--border-bright:rgba(90,140,255,0.24);
+  --border-gold:rgba(212,175,55,0.32);
+  --gold:#d4af37;--gold-dim:rgba(212,175,55,0.11);--gold-glow:rgba(212,175,55,0.06);
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.09);
+  --cyan:#00d4ff;--cyan-b:rgba(0,212,255,0.3);
+  --green:#00ff88;--green-dim:rgba(0,255,136,0.08);--green-t:#00ff88;
+  --text:#b8cce0;--text-dim:rgba(150,180,220,0.42);--text-mid:rgba(180,210,240,0.65);--text-bright:#e8f2ff;
+  --white-node:#e8f2ff;
+  --scanline:rgba(0,0,0,0.018);
+  --guard-bg:rgba(212,175,55,0.07);--guard-border:rgba(212,175,55,0.3);--guard-text:#c8a830;
+}
+/* ── LIGHT MODE ── */
+body.light{
+  --bg:#f0f2f7;--topbar-bg:#fff;--sidebar-bg:#f5f6fa;
+  --ws-header-bg:#fff;--ai-panel-bg:#f5f6fa;
+  --card-bg:#fff;--card-hover:rgba(160,125,16,0.06);
+  --input-bg:#fff;--step-key-bg:#1e2a3a;--msg-bg:rgba(0,0,0,0.03);
+  --border:rgba(0,0,0,0.1);--border-bright:rgba(0,80,200,0.22);
+  --border-gold:rgba(160,125,16,0.38);
+  --gold:#8a6a00;--gold-dim:rgba(138,106,0,0.1);--gold-glow:rgba(138,106,0,0.05);
+  --blue:#1a56db;--blue-dim:rgba(26,86,219,0.07);
+  --cyan:#0077aa;--cyan-b:rgba(0,119,170,0.35);
+  --green:#007a3d;--green-dim:rgba(0,122,61,0.08);--green-t:#007a3d;
+  --text:#1a2236;--text-dim:rgba(30,50,100,0.44);--text-mid:rgba(30,50,100,0.68);--text-bright:#0a1428;
+  --white-node:#333;
+  --scanline:rgba(0,0,0,0);
+  --guard-bg:rgba(138,106,0,0.06);--guard-border:rgba(138,106,0,0.28);--guard-text:#6a4f00;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Share Tech Mono',monospace;background:var(--bg);color:var(--text);display:flex;flex-direction:column;transition:background .25s,color .25s;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,var(--scanline) 3px,var(--scanline) 4px);pointer-events:none;z-index:9998;}
+
+/* ── GUARD BANNER ── */
+#guard-banner{
+  display:none;padding:5px 20px;background:var(--guard-bg);
+  border-bottom:1px solid var(--guard-border);flex-shrink:0;
+  align-items:center;gap:10px;font-size:10px;color:var(--guard-text);
+  font-family:'Orbitron',monospace;letter-spacing:1px;
+}
+#guard-banner.on{display:flex;}
+#guard-banner .gb-icon{font-size:13px;}
+#guard-banner .gb-text{flex:1;}
+#guard-banner .gb-ref{font-size:9px;opacity:0.7;font-style:italic;}
+
+/* ── TOPBAR ── */
+#topbar{display:flex;align-items:center;height:48px;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--topbar-bg);position:relative;transition:background .25s;}
+#topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.35;}
+.tb-logo{padding:0 18px;height:100%;display:flex;align-items:center;border-right:1px solid var(--border);flex-shrink:0;gap:10px;}
+.logo-text{font-family:'Orbitron',monospace;font-size:11px;font-weight:900;letter-spacing:5px;color:var(--gold);}
+.tb-nav{display:flex;height:100%;flex:1;}
+.tni{padding:0 16px;height:100%;display:flex;align-items:center;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-dim);cursor:pointer;border-right:1px solid var(--border);transition:all .18s;white-space:nowrap;}
+.tni:hover{color:var(--text);background:var(--blue-dim);}
+.tni.active{color:var(--gold);background:var(--gold-glow);border-bottom:2px solid var(--gold);}
+.tb-right{display:flex;align-items:center;gap:8px;padding:0 14px;margin-left:auto;flex-shrink:0;}
+.tb-btn{padding:4px 10px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;cursor:pointer;border:1px solid;transition:all .18s;background:transparent;white-space:nowrap;}
+.tb-btn.guard-off{border-color:var(--border);color:var(--text-dim);}
+.tb-btn.guard-off:hover{border-color:var(--guard-border);color:var(--guard-text);}
+.tb-btn.guard-on{border-color:var(--guard-border);color:var(--guard-text);background:var(--guard-bg);}
+.tb-btn.theme{border-color:var(--border-gold);color:var(--gold);background:var(--gold-dim);}
+.tb-btn.theme:hover{background:rgba(212,175,55,.18);}
+.status-pill{display:flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid var(--border);background:var(--green-dim);}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.slbl{font-size:7px;letter-spacing:2px;color:var(--green-t);}
+
+/* ── APP LAYOUT ── */
+#app{display:grid;grid-template-columns:200px 1fr 288px;flex:1;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+#sidebar{border-right:1px solid var(--border);background:var(--sidebar-bg);display:flex;flex-direction:column;overflow:hidden;transition:background .25s;}
+.sb-sec{border-bottom:1px solid var(--border);padding:6px 0;}
+.sb-lbl{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--text-dim);padding:5px 13px 3px;}
+.sb-item{padding:7px 13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text-mid);border-left:2px solid transparent;}
+.sb-item:hover{background:var(--blue-dim);color:var(--text-bright);border-left-color:var(--blue);}
+.sb-item.active{background:var(--gold-glow);color:var(--gold);border-left-color:var(--gold);}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--text-dim);flex-shrink:0;}
+.sb-item.active .sb-dot{background:var(--gold);}
+.sb-tag{font-size:6px;letter-spacing:1px;padding:1px 4px;border:1px solid;margin-left:auto;flex-shrink:0;}
+.sb-tag.live{border-color:var(--green-t);color:var(--green-t);}
+.sb-tag.soon{border-color:var(--text-dim);color:var(--text-dim);}
+
+/* ── WORKSPACE ── */
+#workspace{display:flex;flex-direction:column;overflow:hidden;}
+#ws-head{padding:13px 20px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--ws-header-bg);display:flex;align-items:flex-start;justify-content:space-between;transition:background .25s;}
+.ws-t{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text-bright);letter-spacing:2px;}
+.ws-s{font-size:9px;color:var(--text-dim);margin-top:2px;letter-spacing:1px;}
+.ws-acts{display:flex;gap:7px;flex-shrink:0;}
+.ws-btn{padding:5px 12px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;cursor:pointer;border:1px solid;transition:all .18s;background:transparent;}
+.ws-btn.pri{border-color:var(--border-gold);color:var(--gold);background:var(--gold-dim);}
+.ws-btn.pri:hover{background:rgba(212,175,55,.2);}
+.ws-btn.sec{border-color:var(--border);color:var(--text-mid);}
+.ws-btn.sec:hover{border-color:var(--border-bright);color:var(--text);}
+#ws-body{flex:1;overflow-y:auto;padding:16px 20px;}
+#ws-body::-webkit-scrollbar{width:3px;}
+#ws-body::-webkit-scrollbar-thumb{background:var(--border-gold);}
+
+/* ── PLAN CARDS ── */
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.plan-card{border:1px solid var(--border);padding:14px;cursor:pointer;background:var(--card-bg);transition:all .18s;position:relative;overflow:hidden;}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .18s;}
+.plan-card:hover{border-color:var(--border-gold);background:var(--card-hover);}
+.plan-card:hover::before,.plan-card.selected::before{opacity:1;}
+.plan-card.selected{border-color:var(--gold);background:var(--card-hover);}
+.pc-tool{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:var(--blue);margin-bottom:4px;}
+.pc-title{font-size:12px;color:var(--text-bright);margin-bottom:3px;line-height:1.4;font-family:'Rajdhani',sans-serif;font-weight:600;}
+.pc-desc{font-size:10px;color:var(--text-mid);line-height:1.5;}
+.pc-wk{position:absolute;top:10px;right:10px;font-family:'Orbitron',monospace;font-size:7px;color:var(--text-dim);border:1px solid var(--border);padding:2px 5px;}
+
+/* ── PLAN DETAIL ── */
+.plan-view{animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.plan-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border:1px solid var(--border-gold);background:var(--gold-dim);margin-bottom:8px;}
+.plan-badge span{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--gold);}
+.plan-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);}
+.plan-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--text-bright);line-height:1.3;margin-bottom:3px;}
+.plan-tag{font-size:12px;color:var(--text-mid);font-family:'Rajdhani',sans-serif;margin-bottom:12px;}
+
+/* ── STEP BLOCKS ── */
+.steps-wrap{display:flex;flex-direction:column;gap:8px;margin:12px 0;}
+.step-block{display:grid;grid-template-columns:85px 1fr;border:1px solid var(--border);overflow:hidden;transition:border-color .18s;}
+.step-block:hover{border-color:var(--border-bright);}
+.step-key{padding:12px 6px;background:var(--step-key-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.sk-num{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:rgba(180,200,240,.45);}
+.sk-lbl{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--gold);text-align:center;line-height:1.3;}
+.step-val{padding:12px 14px;font-size:13px;color:var(--text);line-height:1.65;font-family:'Rajdhani',sans-serif;background:var(--card-bg);}
+
+/* ── CHECKLIST ── */
+.checklist-wrap{margin:14px 0;border:1px solid var(--border);background:var(--card-bg);}
+.cl-head{padding:8px 14px;border-bottom:1px solid var(--border);font-family:'Orbitron',monospace;font-size:8px;letter-spacing:3px;color:var(--text-dim);display:flex;justify-content:space-between;align-items:center;}
+.cl-progress{font-size:8px;color:var(--gold);}
+.cl-item{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;cursor:pointer;transition:background .15s;}
+.cl-item:last-child{border-bottom:none;}
+.cl-item:hover{background:var(--card-hover);}
+.cl-item.done{opacity:.6;}
+.cl-cb{width:16px;height:16px;border:1px solid var(--border-gold);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold);margin-top:2px;transition:all .15s;}
+.cl-item.done .cl-cb{background:var(--gold);border-color:var(--gold);color:#000;}
+.cl-text{font-size:12px;color:var(--text);font-family:'Rajdhani',sans-serif;line-height:1.5;flex:1;}
+.cl-item.done .cl-text{text-decoration:line-through;color:var(--text-dim);}
+.cl-note{margin-top:5px;}
+.cl-note input{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:4px 8px;font-family:'Share Tech Mono',monospace;font-size:10px;outline:none;}
+.cl-note input:focus{border-color:var(--border-gold);}
+.cl-note input::placeholder{color:var(--text-dim);}
+
+/* ── EXPANSION + ACTIONS ── */
+.exp-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.exp-tag{padding:4px 8px;border:1px solid var(--border-gold);font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;color:var(--gold);background:var(--gold-dim);}
+.plan-acts{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+.act-btn{flex:1;padding:10px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;cursor:pointer;border:1px solid;transition:all .18s;text-align:center;}
+.act-btn.run{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.act-btn.run:hover{background:rgba(212,175,55,.2);}
+.act-btn.dive{border-color:var(--border-bright);color:var(--blue);background:var(--blue-dim);}
+.act-btn.dive:hover{background:rgba(74,158,255,.14);}
+.act-btn.save{border-color:var(--border);color:var(--text-mid);}
+.act-btn.save:hover{border-color:var(--border-bright);color:var(--text);}
+
+/* ── SECTION HEAD ── */
+.sh{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:var(--text-dim);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+/* ── ECOSYSTEM ── */
+.eco-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.eco-card{border:1px solid var(--border);padding:13px;background:var(--card-bg);transition:all .18s;cursor:pointer;}
+.eco-card:hover{border-color:var(--border-gold);background:var(--card-hover);}
+.eco-name{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;margin-bottom:3px;}
+.eco-purpose{font-size:9px;color:var(--text-dim);margin-bottom:5px;letter-spacing:1px;}
+.eco-desc{font-size:10px;color:var(--text-mid);line-height:1.5;}
+.eco-foot{margin-top:8px;display:flex;gap:5px;align-items:center;}
+.eco-sdot{width:5px;height:5px;border-radius:50%;}
+.eco-status{font-size:7px;color:var(--text-dim);letter-spacing:1px;}
+.eco-tier{margin-left:auto;font-size:7px;border:1px solid;padding:1px 5px;}
+
+/* ── SAVED ── */
+.saved-list{display:flex;flex-direction:column;gap:7px;}
+.saved-card{border:1px solid var(--border);padding:11px;cursor:pointer;transition:all .18s;display:flex;gap:10px;align-items:flex-start;background:var(--card-bg);}
+.saved-card:hover{border-color:var(--border-gold);background:var(--card-hover);}
+.sv-tool{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--blue);flex-shrink:0;padding-top:1px;}
+.sv-title{font-size:12px;color:var(--text-bright);margin-bottom:2px;font-family:'Rajdhani',sans-serif;font-weight:600;}
+.sv-meta{font-size:9px;color:var(--text-dim);}
+.sv-load{margin-left:auto;font-family:'Orbitron',monospace;font-size:7px;color:var(--gold);border:1px solid var(--border-gold);padding:2px 7px;flex-shrink:0;}
+.empty{padding:20px 0;color:var(--text-mid);font-size:12px;line-height:1.9;}
+.empty strong{color:var(--gold);}
+
+/* ── AI PANEL ── */
+#ai-panel{border-left:1px solid var(--border);background:var(--ai-panel-bg);display:flex;flex-direction:column;overflow:hidden;transition:background .25s;}
+#ai-head{padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+.ai-ttl{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--gold);}
+#model-sel{padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ml{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--text-dim);margin-bottom:5px;}
+.model-row{display:flex;gap:4px;flex-wrap:wrap;}
+.mbtn{padding:3px 8px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:1px;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .15s;background:transparent;}
+.mbtn:hover{border-color:var(--border-bright);color:var(--text);}
+.mbtn.active{border-color:var(--border-gold);color:var(--gold);background:var(--gold-dim);}
+#api-row{padding:6px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;gap:5px;align-items:center;}
+#api-in{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:4px 7px;font-family:'Share Tech Mono',monospace;font-size:10px;outline:none;}
+#api-in:focus{border-color:var(--border-gold);}
+#api-in::placeholder{color:var(--text-dim);}
+#api-save{padding:4px 8px;border:1px solid var(--border-gold);color:var(--gold);font-family:'Orbitron',monospace;font-size:7px;cursor:pointer;background:var(--gold-dim);white-space:nowrap;}
+#ai-msgs{flex:1;overflow-y:auto;padding:12px;}
+#ai-msgs::-webkit-scrollbar{width:2px;}
+#ai-msgs::-webkit-scrollbar-thumb{background:var(--border-gold);}
+.msg{margin-bottom:12px;animation:fadeUp .2s ease;}
+.msg-role{font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;margin-bottom:3px;}
+.msg-role.sys{color:var(--green-t);}
+.msg-role.you{color:var(--gold);}
+.msg-role.ai{color:var(--blue);}
+.msg-role.guard{color:var(--guard-text);}
+.msg-body{font-size:11px;line-height:1.7;color:var(--text);padding:8px 10px;border:1px solid var(--border);background:var(--msg-bg);}
+.you-b{border-color:var(--border-gold)!important;background:var(--gold-dim)!important;color:var(--text-bright)!important;}
+.ai-b{border-color:var(--border-bright)!important;background:var(--blue-dim)!important;color:var(--text)!important;}
+.sys-b{border-color:rgba(0,200,100,.22)!important;background:var(--green-dim)!important;color:var(--green-t)!important;font-size:10px!important;}
+.guard-b{border-color:var(--guard-border)!important;background:var(--guard-bg)!important;color:var(--guard-text)!important;font-size:10px!important;}
+.typing{display:flex;gap:4px;padding:8px 10px;border:1px solid var(--border-bright);background:var(--blue-dim);}
+.tdot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blink 1.2s infinite;}
+.tdot:nth-child(2){animation-delay:.2s}.tdot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+#ai-in-area{padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0;}
+.qp-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;}
+.qp{padding:2px 7px;border:1px solid var(--border);font-size:9px;color:var(--text-mid);cursor:pointer;transition:all .15s;font-family:'Share Tech Mono',monospace;}
+.qp:hover{border-color:var(--border-gold);color:var(--gold);}
+.in-row{display:flex;gap:5px;}
+#ai-in{flex:1;background:var(--input-bg);border:1px solid var(--border);color:var(--text-bright);padding:6px 8px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;resize:none;min-height:32px;max-height:90px;}
+#ai-in:focus{border-color:var(--border-gold);}
+#ai-in::placeholder{color:var(--text-dim);}
+#ai-send{padding:6px 10px;border:1px solid var(--border-gold);color:var(--gold);font-family:'Orbitron',monospace;font-size:8px;cursor:pointer;background:var(--gold-dim);align-self:flex-end;}
+#ai-send:hover{background:rgba(212,175,55,.2);}
+
+/* ── NEW USER GUIDE MODAL ── */
+#guide-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+#guide-overlay.on{display:flex;}
+#guide-modal{background:var(--sidebar-bg);border:1px solid var(--border-gold);max-width:740px;width:100%;max-height:88vh;display:flex;flex-direction:column;position:relative;box-shadow:0 0 60px rgba(212,175,55,0.12);}
+#guide-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+#guide-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+#guide-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:900;letter-spacing:4px;color:var(--gold);}
+#guide-close{padding:4px 10px;border:1px solid var(--border-gold);color:var(--gold);font-family:'Orbitron',monospace;font-size:8px;cursor:pointer;background:var(--gold-dim);letter-spacing:1px;}
+#guide-close:hover{background:rgba(212,175,55,.2);}
+#guide-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+.gt{padding:10px 16px;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:2px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.gt:hover{color:var(--text);background:var(--blue-dim);}
+.gt.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--gold-glow);}
+#guide-body{flex:1;overflow-y:auto;padding:22px 24px;}
+#guide-body::-webkit-scrollbar{width:3px;}
+#guide-body::-webkit-scrollbar-thumb{background:var(--border-gold);}
+.g-section{margin-bottom:24px;}
+.g-head{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.g-step{display:grid;grid-template-columns:32px 1fr;gap:14px;margin-bottom:12px;align-items:start;}
+.g-num{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--gold);opacity:.6;line-height:1;}
+.g-text{font-size:12px;line-height:1.7;color:var(--text-mid);}
+.g-text strong{color:var(--text-bright);}
+.g-text .tag{display:inline-block;padding:1px 6px;border:1px solid var(--border-gold);background:var(--gold-dim);font-family:'Orbitron',monospace;font-size:7px;color:var(--gold);letter-spacing:1px;vertical-align:middle;margin:0 2px;}
+.g-callout{border:1px solid var(--border-gold);background:var(--gold-glow);padding:14px 16px;margin:14px 0;font-size:12px;color:var(--text);line-height:1.7;}
+.g-callout strong{color:var(--gold);}
+.g-warn{border:1px solid rgba(0,200,100,.25);background:var(--green-dim);padding:12px 16px;margin:14px 0;font-size:11px;color:var(--green-t);line-height:1.6;}
+.g-json{background:var(--input-bg);border:1px solid var(--border);padding:14px;font-size:10px;color:var(--text-mid);line-height:1.7;font-family:'Share Tech Mono',monospace;white-space:pre-wrap;overflow-x:auto;margin:10px 0;position:relative;}
+.g-copy{position:absolute;top:8px;right:8px;padding:3px 7px;border:1px solid var(--border-gold);background:var(--gold-dim);color:var(--gold);font-family:'Orbitron',monospace;font-size:7px;cursor:pointer;}
+.g-divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+.g-model-row{display:flex;flex-direction:column;gap:10px;margin:10px 0;}
+.g-model{border:1px solid var(--border);padding:12px 14px;background:var(--card-bg);}
+.g-model-name{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--blue);margin-bottom:4px;}
+.g-model-desc{font-size:11px;color:var(--text-mid);line-height:1.6;}
+.g-model-link{font-size:10px;color:var(--gold);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div id="guard-banner">
+  <span class="gb-icon">✦</span>
+  <span class="gb-text">GUARD MODE ACTIVE — Is this honoring? Does this genuinely serve people?</span>
+  <span class="gb-ref">John 14:6 — The Way, The Truth, The Life</span>
+</div>
+
+<div id="topbar">
+  <div class="tb-logo">
+    <div class="logo-text">DRE COMMAND CONSOLE</div>
+  </div>
+  <div class="tb-nav">
+    <div class="tni active" onclick="nav('gtm')">GTM PLANS</div>
+    <div class="tni" onclick="nav('eco')">ECOSYSTEM</div>
+    <div class="tni" onclick="nav('social')">SOCIAL MEDIA 101</div>
+    <div class="tni" onclick="nav('saved')">SAVED RUNS</div>
+  </div>
+  <div class="tb-right">
+    <button class="tb-btn" id="guide-btn" onclick="openGuide()" style="border-color:var(--cyan-b);color:var(--cyan);background:rgba(0,212,255,0.07);">? NEW USER GUIDE</button>
+    <button class="tb-btn guard-off" id="guard-btn" onclick="toggleGuard()">✦ GUARD MODE</button>
+    <button class="tb-btn theme" id="theme-btn" onclick="toggleTheme()">☀ LIGHT</button>
+    <div class="status-pill"><div class="sdot"></div><div class="slbl">ACTIVE</div></div>
+  </div>
+</div>
+
+<div id="app">
+
+  <div id="sidebar">
+    <div class="sb-sec" id="sb-tools-sec">
+      <div class="sb-lbl">TOOLS</div>
+      <div class="sb-item active" id="si-all" onclick="fTool('all',this)"><div class="sb-dot"></div>ALL TOOLS</div>
+      </div>
+    <div class="sb-sec" id="sb-weeks-sec">
+      <div class="sb-lbl">LAUNCH STAGE</div>
+      <div class="sb-item" onclick="fWeek(1,this)"><div class="sb-dot"></div>WEEK 1 — ENTRY</div>
+      <div class="sb-item" onclick="fWeek(2,this)"><div class="sb-dot"></div>WEEK 2 — CONTENT</div>
+      <div class="sb-item" onclick="fWeek(3,this)"><div class="sb-dot"></div>WEEK 3 — FUNNEL</div>
+      <div class="sb-item" onclick="fWeek(4,this)"><div class="sb-dot"></div>WEEK 4 — EXPAND</div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-lbl">EDUCATION</div>
+      <div class="sb-item" onclick="nav('social')"><div class="sb-dot"></div>SOCIAL MEDIA 101</div>
+    </div>
+    <div class="sb-sec" style="border-bottom:none;flex:1;">
+      <div class="sb-lbl">ACTIONS</div>
+      <input type="file" id="workspace-upload" accept=".json" style="display:none;" onchange="loadWorkspace(event)">
+      <div class="sb-item" onclick="document.getElementById('workspace-upload').click()">
+        <div class="sb-dot" style="background:var(--cyan)"></div>IMPORT WORKSPACE
+      </div>
+      <div class="sb-item" onclick="showAll()"><div class="sb-dot"></div>SHOW ALL PLANS</div>
+      <div class="sb-item" onclick="clearSaved()"><div class="sb-dot"></div>CLEAR SAVED RUNS</div>
+    </div>
+  </div>
+
+  <div id="workspace">
+    <div id="ws-head">
+      <div>
+        <div class="ws-t" id="ws-title">DRE CONSOLE</div>
+        <div class="ws-s" id="ws-sub">LOADING INTERFACE...</div>
+      </div>
+      <div class="ws-acts">
+        <button class="ws-btn pri" onclick="showAll()">ALL PLANS</button>
+        <button class="ws-btn sec" onclick="nav('eco')">ECOSYSTEM ↗</button>
+      </div>
+    </div>
+    <div id="ws-body"></div>
+  </div>
+
+  <div id="ai-panel">
+    <div id="ai-head">
+      <div class="ai-ttl">AI COMMAND</div>
+      <div style="font-size:8px;color:var(--text-dim);font-family:'Orbitron',monospace;" id="mdisplay">DeepSeek</div>
+    </div>
+    <div id="model-sel">
+      <div class="ml">SELECT MODEL</div>
+      <div class="model-row">
+        <button class="mbtn active" onclick="selModel('deepseek-chat','DeepSeek',this)">DeepSeek</button>
+        <button class="mbtn" onclick="selModel('llama-3.3-70b-versatile','Groq',this)">Groq (Llama 3.3)</button>
+        <button class="mbtn" onclick="selModel('local-model','LM Studio',this)">LM Studio</button>
+      </div>
+    </div>
+    <div id="api-row">
+      <input id="api-in" type="password" placeholder="Paste API key then hit SAVE…" />
+      <button id="api-save" onclick="saveKey()">SAVE</button>
+    </div>
+    <div id="lms-row" style="display:none;padding:4px 12px 6px;border-bottom:1px solid var(--border);flex-shrink:0;">
+      <input id="lms-model" placeholder="LM Studio model name (e.g. mistral-7b-instruct)" style="width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:4px 7px;font-family:'Share Tech Mono',monospace;font-size:10px;outline:none;" oninput="saveLMSModel(this.value)" />
+    </div>
+    <div id="ai-msgs"></div>
+    <div id="ai-in-area">
+      <div class="qp-row">
+        <div class="qp" onclick="qp('Write a TikTok script for my week 1 plan')">TikTok Script</div>
+        <div class="qp" onclick="qp('Build a landing page brief for my current tool')">Landing Page</div>
+        <div class="qp" onclick="qp('What makes my tool different from competitors?')">Positioning</div>
+        <div class="qp" onclick="qp('Write a tweet thread introducing the ecosystem')">Tweet Thread</div>
+      </div>
+      <div class="in-row">
+        <textarea id="ai-in" placeholder="Ask anything about the launch…" rows="1" onkeydown="aiKey(event)" oninput="resize(this)"></textarea>
+        <button id="ai-send" onclick="sendMsg()">SEND</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── NEW USER GUIDE MODAL ── -->
+<div id="guide-overlay" onclick="if(event.target===this)closeGuide()">
+  <div id="guide-modal">
+    <div id="guide-header">
+      <div id="guide-title">◈ NEW USER GUIDE — DRE CONSOLE v3.0</div>
+      <button id="guide-close" onclick="closeGuide()">✕ CLOSE</button>
+    </div>
+    <div id="guide-tabs">
+      <div class="gt active" onclick="showGuideTab('overview',this)">OVERVIEW</div>
+      <div class="gt" onclick="showGuideTab('setup',this)">STEP 1: SETUP</div>
+      <div class="gt" onclick="showGuideTab('workspace',this)">STEP 2: WORKSPACE</div>
+      <div class="gt" onclick="showGuideTab('ai',this)">STEP 3: AI ENGINE</div>
+      <div class="gt" onclick="showGuideTab('execute',this)">STEP 4: EXECUTE</div>
+      <div class="gt" onclick="showGuideTab('faq',this)">FAQ</div>
+    </div>
+    <div id="guide-body">
+
+      <!-- OVERVIEW TAB -->
+      <div id="gtab-overview">
+        <div class="g-section">
+          <div class="g-head">WHAT IS THE DRE CONSOLE?</div>
+          <p style="font-size:13px;line-height:1.8;color:var(--text);margin-bottom:16px;">
+            The DRE Command Console is a <strong style="color:var(--gold)">personal GTM (Go-To-Market) execution engine</strong> — built for product launchers, indie builders, and first-time founders who need a structured system to take their product from zero to market.
+          </p>
+          <p style="font-size:12px;line-height:1.8;color:var(--text-mid);margin-bottom:20px;">
+            It is a <strong style="color:var(--text-bright)">local-first tool</strong>. Nothing is stored on any server. Your data lives on your device. You bring your own AI API key. You are fully in control.
+          </p>
+          <div class="g-callout">
+            <strong>The DRE Framework:</strong> Every plan inside this console follows an 8-step execution arc — Setup → Hook → Entry → Moment → Asset → Action → Capture → Expansion. These aren't suggestions. They are the minimum viable moves to launch any product with intention.
+          </div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">THE 4 SECTIONS OF THE CONSOLE</div>
+          <div class="g-step"><div class="g-num">01</div><div class="g-text"><strong>GTM PLANS</strong> — Your launch playbooks. Each card represents one week of execution for one tool. Click a card to expand the full 8-step plan, checklist, and AI actions.</div></div>
+          <div class="g-step"><div class="g-num">02</div><div class="g-text"><strong>ECOSYSTEM</strong> — All the tools in your project workspace. After importing your workspace JSON, every tool in your project appears here as a card you can click to get an instant AI briefing.</div></div>
+          <div class="g-step"><div class="g-num">03</div><div class="g-text"><strong>SOCIAL MEDIA 101</strong> — A foundational crash course on every major platform, algorithm rules, bio links, content types, and why Step 0 (your digital infrastructure) is the actual launch. Read this first if you are new.</div></div>
+          <div class="g-step"><div class="g-num">04</div><div class="g-text"><strong>SAVED RUNS</strong> — Every time you click "Save Run" on a plan, it gets archived here. Use this to track your execution history and reload plans you've already worked through.</div></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">THE 3-STEP LAUNCH SEQUENCE</div>
+          <div class="g-step"><div class="g-num">1</div><div class="g-text"><strong>Build your Workspace JSON</strong> — Fill out the template with your tools and plans. This is your project file.</div></div>
+          <div class="g-step"><div class="g-num">2</div><div class="g-text"><strong>Import it into the Console</strong> — Click <span class="tag">IMPORT WORKSPACE</span> in the sidebar. The console loads your project instantly.</div></div>
+          <div class="g-step"><div class="g-num">3</div><div class="g-text"><strong>Plug in an AI key and execute</strong> — Select a model, paste your API key, then use <span class="tag">▶ RUN WITH AI</span> on any plan to start executing with AI guidance.</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+          <button onclick="showGuideTab('setup',document.querySelectorAll('.gt')[1])" style="flex:1;padding:11px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;cursor:pointer;border:1px solid var(--border-gold);color:var(--gold);background:var(--gold-dim);">START: STEP 1 → SETUP ›</button>
+        </div>
+      </div>
+
+      <!-- SETUP TAB -->
+      <div id="gtab-setup" style="display:none;">
+        <div class="g-section">
+          <div class="g-head">STEP 1 — WHAT YOU NEED BEFORE YOU BEGIN</div>
+          <div class="g-warn">⚠ STEP 0 IS REAL: Before you can launch anything, your digital infrastructure must exist. Read Social Media 101 in the console for the full breakdown. The short version: set up your social accounts, write your bios, and create a bio link. If these don't exist, nothing downstream will work.</div>
+          <div class="g-step"><div class="g-num">A</div><div class="g-text"><strong>Your Project Details</strong> — Have a clear answer to: What is your tool? Who does it help? What problem does it solve? You'll need this to fill out your workspace template accurately.</div></div>
+          <div class="g-step"><div class="g-num">B</div><div class="g-text"><strong>A Text or Code Editor</strong> — To fill out your workspace JSON file, you need a basic text editor. <strong>VS Code</strong> (free, recommended), <strong>Notepad</strong> (Windows), or <strong>TextEdit</strong> (Mac) all work. The key is saving the file with a <strong>.json</strong> extension.</div></div>
+          <div class="g-step"><div class="g-num">C</div><div class="g-text"><strong>An AI API Key</strong> — The console's AI Command panel requires a key from one of 3 supported providers. You get this key from the provider's website (links in Step 3). Keys are free or low-cost to start. Your key is saved in your browser only — never sent anywhere else.</div></div>
+          <div class="g-step"><div class="g-num">D</div><div class="g-text"><strong>This Console Open in a Modern Browser</strong> — Chrome, Edge, Firefox, or Safari. The console runs 100% locally. No login. No account. No server.</div></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">HOW TO OPEN THE CONSOLE</div>
+          <div class="g-step"><div class="g-num">1</div><div class="g-text">Save the <strong>DRE_Console.HTML</strong> file to your computer (Downloads, Desktop, a project folder — anywhere).</div></div>
+          <div class="g-step"><div class="g-num">2</div><div class="g-text">Double-click the file. It will open directly in your web browser as a full application. No installation required.</div></div>
+          <div class="g-step"><div class="g-num">3</div><div class="g-text">Bookmark it in your browser for quick access. Treat it like an app you open every day.</div></div>
+          <div class="g-callout"><strong>Pro tip:</strong> Your checklist states, notes, saved runs, chat history, and API keys are all saved in your browser's localStorage. They persist between sessions as long as you open the file in the same browser and don't clear your browser data.</div>
+        </div>
+      </div>
+
+      <!-- WORKSPACE TAB -->
+      <div id="gtab-workspace" style="display:none;">
+        <div class="g-section">
+          <div class="g-head">STEP 2 — BUILDING YOUR WORKSPACE JSON</div>
+          <p style="font-size:12px;line-height:1.8;color:var(--text-mid);margin-bottom:16px;">Your workspace is a single <strong style="color:var(--text-bright)">.json</strong> file that holds all your project data — your tools and your launch plans. You build it once, then import it. You can update it anytime and re-import.</p>
+          <div class="g-step"><div class="g-num">1</div><div class="g-text"><strong>Copy the starter template</strong> — Use the button below to copy it, then paste it into your text editor and save it as <strong>my_project.json</strong> (the filename can be anything, the .json extension is required).</div></div>
+          <div class="g-step"><div class="g-num">2</div><div class="g-text"><strong>Fill in your ECOSYSTEM</strong> — The <code style="color:var(--cyan)">ecosystem</code> array is your list of tools. Each tool has: <code style="color:var(--cyan)">name</code>, <code style="color:var(--cyan)">color</code> (hex code), <code style="color:var(--cyan)">status</code> (LIVE or SOON), <code style="color:var(--cyan)">purpose</code> (one sentence), <code style="color:var(--cyan)">desc</code> (2-3 sentences), and <code style="color:var(--cyan)">tier</code> (Free/Pro/etc.).</div></div>
+          <div class="g-step"><div class="g-num">3</div><div class="g-text"><strong>Fill in your PLANS</strong> — The <code style="color:var(--cyan)">plans</code> array is your GTM playbook. Each plan has a week number, a tool name (must match ecosystem exactly), a title, a tagline, 8 execution steps, a checklist, and expansion tools.</div></div>
+          <div class="g-step"><div class="g-num">4</div><div class="g-text"><strong>Validate your JSON</strong> — Before importing, paste your file into <strong>jsonlint.com</strong> to check for errors. A missing comma or unclosed bracket will prevent it from loading.</div></div>
+          <div class="g-step"><div class="g-num">5</div><div class="g-text"><strong>Import it</strong> — In the sidebar, click <span class="tag">IMPORT WORKSPACE</span>. Select your .json file. The console will load your ecosystem and plans instantly.</div></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">STARTER TEMPLATE — COPY THIS</div>
+          <div class="g-json" id="guide-template-box">{
+  "ecosystem": [
+    {
+      "id": "TOOL_01",
+      "name": "Your Tool Name",
+      "color": "#00d4ff",
+      "status": "LIVE",
+      "purpose": "Short one-sentence purpose statement.",
+      "desc": "A 2-3 sentence description of what this tool does and who it helps.",
+      "tier": "Free / Pro"
+    }
+  ],
+  "plans": [
+    {
+      "id": 1,
+      "tool": "Your Tool Name",
+      "week": 1,
+      "title": "Week 1 — Initial Launch",
+      "tagline": "The core strategy for the first week.",
+      "steps": {
+        "setup": "What accounts, bios, and infrastructure must exist before you post.",
+        "hook": "The core message or angle to grab your audience's attention.",
+        "entry": "How your target user first interacts with the product.",
+        "moment": "The 'Aha!' moment you need to demonstrate clearly.",
+        "asset": "The actual piece of content to create this week.",
+        "action": "Where and how to post or distribute that content.",
+        "capture": "How you capture the lead or convert the viewer into a user.",
+        "expansion": "How this week connects to next week's strategy."
+      },
+      "checklist": [
+        "Set up all social profiles with complete bios",
+        "Create and test your bio link",
+        "Record and post your first piece of content",
+        "Reply to every comment within 24 hours"
+      ],
+      "expansionTools": ["Another Tool Name"]
+    }
+  ]
+}<button class="g-copy" onclick="navigator.clipboard.writeText(document.getElementById('guide-template-box').innerText.replace('COPY TEMPLATE','')).then(()=>{this.innerText='COPIED!';setTimeout(()=>this.innerText='COPY TEMPLATE',2000)})">COPY TEMPLATE</button></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">MULTI-TOOL EXAMPLE STRUCTURE</div>
+          <p style="font-size:11px;color:var(--text-mid);line-height:1.7;">If you have multiple tools, add additional objects to the <code style="color:var(--cyan)">ecosystem</code> array, each with a unique <code style="color:var(--cyan)">name</code>. Add one plan per tool per week to the <code style="color:var(--cyan)">plans</code> array, with <code style="color:var(--cyan)">id</code> values incrementing (1, 2, 3…). The tool name in plans must exactly match the tool name in ecosystem.</p>
+        </div>
+      </div>
+
+      <!-- AI TAB -->
+      <div id="gtab-ai" style="display:none;">
+        <div class="g-section">
+          <div class="g-head">STEP 3 — CONNECTING THE AI ENGINE</div>
+          <p style="font-size:12px;line-height:1.8;color:var(--text-mid);margin-bottom:16px;">The AI Command panel on the right side of the console connects to real AI models via API. You choose your provider, paste your key, and the AI becomes a co-founder that knows your entire ecosystem.</p>
+          <div class="g-callout"><strong>Your API key never leaves your browser.</strong> It is saved in localStorage on your device only. The only outbound connection is the direct call from your browser to the AI provider's server when you send a message.</div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">SUPPORTED MODELS</div>
+          <div class="g-model-row">
+            <div class="g-model">
+              <div class="g-model-name">DEEPSEEK (RECOMMENDED FOR MOST USERS)</div>
+              <div class="g-model-desc">Extremely capable reasoning model. Excellent at strategy, copywriting, and step-by-step guidance. Low cost — often less than $0.01 per conversation. Best overall choice for launch planning.</div>
+              <div class="g-model-link">→ Get your API key at: <strong>platform.deepseek.com</strong></div>
+            </div>
+            <div class="g-model">
+              <div class="g-model-name">GROQ — LLAMA 3.3 70B (FASTEST)</div>
+              <div class="g-model-desc">Runs on Groq's custom hardware. Response times are near-instant. Great for quick questions and rapid iteration. Free tier available with generous limits.</div>
+              <div class="g-model-link">→ Get your API key at: <strong>console.groq.com</strong></div>
+            </div>
+            <div class="g-model">
+              <div class="g-model-name">LM STUDIO (FULLY OFFLINE)</div>
+              <div class="g-model-desc">Runs AI models 100% on your local machine. No API key needed. No internet required for AI calls. Requires LM Studio desktop app and a downloaded model. Best for privacy-first users.</div>
+              <div class="g-model-link">→ Download at: <strong>lmstudio.ai</strong> — then enter your loaded model name in the field that appears.</div>
+            </div>
+          </div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">HOW TO ADD YOUR API KEY</div>
+          <div class="g-step"><div class="g-num">1</div><div class="g-text">In the AI Command panel (right side), click the model button you want to use (DeepSeek, Groq, or LM Studio).</div></div>
+          <div class="g-step"><div class="g-num">2</div><div class="g-text">Paste your API key into the <strong>password field</strong> at the top of the AI panel.</div></div>
+          <div class="g-step"><div class="g-num">3</div><div class="g-text">Click <span class="tag">SAVE</span>. The field will show dots (••••••••) to confirm the key is stored.</div></div>
+          <div class="g-step"><div class="g-num">4</div><div class="g-text">You're connected. Use the quick-prompt buttons or type directly in the message box. Hit Enter or click SEND.</div></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">USING THE AI EFFECTIVELY</div>
+          <div class="g-step"><div class="g-num">▶</div><div class="g-text"><strong>RUN WITH AI</strong> — When viewing a plan, this button sends the plan's setup and hook to the AI and asks: "Give me the first 3 things I should do TODAY." Best for getting unstuck at the start of a week.</div></div>
+          <div class="g-step"><div class="g-num">⚡</div><div class="g-text"><strong>DEEP DIVE</strong> — Sends the plan's ASSET step and asks for a complete content brief: exact script, hook line, what to show on screen, CTA, and best posting time. Use this when you need to actually create content.</div></div>
+          <div class="g-step"><div class="g-num">✎</div><div class="g-text"><strong>Free chat</strong> — Type anything into the message box. The AI knows your full ecosystem (after workspace is loaded). Ask it to write copy, compare tools, plan a week, or explain a concept.</div></div>
+        </div>
+      </div>
+
+      <!-- EXECUTE TAB -->
+      <div id="gtab-execute" style="display:none;">
+        <div class="g-section">
+          <div class="g-head">STEP 4 — YOUR DAILY EXECUTION FLOW</div>
+          <p style="font-size:12px;line-height:1.8;color:var(--text-mid);margin-bottom:16px;">Once your workspace is loaded and your AI key is active, here is how to use the console as a daily operating system for your launch.</p>
+          <div class="g-step"><div class="g-num">1</div><div class="g-text"><strong>Open the console</strong> — Open the HTML file in your browser. Your workspace, chat history, and checklist progress reload automatically.</div></div>
+          <div class="g-step"><div class="g-num">2</div><div class="g-text"><strong>Navigate to GTM PLANS</strong> — Filter by week or tool using the sidebar. Select your current week's plan by clicking its card.</div></div>
+          <div class="g-step"><div class="g-num">3</div><div class="g-text"><strong>Read the 8-step execution plan</strong> — Start with STEP 0: SETUP. Do not skip it. Each step builds on the previous one. The plan is sequential.</div></div>
+          <div class="g-step"><div class="g-num">4</div><div class="g-text"><strong>Run the checklist</strong> — Click each task to mark it complete. Add notes to any item. Progress is saved automatically between sessions.</div></div>
+          <div class="g-step"><div class="g-num">5</div><div class="g-text"><strong>Use AI to create content</strong> — Click <span class="tag">▶ RUN WITH AI</span> to get your day's first 3 actions, or <span class="tag">⚡ DEEP DIVE</span> to generate a complete content brief for the week's main asset.</div></div>
+          <div class="g-step"><div class="g-num">6</div><div class="g-text"><strong>Save your run</strong> — When you've worked a plan, click <span class="tag">💾 SAVE RUN</span> to archive it. You can reload it later from the SAVED RUNS tab.</div></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">SIDEBAR CONTROLS</div>
+          <div class="g-step"><div class="g-num">→</div><div class="g-text"><strong>TOOLS section</strong> — After importing a workspace, each tool in your ecosystem appears here. Click a tool name to filter GTM Plans to only that tool's plans.</div></div>
+          <div class="g-step"><div class="g-num">→</div><div class="g-text"><strong>LAUNCH STAGE section</strong> — Filter all plans by week (Week 1–4). Use this to see everything happening in a given week across all tools.</div></div>
+          <div class="g-step"><div class="g-num">→</div><div class="g-text"><strong>IMPORT WORKSPACE</strong> — Load or reload your .json project file. If you update your workspace outside the console, re-import it to sync changes.</div></div>
+          <div class="g-step"><div class="g-num">→</div><div class="g-text"><strong>CLEAR SAVED RUNS</strong> — Wipes your execution history. Use only when starting a fresh launch cycle.</div></div>
+        </div>
+        <div class="g-section">
+          <div class="g-head">TOPBAR CONTROLS</div>
+          <div class="g-step"><div class="g-num">✦</div><div class="g-text"><strong>GUARD MODE</strong> — Activates a decision filter banner: "Is this honoring? Does this genuinely serve people?" Toggle it on when you want your AI interactions to stay values-aligned. Anchored to John 14:6.</div></div>
+          <div class="g-step"><div class="g-num">☀</div><div class="g-text"><strong>LIGHT / DARK MODE</strong> — Switches the console between dark (default) and light themes. Your preference is saved.</div></div>
+        </div>
+        <div class="g-callout">
+          <strong>The daily minimum:</strong> Open the console. Read the plan for today's week. Complete at least one checklist item. Run AI on your content asset. That's it. Consistency beats volume. Show up every day.
+        </div>
+      </div>
+
+      <!-- FAQ TAB -->
+      <div id="gtab-faq" style="display:none;">
+        <div class="g-section">
+          <div class="g-head">FREQUENTLY ASKED QUESTIONS</div>
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>My workspace won't load. What's wrong?</strong><br>The most common cause is a JSON formatting error. Paste your .json file into <strong>jsonlint.com</strong> to find the exact error. Common mistakes: a trailing comma after the last item in an array, a missing quotation mark, or a curly brace that was never closed.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>Is my data safe? Where is it stored?</strong><br>All data is stored in your browser's localStorage — on your device only. Nothing is sent to any server except the AI messages you send to your chosen model's API. Your API key is stored locally and masked after saving.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>I updated my workspace JSON. How do I reload it?</strong><br>Click <span class="tag">IMPORT WORKSPACE</span> in the sidebar again and re-select your updated file. This will overwrite the ecosystem and plans in memory and localStorage with your new data. Your checklist states, notes, saved runs, and chat history are preserved.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>How many tools and plans can I have?</strong><br>There is no hard limit. The console renders whatever is in your ecosystem and plans arrays. For best performance, keep ecosystems under 30 tools and plans under 120 entries.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>Can I use this on mobile?</strong><br>The console is designed for desktop (three-column layout). On mobile, the layout will compress. It is functional but the experience is optimized for a laptop or desktop screen at 1280px or wider.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>The AI isn't responding. What do I check?</strong><br>(1) Is your API key saved? The field should show dots. (2) Do you have credits/quota remaining with your provider? (3) Is the correct model selected? (4) For LM Studio: is the app running and a model loaded? Check the browser console (F12) for the exact error message.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>What does "STEP 0" mean in every plan?</strong><br>Step 0 is your digital infrastructure — social accounts, bios, bio links, and basic profile setup. It is named Step 0 because it must be done before any other step. No amount of great content will work if people click your profile and find a blank page. Read the SOCIAL MEDIA 101 section for the full breakdown.</div></div>
+          <hr class="g-divider">
+          <div class="g-step"><div class="g-num">Q</div><div class="g-text"><strong>Can I share this console with my team?</strong><br>Yes — just share the HTML file. Each person will have their own local storage, so their progress, notes, and API keys are separate. For a shared workspace, you can distribute the same workspace .json file so everyone is working from the same ecosystem and plans.</div></div>
+        </div>
+      </div>
+
+    </div><!-- end guide-body -->
+  </div><!-- end guide-modal -->
+</div><!-- end guide-overlay -->
+
+<script>
+// ─── DYNAMIC DATA (Loaded via JSON) ──────────────────────────────────────────
+let ECO = JSON.parse(localStorage.getItem('dre_eco') || '[]');
+let PLANS = JSON.parse(localStorage.getItem('dre_plans') || '[]');
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let curView='gtm', activePlan=null, fTool_='all', fWeek_=null;
+let selModel_='deepseek-chat', selLabel='DeepSeek';
+let guardOn = localStorage.getItem('dre_guard')==='1';
+let apiKeys = JSON.parse(localStorage.getItem('dre_keys')||'{}');
+let savedRuns = JSON.parse(localStorage.getItem('dre_runs')||'[]');
+let chatHist = JSON.parse(localStorage.getItem('dre_chat')||'[]');
+let checkState = JSON.parse(localStorage.getItem('dre_checks')||'{}');
+let noteState = JSON.parse(localStorage.getItem('dre_notes')||'{}');
+
+function getSysPrompt() {
+  return `You are the DRE Command System — strategic co-founder and execution partner.
+
+ECOSYSTEM (all tools, accurate descriptions):
+${ECO.map(t=>`- ${t.name} (${t.purpose}): ${t.desc}`).join('\n')}
+
+FOUNDATION: The Christ node anchors every decision. Is this honoring? Does this genuinely serve people? — John 14:6
+
+YOUR ROLE: Product-focused operator. Every response moves execution forward. You know every tool deeply. You speak like a builder giving instructions to another builder. Direct, specific, actionable. No fluff.
+
+THE USER IS A NOVICE launching this ecosystem. Guide them clearly. Break things into simple steps. Emphasize the importance of "Step 0" (Social Media Infrastructure). Never assume they know jargon.`;
+}
+
+const ENDPOINTS = {
+  'deepseek-chat':{url:'https://api.deepseek.com/v1/chat/completions',p:'openai_compat'},
+  'llama-3.3-70b-versatile':{url:'https://api.groq.com/openai/v1/chat/completions',p:'openai_compat'},
+  'local-model':{url:'http://localhost:1234/v1/chat/completions',p:'openai_compat'}
+};
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init(){
+  if(localStorage.getItem('dre_theme')==='light'){document.body.classList.add('light');document.getElementById('theme-btn').textContent='☾ DARK';}
+  if(guardOn){document.getElementById('guard-banner').classList.add('on');document.getElementById('guard-btn').className='tb-btn guard-on';document.getElementById('guard-btn').textContent='✦ GUARD: ON';}
+  renderSidebarTools();
+  renderChat();
+  renderGTM();
+  if(!chatHist.length) addMsg('sys','DRE Command Console ready. Load a workspace to begin — or ask me anything.');
+}
+
+// ─── THEME + GUARD ──────────────────────────────────────────────────────────
+function toggleTheme(){
+  const l=document.body.classList.toggle('light');
+  document.getElementById('theme-btn').textContent=l?'☾ DARK':'☀ LIGHT';
+  localStorage.setItem('dre_theme',l?'light':'dark');
+}
+function toggleGuard(){
+  guardOn=!guardOn;
+  localStorage.setItem('dre_guard',guardOn?'1':'0');
+  document.getElementById('guard-banner').classList.toggle('on',guardOn);
+  const btn=document.getElementById('guard-btn');
+  btn.className=guardOn?'tb-btn guard-on':'tb-btn guard-off';
+  btn.textContent=guardOn?'✦ GUARD: ON':'✦ GUARD MODE';
+  if(guardOn) addMsg('guard','Guard Mode ON — Is this honoring? Does this genuinely serve people? — John 14:6');
+}
+
+// ─── WORKSPACE IMPORT LOGIC ──────────────────────────────────────────────────
+function loadWorkspace(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.ecosystem && data.plans) {
+        ECO = data.ecosystem;
+        PLANS = data.plans;
+        localStorage.setItem('dre_eco', JSON.stringify(ECO));
+        localStorage.setItem('dre_plans', JSON.stringify(PLANS));
+        
+        fTool_ = 'all'; 
+        fWeek_ = null;
+        activePlan = null;
+        
+        renderSidebarTools();
+        addMsg('sys', `Workspace loaded successfully: ${ECO.length} tools and ${PLANS.length} plans detected.`);
+        nav('eco'); 
+      } else {
+        addMsg('sys', 'Invalid workspace file. Missing "ecosystem" or "plans" arrays.');
+      }
+    } catch (err) {
+      addMsg('sys', 'Error parsing file. Please ensure it is a valid JSON format.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; 
+}
+
+function renderSidebarTools() {
+  const toolSec = document.getElementById('sb-tools-sec');
+  let html = `<div class="sb-lbl">TOOLS</div><div class="sb-item active" id="si-all" onclick="fTool('all',this)"><div class="sb-dot"></div>ALL TOOLS</div>`;
+  ECO.forEach(t => {
+    html += `<div class="sb-item" onclick="fTool('${t.name}',this)"><div class="sb-dot"></div>${t.name.toUpperCase()}<div class="sb-tag ${t.status==='LIVE'?'live':'soon'}">${t.status.toUpperCase()}</div></div>`;
+  });
+  toolSec.innerHTML = html;
+}
+
+function renderEmptyState() {
+  const template = `{
+  "ecosystem": [
+    {
+      "id": "TOOL_01",
+      "name": "Your Tool Name",
+      "color": "#00d4ff",
+      "status": "LIVE",
+      "purpose": "Short purpose statement",
+      "desc": "A slightly longer description of what this tool does and who it helps.",
+      "tier": "Free / Pro"
+    }
+  ],
+  "plans": [
+    {
+      "id": 1,
+      "tool": "Your Tool Name",
+      "week": 1,
+      "title": "Week 1 — Initial Launch",
+      "tagline": "The core strategy for the first week.",
+      "steps": {
+        "setup": "What needs to be configured before starting.",
+        "hook": "The core message or angle to grab attention.",
+        "entry": "How the user first interacts with the product.",
+        "moment": "The 'Aha!' moment you need to show.",
+        "asset": "The actual piece of content to create.",
+        "action": "Where and how to post or distribute.",
+        "capture": "How to capture the lead or user.",
+        "expansion": "How this connects to the next step."
+      },
+      "checklist": [
+        "Task 1 to complete",
+        "Task 2 to complete",
+        "Task 3 to complete"
+      ],
+      "expansionTools": ["Another Tool Name"]
+    }
+  ]
+}`;
+  
+  document.getElementById('ws-title').textContent = 'WELCOME TO DRE CONSOLE';
+  document.getElementById('ws-sub').textContent = 'IMPORT A WORKSPACE TO BEGIN';
+  document.getElementById('ws-body').innerHTML = `
+    <div class="empty" style="text-align:left; padding: 20px;">
+      <div style="font-size: 14px; color: var(--gold); margin-bottom: 10px; font-family: 'Orbitron', monospace;">NO WORKSPACE LOADED</div>
+      <p style="margin-bottom:12px;">New here? Click the button below to open the full New User Guide — it walks you through every step from setup to execution.</p>
+      <button onclick="openGuide()" style="padding:10px 20px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;border:1px solid var(--cyan-b);color:var(--cyan);background:rgba(0,212,255,0.07);margin-bottom:20px;">◈ OPEN NEW USER GUIDE</button>
+      <p style="margin-bottom: 20px;">Already know the drill? Copy the starter template below, save it as a <strong>.json</strong> file, fill in your details, and click <strong>IMPORT WORKSPACE</strong> in the sidebar.</p>
+      <div style="background: var(--input-bg); border: 1px solid var(--border); padding: 15px; position: relative;">
+        <button onclick="navigator.clipboard.writeText(this.nextElementSibling.innerText); this.innerText='COPIED!'; setTimeout(()=>this.innerText='COPY TEMPLATE', 2000);" style="position: absolute; top: 10px; right: 10px; padding: 4px 8px; font-size: 8px; font-family: 'Orbitron', monospace; cursor: pointer; background: var(--gold-dim); border: 1px solid var(--border-gold); color: var(--gold);">COPY TEMPLATE</button>
+        <pre style="font-size: 10px; color: var(--text-mid); overflow-x: auto; white-space: pre-wrap;">${template}</pre>
+      </div>
+    </div>
+  `;
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────────
+function nav(v){
+  curView=v;
+  document.querySelectorAll('.tni').forEach((el,i)=>el.classList.toggle('active',['gtm','eco','social','saved'][i]===v));
+  if(v==='gtm') renderGTM();
+  else if(v==='eco') renderEco();
+  else if(v==='social') renderSocial();
+  else renderSaved();
+}
+
+// ─── GTM ────────────────────────────────────────────────────────────────────
+function renderGTM(){
+  if (!ECO.length || !PLANS.length) return renderEmptyState();
+  document.getElementById('ws-title').textContent='GTM EXECUTION PLANS';
+  document.getElementById('ws-sub').textContent='SELECT A PLAN TO BEGIN YOUR DRE ECOSYSTEM LAUNCH';
+  let plans=PLANS;
+  if(fTool_!=='all') plans=plans.filter(p=>p.tool===fTool_);
+  if(fWeek_) plans=plans.filter(p=>p.week===fWeek_);
+  let html=`<div class="sh">${plans.length} PLANS AVAILABLE</div>
+  <div class="plan-grid">${plans.map(p=>`
+    <div class="plan-card${activePlan&&activePlan.id===p.id?' selected':''}" onclick="loadPlan(${p.id})">
+      <div class="pc-wk">WEEK ${p.week}</div>
+      <div class="pc-tool">${p.tool.toUpperCase()}</div>
+      <div class="pc-title">${p.title}</div>
+      <div class="pc-desc">${p.tagline}</div>
+    </div>`).join('')}</div>
+  ${activePlan?renderDetail(activePlan):''}`;
+  document.getElementById('ws-body').innerHTML=html;
+}
+
+function renderDetail(plan){
+  const skeys=['setup','hook','entry','moment','asset','action','capture','expansion'];
+  const slbls=['STEP 0: SETUP','HOOK','ENTRY','MOMENT','ASSET','ACTION','CAPTURE','EXPANSION'];
+  const steps=skeys.map((k,i)=>`
+    <div class="step-block">
+      <div class="step-key"><div class="sk-num">0${i}</div><div class="sk-lbl">${slbls[i]}</div></div>
+      <div class="step-val">${plan.steps[k]||''}</div>
+    </div>`).join('');
+
+  const checks=plan.checklist||[];
+  const ck=checkState[plan.id]||{};
+  const nk=noteState[plan.id]||{};
+  const done=Object.values(ck).filter(Boolean).length;
+  const clItems=checks.map((c,i)=>`
+    <div class="cl-item${ck[i]?' done':''}" onclick="toggleCheck(${plan.id},${i})">
+      <div class="cl-cb">${ck[i]?'✓':''}</div>
+      <div>
+        <div class="cl-text">${c}</div>
+        <div class="cl-note"><input type="text" placeholder="Add a note…" value="${nk[i]||''}" onclick="event.stopPropagation()" onchange="saveNote(${plan.id},${i},this.value)" /></div>
+      </div>
+    </div>`).join('');
+
+  const exp=(plan.expansionTools||[]).map(t=>`<div class="exp-tag">${t}</div>`).join('');
+  return `
+  <div class="plan-view" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <div class="plan-badge"><div class="plan-badge-dot"></div><span>${plan.tool.toUpperCase()} — WEEK ${plan.week}</span></div>
+    <div class="plan-title">${plan.title}</div>
+    <div class="plan-tag">${plan.tagline}</div>
+    <div class="sh">EXECUTION STEPS</div>
+    <div class="steps-wrap">${steps}</div>
+    <div class="sh">ACTION CHECKLIST</div>
+    <div class="checklist-wrap">
+      <div class="cl-head">TASKS <span class="cl-progress">${done}/${checks.length} COMPLETE</span></div>
+      ${clItems}
+    </div>
+    <div class="sh">ECOSYSTEM EXPANSION</div>
+    <div class="exp-tools">${exp}</div>
+    <div class="plan-acts">
+      <div class="act-btn run" onclick="runAI(${plan.id})">▶ RUN WITH AI</div>
+      <div class="act-btn dive" onclick="deepDive(${plan.id})">⚡ DEEP DIVE</div>
+      <div class="act-btn save" onclick="saveRun(${plan.id})">💾 SAVE RUN</div>
+    </div>
+  </div>`;
+}
+
+function loadPlan(id){
+  activePlan=PLANS.find(p=>p.id===id);
+  renderGTM();
+  setTimeout(()=>document.getElementById('ws-body').scrollTop=9999,60);
+  addMsg('sys',`Plan loaded: "${activePlan.title}". Remember: Ensure your digital infrastructure (Step 0) is ready before launching.`);
+}
+function toggleCheck(planId,idx){
+  if(!checkState[planId]) checkState[planId]={};
+  checkState[planId][idx]=!checkState[planId][idx];
+  localStorage.setItem('dre_checks',JSON.stringify(checkState));
+  renderGTM();
+  setTimeout(()=>document.getElementById('ws-body').scrollTop=9999,60);
+}
+function saveNote(planId,idx,val){
+  if(!noteState[planId]) noteState[planId]={};
+  noteState[planId][idx]=val;
+  localStorage.setItem('dre_notes',JSON.stringify(noteState));
+}
+function runAI(id){const p=PLANS.find(x=>x.id===id);sendToAI(`I'm working on the GTM plan: "${p.title}" for ${p.tool}.\n\nSetup required: ${p.steps.setup}\nHook: ${p.steps.hook}\n\nI'm a novice. Give me the first 3 things I should do TODAY, explained simply and specifically.`);}
+function deepDive(id){const p=PLANS.find(x=>x.id===id);sendToAI(`Deep dive on the ASSET step for: "${p.title}"\n\nAsset: ${p.steps.asset}\n\nBuild me a complete content brief: exact script, hook line, what to show on screen, CTA, and best time to post. Write it so a first-timer can follow it without any experience.`);}
+function saveRun(id){
+  const p=PLANS.find(x=>x.id===id);
+  savedRuns.unshift({...p,date:new Date().toLocaleDateString()});
+  localStorage.setItem('dre_runs',JSON.stringify(savedRuns));
+  addMsg('sys',`Saved: "${p.title}"`);
+}
+
+// ─── ECOSYSTEM ──────────────────────────────────────────────────────────────
+function renderEco(){
+  if (!ECO.length || !PLANS.length) return renderEmptyState();
+  document.getElementById('ws-title').textContent='GALAXY-DRE ECOSYSTEM';
+  document.getElementById('ws-sub').textContent='ALL TOOLS — CLICK ANY TO GET A GTM PLAN';
+  const cards=ECO.map(t=>`
+    <div class="eco-card" onclick="askAbout('${t.name}')">
+      <div class="eco-name" style="color:${t.color}">${t.name.toUpperCase()}</div>
+      <div class="eco-purpose">${t.purpose}</div>
+      <div class="eco-desc">${t.desc.substring(0,110)}…</div>
+      <div class="eco-foot">
+        <div class="eco-sdot" style="background:${t.status==='LIVE'?'var(--green)':t.status==='FOUNDATION'?'#fff':'var(--text-dim)'}"></div>
+        <div class="eco-status">${t.status}</div>
+        <div class="eco-tier" style="color:${t.color};border-color:${t.color}40">${t.tier}</div>
+      </div>
+    </div>`).join('');
+  document.getElementById('ws-body').innerHTML=`<div class="sh">ALL TOOLS — ${ECO.length} IN ECOSYSTEM</div><div class="eco-grid">${cards}</div>`;
+}
+function askAbout(name){sendToAI(`Explain ${name} to me simply — what it does, who it helps, and what the first week of launching it should look like. I'm a novice.`);}
+
+// ─── SOCIAL MEDIA 101 ─────────────────────────────────────────────────────────
+function renderSocial(){
+  document.getElementById('ws-title').textContent='SOCIAL MEDIA 101';
+  document.getElementById('ws-sub').textContent='FOUNDATIONAL EDUCATION FOR NOVICE LAUNCHERS';
+  document.getElementById('ws-body').innerHTML=`
+  <div class="sh">WHY SOCIAL MEDIA IS YOUR DISTRIBUTION ENGINE</div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">01</div><div class="sk-lbl">WHAT IT IS</div></div>
+    <div class="step-val">Social media is not a megaphone — it's a marketplace of attention. Each platform has a different audience, a different algorithm, and a different content format. Posting the same thing everywhere the same way is a mistake novices make. The platforms reward native content that fits their format.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">02</div><div class="sk-lbl">BIO LINK</div></div>
+    <div class="step-val">A bio link is the single clickable URL in your social profile. It's the only exit ramp from your content to your product. Every piece of content you make should funnel people toward this link. Tools like Linktree, Beacons, or a simple landing page let one link hold multiple destinations. Without a working bio link, your content is a dead end.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">03</div><div class="sk-lbl">TIKTOK</div></div>
+    <div class="step-val">TikTok is the fastest organic distribution engine alive. Its algorithm shows your content to people who don't follow you — which means you can reach thousands of strangers on your first post. The key is: the hook (first 3 seconds) determines everything. If people scroll past, your content dies. The format is vertical video, 15 seconds to 3 minutes. Raw, authentic content outperforms polished production. TikTok rewards consistency — post 3-5 times per week, not once per month.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">04</div><div class="sk-lbl">X (TWITTER)</div></div>
+    <div class="step-val">X is where technology, finance, and builder culture lives. Developers, investors, and indie hackers use X as their primary feed. The format is text-first, with threads performing better than single tweets. A 'thread' is a series of connected posts that tell one story. X rewards accounts that post consistently and engage with other accounts — reply to 10 posts in your niche for every 1 post you publish. The lifespan of a tweet is about 4 hours. Volume matters here.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">05</div><div class="sk-lbl">YOUTUBE</div></div>
+    <div class="step-val">YouTube is the second largest search engine in the world. People use it specifically to find tutorials, walkthroughs, and 'how to' content. A YouTube video has a much longer lifespan than TikTok or X — a well-titled video can generate views for years. The format is horizontal long-form (5-30 minutes), though YouTube Shorts (under 60 seconds, vertical) now competes with TikTok. Good titles matter more than good thumbnails. Write titles that answer the search query your target user would type.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">06</div><div class="sk-lbl">LINKEDIN</div></div>
+    <div class="step-val">LinkedIn is for professional, B2B, and founder audiences. The format is text posts with optional images or video. Long-form articles and personal stories outperform promotional posts. LinkedIn's algorithm gives content a longer lifespan than X — a well-performing post can get traction for 3-5 days. Engage with comments within the first 2 hours of posting for maximum reach.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">07</div><div class="sk-lbl">INSTAGRAM</div></div>
+    <div class="step-val">Instagram is for visual, lifestyle, and faith content. Reels (short vertical videos) currently get the most organic reach. Carousels (multi-image posts that people swipe through) get the highest save rates — and saves are Instagram's strongest engagement signal. A saved post tells the algorithm: this person wants to come back to this.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">08</div><div class="sk-lbl">ALGORITHM RULES</div></div>
+    <div class="step-val">Every social platform algorithm shares 3 core principles: (1) Engagement signals matter more than follower count. Comments beat likes. Shares beat comments. Saves beat shares. (2) Consistency beats virality. An account that posts 5 times a week for 6 months outperforms an account that goes viral once. (3) Platform-native content wins. Stop fighting each platform's format and work with it.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">09</div><div class="sk-lbl">REDDIT</div></div>
+    <div class="step-val">Reddit is the most trust-resistant community on the internet — and the most rewarding when you earn that trust. The rule on Reddit: never pitch first. Participate in discussions for 1-2 weeks before sharing your own tool. Lead with genuine value, not promotion. A single honest post that solves a real problem in the right subreddit can drive thousands of users.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">10</div><div class="sk-lbl">EMAIL LIST</div></div>
+    <div class="step-val">Your email list is the only audience you truly own. Social platforms can ban you, change their algorithm, or shut down. Your email list cannot be taken away. Start building it from Day 1. Offer something valuable in exchange for an email address. Email converts to paid customers at 3-5x the rate of social media.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:8px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">11</div><div class="sk-lbl">CONTENT TYPES</div></div>
+    <div class="step-val">Every piece of content you make falls into one of 4 categories: (1) DEMO — show the tool doing what it does. This converts. (2) EDUCATION — teach something your audience needs to know to appreciate the tool. This builds authority. (3) STORY — share the real experience of building and using the tool. This builds trust. (4) SOCIAL PROOF — show real users getting real results. This removes doubt. Most novice creators only post demos. Use all 4. Rotate between them.</div>
+  </div>
+  <div class="step-block" style="grid-template-columns:85px 1fr;margin-bottom:24px;border:1px solid var(--border);">
+    <div class="step-key"><div class="sk-num">12</div><div class="sk-lbl">STEP 0 TRUTH</div></div>
+    <div class="step-val">Every GTM plan in this console starts with a STEP 0. This is not bureaucracy — it's survival. Launching a tool into a social media void is like opening a store with no signage and no address. The work of setting up your accounts, writing your bio, and creating your bio link IS the product launch. If Step 0 is not done, nothing in Steps 1-8 will land. Do Step 0 first. Always.</div>
+  </div>
+  <div class="plan-acts">
+    <div class="act-btn run" onclick="sendToAI('I am a complete novice launching my first product. I have zero social media following. Walk me through exactly what I should set up this week to be ready to launch.')">▶ ASK AI: WHERE DO I START?</div>
+    <div class="act-btn dive" onclick="nav('gtm')">← BACK TO GTM PLANS</div>
+  </div>`;
+}
+function renderSaved(){
+  document.getElementById('ws-title').textContent='SAVED RUNS';
+  document.getElementById('ws-sub').textContent='YOUR EXECUTION HISTORY';
+  if(!savedRuns.length){document.getElementById('ws-body').innerHTML='<div class="empty">No saved runs yet.<br>Load a GTM plan and tap <strong>SAVE RUN</strong>.</div>';return;}
+  const cards=savedRuns.map((r,i)=>`
+    <div class="saved-card" onclick="loadSaved(i)">
+      <div class="sv-tool">${(r.tool||'').toUpperCase()}</div>
+      <div><div class="sv-title">${r.title}</div><div class="sv-meta">Week ${r.week} · Saved ${r.date}</div></div>
+      <div class="sv-load">LOAD →</div>
+    </div>`).join('');
+  document.getElementById('ws-body').innerHTML=`<div class="sh">${savedRuns.length} SAVED RUNS</div><div class="saved-list">${cards}</div>`;
+}
+function loadSaved(i){
+  activePlan={...savedRuns[i]};
+  curView='gtm';
+  document.querySelectorAll('.tni').forEach((el,idx)=>el.classList.toggle('active',idx===0));
+  renderGTM();
+  setTimeout(()=>document.getElementById('ws-body').scrollTop=9999,60);
+  addMsg('sys',`Reloaded: "${activePlan.title}". Ready to continue.`);
+}
+
+// ─── FILTERS ────────────────────────────────────────────────────────────────
+function showAll(){fTool_='all';fWeek_=null;document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));document.getElementById('si-all').classList.add('active');nav('gtm');}
+function fTool(t,el){fTool_=t;fWeek_=null;document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');nav('gtm');}
+function fWeek(w,el){fWeek_=w;fTool_='all';document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');nav('gtm');}
+function clearSaved(){savedRuns=[];localStorage.removeItem('dre_runs');addMsg('sys','Saved runs cleared.');nav('saved');}
+
+// ─── AI ──────────────────────────────────────────────────────────────────────
+function selModel(id,label,el){
+  selModel_=id;selLabel=label;
+  document.querySelectorAll('.mbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mdisplay').textContent=label;
+  const k=apiKeys[id]||'';
+  document.getElementById('api-in').value=k?'••••••••••••':'';
+  const lmsRow=document.getElementById('lms-row');
+  if(lmsRow) lmsRow.style.display=(id==='local-model')?'block':'none';
+  if(id==='local-model'){
+    const lmsM=document.getElementById('lms-model');
+    if(lmsM) lmsM.value=localStorage.getItem('dre_lms_model')||'';
+  }
+  addMsg('sys',`Model: ${label}. ${id==='local-model'?'Enter your loaded model name below (e.g. mistral-7b-instruct). LM Studio uses a dummy API key.':k?'Key loaded.':'Paste your API key above and hit SAVE.'}`);
+}
+function saveLMSModel(val){localStorage.setItem('dre_lms_model',val);}
+function saveKey(){const v=document.getElementById('api-in').value.trim();if(!v||v==='••••••••••••')return;apiKeys[selModel_]=v;localStorage.setItem('dre_keys',JSON.stringify(apiKeys));document.getElementById('api-in').value='••••••••••••';addMsg('sys',`API key saved for ${selLabel}.`);}
+function qp(t){document.getElementById('ai-in').value=t;sendMsg();}
+function aiKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function resize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';}
+function sendMsg(){const inp=document.getElementById('ai-in');const v=inp.value.trim();if(!v)return;inp.value='';inp.style.height='auto';sendToAI(v);}
+
+function addMsg(role,text){
+  const msgs=document.getElementById('ai-msgs');
+  const labels={sys:'SYSTEM',you:'YOU',ai:selLabel.toUpperCase(),guard:'✦ GUARD'};
+  const d=document.createElement('div');d.className='msg';
+  d.innerHTML=`<div class="msg-role ${role}">${labels[role]||role.toUpperCase()}</div><div class="msg-body ${role}-b">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+  chatHist.push({role,text});
+  if(chatHist.length>60) chatHist=chatHist.slice(-60);
+  localStorage.setItem('dre_chat',JSON.stringify(chatHist));
+}
+
+function renderChat(){
+  chatHist.forEach(m=>addMsg(m.role,m.text));
+}
+
+function showTyping(){const msgs=document.getElementById('ai-msgs');const d=document.createElement('div');d.className='msg';d.id='typer';d.innerHTML=`<div class="msg-role ai">${selLabel.toUpperCase()}</div><div class="typing"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>`;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
+function removeTyping(){const el=document.getElementById('typer');if(el)el.remove();}
+
+async function sendToAI(userMsg){
+  addMsg('you',userMsg);
+  chatHist.push({role:'user',content:userMsg});
+  
+  let key=apiKeys[selModel_];
+  if(selModel_ === 'local-model' && !key) key = 'lm-studio';
+  
+  if(!key){addMsg('sys',`No API key for ${selLabel}. Paste it above and hit SAVE.`);return;}
+  showTyping();
+  
+  const ep=ENDPOINTS[selModel_];
+  try{
+    let text;
+    const msgs=[{role:'system',content:getSysPrompt()},...chatHist.filter(m=>m.role==='user'||m.role==='assistant').slice(-20)];
+    const r=await fetch(ep.url,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${key}`
+      },
+      body:JSON.stringify({
+        model:selModel_,
+        max_tokens:1500,
+        messages:msgs
+      })
+    });
+    
+    const d=await r.json();
+    text=d.choices?.[0]?.message?.content||d.error?.message||'No response.';
+    
+    removeTyping();
+    chatHist.push({role:'assistant',content:text});
+    addMsg('ai',text);
+  }catch(err){
+    removeTyping();
+    addMsg('sys',`Error: ${err.message}. Check your API key, model availability, and internet connection.`);
+  }
+}
+
+// ─── NEW USER GUIDE ──────────────────────────────────────────────────────────
+function openGuide(){document.getElementById('guide-overlay').classList.add('on');}
+function closeGuide(){document.getElementById('guide-overlay').classList.remove('on');}
+function showGuideTab(tab,el){
+  document.querySelectorAll('[id^="gtab-"]').forEach(t=>t.style.display='none');
+  document.getElementById('gtab-'+tab).style.display='block';
+  document.querySelectorAll('.gt').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeGuide();});
+
+init();
+</script>
+</body>
+</html>
