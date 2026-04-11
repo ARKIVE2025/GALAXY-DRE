@@ -698,7 +698,7 @@
         <button class="portal-btn" style="background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;" onclick="window.location.href='24_HOURS_.HTML'">OPEN 24 HOURS →</button>
         <!-- DRE Workflow & Console in menu -->
         <button class="portal-btn" style="background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;" onclick="window.location.href='dre_workflow_V2.html'">OPEN DRE WORKFLOW →</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;" onclick="window.location.href='DRE_User_Console_v3.0.HTML'">OPEN DRE CONSOLE →</button>
+        <button class="portal-btn" style="background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;" onclick="window.location.href='DRE_User Console v3.0.HTML'">OPEN DRE CONSOLE →</button>
     </div>
 
     <div class="settings-section">
@@ -902,7 +902,7 @@ const moonsData = [
         orbitPhase: 0,          // starting angle
         size: 1.6,
         color: 0xffc832,
-        file: "DRE_User_Console_v3.0.HTML",
+        file: "DRE_User Console v3.0.HTML",
         category: "Execution System · Command Interface",
         desc: "[FOUNDER] Command and execution interface. Select tools from sidebar, view structured plans as cards, follow step-by-step execution blocks, track progress with checklists. Multi-panel system: sidebar / workspace / AI panel.\n\nThis is the EXECUTION LAYER. Run what you built in DRE Workflow here.",
         protocol: "Flow: Build in DRE Workflow → Execute in DRE Console.\n\nConsole operates on workflows already designed. Open tool → select plan → follow execution blocks → track completion.",
@@ -927,7 +927,26 @@ camera.position.set(0, 80, isMobile ? 320 : 250);
 const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild(renderer.domElement);
+
+// ── CINEMATIC SCENE LIGHTING ──
+// Key: deep-space sunlight — warm, strong, directional
+const sunLight = new THREE.DirectionalLight(0xfff5e0, 2.8);
+sunLight.position.set(120, 80, 60);
+scene.add(sunLight);
+// Fill: cold blue ambient — prevents pure-black shadow sides
+const fillLight = new THREE.AmbientLight(0x0d1a2a, 3.5);
+scene.add(fillLight);
+// Rim: cinematic edge highlight, blue-cold
+const rimLight = new THREE.DirectionalLight(0x88bbff, 1.6);
+rimLight.position.set(-80, -40, -80);
+scene.add(rimLight);
+// Engine point light — follows ship, lights nearby hull
+const enginePointLight = new THREE.PointLight(0xff8833, 0, 30);
+scene.add(enginePointLight);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -1128,376 +1147,453 @@ nodesData.forEach(n => {
 // cockpit canopy, hull panels, exhaust glow, trail
 // ══════════════════════════════════════════════════════
 function buildSpaceship(moon, moonGroup) {
-    const S = moon.size; // base scale unit
+    const S = moon.size;
     const shipGroup = new THREE.Group();
     moonGroup.add(shipGroup);
 
-    // ── Material palette ──
-    const matHull      = new THREE.MeshBasicMaterial({ color: 0xc8d8e8 });          // light grey hull
-    const matHullDark  = new THREE.MeshBasicMaterial({ color: 0x7a8fa0 });          // darker panel
-    const matHullMid   = new THREE.MeshBasicMaterial({ color: 0xa0b4c4 });          // mid panel
-    const matGold      = new THREE.MeshBasicMaterial({ color: 0xffc832 });          // gold trim
-    const matGoldDark  = new THREE.MeshBasicMaterial({ color: 0xb8860b });          // dark gold
-    const matCockpit   = new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent: true, opacity: 0.75 });
-    const matCockpitRim= new THREE.MeshBasicMaterial({ color: 0x005577 });
-    const matEngine    = new THREE.MeshBasicMaterial({ color: 0x334455 });
-    const matExhaust   = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.9 });
-    const matExhaust2  = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.6 });
-    const matExhaustCore=new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
-    const matNav       = new THREE.MeshBasicMaterial({ color: 0xff2244, transparent: true, opacity: 0.9 });
-    const matNavGreen  = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.9 });
-    const matStrut     = new THREE.MeshBasicMaterial({ color: 0x556677 });
-    const matVent      = new THREE.MeshBasicMaterial({ color: 0x223344, transparent: true, opacity: 0.8 });
-
-    // ─────────────────────────────────────────────
-    // 1. MAIN FUSELAGE — elongated tapered body
-    //    Nose→mid→tail using CylinderGeometry segments
-    // ─────────────────────────────────────────────
-    // Nose cone (sharp forward point)
-    const noseConeGeo = new THREE.ConeGeometry(S * 0.38, S * 2.2, 12);
-    const noseCone = new THREE.Mesh(noseConeGeo, matHull);
-    noseCone.rotation.z = -Math.PI / 2;   // point along +X (forward)
-    noseCone.position.x = S * 2.8;
-    shipGroup.add(noseCone);
-
-    // Nose tip accent
-    const noseTipGeo = new THREE.ConeGeometry(S * 0.08, S * 0.6, 8);
-    const noseTip = new THREE.Mesh(noseTipGeo, matGold);
-    noseTip.rotation.z = -Math.PI / 2;
-    noseTip.position.x = S * 4.0;
-    shipGroup.add(noseTip);
-
-    // Main fuselage cylinder (mid section)
-    const fuseGeo = new THREE.CylinderGeometry(S * 0.42, S * 0.38, S * 3.8, 12);
-    const fuse = new THREE.Mesh(fuseGeo, matHull);
-    fuse.rotation.z = Math.PI / 2;
-    fuse.position.x = S * 0.4;
-    shipGroup.add(fuse);
-
-    // Rear fuselage (slightly wider, engine mount)
-    const rearGeo = new THREE.CylinderGeometry(S * 0.52, S * 0.42, S * 1.8, 12);
-    const rear = new THREE.Mesh(rearGeo, matHullMid);
-    rear.rotation.z = Math.PI / 2;
-    rear.position.x = -S * 1.8;
-    shipGroup.add(rear);
-
-    // Tail cone
-    const tailGeo = new THREE.ConeGeometry(S * 0.52, S * 0.9, 12);
-    const tail = new THREE.Mesh(tailGeo, matHullDark);
-    tail.rotation.z = Math.PI / 2;
-    tail.position.x = -S * 3.1;
-    shipGroup.add(tail);
-
-    // ─────────────────────────────────────────────
-    // 2. HULL PANEL DETAILS — raised rectangular panels
-    // ─────────────────────────────────────────────
-    [[S*1.2, S*0.44, S*0.04, S*0.8, S*0.16],
-     [S*0.2, S*0.44, S*0.04, S*1.2, S*0.14],
-     [-S*0.8, S*0.43, S*0.04, S*0.7, S*0.12]].forEach(([px,py,pz,pw,ph]) => {
-        const pGeo = new THREE.BoxGeometry(pw, S*0.04, ph);
-        const p = new THREE.Mesh(pGeo, matHullDark);
-        p.position.set(px, py, pz);
-        shipGroup.add(p);
-        // mirror bottom
-        const pb = p.clone(); pb.position.y = -py; shipGroup.add(pb);
+    // ═══════════════════════════════════════════════════
+    // MATERIALS — PBR (MeshStandardMaterial) throughout
+    // Requires scene lighting to render correctly
+    // ═══════════════════════════════════════════════════
+    const matMetal = new THREE.MeshStandardMaterial({
+        color: 0xc8d4de, metalness: 0.82, roughness: 0.32
+    });
+    const matMetalDark = new THREE.MeshStandardMaterial({
+        color: 0x2c3a48, metalness: 0.75, roughness: 0.52
+    });
+    const matMetalMid = new THREE.MeshStandardMaterial({
+        color: 0x8aa0b2, metalness: 0.65, roughness: 0.45
+    });
+    const matGold = new THREE.MeshStandardMaterial({
+        color: 0xd4a84f, metalness: 1.0, roughness: 0.22
+    });
+    const matGoldBright = new THREE.MeshStandardMaterial({
+        color: 0xffc832, metalness: 0.9, roughness: 0.18
+    });
+    const matGlass = new THREE.MeshStandardMaterial({
+        color: 0x44aadd, metalness: 0.1, roughness: 0.05,
+        transparent: true, opacity: 0.72
+    });
+    const matThermal = new THREE.MeshStandardMaterial({
+        color: 0xeeeeff, metalness: 0.2, roughness: 0.85
+    });
+    const matPanel = new THREE.MeshStandardMaterial({
+        color: 0x09141e, metalness: 0.35, roughness: 0.75
+    });
+    const matStrut = new THREE.MeshStandardMaterial({
+        color: 0x7a8fa0, metalness: 0.7, roughness: 0.4
+    });
+    const matNozzle = new THREE.MeshStandardMaterial({
+        color: 0x1a2530, metalness: 0.9, roughness: 0.25
+    });
+    const matHeatShield = new THREE.MeshStandardMaterial({
+        color: 0x3a2010, metalness: 0.1, roughness: 0.95
+    });
+    // Emissive materials (glow — no light dependency)
+    const matGlowOrange = new THREE.MeshBasicMaterial({
+        color: 0xff7722, transparent: true, opacity: 0.88
+    });
+    const matGlowAmber = new THREE.MeshBasicMaterial({
+        color: 0xffaa33, transparent: true, opacity: 0.55
+    });
+    const matGlowWhite = new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 0.80
+    });
+    const matGlowBlue = new THREE.MeshBasicMaterial({
+        color: 0x44aaff, transparent: true, opacity: 0.45
+    });
+    const matNavRed = new THREE.MeshBasicMaterial({
+        color: 0xff2244, transparent: true, opacity: 0.9
+    });
+    const matNavGreen = new THREE.MeshBasicMaterial({
+        color: 0x00ff88, transparent: true, opacity: 0.9
+    });
+    const matNavWhite = new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 0.9
     });
 
-    // Gold stripe along fuselage top
-    const stripeGeo = new THREE.BoxGeometry(S * 4.5, S * 0.04, S * 0.1);
-    const stripe = new THREE.Mesh(stripeGeo, matGold);
-    stripe.position.set(S * 0.5, S * 0.43, 0);
-    shipGroup.add(stripe);
+    // ═══════════════════════════════════════════════════
+    // 1. ORION CREW MODULE — truncated cone capsule
+    // ═══════════════════════════════════════════════════
+    // Main capsule body (truncated cone — wider at base)
+    const capsuleGeo = new THREE.CylinderGeometry(S * 0.38, S * 0.48, S * 0.55, 32);
+    const capsule = new THREE.Mesh(capsuleGeo, matMetal);
+    capsule.position.y = S * 0.38;
+    shipGroup.add(capsule);
 
-    // ─────────────────────────────────────────────
-    // 3. COCKPIT CANOPY — bubble on top
-    // ─────────────────────────────────────────────
-    // Canopy base rim
-    const canopyRimGeo = new THREE.CylinderGeometry(S * 0.32, S * 0.38, S * 0.12, 10);
-    const canopyRim = new THREE.Mesh(canopyRimGeo, matCockpitRim);
-    canopyRim.position.set(S * 1.6, S * 0.46, 0);
-    shipGroup.add(canopyRim);
+    // Capsule top dome
+    const domeCap = new THREE.SphereGeometry(S * 0.38, 32, 16, 0, Math.PI*2, 0, Math.PI/2);
+    const dome = new THREE.Mesh(domeCap, matMetal);
+    dome.position.y = S * 0.65;
+    shipGroup.add(dome);
 
-    // Canopy glass dome (half sphere)
-    const canopyGeo = new THREE.SphereGeometry(S * 0.32, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-    const canopy = new THREE.Mesh(canopyGeo, matCockpit);
-    canopy.position.set(S * 1.6, S * 0.52, 0);
-    shipGroup.add(canopy);
+    // Capsule shoulder ring — gold structural band
+    const shoulderGeo = new THREE.TorusGeometry(S * 0.485, S * 0.028, 12, 64);
+    const shoulder = new THREE.Mesh(shoulderGeo, matGold);
+    shoulder.rotation.x = Math.PI / 2;
+    shoulder.position.y = S * 0.11;
+    shipGroup.add(shoulder);
 
-    // Canopy frame bars
-    [0, 72, 144, 216, 288].forEach(deg => {
-        const rad = (deg * Math.PI) / 180;
-        const fGeo = new THREE.BoxGeometry(S * 0.02, S * 0.34, S * 0.02);
-        const f = new THREE.Mesh(fGeo, matCockpitRim);
-        f.position.set(
-            S * 1.6 + Math.cos(rad) * S * 0.16,
-            S * 0.68,
-            Math.sin(rad) * S * 0.16
-        );
-        f.rotation.y = -rad;
-        shipGroup.add(f);
+    // Abort tower — thin spike on top (Orion LAS)
+    const lasBaseGeo = new THREE.CylinderGeometry(S * 0.08, S * 0.04, S * 0.22, 8);
+    const lasBase = new THREE.Mesh(lasBaseGeo, matMetalDark);
+    lasBase.position.y = S * 1.04;
+    shipGroup.add(lasBase);
+    // Tower legs (3 thin struts up)
+    [0, 120, 240].forEach(deg => {
+        const rad = deg * Math.PI / 180;
+        const legGeo = new THREE.CylinderGeometry(S * 0.008, S * 0.008, S * 0.52, 4);
+        const leg = new THREE.Mesh(legGeo, matGold);
+        leg.position.set(Math.cos(rad) * S * 0.055, S * 1.38, Math.sin(rad) * S * 0.055);
+        shipGroup.add(leg);
+    });
+    // LAS motor housing (top of tower)
+    const lasTopGeo = new THREE.CylinderGeometry(S * 0.065, S * 0.065, S * 0.14, 8);
+    const lasTop = new THREE.Mesh(lasTopGeo, matMetalDark);
+    lasTop.position.y = S * 1.65;
+    shipGroup.add(lasTop);
+    const lasTipGeo = new THREE.ConeGeometry(S * 0.065, S * 0.12, 8);
+    const lasTip = new THREE.Mesh(lasTipGeo, matMetalDark);
+    lasTip.position.y = S * 1.78;
+    shipGroup.add(lasTip);
+
+    // ── Crew windows (3, evenly spaced around capsule) ──
+    [0, 120, 240].forEach(deg => {
+        const rad = deg * Math.PI / 180;
+        const r = S * 0.45;
+        // Window frame
+        const wFrameGeo = new THREE.CylinderGeometry(S * 0.07, S * 0.07, S * 0.022, 20);
+        const wFrame = new THREE.Mesh(wFrameGeo, matGold);
+        wFrame.position.set(Math.cos(rad) * r, S * 0.45, Math.sin(rad) * r);
+        wFrame.rotation.z = Math.PI / 2;
+        wFrame.rotation.y = -rad;
+        shipGroup.add(wFrame);
+        // Window glass
+        const wGlassGeo = new THREE.CircleGeometry(S * 0.058, 20);
+        const wGlass = new THREE.Mesh(wGlassGeo, matGlass);
+        wGlass.position.set(Math.cos(rad) * (r + S*0.01), S * 0.45, Math.sin(rad) * (r + S*0.01));
+        wGlass.lookAt(wGlass.position.clone().multiplyScalar(2));
+        shipGroup.add(wGlass);
     });
 
-    // ─────────────────────────────────────────────
-    // 4. SWEPT DELTA WINGS
-    // ─────────────────────────────────────────────
-    function makeWing(side) { // side = +1 or -1
+    // Heat shield (base of capsule — ablative, rough dark)
+    const heatShieldGeo = new THREE.CylinderGeometry(S * 0.49, S * 0.44, S * 0.06, 32);
+    const heatShield = new THREE.Mesh(heatShieldGeo, matHeatShield);
+    heatShield.position.y = S * 0.10;
+    shipGroup.add(heatShield);
+    // Gold heat shield ring
+    const hsRingGeo = new THREE.TorusGeometry(S * 0.465, S * 0.018, 8, 64);
+    const hsRing = new THREE.Mesh(hsRingGeo, matGold);
+    hsRing.rotation.x = Math.PI / 2;
+    hsRing.position.y = S * 0.07;
+    shipGroup.add(hsRing);
+
+    // ═══════════════════════════════════════════════════
+    // 2. SERVICE MODULE — cylindrical, below capsule
+    // ═══════════════════════════════════════════════════
+    const smGeo = new THREE.CylinderGeometry(S * 0.36, S * 0.36, S * 0.72, 32);
+    const sm = new THREE.Mesh(smGeo, matMetalMid);
+    sm.position.y = -S * 0.25;
+    shipGroup.add(sm);
+
+    // SM top adapter ring
+    const smTopGeo = new THREE.TorusGeometry(S * 0.37, S * 0.022, 10, 48);
+    const smTop = new THREE.Mesh(smTopGeo, matGold);
+    smTop.rotation.x = Math.PI / 2;
+    smTop.position.y = S * 0.11;
+    shipGroup.add(smTop);
+
+    // ── Thermal radiator panels on SM sides (4 panels) ──
+    [0, 90, 180, 270].forEach((deg, i) => {
+        const rad = deg * Math.PI / 180;
+        // Outer panel
+        const tpGeo = new THREE.BoxGeometry(S * 0.08, S * 0.42, S * 0.22);
+        const tp = new THREE.Mesh(tpGeo, matThermal);
+        tp.position.set(Math.cos(rad) * S * 0.41, -S * 0.25, Math.sin(rad) * S * 0.41);
+        tp.rotation.y = -rad;
+        shipGroup.add(tp);
+        // Radiator cell lines (grid detail)
+        for (let row = 0; row < 4; row++) {
+            const lineGeo = new THREE.BoxGeometry(S * 0.082, S * 0.008, S * 0.21);
+            const line = new THREE.Mesh(lineGeo, matMetalDark);
+            line.position.set(Math.cos(rad) * S * 0.415, -S * 0.42 + row * S * 0.13, Math.sin(rad) * S * 0.415);
+            line.rotation.y = -rad;
+            shipGroup.add(line);
+        }
+    });
+
+    // SM gold equatorial band
+    const smBandGeo = new THREE.TorusGeometry(S * 0.365, S * 0.016, 8, 48);
+    const smBand = new THREE.Mesh(smBandGeo, matGoldBright);
+    smBand.rotation.x = Math.PI / 2;
+    smBand.position.y = -S * 0.25;
+    shipGroup.add(smBand);
+
+    // ═══════════════════════════════════════════════════
+    // 3. EUROPEAN SERVICE MODULE ENGINE SECTION
+    // ═══════════════════════════════════════════════════
+    // Adapter skirt (tapers inward to engine)
+    const skirtGeo = new THREE.CylinderGeometry(S * 0.22, S * 0.36, S * 0.30, 24);
+    const skirt = new THREE.Mesh(skirtGeo, matMetalDark);
+    skirt.position.y = -S * 0.76;
+    shipGroup.add(skirt);
+
+    // Engine bell — main OMS engine
+    const bellGeo = new THREE.CylinderGeometry(S * 0.28, S * 0.18, S * 0.32, 24);
+    const bell = new THREE.Mesh(bellGeo, matNozzle);
+    bell.position.y = -S * 1.06;
+    shipGroup.add(bell);
+
+    // Engine throat
+    const throatGeo = new THREE.CylinderGeometry(S * 0.10, S * 0.13, S * 0.14, 16);
+    const throat = new THREE.Mesh(throatGeo, matNozzle);
+    throat.position.y = -S * 0.92;
+    shipGroup.add(throat);
+
+    // Bell lip ring (gold)
+    const bellLipGeo = new THREE.TorusGeometry(S * 0.28, S * 0.018, 8, 48);
+    const bellLip = new THREE.Mesh(bellLipGeo, matGold);
+    bellLip.rotation.x = Math.PI / 2;
+    bellLip.position.y = -S * 0.92;
+    shipGroup.add(bellLip);
+
+    // 4 ACS (attitude control) thrusters around skirt
+    [45, 135, 225, 315].forEach(deg => {
+        const rad = deg * Math.PI / 180;
+        const acsGeo = new THREE.CylinderGeometry(S * 0.04, S * 0.055, S * 0.14, 8);
+        const acs = new THREE.Mesh(acsGeo, matNozzle);
+        acs.position.set(Math.cos(rad) * S * 0.28, -S * 0.80, Math.sin(rad) * S * 0.28);
+        acs.rotation.z = Math.PI / 2;
+        acs.rotation.y = -rad;
+        shipGroup.add(acs);
+    });
+
+    // ═══════════════════════════════════════════════════
+    // 4. SOLAR ARRAYS — 4-panel cross pattern (Orion ESA style)
+    //    Each wing: inner panel + outer panel + connecting beam
+    // ═══════════════════════════════════════════════════
+    // Solar panel cell texture canvas
+    function makeSolarTexture(w, h) {
+        const c = document.createElement('canvas');
+        c.width = 128; c.height = 64;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#080e18';
+        ctx.fillRect(0, 0, 128, 64);
+        ctx.strokeStyle = '#1a3050';
+        ctx.lineWidth = 1.5;
+        // Cell grid
+        for (let gx = 0; gx <= 8; gx++) { ctx.beginPath(); ctx.moveTo(gx*16, 0); ctx.lineTo(gx*16, 64); ctx.stroke(); }
+        for (let gy = 0; gy <= 4; gy++) { ctx.beginPath(); ctx.moveTo(0, gy*16); ctx.lineTo(128, gy*16); ctx.stroke(); }
+        // Cell fill tint
+        ctx.fillStyle = 'rgba(10,30,60,0.4)';
+        for (let gx=0;gx<8;gx++) for (let gy=0;gy<4;gy++) ctx.fillRect(gx*16+1,gy*16+1,14,14);
+        return new THREE.CanvasTexture(c);
+    }
+    const solarTex = makeSolarTexture(128, 64);
+    const matSolar = new THREE.MeshStandardMaterial({
+        map: solarTex, metalness: 0.25, roughness: 0.7, color: 0x101828
+    });
+
+    function makeSolarWing(side) { // side = +1 (port) or -1 (starboard)
         const wGroup = new THREE.Group();
 
-        // Main wing slab — tapered box approximation
-        // Wing root at fuselage, tip swept back
-        const wingShape = new THREE.Shape();
-        wingShape.moveTo(0, 0);           // leading edge root (front)
-        wingShape.lineTo(S * 3.2, 0);     // leading edge tip (front, swept back)
-        wingShape.lineTo(S * 4.0, S * 0.6); // trailing tip
-        wingShape.lineTo(S * 0.6, S * 0.55); // trailing root
-        wingShape.lineTo(0, 0);
+        // Inner beam
+        const beamGeo = new THREE.CylinderGeometry(S * 0.018, S * 0.018, S * 1.08, 8);
+        const beam = new THREE.Mesh(beamGeo, matStrut);
+        beam.rotation.z = Math.PI / 2;
+        beam.position.set(S * 0.54, -S * 0.25, 0);
+        wGroup.add(beam);
 
-        const wingExtSettings = { depth: S * 0.08, bevelEnabled: false };
-        const wingGeo = new THREE.ExtrudeGeometry(wingShape, wingExtSettings);
-        const wingMesh = new THREE.Mesh(wingGeo, matHullMid);
-        // rotate flat in XZ plane, then position
-        wingMesh.rotation.x = -Math.PI / 2;
-        wingMesh.position.set(-S * 0.6, 0, 0);
-        wGroup.add(wingMesh);
+        // Outer beam extension
+        const beam2Geo = new THREE.CylinderGeometry(S * 0.012, S * 0.012, S * 0.82, 8);
+        const beam2 = new THREE.Mesh(beam2Geo, matStrut);
+        beam2.rotation.z = Math.PI / 2;
+        beam2.position.set(S * 1.45, -S * 0.25, 0);
+        wGroup.add(beam2);
 
-        // Wing upper surface panel (darker)
-        const wpGeo = new THREE.BoxGeometry(S * 2.2, S * 0.02, S * 0.35);
-        const wp = new THREE.Mesh(wpGeo, matHullDark);
-        wp.position.set(S * 0.6, S * 0.05, S * 0.18);
-        wGroup.add(wp);
+        // Inner panel (larger)
+        const ip = new THREE.Mesh(new THREE.BoxGeometry(S * 0.72, S * 0.012, S * 0.42), matSolar);
+        ip.position.set(S * 0.54, -S * 0.25, 0);
+        wGroup.add(ip);
+        // Inner panel frame
+        const ipfGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(S * 0.72, S * 0.014, S * 0.42));
+        wGroup.add(new THREE.LineSegments(ipfGeo, new THREE.LineBasicMaterial({ color: 0x4a6070 })));
+        wGroup.children[wGroup.children.length-1].position.set(S * 0.54, -S * 0.25, 0);
 
-        // Gold wing tip stripe
-        const wtGeo = new THREE.BoxGeometry(S * 0.06, S * 0.1, S * 0.55);
-        const wt = new THREE.Mesh(wtGeo, matGold);
-        wt.position.set(S * 2.58, 0, S * 0.28);
-        wGroup.add(wt);
+        // Outer panel (smaller)
+        const op = new THREE.Mesh(new THREE.BoxGeometry(S * 0.58, S * 0.012, S * 0.38), matSolar);
+        op.position.set(S * 1.42, -S * 0.25, 0);
+        wGroup.add(op);
+        // Outer panel frame
+        const opfGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(S * 0.58, S * 0.014, S * 0.38));
+        const opf = new THREE.LineSegments(opfGeo, new THREE.LineBasicMaterial({ color: 0x4a6070 }));
+        opf.position.set(S * 1.42, -S * 0.25, 0);
+        wGroup.add(opf);
 
-        // Wing leading edge gold accent
-        const wleGeo = new THREE.BoxGeometry(S * 3.2, S * 0.06, S * 0.06);
-        const wle = new THREE.Mesh(wleGeo, matGold);
-        wle.rotation.y = -0.22;
-        wle.position.set(S * 0.9, 0, -S * 0.04);
-        wGroup.add(wle);
+        // Gold tip bar
+        const tipGeo = new THREE.BoxGeometry(S * 0.04, S * 0.025, S * 0.38);
+        const tip = new THREE.Mesh(tipGeo, matGold);
+        tip.position.set(S * 1.73, -S * 0.25, 0);
+        wGroup.add(tip);
 
-        // Ventral fin (small fin underneath)
-        const finGeo = new THREE.BoxGeometry(S * 0.06, S * 0.35, S * 0.7);
-        const fin = new THREE.Mesh(finGeo, matHullDark);
-        fin.position.set(S * 0.5, -S * 0.22, S * 0.18);
-        wGroup.add(fin);
-
-        wGroup.position.set(-S * 0.6, 0, 0);
-        wGroup.scale.z = side;
+        wGroup.scale.x = side;
         shipGroup.add(wGroup);
     }
 
-    makeWing(1);   // starboard
-    makeWing(-1);  // port
+    makeSolarWing(1);
+    makeSolarWing(-1);
 
-    // ─────────────────────────────────────────────
-    // 5. TWIN ENGINE NACELLES (mounted under wings)
-    // ─────────────────────────────────────────────
-    function makeNacelle(zOffset) {
-        const nGroup = new THREE.Group();
-
-        // Nacelle body
-        const nBodyGeo = new THREE.CylinderGeometry(S * 0.22, S * 0.18, S * 2.6, 10);
-        const nBody = new THREE.Mesh(nBodyGeo, matEngine);
-        nBody.rotation.z = Math.PI / 2;
-        nGroup.add(nBody);
-
-        // Nacelle intake ring (front)
-        const nIntakeGeo = new THREE.TorusGeometry(S * 0.23, S * 0.06, 8, 24);
-        const nIntake = new THREE.Mesh(nIntakeGeo, matGold);
-        nIntake.rotation.y = Math.PI / 2;
-        nIntake.position.x = S * 1.3;
-        nGroup.add(nIntake);
-
-        // Inner intake glow
-        const nIntGlowGeo = new THREE.CircleGeometry(S * 0.18, 12);
-        const nIntGlowMat = new THREE.MeshBasicMaterial({ color: 0x00aaff, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-        const nIntGlow = new THREE.Mesh(nIntGlowGeo, nIntGlowMat);
-        nIntGlow.rotation.y = Math.PI / 2;
-        nIntGlow.position.x = S * 1.3;
-        nGroup.add(nIntGlow);
-
-        // Nacelle mid ring stripe
-        const nRingGeo = new THREE.TorusGeometry(S * 0.225, S * 0.03, 6, 20);
-        const nRing = new THREE.Mesh(nRingGeo, matGold);
-        nRing.rotation.y = Math.PI / 2;
-        nRing.position.x = S * 0.1;
-        nGroup.add(nRing);
-
-        // Nacelle exhaust cone
-        const nExhGeo = new THREE.ConeGeometry(S * 0.22, S * 0.45, 10);
-        const nExh = new THREE.Mesh(nExhGeo, matEngine);
-        nExh.rotation.z = Math.PI / 2;
-        nExh.position.x = -S * 1.52;
-        nGroup.add(nExh);
-
-        // Engine exhaust glow — layered
-        const eGlow1Geo = new THREE.ConeGeometry(S * 0.2, S * 0.9, 10);
-        const eGlow1 = new THREE.Mesh(eGlow1Geo, matExhaust);
-        eGlow1.rotation.z = Math.PI / 2;
-        eGlow1.position.x = -S * 2.05;
-        nGroup.add(eGlow1);
-
-        const eGlow2Geo = new THREE.ConeGeometry(S * 0.14, S * 1.4, 10);
-        const eGlow2 = new THREE.Mesh(eGlow2Geo, matExhaust2);
-        eGlow2.rotation.z = Math.PI / 2;
-        eGlow2.position.x = -S * 2.5;
-        nGroup.add(eGlow2);
-
-        const eGlow3Geo = new THREE.ConeGeometry(S * 0.07, S * 0.7, 8);
-        const eGlow3 = new THREE.Mesh(eGlow3Geo, matExhaustCore);
-        eGlow3.rotation.z = Math.PI / 2;
-        eGlow3.position.x = -S * 2.1;
-        nGroup.add(eGlow3);
-
-        // Strut connecting nacelle to wing underside
-        const strutGeo = new THREE.CylinderGeometry(S * 0.05, S * 0.05, S * 0.55, 6);
-        const strut = new THREE.Mesh(strutGeo, matStrut);
-        strut.position.y = S * 0.35;
-        nGroup.add(strut);
-
-        nGroup.position.set(-S * 1.0, -S * 0.45, zOffset);
-        shipGroup.add(nGroup);
-
-        return { eGlow1, eGlow2, eGlow3, nIntGlow, nRing };
+    // ── Two additional (perpendicular) shorter panels ──
+    function makeSolarWingZ(side) {
+        const wGroup = new THREE.Group();
+        const beamGeo = new THREE.CylinderGeometry(S * 0.016, S * 0.016, S * 0.75, 8);
+        const beam = new THREE.Mesh(beamGeo, matStrut);
+        beam.rotation.x = Math.PI / 2;
+        beam.position.set(0, -S * 0.25, S * 0.375);
+        wGroup.add(beam);
+        const panel = new THREE.Mesh(new THREE.BoxGeometry(S * 0.38, S * 0.012, S * 0.56), matSolar);
+        panel.position.set(0, -S * 0.25, S * 0.37);
+        wGroup.add(panel);
+        wGroup.scale.z = side;
+        shipGroup.add(wGroup);
     }
+    makeSolarWingZ(1);
+    makeSolarWingZ(-1);
 
-    const nacelle1 = makeNacelle(S * 1.4);
-    const nacelle2 = makeNacelle(-S * 1.4);
+    // ═══════════════════════════════════════════════════
+    // 5. ENGINE EXHAUST EFFECTS (BasicMaterial — self-lit)
+    // ═══════════════════════════════════════════════════
+    // Plume — layered cones
+    const plume1Geo = new THREE.ConeGeometry(S * 0.22, S * 0.75, 16);
+    const plume1 = new THREE.Mesh(plume1Geo, matGlowOrange);
+    plume1.position.y = -S * 1.43;
+    plume1.rotation.x = Math.PI;
+    shipGroup.add(plume1);
 
-    // ─────────────────────────────────────────────
-    // 6. DORSAL FIN (top center tail fin)
-    // ─────────────────────────────────────────────
-    const dorsalShape = new THREE.Shape();
-    dorsalShape.moveTo(0, 0);
-    dorsalShape.lineTo(-S * 1.8, 0);
-    dorsalShape.lineTo(-S * 2.4, S * 1.0);
-    dorsalShape.lineTo(-S * 0.6, S * 0.9);
-    dorsalShape.lineTo(0, 0);
+    const plume2Geo = new THREE.ConeGeometry(S * 0.15, S * 1.1, 14);
+    const plume2 = new THREE.Mesh(plume2Geo, matGlowAmber);
+    plume2.position.y = -S * 1.65;
+    plume2.rotation.x = Math.PI;
+    shipGroup.add(plume2);
 
-    const dorsalExtSettings = { depth: S * 0.06, bevelEnabled: false };
-    const dorsalGeo = new THREE.ExtrudeGeometry(dorsalShape, dorsalExtSettings);
-    const dorsal = new THREE.Mesh(dorsalGeo, matHullDark);
-    dorsal.rotation.y = Math.PI / 2;
-    dorsal.position.set(-S * 0.8, S * 0.52, -S * 0.03);
-    shipGroup.add(dorsal);
+    const plume3Geo = new THREE.ConeGeometry(S * 0.07, S * 0.55, 10);
+    const plume3 = new THREE.Mesh(plume3Geo, matGlowWhite);
+    plume3.position.y = -S * 1.46;
+    plume3.rotation.x = Math.PI;
+    shipGroup.add(plume3);
 
-    // Dorsal fin gold edge
-    const dfEdgeGeo = new THREE.BoxGeometry(S * 2.0, S * 0.04, S * 0.04);
-    const dfEdge = new THREE.Mesh(dfEdgeGeo, matGold);
-    dfEdge.rotation.z = -0.5;
-    dfEdge.position.set(-S * 1.6, S * 1.0, 0);
-    shipGroup.add(dfEdge);
+    // ── ACS thruster micro-plumes ──
+    const acsPlumeRefs = [];
+    [45, 135, 225, 315].forEach(deg => {
+        const rad = deg * Math.PI / 180;
+        const apGeo = new THREE.ConeGeometry(S * 0.025, S * 0.15, 6);
+        const apMat = new THREE.MeshBasicMaterial({ color: 0xff9922, transparent: true, opacity: 0.6 });
+        const ap = new THREE.Mesh(apGeo, apMat);
+        ap.position.set(Math.cos(rad) * S * 0.32, -S * 0.80, Math.sin(rad) * S * 0.32);
+        ap.rotation.z = Math.PI / 2;
+        ap.rotation.y = -rad;
+        shipGroup.add(ap);
+        acsPlumeRefs.push(ap);
+    });
 
-    // ─────────────────────────────────────────────
-    // 7. VENTRAL KEEL (bottom spine)
-    // ─────────────────────────────────────────────
-    const keelGeo = new THREE.BoxGeometry(S * 3.8, S * 0.06, S * 0.28);
-    const keel = new THREE.Mesh(keelGeo, matHullDark);
-    keel.position.set(S * 0.2, -S * 0.44, 0);
-    shipGroup.add(keel);
+    // ═══════════════════════════════════════════════════
+    // 6. COMMUNICATION ANTENNA — high-gain dish on SM
+    // ═══════════════════════════════════════════════════
+    const antBoomGeo = new THREE.CylinderGeometry(S*0.014, S*0.014, S*0.48, 6);
+    const antBoom = new THREE.Mesh(antBoomGeo, matStrut);
+    antBoom.position.set(S * 0.30, -S * 0.14, S * 0.26);
+    antBoom.rotation.z = 0.55;
+    shipGroup.add(antBoom);
 
-    // ─────────────────────────────────────────────
-    // 8. SENSOR ARRAY / ANTENNA (forward top)
-    // ─────────────────────────────────────────────
-    const ant1Geo = new THREE.CylinderGeometry(S * 0.02, S * 0.02, S * 0.9, 4);
-    const ant1 = new THREE.Mesh(ant1Geo, matGold);
-    ant1.position.set(S * 2.4, S * 0.55, 0);
-    shipGroup.add(ant1);
+    const dishStemGeo = new THREE.CylinderGeometry(S*0.010, S*0.010, S*0.18, 6);
+    const dishStem = new THREE.Mesh(dishStemGeo, matStrut);
+    dishStem.position.set(S * 0.46, S * 0.05, S * 0.38);
+    shipGroup.add(dishStem);
 
-    const ant2Geo = new THREE.CylinderGeometry(S * 0.02, S * 0.02, S * 0.6, 4);
-    const ant2 = new THREE.Mesh(ant2Geo, matStrut);
-    ant2.rotation.z = Math.PI / 4;
-    ant2.position.set(S * 2.1, S * 0.75, S * 0.18);
-    shipGroup.add(ant2);
+    const dishGeo = new THREE.SphereGeometry(S * 0.12, 16, 8, 0, Math.PI*2, 0, Math.PI/2);
+    const dishMesh = new THREE.Mesh(dishGeo, matMetalMid);
+    dishMesh.rotation.x = Math.PI;
+    dishMesh.position.set(S * 0.46, S * 0.13, S * 0.38);
+    shipGroup.add(dishMesh);
+    const dishRimGeo = new THREE.TorusGeometry(S * 0.12, S * 0.010, 6, 32);
+    const dishRim = new THREE.Mesh(dishRimGeo, matGold);
+    dishRim.rotation.x = Math.PI / 2;
+    dishRim.position.set(S * 0.46, S * 0.13, S * 0.38);
+    shipGroup.add(dishRim);
 
-    // Sensor dish
-    const dishGeo = new THREE.SphereGeometry(S * 0.14, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2);
-    const dish = new THREE.Mesh(dishGeo, matHullMid);
-    dish.rotation.x = Math.PI;
-    dish.position.set(S * 2.4, S * 1.0, 0);
-    shipGroup.add(dish);
-
-    // ─────────────────────────────────────────────
-    // 9. NAVIGATION LIGHTS (wingtips + nose)
-    // ─────────────────────────────────────────────
-    // Port (left) — red
-    const navLGeo = new THREE.SphereGeometry(S * 0.08, 6, 6);
-    const navL = new THREE.Mesh(navLGeo, matNav);
-    navL.position.set(S * 2.55, 0.0, S * 0.58);
+    // ═══════════════════════════════════════════════════
+    // 7. NAVIGATION & STATUS LIGHTS
+    // ═══════════════════════════════════════════════════
+    // Port (left) — red strobe
+    const navLGeo = new THREE.SphereGeometry(S * 0.05, 8, 8);
+    const navL = new THREE.Mesh(navLGeo, matNavRed);
+    navL.position.set(-S * 1.62, -S * 0.25, 0);
     shipGroup.add(navL);
 
-    // Starboard (right) — green
-    const navRGeo = new THREE.SphereGeometry(S * 0.08, 6, 6);
+    // Starboard (right) — green strobe
+    const navRGeo = new THREE.SphereGeometry(S * 0.05, 8, 8);
     const navR = new THREE.Mesh(navRGeo, matNavGreen);
-    navR.position.set(S * 2.55, 0.0, -S * 0.58);
+    navR.position.set(S * 1.62, -S * 0.25, 0);
     shipGroup.add(navR);
 
-    // Nose beacon
-    const navNGeo = new THREE.SphereGeometry(S * 0.07, 6, 6);
-    const navNMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 });
-    const navN = new THREE.Mesh(navNGeo, navNMat);
-    navN.position.set(S * 3.9, 0, 0);
-    shipGroup.add(navN);
+    // Beacon on top of LAS
+    const beaconGeo = new THREE.SphereGeometry(S * 0.04, 8, 8);
+    const beacon = new THREE.Mesh(beaconGeo, matNavWhite);
+    beacon.position.y = S * 1.84;
+    shipGroup.add(beacon);
 
-    // ─────────────────────────────────────────────
-    // 10. VENTS on fuselage sides
-    // ─────────────────────────────────────────────
-    for (let i = 0; i < 4; i++) {
-        [1, -1].forEach(side => {
-            const vGeo = new THREE.BoxGeometry(S * 0.12, S * 0.06, S * 0.06);
-            const v = new THREE.Mesh(vGeo, matVent);
-            v.position.set(S * (0.8 - i * 0.45), S * 0.41, side * S * 0.36);
-            shipGroup.add(v);
-        });
-    }
+    // Docking target light (below capsule base)
+    const dockLightGeo = new THREE.CircleGeometry(S * 0.035, 12);
+    const dockLightMat = new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.8 });
+    const dockLight = new THREE.Mesh(dockLightGeo, dockLightMat);
+    dockLight.position.y = S * 0.09;
+    dockLight.rotation.x = -Math.PI / 2;
+    shipGroup.add(dockLight);
 
-    // ─────────────────────────────────────────────
-    // 11. ENGINE PARTICLE TRAIL (point cloud behind)
-    // ─────────────────────────────────────────────
-    const trailCount = 60;
-    const trailPositions = new Float32Array(trailCount * 3);
+    // ═══════════════════════════════════════════════════
+    // 8. PARTICLE TRAIL (engine exhaust cloud)
+    // ═══════════════════════════════════════════════════
+    const trailCount = 80;
+    const trailPos = new Float32Array(trailCount * 3);
     for (let i = 0; i < trailCount; i++) {
-        trailPositions[i*3]   = -S * (2.5 + i * 0.08) - Math.random() * S * 0.4;
-        trailPositions[i*3+1] = (Math.random() - 0.5) * S * 0.2;
-        trailPositions[i*3+2] = (Math.random() - 0.5) * S * 0.2;
+        const spread = i / trailCount;
+        trailPos[i*3]   = (Math.random() - 0.5) * S * 0.35 * spread;
+        trailPos[i*3+1] = -S * (1.8 + i * 0.055) - Math.random() * S * 0.3;
+        trailPos[i*3+2] = (Math.random() - 0.5) * S * 0.35 * spread;
     }
     const trailGeo = new THREE.BufferGeometry();
-    trailGeo.setAttribute('position', new THREE.Float32BufferAttribute(trailPositions, 3));
+    trailGeo.setAttribute('position', new THREE.Float32BufferAttribute(trailPos, 3));
     const trailMat = new THREE.PointsMaterial({
-        color: 0xff8800,
-        size: S * 0.12,
-        transparent: true,
-        opacity: 0.45,
-        sizeAttenuation: true
+        color: 0xff9944, size: S * 0.1, transparent: true,
+        opacity: 0.4, sizeAttenuation: true
     });
     const trail = new THREE.Points(trailGeo, trailMat);
     shipGroup.add(trail);
 
-    // ─────────────────────────────────────────────
-    // 12. GLOW HALO around entire ship
-    // ─────────────────────────────────────────────
-    const haloGeo = new THREE.SphereGeometry(S * 3.2, 16, 16);
-    const haloMat = new THREE.MeshBasicMaterial({ color: 0xffc832, transparent: true, opacity: 0.06, side: THREE.BackSide });
+    // ═══════════════════════════════════════════════════
+    // 9. AMBIENT GLOW HALO
+    // ═══════════════════════════════════════════════════
+    const haloGeo = new THREE.SphereGeometry(S * 2.8, 16, 16);
+    const haloMat = new THREE.MeshBasicMaterial({
+        color: 0xff8833, transparent: true, opacity: 0.05, side: THREE.BackSide
+    });
     const halo = new THREE.Mesh(haloGeo, haloMat);
     shipGroup.add(halo);
 
-    // Orient ship to fly forward along orbit tangent direction (nose along +X initially)
-    // Will be rotated each frame to face travel direction
-    shipGroup.rotation.y = Math.PI / 2;
+    // Initial orientation: capsule nose points up (+Y)
+    // The animation loop will rotate to align with orbit tangent
+    shipGroup.rotation.z = 0;
 
     return {
         shipGroup,
-        exhaustParts: [nacelle1.eGlow1, nacelle1.eGlow2, nacelle1.eGlow3,
-                        nacelle2.eGlow1, nacelle2.eGlow2, nacelle2.eGlow3],
-        navLights: [navL, navR, navN],
+        plumes: [plume1, plume2, plume3],
+        acsPlumeRefs,
+        navLights: [navL, navR, beacon],
+        dockLight,
         halo,
+        haloMat,
         trail,
-        trailMat,
-        intakeGlows: [nacelle1.nIntGlow, nacelle2.nIntGlow]
+        trailMat
     };
 }
 
@@ -1557,12 +1653,14 @@ moonsData.forEach(moon => {
         group: moonGroup,
         body: hitSphere,
         shipGroup: shipData.shipGroup,
-        exhaustParts: shipData.exhaustParts,
+        plumes: shipData.plumes,
+        acsPlumeRefs: shipData.acsPlumeRefs,
         navLights: shipData.navLights,
+        dockLight: shipData.dockLight,
         halo: shipData.halo,
+        haloMat: shipData.haloMat,
         trail: shipData.trail,
         trailMat: shipData.trailMat,
-        intakeGlows: shipData.intakeGlows,
         orbitRing,
         labelOffset,
         moonData: moon,
@@ -1806,13 +1904,13 @@ function animate(){
         hoursObj.starGroup.rotation.y += 0.001;
     }
 
-    // ── SPACESHIP ORBIT ANIMATION ──
+    // ── ORION SPACECRAFT ORBIT ANIMATION ──
     moonObjects.forEach((moonRef, id) => {
         const moon = moonRef.moonData;
         const prevAngle = moonRef.angle;
         moonRef.angle += moon.orbitSpeed;
 
-        // Tilted circular orbit position
+        // Tilted circular orbit
         const cosT = Math.cos(moon.orbitTilt);
         const sinT = Math.sin(moon.orbitTilt);
 
@@ -1820,73 +1918,109 @@ function animate(){
         const rawY = Math.sin(moonRef.angle) * moon.orbitRadius * sinT;
         const rawZ = Math.sin(moonRef.angle) * moon.orbitRadius * cosT;
 
-        // Previous position for tangent direction
+        // Previous frame position — used to compute tangent (travel direction)
         const prevX = Math.cos(prevAngle) * moon.orbitRadius;
         const prevY = Math.sin(prevAngle) * moon.orbitRadius * sinT;
         const prevZ = Math.sin(prevAngle) * moon.orbitRadius * cosT;
 
-        // Move the entire ship group to orbit position
+        // Position the ship group
         if (moonRef.shipGroup) {
             moonRef.shipGroup.position.set(rawX, rawY, rawZ);
 
-            // Orient ship nose along travel direction (tangent of orbit)
-            const travelDir = new THREE.Vector3(rawX - prevX, rawY - prevY, rawZ - prevZ).normalize();
-            if (travelDir.length() > 0.0001) {
-                // Build rotation: ship's forward axis (+X) → travelDir
-                const up = new THREE.Vector3(0, 1, 0);
-                const right = new THREE.Vector3().crossVectors(travelDir, up).normalize();
-                const shipUp = new THREE.Vector3().crossVectors(right, travelDir).normalize();
-                const rotMatrix = new THREE.Matrix4().makeBasis(travelDir, shipUp, right);
-                moonRef.shipGroup.setRotationFromMatrix(rotMatrix);
+            // Align ship so engine (-Y) points away from travel direction
+            // Orion travels capsule-first, engine trailing
+            const travelDir = new THREE.Vector3(
+                rawX - prevX, rawY - prevY, rawZ - prevZ
+            ).normalize();
+
+            if (travelDir.lengthSq() > 0.00001) {
+                // Ship's forward axis = capsule top = +Y in local space
+                // We want +Y to point in travel direction
+                const worldUp = new THREE.Vector3(0, 1, 0);
+                // Build quaternion rotating local +Y → travelDir
+                const q = new THREE.Quaternion().setFromUnitVectors(worldUp, travelDir);
+                moonRef.shipGroup.setRotationFromQuaternion(q);
             }
 
-            // Gentle banking roll into the turn (feel of banking spacecraft)
-            moonRef.shipGroup.rotateX(Math.sin(clock * 0.3) * 0.05);
+            // Subtle attitude drift — living, not static
+            moonRef.shipGroup.rotateZ(Math.sin(clock * 0.4) * 0.008);
         }
 
-        // Move hit sphere + label with ship
+        // Move raycasting hit sphere with ship
         if (moonRef.body) moonRef.body.position.set(rawX, rawY, rawZ);
 
-        // Label floats above ship
+        // Float label above ship (capsule points in travel dir, so offset along travelDir)
         if (moonRef.labelOffset) {
-            moonRef.labelOffset.position.set(rawX, rawY + moon.size * 3.8, rawZ);
+            moonRef.labelOffset.position.set(
+                rawX, rawY + moon.size * 4.2, rawZ
+            );
         }
 
-        // ── Animate engine exhausts (pulsing flame) ──
-        if (moonRef.exhaustParts) {
-            const exhaustPulse = 0.7 + 0.3 * Math.sin(clock * 12);
-            moonRef.exhaustParts.forEach((part, i) => {
-                if (i % 3 === 0) part.material.opacity = 0.75 * exhaustPulse;       // orange cone
-                else if (i % 3 === 1) part.material.opacity = 0.5 * exhaustPulse;   // wide glow
-                else part.material.opacity = 0.85 * exhaustPulse;                    // white core
-                part.scale.x = 0.85 + 0.3 * Math.sin(clock * 8 + i);
+        // ── Engine plume animation (flicker) ──
+        if (moonRef.plumes) {
+            const flicker = 0.75 + 0.25 * Math.sin(clock * 14 + Math.random() * 0.5);
+            const flicker2 = 0.65 + 0.35 * Math.sin(clock * 9);
+            const flicker3 = 0.80 + 0.20 * Math.sin(clock * 18);
+            moonRef.plumes[0].material.opacity = 0.78 * flicker;
+            moonRef.plumes[0].scale.set(flicker, 0.9 + 0.2 * flicker, flicker);
+            moonRef.plumes[1].material.opacity = 0.48 * flicker2;
+            moonRef.plumes[1].scale.set(flicker2, 0.85 + 0.25 * flicker2, flicker2);
+            moonRef.plumes[2].material.opacity = 0.72 * flicker3;
+            moonRef.plumes[2].scale.set(flicker3 * 0.8, 0.9 + 0.15 * flicker3, flicker3 * 0.8);
+        }
+
+        // ── ACS thruster micro-plumes (occasional pulses) ──
+        if (moonRef.acsPlumeRefs) {
+            moonRef.acsPlumeRefs.forEach((ap, i) => {
+                const pulse = Math.max(0, Math.sin(clock * 3 + i * 1.57));
+                ap.material.opacity = pulse * 0.55;
+                ap.visible = pulse > 0.1;
             });
         }
 
-        // ── Animate nav lights (strobe) ──
+        // ── Nav lights (strobe alternating) ──
         if (moonRef.navLights) {
-            const strobePort  = Math.sin(clock * 4) > 0 ? 0.9 : 0.1;
-            const strobeStarb = Math.sin(clock * 4 + Math.PI) > 0 ? 0.9 : 0.1;
-            const beaconPulse = 0.4 + 0.6 * Math.abs(Math.sin(clock * 2.5));
-            moonRef.navLights[0].material.opacity = strobePort;
-            moonRef.navLights[1].material.opacity = strobeStarb;
-            moonRef.navLights[2].material.opacity = beaconPulse;
+            // Port red — strobes on half-cycle
+            const strobeA = Math.sin(clock * 3.5) > 0.3 ? 0.95 : 0.05;
+            // Starboard green — strobes opposite
+            const strobeB = Math.sin(clock * 3.5 + Math.PI) > 0.3 ? 0.95 : 0.05;
+            // Beacon — slow pulse
+            const beaconP = 0.35 + 0.65 * Math.abs(Math.sin(clock * 2.0));
+            moonRef.navLights[0].material.opacity = strobeA;
+            moonRef.navLights[1].material.opacity = strobeB;
+            moonRef.navLights[2].material.opacity = beaconP;
         }
 
-        // ── Animate halo glow pulse ──
-        if (moonRef.halo) {
-            moonRef.halo.material.opacity = 0.04 + 0.04 * Math.sin(clock * 1.5);
+        // ── Docking target light pulse ──
+        if (moonRef.dockLight) {
+            moonRef.dockLight.material.opacity = 0.4 + 0.4 * Math.sin(clock * 1.2);
         }
 
-        // ── Animate particle trail ──
+        // ── Halo glow pulse ──
+        if (moonRef.haloMat) {
+            moonRef.haloMat.opacity = 0.03 + 0.025 * Math.sin(clock * 1.8);
+        }
+
+        // ── Trail opacity pulse ──
         if (moonRef.trailMat) {
-            moonRef.trailMat.opacity = 0.3 + 0.2 * Math.sin(clock * 3);
+            moonRef.trailMat.opacity = 0.28 + 0.18 * Math.sin(clock * 2.5);
         }
 
-        // ── Animate intake glows ──
-        if (moonRef.intakeGlows) {
-            const intakePulse = 0.35 + 0.2 * Math.sin(clock * 6);
-            moonRef.intakeGlows.forEach(ig => ig.material.opacity = intakePulse);
+        // ── Engine point light — follows ship, pulses with plume ──
+        if (enginePointLight) {
+            const plumePulse = 0.8 + 0.4 * Math.sin(clock * 10);
+            enginePointLight.intensity = 1.4 * plumePulse;
+            // Position at engine bell (behind ship along -travelDir)
+            const tDir = new THREE.Vector3(rawX - Math.cos(prevAngle) * moon.orbitRadius,
+                                           rawY - Math.sin(prevAngle) * moon.orbitRadius * sinT,
+                                           rawZ - Math.sin(prevAngle) * moon.orbitRadius * cosT).normalize();
+            // World position = moonGroup.position + ship local position + offset behind
+            const mg = moonRef.group.position;
+            enginePointLight.position.set(
+                mg.x + rawX - tDir.x * moon.size * 1.4,
+                mg.y + rawY - tDir.y * moon.size * 1.4,
+                mg.z + rawZ - tDir.z * moon.size * 1.4
+            );
         }
     });
 
