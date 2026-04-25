@@ -1,2331 +1,873 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRE ECOSYSTEM · V12</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #000000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            color: #FFFFFF;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        canvas { display: block; cursor: grab; touch-action: none; }
-        canvas:active { cursor: grabbing; }
-
-        #interface {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            color: rgba(255,255,255,0.9);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .system-label {
-            font-size: clamp(11px, 3vw, 16px);
-            font-weight: 700;
-            letter-spacing: 3px;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .stat-line {
-            font-size: clamp(9px, 2.5vw, 11px);
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 6px;
-            font-weight: 400;
-            line-height: 1.8;
-        }
-
-        .stat-line strong { color: rgba(255,255,255,0.9); font-weight: 600; }
-
-        #dataDisplay {
-            position: absolute;
-            bottom: 100px;
-            left: 16px;
-            font-family: 'Courier New', monospace;
-            font-size: 10px;
-            color: #00FF41;
-            pointer-events: none;
-            z-index: 10;
-            line-height: 1.8;
-            opacity: 0.7;
-        }
-
-        @media (max-width: 480px) {
-            #dataDisplay { display: none; }
-        }
-
-        .data-line { letter-spacing: 1px; }
-
-        #cameraControls {
-            position: absolute;
-            bottom: 20px;
-            left: 16px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .camera-btn {
-            background: rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            color: #FFFFFF;
-            padding: 0;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            pointer-events: all;
-        }
-
-        .camera-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); transform: scale(1.05); }
-        .camera-btn:active { transform: scale(0.95); }
-
-        #settingsBtn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            color: #FFFFFF;
-            padding: 10px 16px;
-            font-size: 11px;
-            cursor: pointer;
-            z-index: 10;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            pointer-events: all;
-            min-height: 48px;
-            min-width: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #settingsBtn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
-
-        #settingsPanel {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: min(400px, 100vw);
-            height: 100vh;
-            background: #000000;
-            border-left: 1px solid rgba(255,255,255,0.15);
-            z-index: 2000;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 28px 20px 40px;
-            transition: right 0.3s ease;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-        }
-
-        #settingsPanel.active { right: 0; }
-
-        .settings-header { font-size: 18px; font-weight: 700; margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
-        .settings-subtitle { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 28px; line-height: 1.6; }
-
-        .close-settings {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            color: #FFFFFF;
-            font-size: 20px;
-            cursor: pointer;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .settings-section { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .settings-section:last-of-type { margin-bottom: 0; }
-        .settings-section h3 { font-size: 12px; font-weight: 600; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.8); }
-
-        .portal-btn {
-            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 10px;
-            min-height: 48px;
-            font-family: inherit;
-        }
-
-        .portal-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
-        .portal-btn:active { transform: scale(0.97); }
-
-        #modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 3000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-            padding: 16px;
-        }
-
-        #modal.active { display: flex; }
-
-        .modal-content {
-            background: #0a0a0a;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: clamp(20px, 5vw, 40px);
-            max-width: 700px;
-            width: 100%;
-            max-height: 88vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            position: relative;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-        }
-
-        .modal-header { font-size: clamp(20px, 5vw, 28px); font-weight: 700; margin-bottom: 8px; color: #FFFFFF; letter-spacing: 1px; }
-        .modal-category { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .modal-body { font-size: clamp(13px, 3.5vw, 15px); line-height: 1.8; color: rgba(255,255,255,0.8); margin-bottom: 20px; white-space: pre-wrap; }
-
-        .modal-protocol {
-            background: rgba(255,255,255,0.05);
-            padding: 16px;
-            border-left: 3px solid rgba(255,255,255,0.3);
-            font-size: clamp(12px, 3vw, 13px);
-            color: rgba(255,255,255,0.7);
-            line-height: 1.7;
-            margin-top: 16px;
-            border-radius: 4px;
-            white-space: pre-wrap;
-        }
-
-        /* Moon modal gets gold accent */
-        .modal-content.moon-modal { border-color: rgba(255,200,50,0.4); }
-        .modal-content.moon-modal .modal-protocol { border-left-color: rgba(255,200,50,0.6); }
-
-        .close-modal {
-            position: absolute;
-            top: 16px; right: 16px;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            color: #FFFFFF;
-            font-size: 24px;
-            cursor: pointer;
-            width: 48px; height: 48px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-control {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 6px;
-        }
-
-        .toggle-control label { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; }
-        .toggle-control input[type=checkbox] { width: 20px; height: 20px; cursor: pointer; }
-
-        #tooltip {
-            position: absolute;
-            background: rgba(0,0,0,0.95);
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #FFFFFF;
-            pointer-events: none;
-            display: none;
-            z-index: 1000;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        /* Moon tooltip gets gold styling */
-        #tooltip.moon-tip {
-            border-color: rgba(255,200,50,0.6);
-            color: #ffc832;
-        }
-
-        @media (hover: none) { #tooltip { display: none !important; } }
-
-        /* Moon legend badge */
-        #moonLegend {
-            position: fixed;
-            bottom: 80px;
-            right: 16px;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,200,50,0.3);
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 10px;
-            color: rgba(255,200,50,0.8);
-            letter-spacing: 1px;
-            pointer-events: none;
-            z-index: 9;
-            line-height: 1.8;
-        }
-
-        #moonLegend .moon-dot {
-            display: inline-block;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #ffc832;
-            margin-right: 6px;
-            box-shadow: 0 0 6px #ffc832;
-        }
-
-        /* ── TUTORIAL ── */
-        #tutorialBackdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.82);
-            backdrop-filter: blur(3px);
-            z-index: 10000;
-            display: none;
-            pointer-events: none;
-        }
-
-        #tutorialBackdrop.active { display: block; }
-
-        .tutorial-overlay {
-            position: fixed;
-            inset: 0;
-            background: transparent;
-            z-index: 10000;
-            display: none;
-            pointer-events: none;
-        }
-
-        .tutorial-overlay.active { display: block; }
-
-        .tutorial-card-wrap {
-            position: fixed;
-            bottom: clamp(12px, 3vh, 28px);
-            left: 0;
-            right: 0;
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 10004;
-            pointer-events: none;
-        }
-
-        .tutorial-card-wrap.active { display: flex; }
-
-        .tutorial-card {
-            pointer-events: all;
-            background: #0a0a0a;
-            border: 1px solid rgba(0,212,255,0.4);
-            border-radius: 16px 16px 12px 12px;
-            padding: clamp(18px, 4vw, 30px) clamp(18px, 4vw, 34px);
-            width: min(480px, calc(100vw - 20px));
-            text-align: center;
-            box-shadow: 0 0 50px rgba(0,212,255,0.18), 0 -8px 30px rgba(0,0,0,0.7);
-        }
-
-        .tutorial-step { font-size: 10px; letter-spacing: 3px; color: #00d4ff; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
-        .tutorial-title { font-size: clamp(17px, 4.5vw, 22px); font-weight: 800; margin-bottom: 10px; color: #fff; letter-spacing: 1px; }
-        .tutorial-desc { font-size: clamp(12px, 3.2vw, 14px); line-height: 1.7; color: rgba(255,255,255,0.7); margin-bottom: 18px; }
-
-        .tutorial-highlight {
-            position: fixed;
-            border: 2px solid #00d4ff;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.5);
-            pointer-events: none;
-            z-index: 10001;
-            transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
-            display: none;
-        }
-
-        .tutorial-highlight.active { display: block; }
-
-        .tutorial-arrow {
-            position: fixed;
-            width: 0; height: 0;
-            border-left: 11px solid transparent;
-            border-right: 11px solid transparent;
-            border-top: 17px solid #00d4ff;
-            filter: drop-shadow(0 0 5px #00d4ff);
-            z-index: 10002;
-            display: none;
-            pointer-events: none;
-        }
-
-        .tutorial-arrow.active { display: block; }
-
-        .tutorial-elevated {
-            position: relative;
-            z-index: 10002 !important;
-        }
-
-        .tutorial-progress { display: flex; justify-content: center; gap: 8px; margin: 14px 0; }
-
-        .tutorial-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.25);
-            transition: all 0.3s ease;
-        }
-
-        .tutorial-dot.active { background: #00d4ff; width: 22px; border-radius: 4px; }
-
-        .tutorial-actions { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
-
-        .tutorial-btn {
-            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
-            border: none;
-            color: #000;
-            font-weight: 800;
-            padding: 10px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: clamp(11px, 3vw, 13px);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            min-height: 44px;
-            font-family: inherit;
-        }
-
-        .tutorial-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,212,255,0.4); }
-        .tutorial-btn:active { transform: scale(0.96); }
-
-        .tutorial-prev {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.25);
-            color: rgba(255,255,255,0.65);
-        }
-
-        .tutorial-prev:hover { background: rgba(255,255,255,0.07); color: #fff; box-shadow: none; }
-
-        .tutorial-skip {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: rgba(255,255,255,0.4);
-            font-size: 11px;
-        }
-
-        .tutorial-skip:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); box-shadow: none; }
-
-        @keyframes tutSlide {
-            from { opacity: 0; transform: translateY(18px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── ENTRY GATE ── */
-        #entryGate {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            overflow: hidden;
-            padding: 24px;
-        }
-
-        #entryGate::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
-            background-size: 40px 40px;
-            animation: gridDrift 12s linear infinite;
-        }
-
-        @keyframes gridDrift { 0%{transform:translateY(0)} 100%{transform:translateY(40px)} }
-
-        #entryGate::after {
-            content: '';
-            position: absolute;
-            width: min(600px, 90vw);
-            height: min(600px, 90vw);
-            background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: gPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes gPulse { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.15);opacity:1} }
-
-        .gate-eyebrow { font-size: clamp(9px, 2.5vw, 11px); letter-spacing: 5px; color: rgba(0,212,255,0.6); text-transform: uppercase; margin-bottom: 20px; position: relative; z-index: 1; font-weight: 400; text-align: center; }
-        .gate-title { font-size: clamp(28px, 10vw, 80px); font-weight: 900; letter-spacing: 6px; text-transform: uppercase; color: #fff; text-align: center; position: relative; z-index: 1; line-height: 1.1; margin-bottom: 12px; text-shadow: 0 0 40px rgba(0,212,255,0.4); }
-        .gate-title span { color: #00d4ff; }
-        .gate-subtitle { font-size: clamp(10px, 3vw, 13px); letter-spacing: 3px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 48px; position: relative; z-index: 1; text-align: center; }
-
-        .gate-btn {
-            position: relative; z-index: 1;
-            background: transparent;
-            border: 1px solid rgba(0,212,255,0.5);
-            color: #00d4ff;
-            font-size: clamp(11px, 3vw, 12px);
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            padding: 16px clamp(24px, 6vw, 48px);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            min-height: 56px;
-        }
-
-        .gate-btn::before { content:''; position:absolute; inset:0; background:rgba(0,212,255,0.06); opacity:0; transition:opacity 0.3s ease; }
-        .gate-btn:hover { border-color:#00d4ff; color:#fff; box-shadow:0 0 30px rgba(0,212,255,0.25),inset 0 0 30px rgba(0,212,255,0.05); }
-        .gate-btn:hover::before { opacity:1; }
-        .gate-btn:active { transform:scale(0.97); }
-
-        .gate-hint { position:absolute; bottom:20px; font-size:10px; letter-spacing:2px; color:rgba(255,255,255,0.2); text-transform:uppercase; z-index:1; text-align:center; }
-
-        #entryGate.leaving { animation:gateLeave 1.2s ease forwards; }
-        @keyframes gateLeave { 0%{opacity:1;transform:scale(1)} 60%{opacity:1;transform:scale(1.03)} 100%{opacity:0;transform:scale(1.06);pointer-events:none} }
-
-        /* MUSIC */
-        #musicControls {
-            position: fixed;
-            bottom: 20px;
-            right: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .music-btn {
-            background: rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            color: #FFFFFF;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 48px; height: 48px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .music-btn:hover { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.5); }
-
-        .music-vol {
-            -webkit-appearance: none; appearance: none;
-            width: 60px; height: 3px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px; outline: none; cursor: pointer;
-        }
-
-        @media (max-width: 380px) { .music-vol { display:none; } }
-
-        .music-vol::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px; height: 16px;
-            border-radius: 50%;
-            background: #00d4ff;
-            cursor: pointer;
-        }
-
-        /* Mobile tap hint */
-        #tapHint {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 20px;
-            padding: 8px 18px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.45);
-            letter-spacing: 1px;
-            pointer-events: none;
-            z-index: 9;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            white-space: nowrap;
-        }
-
-        #tapHint.show { opacity: 1; }
-
-        /* Tutorial menu button */
-        #tutorialMenuBtn {
-            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 10px;
-            min-height: 48px;
-            font-family: inherit;
-        }
-
-        #tutorialMenuBtn:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,212,255,0.3); }
-        #tutorialMenuBtn:active { transform:scale(0.97); }
-
-        /* ── ACCORDION CATEGORIES ── */
-        .settings-accordion { margin-top: 20px; }
-        .accordion-item { border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .accordion-trigger {
-            display: flex; justify-content: space-between; align-items: center;
-            width: 100%; padding: 14px 4px; cursor: pointer;
-            background: transparent; border: none; color: rgba(255,255,255,0.85);
-            font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-            text-transform: uppercase; text-align: left;
-            font-family: inherit; transition: color 0.2s ease;
-            min-height: 48px;
-        }
-        .accordion-trigger:hover { color: #fff; }
-        .accordion-trigger .arrow {
-            display: inline-block;
-            transition: transform 0.25s ease;
-            font-size: 14px; color: rgba(255,255,255,0.3);
-        }
-        .accordion-trigger.open .arrow { transform: rotate(90deg); }
-        .accordion-content {
-            max-height: 0; overflow: hidden;
-            transition: max-height 0.35s ease, padding 0.35s ease;
-            padding: 0 4px;
-        }
-        .accordion-content.open {
-            max-height: 1200px;
-            padding: 0 4px 16px;
-        }
-        .settings-visual-divider {
-            height: 1px;
-            background: linear-gradient(90deg, rgba(0,212,255,0.4) 0%, transparent 100%);
-            margin: 18px 0 20px;
-        }
-
-        /* Moon orbit ring indicator in HUD */
-        .moon-hud-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 10px;
-            color: rgba(255,200,50,0.7);
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
-        .moon-hud-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #ffc832;
-            box-shadow: 0 0 5px #ffc832;
-            animation: moonPulse 2s ease-in-out infinite;
-        }
-        @keyframes moonPulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Galaxy DRE — Recalibrating</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --void:       #060509;
+      --deep:       #080b14;
+      --navy:       #0b0f1e;
+      --gold:       #c9a84c;
+      --gold-bright:#e8c96a;
+      --gold-dim:   #7a6330;
+      --gold-glow:  rgba(201,168,76,0.18);
+      --text:       #d4ccb8;
+      --text-dim:   #6a6555;
+      --ring-1:     rgba(201,168,76,0.18);
+      --ring-2:     rgba(201,168,76,0.10);
+      --ring-3:     rgba(201,168,76,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--void);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      cursor: crosshair;
+    }
+
+    /* ── STAR CANVAS ── */
+    #stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── RADIAL VIGNETTE ── */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(4,3,8,0.7) 100%);
+    }
+
+    /* ── MAIN SCENE ── */
+    .scene {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── ORBITAL SVG WRAPPER ── */
+    #orbitalMap {
+      position: relative;
+      width: min(92vw, 92vh, 700px);
+      height: min(92vw, 92vh, 700px);
+      flex-shrink: 0;
+    }
+
+    #orbitalMap svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Slow galaxy rotation */
+    .orbit-group {
+      transform-origin: 50% 50%;
+      animation: galaxySpin 90s linear infinite;
+    }
+
+    @keyframes galaxySpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Counter-rotate nodes so labels stay upright */
+    .node-group {
+      animation: counterSpin 90s linear infinite;
+      transform-origin: 0px 0px; /* set per node via JS */
+    }
+
+    @keyframes counterSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-360deg); }
+    }
+
+    /* ── CENTER CIRCLE ── */
+    .center-ring {
+      cursor: default;
+    }
+
+    /* ── NODE BOXES ── */
+    .node-box {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .node-box rect {
+      transition: fill 0.25s ease, stroke 0.25s ease;
+    }
+
+    .node-box:hover rect {
+      fill: rgba(201,168,76,0.12);
+      stroke: rgba(232,201,106,0.9);
+    }
+
+    .node-box:hover text {
+      fill: #e8c96a;
+    }
+
+    .node-box text {
+      transition: fill 0.25s ease;
+      pointer-events: none;
+    }
+
+    .node-dot {
+      transition: r 0.2s ease, opacity 0.2s ease;
+    }
+
+    .node-box:hover .node-dot {
+      r: 4;
+      opacity: 1;
+    }
+
+    /* ── TOP HEADER ── */
+    .top-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 36px;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      background: rgba(6,5,9,0.5);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold-dim);
+      box-shadow: 0 0 6px var(--gold-dim);
+      animation: statusPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%,100% { opacity: 0.4; }
+      50%      { opacity: 1; }
+    }
+
+    /* ── BOTTOM STRIP ── */
+    .bottom-strip {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 36px;
+      border-top: 1px solid rgba(201,168,76,0.08);
+      background: rgba(6,5,9,0.5);
+      backdrop-filter: blur(12px);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .bottom-divider {
+      width: 1px; height: 10px;
+      background: rgba(201,168,76,0.2);
+    }
+
+    /* ── HINT TEXT ── */
+    .hint {
+      position: fixed;
+      bottom: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.78rem;
+      font-style: italic;
+      letter-spacing: 0.15em;
+      color: rgba(201,168,76,0.35);
+      white-space: nowrap;
+      animation: hintFade 4s ease 2s both;
+      pointer-events: none;
+    }
+
+    @keyframes hintFade {
+      0%   { opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* ── INFO PANEL (drawer) ── */
+    .info-panel {
+      position: fixed;
+      top: 0;
+      right: -480px;
+      width: min(460px, 95vw);
+      height: 100vh;
+      z-index: 200;
+      background: rgba(8,7,12,0.97);
+      border-left: 1px solid rgba(201,168,76,0.2);
+      display: flex;
+      flex-direction: column;
+      transition: right 0.45s cubic-bezier(0.22,1,0.36,1);
+      backdrop-filter: blur(20px);
+      box-shadow: -20px 0 80px rgba(0,0,0,0.6);
+    }
+
+    .info-panel.open {
+      right: 0;
+    }
+
+    /* Panel top accent line */
+    .info-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .panel-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 2px;
+      color: var(--text-dim);
+      font-size: 16px;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .panel-close:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .panel-inner {
+      padding: 56px 40px 40px;
+      overflow-y: auto;
+      height: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .panel-eyebrow {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201,168,76,0.15);
+    }
+
+    .panel-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      letter-spacing: 0.1em;
+      color: var(--gold-bright);
+      line-height: 1;
+      margin-bottom: 6px;
+      text-shadow: 0 0 40px rgba(201,168,76,0.3);
+    }
+
+    .panel-category {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      margin-bottom: 32px;
+    }
+
+    .panel-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold-dim);
+      margin-bottom: 24px;
+    }
+
+    .panel-purpose-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.25em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .panel-purpose {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .panel-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: rgba(212,204,184,0.7);
+      letter-spacing: 0.03em;
+    }
+
+    .panel-locked {
+      margin-top: 36px;
+      padding: 16px 20px;
+      border: 1px solid rgba(201,168,76,0.12);
+      background: rgba(201,168,76,0.03);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lock-icon {
+      font-size: 1rem;
+      opacity: 0.4;
+    }
+
+    .lock-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      line-height: 1.6;
+    }
+
+    /* ── OVERLAY backdrop ── */
+    .panel-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 190;
+      background: rgba(4,3,8,0.5);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .panel-backdrop.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── PAGE LOAD ANIMATION ── */
+    .scene {
+      animation: sceneFadeIn 1.8s ease both;
+    }
+
+    @keyframes sceneFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .top-header, .bottom-strip {
+      animation: barSlide 1s ease 0.5s both;
+    }
+
+    @keyframes barSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      .top-header { padding: 14px 18px; }
+      .bottom-strip { padding: 12px 18px; font-size: 0.5rem; }
+      .hint { font-size: 0.68rem; }
+      .panel-inner { padding: 52px 24px 32px; }
+    }
+
+    /* Panel scroll */
+    .panel-inner::-webkit-scrollbar { width: 3px; }
+    .panel-inner::-webkit-scrollbar-track { background: transparent; }
+    .panel-inner::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+  </style>
 </head>
 <body>
 
-<audio id="bgMusic" loop preload="auto">
-    <source src="Dre Galaxy Theme.mp3" type="audio/mpeg">
-</audio>
+<canvas id="stars"></canvas>
+<div class="grain"></div>
+<div class="vignette"></div>
 
-<!-- ENTRY GATE -->
-<div id="entryGate">
-    <div class="gate-eyebrow">Andre Method · DRE Core Systems</div>
-    <div class="gate-title">WELCOME TO<br>THE <span>GALAXY</span></div>
-    <div class="gate-subtitle">System-Driven. Street-Savvy.</div>
-    <button class="gate-btn" onclick="enterGalaxy()">ENTER THE GALAXY</button>
-    <div class="gate-hint">Tap to enter · Audio will play</div>
+<!-- TOP HEADER -->
+<div class="top-header">
+  <div class="header-brand">Galaxy DRE</div>
+  <div class="header-status">
+    <div class="status-dot"></div>
+    <span>Recalibrating · Stand By</span>
+  </div>
 </div>
 
-<div id="musicControls" style="display:none;">
-    <input class="music-vol" type="range" min="0" max="1" step="0.05" value="0.6" oninput="setVolume(this.value)" title="Volume">
-    <button class="music-btn" id="muteBtn" onclick="toggleMute()" title="Mute / Unmute">🔊</button>
+<!-- MAIN SCENE -->
+<div class="scene">
+  <div id="orbitalMap">
+    <!-- SVG injected by JS -->
+  </div>
 </div>
 
-<div id="interface">
-    <div class="system-label" id="systemLabelDisplay">WELCOME TO DRE CORE SYSTEMS</div>
-    <div class="stat-line">ANCHOR: <strong id="missionDisplay">ANDRE GO</strong></div>
-    <div class="stat-line">STATUS: <strong id="statusDisplay">ACTIVE</strong></div>
-    <div class="stat-line">MODE: <strong id="modeDisplay">PUBLIC</strong></div>
-    <div class="moon-hud-badge"><span class="moon-hud-dot"></span>DRE CONSOLE ORBITING</div>
+<!-- HINT -->
+<div class="hint">Select any node to learn more</div>
+
+<!-- BOTTOM -->
+<div class="bottom-strip">
+  <span>© 2026 Andremethod.com</span>
+  <div class="bottom-divider"></div>
+  <span>Galaxy DRE · v3.5</span>
+  <div class="bottom-divider"></div>
+  <span>All Systems Offline</span>
 </div>
 
-<div id="dataDisplay">
-    <div class="data-line">→ Try Andre Go and leave a review! </div>
-    <div class="data-line">→ 90-DAY GOAL: DRE CODE May 20th</div>
-    <div class="data-line">→ NODES ONLINE: 18</div>
-    <div class="data-line">→ CONSOLE: ORBITING CORE</div>
-    <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
-</div>
+<!-- BACKDROP -->
+<div class="panel-backdrop" id="backdrop"></div>
 
-<div id="cameraControls">
-    <button class="camera-btn" onclick="resetCamera()" title="Reset View">⌂</button>
-    <button class="camera-btn" onclick="zoomIn()" title="Zoom In">+</button>
-    <button class="camera-btn" onclick="zoomOut()" title="Zoom Out">−</button>
-</div>
-
-<button id="settingsBtn" onclick="toggleSettings()">MENU</button>
-
-<!-- Moon legend -->
-<div id="moonLegend" style="display:none;">
-    <div><span class="moon-dot"></span>MOON = EXECUTION LAYER</div>
-    <div style="opacity:0.5;font-size:9px;margin-top:2px;">Click orbiting body to open</div>
-</div>
-
-<div id="settingsPanel">
-    <button class="close-settings" onclick="toggleSettings()">✕</button>
-    <div class="settings-header">Control Deck</div>
-    <div class="settings-subtitle">System Navigation &amp; View Modes</div>
-
-    <!-- ── TOP SECTION: Tutorial + Evaluation Portal ── -->
-    <div class="settings-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
-        <button id="tutorialMenuBtn" onclick="replayTutorial()">🎓 START TUTORIAL</button>
-        <button class="portal-btn" onclick="window.location.href='https://galaxy-andre-html-deploy.vercel.app/'">OPEN EVALUATION PORTAL</button>
+<!-- INFO PANEL -->
+<div class="info-panel" id="infoPanel">
+  <button class="panel-close" id="panelClose">✕</button>
+  <div class="panel-inner">
+    <div class="panel-eyebrow" id="pEyebrow">Category</div>
+    <div class="panel-name" id="pName">Tool Name</div>
+    <div class="panel-category" id="pCategory">Subcategory</div>
+    <div class="panel-divider"></div>
+    <div class="panel-purpose-label">Purpose</div>
+    <div class="panel-purpose" id="pPurpose">—</div>
+    <div class="panel-desc" id="pDesc">—</div>
+    <div class="panel-locked">
+      <div class="lock-icon">◈</div>
+      <div class="lock-text">
+        Access temporarily suspended<br>
+        Galaxy DRE is currently recalibrating
+      </div>
     </div>
-
-    <!-- ── VISUAL DIVIDER ── -->
-    <div class="settings-visual-divider"></div>
-
-    <!-- ── ACCORDION SECTION ── -->
-    <div class="settings-accordion" id="settingsAccordion">
-
-        <!-- CATEGORY: Revenue & Core -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionRevenue">
-                <span>💰 Revenue &amp; Core</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionRevenue">
-                <button class="portal-btn" style="background:linear-gradient(135deg,#00d4ff 0%,#005f7a 100%);color:#000;font-weight:800;letter-spacing:1px;" onclick="window.location.href='https://project-9dael.vercel.app/DRE_CSInterface_v5.html'">OPEN DRE INTERFACE</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#00d4ff 0%,#7b2ff7 100%);color:#fff;" onclick="window.location.href='Dre_Go_lndpage.html'">GET ANDRE GO FREE →</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;" onclick="window.location.href='dre_workflow_V2.html'">OPEN DRE WORKFLOW →</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;" onclick="window.location.href='DREUserConsolev3.0.HTML'">OPEN DRE CONSOLE →</button>
-            </div>
-        </div>
-
-        <!-- CATEGORY: Utilities -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionUtilities">
-                <span>🔧 Utilities</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionUtilities">
-                <button class="portal-btn" style="background:linear-gradient(135deg,#f59e0b 0%,#b45309 100%);color:#000;" onclick="window.location.href='ZIP_tool.html'">OPEN ZIP TOOL</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#FF8C00 0%,#FF5500 100%);color:#000;" onclick="window.location.href='dre-extractor-v2.html'">OPEN DRE EXTRACTOR</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#00C853 0%,#009624 100%);color:#000;" onclick="window.location.href='dre-os-v2__1_.html'">OPEN DRE OS</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#e83000 0%,#ffaa00 100%);color:#fff;" onclick="window.location.href='https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html'">OPEN DRE CODE</button>
-            </div>
-        </div>
-
-        <!-- CATEGORY: Creator & Career -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionCreator">
-                <span>✍️ Creator &amp; Career</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionCreator">
-                <button class="portal-btn" style="background:linear-gradient(135deg,#FF2D78 0%,#8B0038 100%);color:#fff;" onclick="window.location.href='DRE_FLOW_enhanced.html'">OPEN DRE FLOW</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#7C3AED 0%,#4C1D95 100%);color:#fff;" onclick="window.location.href='ATS_Config_Pro_v_3_0.html'">OPEN REPRIZAL AI</button>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;font-weight:800;letter-spacing:2px;" onclick="window.location.href='24_HOURS_.HTML'">OPEN 24 HOURS →</button>
-            </div>
-        </div>
-
-        <!-- CATEGORY: Finance & Strategy -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionFinance">
-                <span>📊 Finance &amp; Strategy</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionFinance">
-                <button class="portal-btn" style="background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" onclick="window.location.href='loan_shark_full_system.html'">OPEN LOAN SHARK</button>
-            </div>
-        </div>
-
-        <!-- CATEGORY: Kleara Studios (separate) -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionKleara">
-                <span>✦ Kleara Studios</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionKleara">
-                <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;line-height:1.6;">Separate universe · DL Ford &amp; Atlas Parks</div>
-                <button class="portal-btn" style="background:linear-gradient(135deg,#1a0033 0%,#6b00a8 50%,#c084fc 100%);color:#fff;font-weight:800;letter-spacing:2px;" onclick="window.location.href='authorpage.html'">ENTER KLEARA STUDIOS →</button>
-            </div>
-        </div>
-
-        <!-- CATEGORY: View Mode -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionViewMode">
-                <span>👁️ View Mode</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionViewMode">
-                <div class="toggle-control">
-                    <label>Founder Mode (Private)</label>
-                    <input type="checkbox" id="founderToggle" onchange="updateModeDisplay()">
-                </div>
-                <div id="nodeColorControls"></div>
-            </div>
-        </div>
-
-    </div><!-- /.settings-accordion -->
+  </div>
 </div>
 
-<div id="tooltip"></div>
-<div id="tapHint">TAP ANY PLANET TO EXPLORE</div>
+<script>
+// ── STAR FIELD ──
+const canvas = document.getElementById('stars');
+const ctx    = canvas.getContext('2d');
+let W, H, starArr = [];
 
-<div id="modal">
-    <div class="modal-content" id="modalContent">
-        <button class="close-modal" onclick="closeModal()">×</button>
-        <div class="modal-header" id="modalTitle"></div>
-        <div class="modal-category" id="modalCategory"></div>
-        <div class="modal-body" id="modalDescription"></div>
-        <div class="modal-protocol">
-            <div style="font-size:10px;text-transform:uppercase;margin-bottom:8px;opacity:0.6;">Protocol / Action</div>
-            <div id="modalProtocol"></div>
-        </div>
-        <div id="modalActionArea" style="margin-top:20px;"></div>
-    </div>
-</div>
-
-<!-- TUTORIAL -->
-<div id="tutorialBackdrop"></div>
-<div id="tutorialOverlay" class="tutorial-overlay"></div>
-<div id="tutorialCardWrap" class="tutorial-card-wrap">
-    <div class="tutorial-card" id="tutorialCard">
-        <div class="tutorial-step" id="tutorialStep">STEP 1 OF 6</div>
-        <div class="tutorial-title" id="tutorialTitle">Welcome to the Galaxy</div>
-        <div class="tutorial-desc" id="tutorialDesc">You're looking at the DRE Ecosystem. Every glowing planet is a live tool. Let's take 30 seconds to show you around.</div>
-        <div class="tutorial-progress" id="tutorialProgress">
-            <div class="tutorial-dot active"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-        </div>
-        <div class="tutorial-actions">
-            <button class="tutorial-btn tutorial-prev" id="tutorialPrevBtn" style="display:none;">← PREV</button>
-            <button class="tutorial-btn" id="tutorialNextBtn">NEXT →</button>
-            <button class="tutorial-btn tutorial-skip" id="tutorialSkipBtn">SKIP</button>
-        </div>
-    </div>
-</div>
-
-<div id="tutorialHighlight" class="tutorial-highlight"></div>
-<div id="tutorialArrow" class="tutorial-arrow"></div>
-
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  buildStars();
 }
-</script>
 
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+function buildStars() {
+  starArr = [];
+  const n = Math.floor(W * H / 4000);
+  for (let i = 0; i < n; i++) {
+    starArr.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.2 + 0.1,
+      a: Math.random(),
+      sp: Math.random() * 0.4 + 0.05,
+      ph: Math.random() * Math.PI * 2,
+      gold: Math.random() < 0.06
+    });
+  }
+}
 
-// Detect mobile
-const isMobile = ('ontouchstart' in window) || window.innerWidth < 768;
+function drawStarsFrame() {
+  ctx.clearRect(0, 0, W, H);
+  const t = Date.now() * 0.001;
+  starArr.forEach(s => {
+    const a = 0.3 + 0.7 * Math.abs(Math.sin(t * s.sp + s.ph));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = s.gold ? '#c9a84c' : '#ffffff';
+    ctx.globalAlpha = a * s.a;
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawStarsFrame);
+}
 
-const CONFIG = {
-    nodeSize: 2.5,
-    centerNodeSize: 5,
-    nodeHoverSize: 3.5,
-    rotationSpeed: 0.0003,
-    starCount: isMobile ? 2000 : 4000,
-    asteroidCount: isMobile ? 80 : 200
-};
+window.addEventListener('resize', resize);
+resize();
+drawStarsFrame();
 
-// ══════════════════════════════════════════════════════
-// NODE DATA — includes DRE Workflow as standard node
-// ══════════════════════════════════════════════════════
-const nodesData = [
-    { id:"CORE", x:0, y:0, z:0, name:"Andre Go", isCenter:true, category:"Revenue Engine · Chrome Extension · v5.0.0",
-      desc:"[FOUNDER] Primary 90-day income goal. Priority 1. Nothing else eats until this eats. Chrome Web Store live. $9.99/mo or $19.99 lifetime. 3 free sessions to hook. Push content → installs → MRR.\n\nPlatforms: Claude, ChatGPT, Gemini, Copilot, Poe, Perplexity, You.com, Grok, DeepSeek + universal fallback.\n\nAI Providers: Andre Cloud (no key needed) · OpenAI · Anthropic · Google · DeepSeek · Grok · Custom API.\n\nTech: Manifest V3 · Chrome 114+ · Edge 114+ · Brave · Local storage only — no tracking.",
-      protocol:"90-Day Play: Drive traffic via YouTube/Stream → land on Dre_Go_lndpage → free session → convert.\n\nFree tier: 3 sessions, all exports, all platforms.\nPremium Monthly $9.99: Unlimited sessions + Andre Cloud AI.\nPremium Lifetime $19.99: Pay once, own forever.",
-      public_desc:"🔥 Never lose your AI convos again.\n\nAndre Go saves every message across ChatGPT, Claude, Gemini, Copilot, Grok, DeepSeek, Perplexity, Poe, and more — automatically, in real time.\n\n✅ Real-time capture with live stats\n✅ Switch models without losing context\n✅ Edit AI responses directly\n✅ Export to JSON, Markdown, CSV, or plain text\n✅ Works across 10+ AI platforms\n✅ 100% local — no tracking\n\n⚡ Premium: Unlimited sessions · Full code capture · AI analysis · Andre Cloud included\n\n✨ Start FREE — 3 sessions, no card required. Then $9.99/mo or $19.99 once.",
-      public_protocol:"👇 One click. Your AI memory starts now.\n\nWorks on Chrome 114+, Edge 114+, and Brave.",
-      isPortal:true, portalFile:"Dre_Go_lndpage.html", portalLabel:"GET ANDRE GO FREE →",
-      portalStyle:"background:linear-gradient(135deg,#00d4ff 0%,#7b2ff7 100%);color:#fff;font-size:13px;" },
-
-    // ── DRE WORKFLOW — CREATION LAYER ──
-    { id:"DRE_WORKFLOW", x:-55, y:50, z:110, name:"DRE Workflow", category:"System Builder · Creation Layer",
-      desc:"[FOUNDER] Visual workflow builder. Create nodes, connect logic paths (AND/OR), build structured execution flows. Use prompts, templates, and file uploads to design full processes on a large interactive canvas. Navigate using zoom, minimap, and drag.\n\nPurpose: → BUILD the system. Design logic before you execute it.",
-      protocol:"Use: Open canvas → drag nodes → connect with AND/OR logic → generate via prompt or template → export flow.\n\nThis is the CREATION LAYER. Build here first. Execute in DRE Console.",
-      public_desc:"DRE Workflow is your system architecture canvas.\n\nBuild structured workflows using nodes and logic connectors — no code required.\n\n🧱 Visual node builder\n🔗 AND / OR logic paths\n📎 File & template uploads\n🗺️ Minimap navigation\n⚡ AI-assisted flow generation\n\nDesign your execution plan before you run it.",
-      public_protocol:"Action: Open DRE Workflow → Drag nodes → Connect logic → Build your system",
-      isPortal:true, portalFile:"dre_workflow_V2.html", portalLabel:"OPEN DRE WORKFLOW →",
-      portalStyle:"background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;letter-spacing:2px;" },
-
-    { id:"EVALUATE", x:70, y:30, z:120, name:"START EVALUATION", category:"Action Portal",
-      desc:"[FOUNDER] Gateway to the Andre Rebuilt utility page (Price Reality).", protocol:"Action: Redirect user to /andre.html",
-      public_desc:"Stop overpaying. Click here to analyze a service, quote, or contract against our independent standards.", public_protocol:"Action: Open Evaluation Tool",
-      isPortal:true, portalFile:"https://galaxy-andre-html-deploy.vercel.app/", portalLabel:"ENTER EVALUATION PORTAL" },
-    { id:"CHRIST", x:0, y:70, z:0, name:"Christ", category:"Foundation",
-      desc:"[FOUNDER] Ethics and Purpose filter. Is this honoring?", protocol:"John 14:6 - The Way, The Truth, The Life.",
-      public_desc:"The cornerstone of our policy and ethics. Truth without alignment is noise.", public_protocol:"Principle: Integrity in every transaction." },
-    { id:"DRE", x:-110, y:30, z:-70, name:"DRE System", category:"Strategic Tool",
-      desc:"[FOUNDER] Use to filter redundant expenses and validate ideas.", protocol:"Alignment Architect: Diagnose. Redesign. Complete.",
-      public_desc:"A diagnostic framework to expose broken project systems and redesign them for completion.", public_protocol:"Process: 7-Stage Analysis" },
-    { id:"CONSULT", x:100, y:-40, z:-80, name:"Church Consulting", category:"Service",
-      desc:"[FOUNDER] High-margin authority builder.", protocol:"Focus: Limit outgoing cash through tech optimization.",
-      public_desc:"Helping ministries steward resources by eliminating unnecessary technology costs.", public_protocol:"Service: Tech Audit" },
-    { id:"CONTENT", x:-80, y:-70, z:90, name:"YouTube / Stream", category:"Authority Builder",
-      desc:"[FOUNDER] Top-of-funnel for Andre Go adoption.", protocol:"Goal: Translate system builds into video content.",
-      public_desc:"Watch the systems being built in real-time. Transparency in execution.", public_protocol:"Channel: Andre Method" },
-    { id:"EXTENSION_DATA", x:40, y:-50, z:60, name:"Session Data", category:"Feature",
-      desc:"[FOUNDER] Storage mechanism for Andre Go extension.", protocol:"Local Storage / JSON Export",
-      public_desc:"Your data stays local. We don't train on your chats.", public_protocol:"Privacy: 100% Local" },
-    { id:"ZIP_TOOL", x:90, y:55, z:-110, name:"ZIP Tool", category:"File Utility",
-      desc:"[FOUNDER] Browser-native file archiver. Zero server upload.", protocol:"Use: Queue files/folders → compress to ZIP, or drop a ZIP → extract. All local.",
-      public_desc:"Create and extract ZIP archives entirely in your browser. No uploads, no accounts.", public_protocol:"Action: Open ZIP Tool → Drop Files → Archive or Extract",
-      isPortal:true, portalFile:"ZIP_tool.html", portalLabel:"OPEN ZIP TOOL",
-      portalStyle:"background:linear-gradient(135deg,#f59e0b 0%,#b45309 100%);color:#000;" },
-    { id:"DRE_FLOW", x:-140, y:20, z:40, name:"DRE Flow", category:"Story Intelligence",
-      desc:"[FOUNDER] Manuscript analysis dashboard for authors. Multi-AI provider. Character arc checking, timeline consistency, highlight analysis.",
-      protocol:"Route: Writers managing characters, timelines, plot threads. Upsell: AI features via their own API key.",
-      public_desc:"DRE Flow is a Story Intelligence dashboard for authors. Upload your manuscript and get AI-driven chapter analysis, character thread mapping, scene summaries, and consistency checks.\n\nSupports Claude, OpenAI, Gemini, and DeepSeek via your own API key. Your manuscript never leaves your device.",
-      public_protocol:"Action: Upload .docx or .txt manuscript → Analyze → Map your story",
-      isPortal:true, portalFile:"DRE_FLOW_enhanced.html", portalLabel:"OPEN DRE FLOW",
-      portalStyle:"background:linear-gradient(135deg,#FF2D78 0%,#8B0038 100%);color:#fff;" },
-    { id:"DRE_EXTRACTOR", x:-50, y:60, z:-145, name:"DRE Extractor", category:"Audio Tool",
-      desc:"[FOUNDER] On-device audio extraction engine. Zero server dependency.", protocol:"Use: Drop any audio/video file → extract clean WAV. Local-first.",
-      public_desc:"Extract audio from any file directly in your browser. No uploads, no accounts — your files never leave your device.", public_protocol:"Action: Open DRE Extractor → Drop file → Extract",
-      isPortal:true, portalFile:"dre-extractor-v2.html", portalLabel:"OPEN DRE EXTRACTOR",
-      portalStyle:"background:linear-gradient(135deg,#FF8C00 0%,#FF5500 100%);color:#000;" },
-    { id:"DRE_OS", x:135, y:-20, z:65, name:"DRE OS", category:"Privacy System",
-      desc:"[FOUNDER] Exposure Reduction System. Maps device tracking, scores exposure, gives hardening steps.", protocol:"Run: Scan → Score → Reduce.",
-      public_desc:"Find out how exposed your device really is. DRE OS scans your browser and network signals and gives you a real exposure score — then shows you how to fix it.", public_protocol:"Action: Open DRE OS → Run Scan → Harden Device",
-      isPortal:true, portalFile:"dre-os-v2__1_.html", portalLabel:"OPEN DRE OS",
-      portalStyle:"background:linear-gradient(135deg,#00C853 0%,#009624 100%);color:#000;" },
-    { id:"REPRIZAL", x:-30, y:-95, z:-115, name:"RePrizal AI", category:"Career Tool",
-      desc:"[FOUNDER] LLM-powered resume builder. PDF import via AI JSON pipeline.", protocol:"Flow: Import PDF → LLM converts → JSON loads into builder → Export polished resume.",
-      public_desc:"Build a professional resume powered by AI. Import your existing PDF, let an LLM reformat it, and export a polished result — all without a monthly subscription.", public_protocol:"Action: Open RePrizal AI → Import Resume → Export",
-      isPortal:true, portalFile:"ATS_Config_Pro_v_3_0.html", portalLabel:"OPEN REPRIZAL AI",
-      portalStyle:"background:linear-gradient(135deg,#7C3AED 0%,#4C1D95 100%);color:#fff;" },
-    { id:"DRE_CODE", x:20, y:110, z:40, name:"Dre Code", category:"Code Editor",
-      desc:"[FOUNDER] The code editor built for creators who move different.", protocol:"Use: Write, edit, and preview code with AI-powered tools.",
-      public_desc:"The code editor built for creators who move different. Professional tools. Zero gatekeeping.\n\n⚡ AI-Powered Editor\n🛡️ Novice Guard Mode\n🔍 Smart Code Search\n🌐 Live Preview", public_protocol:"Action: Open Dre Code → Join Waitlist",
-      isPortal:true, portalFile:"https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html", portalLabel:"OPEN DRE CODE",
-      portalStyle:"background:linear-gradient(135deg,#e83000 0%,#ffaa00 100%);color:#fff;" },
-    { id:"LOAN_SHARK", x:100, y:-90, z:20, name:"Loan Shark", category:"Financial Engine",
-      desc:"[FOUNDER] Payday loan survival and sequence calculator.", protocol:"Input: Income, Bills, Active Nodes → Output: Sequenced survival path.",
-      public_desc:"Trapped in the payday loan cycle? Loan Shark calculates the exact sequence of payments and reborrows needed to survive your next payday.\n\n✅ Maps your cash flow timeline\n✅ Survival and exit strategies\n✅ Reborrow danger tracking", public_protocol:"Action: Open Loan Shark → Input Loans → Run Simulation",
-      isPortal:true, portalFile:"loan_shark_full_system.html", portalLabel:"OPEN LOAN SHARK",
-      portalStyle:"background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" },
-    { id:"KLEARA", x:0, y:-160, z:0, name:"Kleara Studios", category:"Author Universe · DL Ford & Atlas Parks",
-      desc:"[FOUNDER] The literary arm. Completely separate from Andre ecosystem. DL Ford (Light/Exposure) and Atlas Parks (Dark/Pattern) — two authors, two perspectives, one universe.",
-      protocol:"This node does not feed the revenue engine. It is a separate creative universe.",
-      public_desc:"Welcome to Kleara Studios.\n\nTwo authors. Two perspectives on the same world.\n\n☀️ DL Ford — Light / Exposure\nPeople don't break. They decide.\nThe DEFINED series · DEFINED AFFAIR: A Prelude\n\n🌑 Atlas Parks — Dark / Pattern\nThe dark doesn't hide things. It reveals what light ignores.\nHADDER: Isabella Hadder\n\nThis is not a tool. This is the work.",
-      public_protocol:"Enter the universe → Choose your perspective → Light or Dark",
-      isPortal:true, portalFile:"authorpage.html", portalLabel:"ENTER KLEARA STUDIOS →",
-      portalStyle:"background:linear-gradient(135deg,#1a0033 0%,#6b00a8 50%,#ffffff 100%);color:#fff;font-weight:800;letter-spacing:2px;font-size:12px;" },
-    { id:"DRE_INTERFACE", x:160, y:90, z:80, name:"DRE Interface", category:"AI Chat Terminal · v4",
-      desc:"[FOUNDER] Live AI chat terminal running the full DRE system prompt. Multi-provider, multi-mode. Ford Technical and Book Writing controllers loaded.",
-      protocol:"Providers: OpenAI · Anthropic · Google · DeepSeek · Local (LM Studio / Element) · Custom endpoint.",
-      public_desc:"DRE Interface is a live AI chat terminal running the full DRE Alignment Architect system.\n\nConnect your own AI provider and talk directly to DRE.\n\n⚡ Controller Modes:\n— DRE Default · General alignment\n— Ford Technical · Step-by-step execution\n— Book Writing · Narrative project support\n\n📎 Attach files: PDF, JSON, TXT, Markdown\n\n🔑 Requires your own API key. Stored locally only.",
-      public_protocol:"⚠️ This tool requires your own API key from OpenAI, Anthropic, Google, DeepSeek, or a local model. No key = no chat.",
-      isPortal:true, portalFile:"https://project-9dael.vercel.app/DRE_CSInterface_v5.html", portalLabel:"OPEN DRE INTERFACE",
-      portalStyle:"background:linear-gradient(135deg,#00d4ff 0%,#005f7a 100%);color:#000;font-weight:800;letter-spacing:2px;" },
-    { id:"HOURS_24", x:-120, y:-60, z:130, name:"24 Hours", category:"Wellness · Daily Rhythm · Christ-Centered",
-      desc:"[FOUNDER] Christ-centered daily wellness and mental health app. Habit tracking, focus sessions, urge tracking, a built-in AI life coach grounded in scripture, and a full daily rhythm system.\n\nFeatures: Habit streaks · Bilateral focus sessions · Urge resistance tracker · AI Coach (OpenAI / Groq / DeepSeek / Anthropic) · Calendar · Daily check-in · Crisis support mode.\n\nAll data stored locally. No accounts required.",
-      protocol:"Use: Open → Set your API key in Settings → Log habits, run focus sessions, talk to the coach.\nAI Coach providers: OpenAI, Groq, DeepSeek, Anthropic.\nDesigned for daily use — morning check-in to evening reflection.",
-      public_desc:"24 Hours is a Christ-centered daily rhythm and wellness app.\n\nBuilt for people who want structure, accountability, and a coach rooted in truth — not algorithms.\n\n✝️ AI Life Coach — powered by scripture and your own API key\n📅 Daily habit tracking with streaks\n🧠 Bilateral focus sessions for deep work\n💪 Urge resistance tracker\n📖 Daily check-in and evening reflection\n🚨 Crisis support mode\n\n100% local. No account. No tracking.",
-      public_protocol:"Action: Open 24 Hours → Configure your API key → Start your daily rhythm\n\nProviders: OpenAI · Groq · DeepSeek · Anthropic",
-      isStar:true,
-      isPortal:true, portalFile:"24_HOURS_.HTML", portalLabel:"OPEN 24 HOURS →",
-      portalStyle:"background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;font-weight:800;letter-spacing:2px;" }
+// ── TOOL DATA ──
+const tools = [
+  {
+    id: 'GALAXY_CENTER',
+    label: 'GALAXY\nDRE',
+    category: 'Ecosystem',
+    purpose: 'Central Command Deck',
+    desc: 'The master shell for the entire DRE ecosystem. A high-performance control center featuring a 4-tab rail (Editor, Architect, Local NWA, Debugger) and a real-time Command Input for the Cloud Engine. Synchronizes all subsystem modules and workspace contexts.',
+    isCenter: true
+  },
+  {
+    id: 'DRE_CODE',
+    label: 'DRE CODE',
+    category: 'Code Development',
+    purpose: 'Autonomous AI Code Editing',
+    desc: 'A full code editor with a built-in autonomous agent that has direct function-calling access to rewrite, format, and validate code. Tab 01 of the DRE master shell — the primary execution surface for all development work.',
+  },
+  {
+    id: 'LOAN',
+    label: 'LOAN SHARK',
+    category: 'Financial Intelligence',
+    purpose: 'Payday Loan Survival Engine',
+    desc: 'A survival calculator that maps cash flow timelines to sequence payments for those stuck in loan cycles. Inputs your income, bills, and active lending nodes to output an exact sequenced survival path — repayment strategies designed to get you out, not keep you in.',
+  },
+  {
+    id: 'DRE_FLOW',
+    label: 'DRE FLOW',
+    category: 'Story Intelligence',
+    purpose: 'Manuscript Analysis for Authors',
+    desc: 'A Story Intelligence dashboard providing AI-driven chapter analysis, character thread mapping across timelines, scene summaries, highlight tagging, and consistency checks. Supports Claude, OpenAI, Gemini, and DeepSeek via your own API key. Your manuscript never leaves your device.',
+  },
+  {
+    id: 'DRE_OS',
+    label: 'DRE OS',
+    category: 'Privacy',
+    purpose: 'Exposure Reduction System',
+    desc: 'Scans your browser and network signals to score your device exposure level, then provides actionable hardening steps. Targets Ad ID tracking, DNS leaks, and network signal exposure. Runs entirely in-browser — no upload, no account.',
+  },
+  {
+    id: 'ANDRE_GO',
+    label: 'ANDRE GO',
+    category: 'Data Liberation',
+    purpose: 'AI Conversation Capture',
+    desc: 'A Chrome extension that saves your real-time message history across 10+ AI platforms — ChatGPT, Claude, Gemini, Copilot, Grok, DeepSeek, Perplexity, Poe, and more. Ends platform lock-in permanently. Export to JSON, Markdown, CSV, or plain text. 100% local — no tracking.',
+  },
+  {
+    id: 'KLEARA',
+    label: 'KLEARA',
+    category: 'Literary Arm',
+    purpose: 'Creative Content & Narrative Strategy',
+    desc: 'A separate creative universe featuring two authors and two perspectives on the same world. DL Ford — Light / Exposure. Atlas Parks — Dark / Pattern. Powered by the DRE Flow intelligence layer. Not a tool. The work.',
+  },
+  {
+    id: '24HRS',
+    label: '24 HRS',
+    category: 'Wellness & Productivity',
+    purpose: 'Christ-Centered Daily Rhythm',
+    desc: 'A wellness application for habit tracking and scripture-grounded AI life coaching. Features a 45-minute quote rotation engine and daily rhythm structuring built around a Christ-centered framework. Designed for those who want their systems to reflect their values.',
+  },
+  {
+    id: 'CHURCH',
+    label: 'CHURCH+',
+    category: 'Service Optimization',
+    purpose: 'Ministry Tech & Expense Reduction',
+    desc: 'Strategic optimization of technology stacks and expense reduction specifically designed for ministries and faith-based organizations. Eliminates unnecessary technology costs so resources flow toward mission, not overhead.',
+  }
 ];
 
-// ══════════════════════════════════════════════════════
-// MOON DATA — DRE Console orbits CORE
-// ══════════════════════════════════════════════════════
-const moonsData = [
-    {
-        id: "DRE_CONSOLE_MOON",
-        name: "DRE Console",
-        parent: "CORE",
-        orbitRadius: 28,        // distance from parent
-        orbitSpeed: 0.008,      // radians per frame
-        orbitTilt: 0.4,         // orbit plane tilt in radians
-        orbitPhase: 0,          // starting angle
-        size: 1.6,
-        color: 0xffc832,
-        file: "DREUserConsolev3.0.HTML",
-        category: "Execution System · Command Interface",
-        desc: "[FOUNDER] Command and execution interface. Select tools from sidebar, view structured plans as cards, follow step-by-step execution blocks, track progress with checklists. Multi-panel system: sidebar / workspace / AI panel.\n\nThis is the EXECUTION LAYER. Run what you built in DRE Workflow here.",
-        protocol: "Flow: Build in DRE Workflow → Execute in DRE Console.\n\nConsole operates on workflows already designed. Open tool → select plan → follow execution blocks → track completion.",
-        public_desc:"DRE Console is your command and execution center.\n\nThis is where structured plans become action.\n\n⚡ Step-by-step execution blocks\n📋 Plan cards with checklists\n🛠️ Tool sidebar\n🤖 AI execution panel\n📊 Progress tracking\n\nBuild your system in DRE Workflow. Execute it here.",
-        public_protocol:"Action: Open DRE Console → Load your workflow plan → Execute step by step\n\n🔁 Workflow → Console = Build → Execute"
-    }
+// ── ORBITAL MAP (SVG) ──
+// Layout: center + 8 nodes arranged around two orbital rings
+const CX = 350, CY = 350; // viewBox center
+
+// Ring radii
+const R1 = 155; // inner orbit
+const R2 = 265; // outer orbit
+
+// Node positions: angle in degrees, which ring
+const nodeLayout = [
+  // id,              angle,   ring
+  ['DRE_CODE',        -75,     R2],
+  ['LOAN',            -20,     R2],
+  ['DRE_FLOW',         30,     R2],
+  ['DRE_OS',           95,     R2],
+  ['ANDRE_GO',        160,     R1],
+  ['KLEARA',         -150,     R1],
+  ['24HRS',          -115,     R1],
+  ['CHURCH',          210,     R2],
 ];
 
-const nodeColors = {
-    "CORE":0x00d4ff,"CHRIST":0xFFFFFF,"EVALUATE":0x3b82f6,"DRE":0xd4af37,"CONSULT":0x50C878,
-    "CONTENT":0xFF6B6B,"EXTENSION_DATA":0x9370DB,"DRE_INTERFACE":0x00d4ff,"ZIP_TOOL":0xf59e0b,
-    "DRE_FLOW":0xFF2D78,"DRE_EXTRACTOR":0xFF8C00,"DRE_OS":0x00C853,"REPRIZAL":0x7C3AED,
-    "DRE_CODE":0xff4800,"LOAN_SHARK":0x00ff41,"KLEARA":0xff6600,
-    "HOURS_24":0x8b6fff,"DRE_WORKFLOW":0x00ffaa
-};
+function degToRad(d) { return d * Math.PI / 180; }
 
-// ── SCENE ──
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(0, 80, isMobile ? 320 : 250);
+// Build SVG
+function buildOrbitalMap() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 700 700');
+  svg.setAttribute('xmlns', ns);
 
-const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-document.body.appendChild(renderer.domElement);
+  // Defs — gradients and filters
+  const defs = document.createElementNS(ns, 'defs');
 
-// ── CINEMATIC SCENE LIGHTING ──
-// Key: deep-space sunlight — warm, strong, directional
-const sunLight = new THREE.DirectionalLight(0xfff5e0, 2.8);
-sunLight.position.set(120, 80, 60);
-scene.add(sunLight);
-// Fill: cold blue ambient — prevents pure-black shadow sides
-const fillLight = new THREE.AmbientLight(0x0d1a2a, 3.5);
-scene.add(fillLight);
-// Rim: cinematic edge highlight, blue-cold
-const rimLight = new THREE.DirectionalLight(0x88bbff, 1.6);
-rimLight.position.set(-80, -40, -80);
-scene.add(rimLight);
-// Engine point light — follows ship, lights nearby hull
-const enginePointLight = new THREE.PointLight(0xff8833, 0, 30);
-scene.add(enginePointLight);
+  // Gold radial gradient for center
+  const cg = document.createElementNS(ns, 'radialGradient');
+  cg.setAttribute('id', 'centerGrad');
+  cg.setAttribute('cx', '50%'); cg.setAttribute('cy', '50%'); cg.setAttribute('r', '50%');
+  [['0%','#1c1608'],['40%','#0e0b04'],['100%','#060402']].forEach(([off,col])=>{
+    const s = document.createElementNS(ns,'stop');
+    s.setAttribute('offset',off); s.setAttribute('stop-color',col); cg.appendChild(s);
+  });
+  defs.appendChild(cg);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.minDistance = 50;
-controls.maxDistance = 700;
-controls.enablePan = false;
+  // Glow filter
+  const gf = document.createElementNS(ns,'filter');
+  gf.setAttribute('id','glow'); gf.setAttribute('x','-50%'); gf.setAttribute('y','-50%'); gf.setAttribute('width','200%'); gf.setAttribute('height','200%');
+  const fe = document.createElementNS(ns,'feGaussianBlur');
+  fe.setAttribute('in','SourceGraphic'); fe.setAttribute('stdDeviation','4'); fe.setAttribute('result','blur');
+  gf.appendChild(fe);
+  const fm = document.createElementNS(ns,'feMerge');
+  ['blur','SourceGraphic'].forEach(n=>{const fn=document.createElementNS(ns,'feMergeNode');fn.setAttribute('in',n);fm.appendChild(fn);});
+  gf.appendChild(fm);
+  defs.appendChild(gf);
 
-const mainGroup = new THREE.Group();
-scene.add(mainGroup);
+  // Subtle glow filter (smaller)
+  const sgf = document.createElementNS(ns,'filter');
+  sgf.setAttribute('id','softGlow'); sgf.setAttribute('x','-30%'); sgf.setAttribute('y','-30%'); sgf.setAttribute('width','160%'); sgf.setAttribute('height','160%');
+  const sfe = document.createElementNS(ns,'feGaussianBlur');
+  sfe.setAttribute('in','SourceGraphic'); sfe.setAttribute('stdDeviation','2.5'); sfe.setAttribute('result','blur');
+  sgf.appendChild(sfe);
+  const sfm = document.createElementNS(ns,'feMerge');
+  ['blur','SourceGraphic'].forEach(n=>{const fn=document.createElementNS(ns,'feMergeNode');fn.setAttribute('in',n);sfm.appendChild(fn);});
+  sgf.appendChild(sfm);
+  defs.appendChild(sgf);
 
-// Starfield
-const starGeo = new THREE.BufferGeometry();
-const sp = [];
-for (let i = 0; i < CONFIG.starCount; i++) {
-    const t = Math.random()*Math.PI*2, p = Math.acos(2*Math.random()-1), r = 400+Math.random()*400;
-    sp.push(r*Math.sin(p)*Math.cos(t), r*Math.sin(p)*Math.sin(t), r*Math.cos(p));
+  svg.appendChild(defs);
+
+  // ── Background deep space glow ──
+  const bgGlow = document.createElementNS(ns,'circle');
+  bgGlow.setAttribute('cx',CX); bgGlow.setAttribute('cy',CY); bgGlow.setAttribute('r','320');
+  bgGlow.setAttribute('fill','none'); bgGlow.setAttribute('stroke','rgba(201,168,76,0.04)'); bgGlow.setAttribute('stroke-width','80');
+  svg.appendChild(bgGlow);
+
+  // ── OUTER RING ──
+  const outerRing = document.createElementNS(ns,'circle');
+  outerRing.setAttribute('cx',CX); outerRing.setAttribute('cy',CY); outerRing.setAttribute('r',R2);
+  outerRing.setAttribute('fill','none');
+  outerRing.setAttribute('stroke','rgba(201,168,76,0.15)');
+  outerRing.setAttribute('stroke-width','1');
+  outerRing.setAttribute('stroke-dasharray','3 8');
+  svg.appendChild(outerRing);
+
+  // ── INNER RING ──
+  const innerRing = document.createElementNS(ns,'circle');
+  innerRing.setAttribute('cx',CX); innerRing.setAttribute('cy',CY); innerRing.setAttribute('r',R1);
+  innerRing.setAttribute('fill','none');
+  innerRing.setAttribute('stroke','rgba(201,168,76,0.12)');
+  innerRing.setAttribute('stroke-width','1');
+  innerRing.setAttribute('stroke-dasharray','2 6');
+  svg.appendChild(innerRing);
+
+  // ── THIRD MICRO RING (innermost, decorative) ──
+  const microRing = document.createElementNS(ns,'circle');
+  microRing.setAttribute('cx',CX); microRing.setAttribute('cy',CY); microRing.setAttribute('r','82');
+  microRing.setAttribute('fill','none');
+  microRing.setAttribute('stroke','rgba(201,168,76,0.09)');
+  microRing.setAttribute('stroke-width','1');
+  microRing.setAttribute('stroke-dasharray','1 5');
+  svg.appendChild(microRing);
+
+  // ── RADIAL SPOKES (very faint) ──
+  for (let i = 0; i < 8; i++) {
+    const angle = (i / 8) * Math.PI * 2;
+    const spoke = document.createElementNS(ns,'line');
+    spoke.setAttribute('x1', CX); spoke.setAttribute('y1', CY);
+    spoke.setAttribute('x2', CX + Math.cos(angle) * R2); spoke.setAttribute('y2', CY + Math.sin(angle) * R2);
+    spoke.setAttribute('stroke','rgba(201,168,76,0.04)'); spoke.setAttribute('stroke-width','1');
+    svg.appendChild(spoke);
+  }
+
+  // ── CENTER CIRCLE ──
+  // Outer glow ring
+  const centerGlowRing = document.createElementNS(ns,'circle');
+  centerGlowRing.setAttribute('cx',CX); centerGlowRing.setAttribute('cy',CY); centerGlowRing.setAttribute('r','78');
+  centerGlowRing.setAttribute('fill','none'); centerGlowRing.setAttribute('stroke','rgba(201,168,76,0.25)'); centerGlowRing.setAttribute('stroke-width','1.5');
+  svg.appendChild(centerGlowRing);
+
+  const centerBg = document.createElementNS(ns,'circle');
+  centerBg.setAttribute('cx',CX); centerBg.setAttribute('cy',CY); centerBg.setAttribute('r','72');
+  centerBg.setAttribute('fill','url(#centerGrad)'); centerBg.setAttribute('stroke','rgba(201,168,76,0.45)'); centerBg.setAttribute('stroke-width','1.5');
+  svg.appendChild(centerBg);
+
+  // Center text
+  const cLabel1 = document.createElementNS(ns,'text');
+  cLabel1.setAttribute('x',CX); cLabel1.setAttribute('y',CY - 8);
+  cLabel1.setAttribute('text-anchor','middle'); cLabel1.setAttribute('dominant-baseline','middle');
+  cLabel1.setAttribute('font-family',"'Bebas Neue', sans-serif");
+  cLabel1.setAttribute('font-size','22'); cLabel1.setAttribute('letter-spacing','4');
+  cLabel1.setAttribute('fill','#c9a84c');
+  cLabel1.textContent = 'GALAXY';
+  svg.appendChild(cLabel1);
+
+  const cLabel2 = document.createElementNS(ns,'text');
+  cLabel2.setAttribute('x',CX); cLabel2.setAttribute('y',CY + 16);
+  cLabel2.setAttribute('text-anchor','middle'); cLabel2.setAttribute('dominant-baseline','middle');
+  cLabel2.setAttribute('font-family',"'Bebas Neue', sans-serif");
+  cLabel2.setAttribute('font-size','22'); cLabel2.setAttribute('letter-spacing','4');
+  cLabel2.setAttribute('fill','#c9a84c');
+  cLabel2.textContent = 'DRE';
+  svg.appendChild(cLabel2);
+
+  // ── NODES ──
+  nodeLayout.forEach(([id, angleDeg, radius]) => {
+    const tool = tools.find(t => t.id === id);
+    if (!tool) return;
+
+    const rad  = degToRad(angleDeg);
+    const nx   = CX + Math.cos(rad) * radius;
+    const ny   = CY + Math.sin(rad) * radius;
+
+    // Connection dot on ring
+    const dot = document.createElementNS(ns,'circle');
+    dot.setAttribute('cx', nx); dot.setAttribute('cy', ny); dot.setAttribute('r', '2.5');
+    dot.setAttribute('fill','rgba(201,168,76,0.5)');
+    svg.appendChild(dot);
+
+    // Build label lines
+    const labelLines = tool.label.split('\n');
+    const lineH = 13;
+    const boxW = Math.max(...labelLines.map(l => l.length)) * 6.5 + 28;
+    const boxH = labelLines.length * lineH + 18;
+
+    // Position box so it doesn't overlap center
+    // Push away from center along radial
+    const pushR = radius + 24;
+    const bx = CX + Math.cos(rad) * pushR;
+    const by = CY + Math.sin(rad) * pushR;
+
+    const g = document.createElementNS(ns,'g');
+    g.setAttribute('class','node-box');
+    g.setAttribute('data-id', id);
+    g.style.cursor = 'pointer';
+
+    const rect = document.createElementNS(ns,'rect');
+    rect.setAttribute('x', bx - boxW/2); rect.setAttribute('y', by - boxH/2);
+    rect.setAttribute('width', boxW); rect.setAttribute('height', boxH);
+    rect.setAttribute('rx','2');
+    rect.setAttribute('fill','rgba(8,7,12,0.85)');
+    rect.setAttribute('stroke','rgba(201,168,76,0.35)');
+    rect.setAttribute('stroke-width','1');
+    g.appendChild(rect);
+
+    // Lines connecting dot to box
+    const lineStart = { x: nx, y: ny };
+    const lineEnd   = { x: bx + (nx < CX ? boxW/2 : -boxW/2) * 0 , y: by };
+    // Simple straight connector
+    const connector = document.createElementNS(ns,'line');
+    connector.setAttribute('x1', nx); connector.setAttribute('y1', ny);
+    connector.setAttribute('x2', bx); connector.setAttribute('y2', by);
+    connector.setAttribute('stroke','rgba(201,168,76,0.2)'); connector.setAttribute('stroke-width','0.8');
+    connector.setAttribute('stroke-dasharray','3 4');
+    g.appendChild(connector);
+
+    // Label text
+    labelLines.forEach((line, i) => {
+      const t = document.createElementNS(ns,'text');
+      const totalH = labelLines.length * lineH;
+      const yOff = -totalH/2 + i * lineH + lineH * 0.6;
+      t.setAttribute('x', bx); t.setAttribute('y', by + yOff);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('font-family',"'Bebas Neue', sans-serif");
+      t.setAttribute('font-size','11.5'); t.setAttribute('letter-spacing','2.5');
+      t.setAttribute('fill','#b09050');
+      t.textContent = line;
+      g.appendChild(t);
+    });
+
+    g.addEventListener('click', () => openPanel(id));
+    g.addEventListener('touchend', (e) => { e.preventDefault(); openPanel(id); });
+
+    svg.appendChild(g);
+  });
+
+  document.getElementById('orbitalMap').appendChild(svg);
 }
-starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
-const starField = new THREE.Group();
-starField.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0xFFFFFF, size:1.5, transparent:true, opacity:0.8 })));
-scene.add(starField);
 
-// Asteroids
-for (let i = 0; i < CONFIG.asteroidCount; i++) {
-    const a = new THREE.Mesh(new THREE.DodecahedronGeometry(0.3+Math.random()*1.2, 0), new THREE.MeshBasicMaterial({ color:0x444444, wireframe:true, transparent:true, opacity:0.15 }));
-    const r=200+Math.random()*300, t=Math.random()*Math.PI*2, p=Math.random()*Math.PI;
-    a.position.set(r*Math.sin(p)*Math.cos(t), r*Math.sin(p)*Math.sin(t), r*Math.cos(p));
-    scene.add(a);
+buildOrbitalMap();
+
+// ── PANEL LOGIC ──
+const panel    = document.getElementById('infoPanel');
+const backdrop = document.getElementById('backdrop');
+const pClose   = document.getElementById('panelClose');
+
+function openPanel(id) {
+  const tool = tools.find(t => t.id === id);
+  if (!tool) return;
+
+  document.getElementById('pEyebrow').textContent  = tool.category;
+  document.getElementById('pName').textContent      = tool.label.replace('\n',' ');
+  document.getElementById('pCategory').textContent  = tool.category;
+  document.getElementById('pPurpose').textContent   = tool.purpose;
+  document.getElementById('pDesc').textContent      = tool.desc;
+
+  panel.classList.add('open');
+  backdrop.classList.add('show');
 }
 
-// ── NODES ──
-const nodeObjects = new Map();
-const clickableNodes = [];
-// Store moon mesh refs separately
-const moonObjects = new Map();
-const clickableMoons = [];
-
-// ── Helper: build a 5-point star shape geometry ──
-function createStarMesh(size, color) {
-    const starGroup = new THREE.Group();
-    const outerR = size * 1.8;
-    const innerR = size * 0.75;
-    const points = 5;
-    const shape = new THREE.Shape();
-    for (let i = 0; i < points * 2; i++) {
-        const angle = (i * Math.PI) / points - Math.PI / 2;
-        const r = i % 2 === 0 ? outerR : innerR;
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
-        i === 0 ? shape.moveTo(x, y) : shape.lineTo(x, y);
-    }
-    shape.closePath();
-    const extrudeSettings = { depth: size * 0.5, bevelEnabled: true, bevelThickness: size * 0.1, bevelSize: size * 0.08, bevelSegments: 3 };
-    const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    geo.center();
-    const mat = new THREE.MeshBasicMaterial({ color });
-    const mesh = new THREE.Mesh(geo, mat);
-    starGroup.add(mesh);
-    const igMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.35, side:THREE.BackSide });
-    const igGeo = new THREE.SphereGeometry(outerR * 1.15, 16, 16);
-    const ig = new THREE.Mesh(igGeo, igMat);
-    starGroup.add(ig);
-    const ogMat = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0.15, side:THREE.BackSide });
-    const ogGeo = new THREE.SphereGeometry(outerR * 1.6, 16, 16);
-    const og = new THREE.Mesh(ogGeo, ogMat);
-    starGroup.add(og);
-    return { group: starGroup, mesh, innerGlow: ig, outerGlow: og };
+function closePanel() {
+  panel.classList.remove('open');
+  backdrop.classList.remove('show');
 }
 
-nodesData.forEach(n => {
-    const size = n.id==="KLEARA" ? 12 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
-    const color = nodeColors[n.id] || 0xFFFFFF;
-    const pos = new THREE.Vector3(n.x, n.y, n.z);
-    const pg = n.id==="KLEARA" ? scene : mainGroup;
-    let planet;
+pClose.addEventListener('click', closePanel);
+backdrop.addEventListener('click', closePanel);
 
-    if (n.id === 'KLEARA') {
-        const sg = new THREE.Group();
-        sg.position.copy(pos);
-        planet = new THREE.Mesh(new THREE.SphereGeometry(size*2,16,16), new THREE.MeshBasicMaterial({ transparent:true, opacity:0 }));
-        sg.add(planet);
-        const hull=new THREE.MeshBasicMaterial({color:0x1a1a2e}), hullL=new THREE.MeshBasicMaterial({color:0x2d2d4e}), hullM=new THREE.MeshBasicMaterial({color:0x16213e});
-        const pg2=new THREE.MeshBasicMaterial({color:0x9b30ff}), pd=new THREE.MeshBasicMaterial({color:0x6b00a8,transparent:true,opacity:0.8}), lav=new THREE.MeshBasicMaterial({color:0xc084fc,transparent:true,opacity:0.9});
-        const dp=new THREE.MeshBasicMaterial({color:0x4a0080}), wa=new THREE.MeshBasicMaterial({color:0xe8e8ff,transparent:true,opacity:0.85}), sp2=new THREE.MeshBasicMaterial({color:0x0d1b2a,transparent:true,opacity:0.95}), st=new THREE.MeshBasicMaterial({color:0x1e3a5f});
-        const spine=new THREE.Mesh(new THREE.CylinderGeometry(size*.12,size*.12,size*9,12),hullL); spine.rotation.z=Math.PI/2; sg.add(spine);
-        for(let i=-3;i<=3;i++){const s=new THREE.Mesh(new THREE.TorusGeometry(size*.18,size*.04,8,16),i===0?pg2:hullM);s.rotation.y=Math.PI/2;s.position.x=i*size*1.25;sg.add(s);}
-        const hab=new THREE.Mesh(new THREE.CylinderGeometry(size*.7,size*.7,size*1.6,16),hullL);hab.rotation.z=Math.PI/2;sg.add(hab);
-        const cL=new THREE.Mesh(new THREE.CylinderGeometry(size*.35,size*.7,size*.4,16),hull);cL.rotation.z=Math.PI/2;cL.position.x=-size;sg.add(cL);
-        const cR=new THREE.Mesh(new THREE.CylinderGeometry(size*.7,size*.35,size*.4,16),hull);cR.rotation.z=Math.PI/2;cR.position.x=size;sg.add(cR);
-        [-0.5,0,0.5].forEach(o=>{const b=new THREE.Mesh(new THREE.TorusGeometry(size*.72,size*.05,8,32),o===0?lav:pd);b.rotation.y=Math.PI/2;b.position.x=o*size;sg.add(b);});
-        const dock=new THREE.Mesh(new THREE.CylinderGeometry(size*.35,size*.35,size*.9,12),dp);dock.position.z=size*.85;sg.add(dock);
-        const dr=new THREE.Mesh(new THREE.TorusGeometry(size*.4,size*.06,8,24),pg2);dr.position.z=size*1.3;sg.add(dr);
-        const hg=new THREE.Mesh(new THREE.CircleGeometry(size*.28,16),new THREE.MeshBasicMaterial({color:0xc084fc,transparent:true,opacity:0.6}));hg.position.z=size*1.31;sg.add(hg);
-        [-2.8,-1.4,1.4,2.8].forEach(xO=>{[-1,1].forEach(side=>{
-            const str=new THREE.Mesh(new THREE.CylinderGeometry(size*.05,size*.05,size*1.8,8),hullM);str.position.set(xO*size,side*size*.9,0);sg.add(str);
-            const pan=new THREE.Mesh(new THREE.BoxGeometry(size*.9,size*1.5,size*.04),sp2);pan.position.set(xO*size,side*size*1.9,0);sg.add(pan);
-            const tH=new THREE.Mesh(new THREE.BoxGeometry(size*.92,size*.04,size*.045),st);tH.position.set(xO*size,side*size*1.9,0);sg.add(tH);
-            for(let g=-1;g<=1;g++){const tV=new THREE.Mesh(new THREE.BoxGeometry(size*.04,size*1.52,size*.045),st);tV.position.set((xO+g*.28)*size,side*size*1.9,0);sg.add(tV);}
-            const eT=new THREE.Mesh(new THREE.BoxGeometry(size*.9,size*.04,size*.05),side>0?pg2:lav);eT.position.set(xO*size,side*(size*1.9+size*.75),0);sg.add(eT);
-        });});
-        const da=new THREE.Mesh(new THREE.CylinderGeometry(size*.04,size*.04,size*1.4,8),hullL);da.position.y=size*1.4;sg.add(da);
-        const dish=new THREE.Mesh(new THREE.SphereGeometry(size*.55,16,8,0,Math.PI*2,0,Math.PI/2),hullL);dish.rotation.x=Math.PI;dish.position.y=size*2.1;sg.add(dish);
-        const rim=new THREE.Mesh(new THREE.TorusGeometry(size*.55,size*.04,8,32),pg2);rim.rotation.x=Math.PI/2;rim.position.y=size*2.1;sg.add(rim);
-        [{x:size*1.5,z:0},{x:-size*1.5,z:0},{x:0,z:size*.8}].forEach(p=>{
-            const a2=new THREE.Mesh(new THREE.CylinderGeometry(size*.03,size*.03,size*.9,6),wa);a2.position.set(p.x,size*.9,p.z);sg.add(a2);
-            const t2=new THREE.Mesh(new THREE.SphereGeometry(size*.07,8,8),pg2);t2.position.set(p.x,size*1.35,p.z);sg.add(t2);
-        });
-        [-1,0,1].forEach(i=>{const th=new THREE.Mesh(new THREE.CylinderGeometry(size*.15,size*.2,size*.5,10),hull);th.position.set(i*size*.6,0,-size*.75);sg.add(th);
-            const tg=new THREE.Mesh(new THREE.CircleGeometry(size*.15,10),new THREE.MeshBasicMaterial({color:0x9b30ff,transparent:true,opacity:0.7}));tg.rotation.x=Math.PI/2;tg.position.set(i*size*.6,0,-size*1.01);sg.add(tg);});
-        sg.add(new THREE.Mesh(new THREE.SphereGeometry(size*5.5,16,16),new THREE.MeshBasicMaterial({color:0x2a004a,transparent:true,opacity:0.18,side:THREE.BackSide})));
-        sg.add(new THREE.Mesh(new THREE.SphereGeometry(size*4,16,16),new THREE.MeshBasicMaterial({color:0x6b00a8,transparent:true,opacity:0.10,side:THREE.BackSide})));
-        const nd=new THREE.Mesh(new THREE.RingGeometry(size*1.5,size*6,64),new THREE.MeshBasicMaterial({color:0x4a0080,transparent:true,opacity:0.12,side:THREE.DoubleSide}));nd.rotation.x=Math.PI/2.2;sg.add(nd);
-        const dg=new THREE.BufferGeometry(), dp2=[];
-        for(let d=0;d<80;d++){const r=size*(2.5+Math.random()*3.5),t=Math.random()*Math.PI*2,p=( Math.random()-.5)*Math.PI*.4;dp2.push(r*Math.cos(t)*Math.cos(p),r*Math.sin(p),r*Math.sin(t)*Math.cos(p));}
-        dg.setAttribute('position',new THREE.Float32BufferAttribute(dp2,3));
-        sg.add(new THREE.Points(dg,new THREE.PointsMaterial({color:0xc084fc,size:0.6,transparent:true,opacity:0.5})));
-        sg.rotation.x=0.18; sg.rotation.z=0.08;
-        pg.add(sg);
-        scene.userData.kleara = sg;
-
-    } else if (n.isStar) {
-        const starData = createStarMesh(size, color);
-        const sg = starData.group;
-        sg.position.copy(pos);
-        sg.userData.isStar = true;
-        planet = starData.mesh;
-        planet.userData = { nodeId: n.id, nodeData: n };
-        pg.add(sg);
-        nodeObjects.set(n.id, {
-            planet: planet,
-            starGroup: sg,
-            innerGlow: starData.innerGlow,
-            outerGlow: starData.outerGlow,
-            originalSize: size
-        });
-        clickableNodes.push(planet);
-
-        const lc=document.createElement('canvas'), lx=lc.getContext('2d');
-        lx.font='bold 48px Arial';
-        const tw=lx.measureText(n.name).width;
-        lc.width=tw+32; lc.height=64;
-        lx.font='bold 48px Arial'; lx.fillStyle='#FFFFFF'; lx.textAlign='left'; lx.textBaseline='middle';
-        lx.fillText(n.name,16,32);
-        const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:0.9}));
-        spr.scale.set((lc.width/lc.height)*4,4,1);
-        spr.position.set(n.x, n.y+(size*2+3), n.z);
-        pg.add(spr);
-        return;
-
-    } else {
-        planet = new THREE.Mesh(new THREE.SphereGeometry(size,32,32), new THREE.MeshBasicMaterial({ color }));
-        planet.position.copy(pos); pg.add(planet);
-        const ig=new THREE.Mesh(new THREE.SphereGeometry(size*1.2,32,32),new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.4,side:THREE.BackSide}));ig.position.copy(pos);pg.add(ig);
-        const og=new THREE.Mesh(new THREE.SphereGeometry(size*1.5,32,32),new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.2,side:THREE.BackSide}));og.position.copy(pos);pg.add(og);
-        nodeObjects.set(n.id, { innerGlow:ig, outerGlow:og });
-        if (n.id==='DRE_INTERFACE') {
-            const b1=new THREE.Mesh(new THREE.SphereGeometry(size,64,64),new THREE.MeshBasicMaterial({color:0x003344}));b1.position.copy(pos);pg.add(b1);
-            const band=new THREE.Mesh(new THREE.TorusGeometry(size*.72,size*.28,4,64),new THREE.MeshBasicMaterial({color:0x00d4ff,transparent:true,opacity:0.45}));band.position.copy(pos);pg.add(band);
-            const ring=new THREE.Mesh(new THREE.RingGeometry(size*1.7,size*2.9,80),new THREE.MeshBasicMaterial({color:0x00d4ff,transparent:true,opacity:0.35,side:THREE.DoubleSide}));ring.rotation.x=Math.PI/2.5;ring.position.copy(pos);pg.add(ring);
-            const ring2=new THREE.Mesh(new THREE.RingGeometry(size*3,size*3.5,80),new THREE.MeshBasicMaterial({color:0xaaeeff,transparent:true,opacity:0.12,side:THREE.DoubleSide}));ring2.rotation.x=Math.PI/2.5;ring2.position.copy(pos);pg.add(ring2);
-            mainGroup.userData.interfacePlanet=b1;
-        }
-        // DRE Workflow gets special ring treatment
-        if (n.id === 'DRE_WORKFLOW') {
-            const wfRing = new THREE.Mesh(new THREE.RingGeometry(size*1.8, size*2.4, 64),
-                new THREE.MeshBasicMaterial({color:0x00ffaa, transparent:true, opacity:0.25, side:THREE.DoubleSide}));
-            wfRing.rotation.x = Math.PI/3;
-            wfRing.position.copy(pos);
-            pg.add(wfRing);
-        }
-    }
-
-    planet.userData = { nodeId: n.id, nodeData: n };
-    clickableNodes.push(planet);
-
-    const lc=document.createElement('canvas'), lx=lc.getContext('2d');
-    lx.font='bold 48px Arial';
-    const tw=lx.measureText(n.name).width;
-    lc.width=tw+32; lc.height=64;
-    lx.font='bold 48px Arial'; lx.fillStyle='#FFFFFF'; lx.textAlign='left'; lx.textBaseline='middle';
-    lx.fillText(n.name,16,32);
-    const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:0.9}));
-    spr.scale.set((lc.width/lc.height)*4,4,1);
-    spr.position.set(n.x, n.y+(size+3), n.z);
-    pg.add(spr);
-
-    if (nodeObjects.has(n.id)) { const o=nodeObjects.get(n.id); o.planet=planet; o.label=spr; o.originalSize=size; }
-    else { nodeObjects.set(n.id, { planet, label:spr, originalSize:size, innerGlow:null, outerGlow:null }); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePanel();
 });
-
-// ══════════════════════════════════════════════════════
-// MOON CONSTRUCTION — DRE Console
-// ══════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════
-// SPACESHIP BUILDER — DRE Console orbiting spacecraft
-// Full geometry: fuselage, swept wings, nacelles,
-// cockpit canopy, hull panels, exhaust glow, trail
-// ══════════════════════════════════════════════════════
-function buildSpaceship(moon, moonGroup) {
-    const S = moon.size;
-    const shipGroup = new THREE.Group();
-    moonGroup.add(shipGroup);
-
-    // ═══════════════════════════════════════════════════
-    // MATERIALS — PBR (MeshStandardMaterial) throughout
-    // Requires scene lighting to render correctly
-    // ═══════════════════════════════════════════════════
-    const matMetal = new THREE.MeshStandardMaterial({
-        color: 0xc8d4de, metalness: 0.82, roughness: 0.32
-    });
-    const matMetalDark = new THREE.MeshStandardMaterial({
-        color: 0x2c3a48, metalness: 0.75, roughness: 0.52
-    });
-    const matMetalMid = new THREE.MeshStandardMaterial({
-        color: 0x8aa0b2, metalness: 0.65, roughness: 0.45
-    });
-    const matGold = new THREE.MeshStandardMaterial({
-        color: 0xd4a84f, metalness: 1.0, roughness: 0.22
-    });
-    const matGoldBright = new THREE.MeshStandardMaterial({
-        color: 0xffc832, metalness: 0.9, roughness: 0.18
-    });
-    const matGlass = new THREE.MeshStandardMaterial({
-        color: 0x44aadd, metalness: 0.1, roughness: 0.05,
-        transparent: true, opacity: 0.72
-    });
-    const matThermal = new THREE.MeshStandardMaterial({
-        color: 0xeeeeff, metalness: 0.2, roughness: 0.85
-    });
-    const matPanel = new THREE.MeshStandardMaterial({
-        color: 0x09141e, metalness: 0.35, roughness: 0.75
-    });
-    const matStrut = new THREE.MeshStandardMaterial({
-        color: 0x7a8fa0, metalness: 0.7, roughness: 0.4
-    });
-    const matNozzle = new THREE.MeshStandardMaterial({
-        color: 0x1a2530, metalness: 0.9, roughness: 0.25
-    });
-    const matHeatShield = new THREE.MeshStandardMaterial({
-        color: 0x3a2010, metalness: 0.1, roughness: 0.95
-    });
-    // Emissive materials (glow — no light dependency)
-    const matGlowOrange = new THREE.MeshBasicMaterial({
-        color: 0xff7722, transparent: true, opacity: 0.88
-    });
-    const matGlowAmber = new THREE.MeshBasicMaterial({
-        color: 0xffaa33, transparent: true, opacity: 0.55
-    });
-    const matGlowWhite = new THREE.MeshBasicMaterial({
-        color: 0xffffff, transparent: true, opacity: 0.80
-    });
-    const matGlowBlue = new THREE.MeshBasicMaterial({
-        color: 0x44aaff, transparent: true, opacity: 0.45
-    });
-    const matNavRed = new THREE.MeshBasicMaterial({
-        color: 0xff2244, transparent: true, opacity: 0.9
-    });
-    const matNavGreen = new THREE.MeshBasicMaterial({
-        color: 0x00ff88, transparent: true, opacity: 0.9
-    });
-    const matNavWhite = new THREE.MeshBasicMaterial({
-        color: 0xffffff, transparent: true, opacity: 0.9
-    });
-
-    // ═══════════════════════════════════════════════════
-    // 1. ORION CREW MODULE — truncated cone capsule
-    // ═══════════════════════════════════════════════════
-    // Main capsule body (truncated cone — wider at base)
-    const capsuleGeo = new THREE.CylinderGeometry(S * 0.38, S * 0.48, S * 0.55, 32);
-    const capsule = new THREE.Mesh(capsuleGeo, matMetal);
-    capsule.position.y = S * 0.38;
-    shipGroup.add(capsule);
-
-    // Capsule top dome
-    const domeCap = new THREE.SphereGeometry(S * 0.38, 32, 16, 0, Math.PI*2, 0, Math.PI/2);
-    const dome = new THREE.Mesh(domeCap, matMetal);
-    dome.position.y = S * 0.65;
-    shipGroup.add(dome);
-
-    // Capsule shoulder ring — gold structural band
-    const shoulderGeo = new THREE.TorusGeometry(S * 0.485, S * 0.028, 12, 64);
-    const shoulder = new THREE.Mesh(shoulderGeo, matGold);
-    shoulder.rotation.x = Math.PI / 2;
-    shoulder.position.y = S * 0.11;
-    shipGroup.add(shoulder);
-
-    // Abort tower — thin spike on top (Orion LAS)
-    const lasBaseGeo = new THREE.CylinderGeometry(S * 0.08, S * 0.04, S * 0.22, 8);
-    const lasBase = new THREE.Mesh(lasBaseGeo, matMetalDark);
-    lasBase.position.y = S * 1.04;
-    shipGroup.add(lasBase);
-    // Tower legs (3 thin struts up)
-    [0, 120, 240].forEach(deg => {
-        const rad = deg * Math.PI / 180;
-        const legGeo = new THREE.CylinderGeometry(S * 0.008, S * 0.008, S * 0.52, 4);
-        const leg = new THREE.Mesh(legGeo, matGold);
-        leg.position.set(Math.cos(rad) * S * 0.055, S * 1.38, Math.sin(rad) * S * 0.055);
-        shipGroup.add(leg);
-    });
-    // LAS motor housing (top of tower)
-    const lasTopGeo = new THREE.CylinderGeometry(S * 0.065, S * 0.065, S * 0.14, 8);
-    const lasTop = new THREE.Mesh(lasTopGeo, matMetalDark);
-    lasTop.position.y = S * 1.65;
-    shipGroup.add(lasTop);
-    const lasTipGeo = new THREE.ConeGeometry(S * 0.065, S * 0.12, 8);
-    const lasTip = new THREE.Mesh(lasTipGeo, matMetalDark);
-    lasTip.position.y = S * 1.78;
-    shipGroup.add(lasTip);
-
-    // ── Crew windows (3, evenly spaced around capsule) ──
-    [0, 120, 240].forEach(deg => {
-        const rad = deg * Math.PI / 180;
-        const r = S * 0.45;
-        // Window frame
-        const wFrameGeo = new THREE.CylinderGeometry(S * 0.07, S * 0.07, S * 0.022, 20);
-        const wFrame = new THREE.Mesh(wFrameGeo, matGold);
-        wFrame.position.set(Math.cos(rad) * r, S * 0.45, Math.sin(rad) * r);
-        wFrame.rotation.z = Math.PI / 2;
-        wFrame.rotation.y = -rad;
-        shipGroup.add(wFrame);
-        // Window glass
-        const wGlassGeo = new THREE.CircleGeometry(S * 0.058, 20);
-        const wGlass = new THREE.Mesh(wGlassGeo, matGlass);
-        wGlass.position.set(Math.cos(rad) * (r + S*0.01), S * 0.45, Math.sin(rad) * (r + S*0.01));
-        wGlass.lookAt(wGlass.position.clone().multiplyScalar(2));
-        shipGroup.add(wGlass);
-    });
-
-    // Heat shield (base of capsule — ablative, rough dark)
-    const heatShieldGeo = new THREE.CylinderGeometry(S * 0.49, S * 0.44, S * 0.06, 32);
-    const heatShield = new THREE.Mesh(heatShieldGeo, matHeatShield);
-    heatShield.position.y = S * 0.10;
-    shipGroup.add(heatShield);
-    // Gold heat shield ring
-    const hsRingGeo = new THREE.TorusGeometry(S * 0.465, S * 0.018, 8, 64);
-    const hsRing = new THREE.Mesh(hsRingGeo, matGold);
-    hsRing.rotation.x = Math.PI / 2;
-    hsRing.position.y = S * 0.07;
-    shipGroup.add(hsRing);
-
-    // ═══════════════════════════════════════════════════
-    // 2. SERVICE MODULE — cylindrical, below capsule
-    // ═══════════════════════════════════════════════════
-    const smGeo = new THREE.CylinderGeometry(S * 0.36, S * 0.36, S * 0.72, 32);
-    const sm = new THREE.Mesh(smGeo, matMetalMid);
-    sm.position.y = -S * 0.25;
-    shipGroup.add(sm);
-
-    // SM top adapter ring
-    const smTopGeo = new THREE.TorusGeometry(S * 0.37, S * 0.022, 10, 48);
-    const smTop = new THREE.Mesh(smTopGeo, matGold);
-    smTop.rotation.x = Math.PI / 2;
-    smTop.position.y = S * 0.11;
-    shipGroup.add(smTop);
-
-    // ── Thermal radiator panels on SM sides (4 panels) ──
-    [0, 90, 180, 270].forEach((deg, i) => {
-        const rad = deg * Math.PI / 180;
-        // Outer panel
-        const tpGeo = new THREE.BoxGeometry(S * 0.08, S * 0.42, S * 0.22);
-        const tp = new THREE.Mesh(tpGeo, matThermal);
-        tp.position.set(Math.cos(rad) * S * 0.41, -S * 0.25, Math.sin(rad) * S * 0.41);
-        tp.rotation.y = -rad;
-        shipGroup.add(tp);
-        // Radiator cell lines (grid detail)
-        for (let row = 0; row < 4; row++) {
-            const lineGeo = new THREE.BoxGeometry(S * 0.082, S * 0.008, S * 0.21);
-            const line = new THREE.Mesh(lineGeo, matMetalDark);
-            line.position.set(Math.cos(rad) * S * 0.415, -S * 0.42 + row * S * 0.13, Math.sin(rad) * S * 0.415);
-            line.rotation.y = -rad;
-            shipGroup.add(line);
-        }
-    });
-
-    // SM gold equatorial band
-    const smBandGeo = new THREE.TorusGeometry(S * 0.365, S * 0.016, 8, 48);
-    const smBand = new THREE.Mesh(smBandGeo, matGoldBright);
-    smBand.rotation.x = Math.PI / 2;
-    smBand.position.y = -S * 0.25;
-    shipGroup.add(smBand);
-
-    // ═══════════════════════════════════════════════════
-    // 3. EUROPEAN SERVICE MODULE ENGINE SECTION
-    // ═══════════════════════════════════════════════════
-    // Adapter skirt (tapers inward to engine)
-    const skirtGeo = new THREE.CylinderGeometry(S * 0.22, S * 0.36, S * 0.30, 24);
-    const skirt = new THREE.Mesh(skirtGeo, matMetalDark);
-    skirt.position.y = -S * 0.76;
-    shipGroup.add(skirt);
-
-    // Engine bell — main OMS engine
-    const bellGeo = new THREE.CylinderGeometry(S * 0.28, S * 0.18, S * 0.32, 24);
-    const bell = new THREE.Mesh(bellGeo, matNozzle);
-    bell.position.y = -S * 1.06;
-    shipGroup.add(bell);
-
-    // Engine throat
-    const throatGeo = new THREE.CylinderGeometry(S * 0.10, S * 0.13, S * 0.14, 16);
-    const throat = new THREE.Mesh(throatGeo, matNozzle);
-    throat.position.y = -S * 0.92;
-    shipGroup.add(throat);
-
-    // Bell lip ring (gold)
-    const bellLipGeo = new THREE.TorusGeometry(S * 0.28, S * 0.018, 8, 48);
-    const bellLip = new THREE.Mesh(bellLipGeo, matGold);
-    bellLip.rotation.x = Math.PI / 2;
-    bellLip.position.y = -S * 0.92;
-    shipGroup.add(bellLip);
-
-    // 4 ACS (attitude control) thrusters around skirt
-    [45, 135, 225, 315].forEach(deg => {
-        const rad = deg * Math.PI / 180;
-        const acsGeo = new THREE.CylinderGeometry(S * 0.04, S * 0.055, S * 0.14, 8);
-        const acs = new THREE.Mesh(acsGeo, matNozzle);
-        acs.position.set(Math.cos(rad) * S * 0.28, -S * 0.80, Math.sin(rad) * S * 0.28);
-        acs.rotation.z = Math.PI / 2;
-        acs.rotation.y = -rad;
-        shipGroup.add(acs);
-    });
-
-    // ═══════════════════════════════════════════════════
-    // 4. SOLAR ARRAYS — 4-panel cross pattern (Orion ESA style)
-    //    Each wing: inner panel + outer panel + connecting beam
-    // ═══════════════════════════════════════════════════
-    // Solar panel cell texture canvas
-    function makeSolarTexture(w, h) {
-        const c = document.createElement('canvas');
-        c.width = 128; c.height = 64;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#080e18';
-        ctx.fillRect(0, 0, 128, 64);
-        ctx.strokeStyle = '#1a3050';
-        ctx.lineWidth = 1.5;
-        // Cell grid
-        for (let gx = 0; gx <= 8; gx++) { ctx.beginPath(); ctx.moveTo(gx*16, 0); ctx.lineTo(gx*16, 64); ctx.stroke(); }
-        for (let gy = 0; gy <= 4; gy++) { ctx.beginPath(); ctx.moveTo(0, gy*16); ctx.lineTo(128, gy*16); ctx.stroke(); }
-        // Cell fill tint
-        ctx.fillStyle = 'rgba(10,30,60,0.4)';
-        for (let gx=0;gx<8;gx++) for (let gy=0;gy<4;gy++) ctx.fillRect(gx*16+1,gy*16+1,14,14);
-        return new THREE.CanvasTexture(c);
-    }
-    const solarTex = makeSolarTexture(128, 64);
-    const matSolar = new THREE.MeshStandardMaterial({
-        map: solarTex, metalness: 0.25, roughness: 0.7, color: 0x101828
-    });
-
-    function makeSolarWing(side) { // side = +1 (port) or -1 (starboard)
-        const wGroup = new THREE.Group();
-
-        // Inner beam
-        const beamGeo = new THREE.CylinderGeometry(S * 0.018, S * 0.018, S * 1.08, 8);
-        const beam = new THREE.Mesh(beamGeo, matStrut);
-        beam.rotation.z = Math.PI / 2;
-        beam.position.set(S * 0.54, -S * 0.25, 0);
-        wGroup.add(beam);
-
-        // Outer beam extension
-        const beam2Geo = new THREE.CylinderGeometry(S * 0.012, S * 0.012, S * 0.82, 8);
-        const beam2 = new THREE.Mesh(beam2Geo, matStrut);
-        beam2.rotation.z = Math.PI / 2;
-        beam2.position.set(S * 1.45, -S * 0.25, 0);
-        wGroup.add(beam2);
-
-        // Inner panel (larger)
-        const ip = new THREE.Mesh(new THREE.BoxGeometry(S * 0.72, S * 0.012, S * 0.42), matSolar);
-        ip.position.set(S * 0.54, -S * 0.25, 0);
-        wGroup.add(ip);
-        // Inner panel frame
-        const ipfGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(S * 0.72, S * 0.014, S * 0.42));
-        wGroup.add(new THREE.LineSegments(ipfGeo, new THREE.LineBasicMaterial({ color: 0x4a6070 })));
-        wGroup.children[wGroup.children.length-1].position.set(S * 0.54, -S * 0.25, 0);
-
-        // Outer panel (smaller)
-        const op = new THREE.Mesh(new THREE.BoxGeometry(S * 0.58, S * 0.012, S * 0.38), matSolar);
-        op.position.set(S * 1.42, -S * 0.25, 0);
-        wGroup.add(op);
-        // Outer panel frame
-        const opfGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(S * 0.58, S * 0.014, S * 0.38));
-        const opf = new THREE.LineSegments(opfGeo, new THREE.LineBasicMaterial({ color: 0x4a6070 }));
-        opf.position.set(S * 1.42, -S * 0.25, 0);
-        wGroup.add(opf);
-
-        // Gold tip bar
-        const tipGeo = new THREE.BoxGeometry(S * 0.04, S * 0.025, S * 0.38);
-        const tip = new THREE.Mesh(tipGeo, matGold);
-        tip.position.set(S * 1.73, -S * 0.25, 0);
-        wGroup.add(tip);
-
-        wGroup.scale.x = side;
-        shipGroup.add(wGroup);
-    }
-
-    makeSolarWing(1);
-    makeSolarWing(-1);
-
-    // ── Two additional (perpendicular) shorter panels ──
-    function makeSolarWingZ(side) {
-        const wGroup = new THREE.Group();
-        const beamGeo = new THREE.CylinderGeometry(S * 0.016, S * 0.016, S * 0.75, 8);
-        const beam = new THREE.Mesh(beamGeo, matStrut);
-        beam.rotation.x = Math.PI / 2;
-        beam.position.set(0, -S * 0.25, S * 0.375);
-        wGroup.add(beam);
-        const panel = new THREE.Mesh(new THREE.BoxGeometry(S * 0.38, S * 0.012, S * 0.56), matSolar);
-        panel.position.set(0, -S * 0.25, S * 0.37);
-        wGroup.add(panel);
-        wGroup.scale.z = side;
-        shipGroup.add(wGroup);
-    }
-    makeSolarWingZ(1);
-    makeSolarWingZ(-1);
-
-    // ═══════════════════════════════════════════════════
-    // 5. ENGINE EXHAUST EFFECTS (BasicMaterial — self-lit)
-    // ═══════════════════════════════════════════════════
-    // Plume — layered cones
-    const plume1Geo = new THREE.ConeGeometry(S * 0.22, S * 0.75, 16);
-    const plume1 = new THREE.Mesh(plume1Geo, matGlowOrange);
-    plume1.position.y = -S * 1.43;
-    plume1.rotation.x = Math.PI;
-    shipGroup.add(plume1);
-
-    const plume2Geo = new THREE.ConeGeometry(S * 0.15, S * 1.1, 14);
-    const plume2 = new THREE.Mesh(plume2Geo, matGlowAmber);
-    plume2.position.y = -S * 1.65;
-    plume2.rotation.x = Math.PI;
-    shipGroup.add(plume2);
-
-    const plume3Geo = new THREE.ConeGeometry(S * 0.07, S * 0.55, 10);
-    const plume3 = new THREE.Mesh(plume3Geo, matGlowWhite);
-    plume3.position.y = -S * 1.46;
-    plume3.rotation.x = Math.PI;
-    shipGroup.add(plume3);
-
-    // ── ACS thruster micro-plumes ──
-    const acsPlumeRefs = [];
-    [45, 135, 225, 315].forEach(deg => {
-        const rad = deg * Math.PI / 180;
-        const apGeo = new THREE.ConeGeometry(S * 0.025, S * 0.15, 6);
-        const apMat = new THREE.MeshBasicMaterial({ color: 0xff9922, transparent: true, opacity: 0.6 });
-        const ap = new THREE.Mesh(apGeo, apMat);
-        ap.position.set(Math.cos(rad) * S * 0.32, -S * 0.80, Math.sin(rad) * S * 0.32);
-        ap.rotation.z = Math.PI / 2;
-        ap.rotation.y = -rad;
-        shipGroup.add(ap);
-        acsPlumeRefs.push(ap);
-    });
-
-    // ═══════════════════════════════════════════════════
-    // 6. COMMUNICATION ANTENNA — high-gain dish on SM
-    // ═══════════════════════════════════════════════════
-    const antBoomGeo = new THREE.CylinderGeometry(S*0.014, S*0.014, S*0.48, 6);
-    const antBoom = new THREE.Mesh(antBoomGeo, matStrut);
-    antBoom.position.set(S * 0.30, -S * 0.14, S * 0.26);
-    antBoom.rotation.z = 0.55;
-    shipGroup.add(antBoom);
-
-    const dishStemGeo = new THREE.CylinderGeometry(S*0.010, S*0.010, S*0.18, 6);
-    const dishStem = new THREE.Mesh(dishStemGeo, matStrut);
-    dishStem.position.set(S * 0.46, S * 0.05, S * 0.38);
-    shipGroup.add(dishStem);
-
-    const dishGeo = new THREE.SphereGeometry(S * 0.12, 16, 8, 0, Math.PI*2, 0, Math.PI/2);
-    const dishMesh = new THREE.Mesh(dishGeo, matMetalMid);
-    dishMesh.rotation.x = Math.PI;
-    dishMesh.position.set(S * 0.46, S * 0.13, S * 0.38);
-    shipGroup.add(dishMesh);
-    const dishRimGeo = new THREE.TorusGeometry(S * 0.12, S * 0.010, 6, 32);
-    const dishRim = new THREE.Mesh(dishRimGeo, matGold);
-    dishRim.rotation.x = Math.PI / 2;
-    dishRim.position.set(S * 0.46, S * 0.13, S * 0.38);
-    shipGroup.add(dishRim);
-
-    // ═══════════════════════════════════════════════════
-    // 7. NAVIGATION & STATUS LIGHTS
-    // ═══════════════════════════════════════════════════
-    // Port (left) — red strobe
-    const navLGeo = new THREE.SphereGeometry(S * 0.05, 8, 8);
-    const navL = new THREE.Mesh(navLGeo, matNavRed);
-    navL.position.set(-S * 1.62, -S * 0.25, 0);
-    shipGroup.add(navL);
-
-    // Starboard (right) — green strobe
-    const navRGeo = new THREE.SphereGeometry(S * 0.05, 8, 8);
-    const navR = new THREE.Mesh(navRGeo, matNavGreen);
-    navR.position.set(S * 1.62, -S * 0.25, 0);
-    shipGroup.add(navR);
-
-    // Beacon on top of LAS
-    const beaconGeo = new THREE.SphereGeometry(S * 0.04, 8, 8);
-    const beacon = new THREE.Mesh(beaconGeo, matNavWhite);
-    beacon.position.y = S * 1.84;
-    shipGroup.add(beacon);
-
-    // Docking target light (below capsule base)
-    const dockLightGeo = new THREE.CircleGeometry(S * 0.035, 12);
-    const dockLightMat = new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.8 });
-    const dockLight = new THREE.Mesh(dockLightGeo, dockLightMat);
-    dockLight.position.y = S * 0.09;
-    dockLight.rotation.x = -Math.PI / 2;
-    shipGroup.add(dockLight);
-
-    // ═══════════════════════════════════════════════════
-    // 8. PARTICLE TRAIL (engine exhaust cloud)
-    // ═══════════════════════════════════════════════════
-    const trailCount = 80;
-    const trailPos = new Float32Array(trailCount * 3);
-    for (let i = 0; i < trailCount; i++) {
-        const spread = i / trailCount;
-        trailPos[i*3]   = (Math.random() - 0.5) * S * 0.35 * spread;
-        trailPos[i*3+1] = -S * (1.8 + i * 0.055) - Math.random() * S * 0.3;
-        trailPos[i*3+2] = (Math.random() - 0.5) * S * 0.35 * spread;
-    }
-    const trailGeo = new THREE.BufferGeometry();
-    trailGeo.setAttribute('position', new THREE.Float32BufferAttribute(trailPos, 3));
-    const trailMat = new THREE.PointsMaterial({
-        color: 0xff9944, size: S * 0.1, transparent: true,
-        opacity: 0.4, sizeAttenuation: true
-    });
-    const trail = new THREE.Points(trailGeo, trailMat);
-    shipGroup.add(trail);
-
-    // ═══════════════════════════════════════════════════
-    // 9. AMBIENT GLOW HALO
-    // ═══════════════════════════════════════════════════
-    const haloGeo = new THREE.SphereGeometry(S * 2.8, 16, 16);
-    const haloMat = new THREE.MeshBasicMaterial({
-        color: 0xff8833, transparent: true, opacity: 0.05, side: THREE.BackSide
-    });
-    const halo = new THREE.Mesh(haloGeo, haloMat);
-    shipGroup.add(halo);
-
-    // Initial orientation: capsule nose points up (+Y)
-    // The animation loop will rotate to align with orbit tangent
-    shipGroup.rotation.z = 0;
-
-    return {
-        shipGroup,
-        plumes: [plume1, plume2, plume3],
-        acsPlumeRefs,
-        navLights: [navL, navR, beacon],
-        dockLight,
-        halo,
-        haloMat,
-        trail,
-        trailMat
-    };
-}
-
-moonsData.forEach(moon => {
-    const parentNode = nodesData.find(n => n.id === moon.parent);
-    if (!parentNode) return;
-
-    const moonGroup = new THREE.Group();
-    moonGroup.position.set(parentNode.x, parentNode.y, parentNode.z);
-    mainGroup.add(moonGroup);
-
-    // ── Orbit ring ──
-    const orbitRingGeo = new THREE.RingGeometry(moon.orbitRadius - 0.15, moon.orbitRadius + 0.15, 128);
-    const orbitRingMat = new THREE.MeshBasicMaterial({
-        color: 0xffc832, transparent: true, opacity: 0.18, side: THREE.DoubleSide
-    });
-    const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
-    orbitRing.rotation.x = moon.orbitTilt;
-    moonGroup.add(orbitRing);
-
-    const orbitRing2Geo = new THREE.RingGeometry(moon.orbitRadius - 0.5, moon.orbitRadius + 0.5, 128);
-    const orbitRing2Mat = new THREE.MeshBasicMaterial({
-        color: 0xffc832, transparent: true, opacity: 0.05, side: THREE.DoubleSide
-    });
-    const orbitRing2 = new THREE.Mesh(orbitRing2Geo, orbitRing2Mat);
-    orbitRing2.rotation.x = moon.orbitTilt;
-    moonGroup.add(orbitRing2);
-
-    // ── Build the spaceship ──
-    const shipData = buildSpaceship(moon, moonGroup);
-
-    // Invisible hit sphere for raycasting (covers whole ship)
-    const hitGeo = new THREE.SphereGeometry(moon.size * 3.5, 8, 8);
-    const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
-    const hitSphere = new THREE.Mesh(hitGeo, hitMat);
-    hitSphere.userData = { isMoon: true, moonData: moon };
-    moonGroup.add(hitSphere);
-    clickableMoons.push(hitSphere);
-
-    // ── Label sprite ──
-    const lc = document.createElement('canvas'), lx = lc.getContext('2d');
-    const labelText = moon.name;
-    lx.font = 'bold 36px Arial';
-    const tw2 = lx.measureText(labelText).width;
-    lc.width = tw2 + 24; lc.height = 50;
-    lx.font = 'bold 36px Arial';
-    lx.fillStyle = '#ffc832';
-    lx.textAlign = 'left'; lx.textBaseline = 'middle';
-    lx.fillText(labelText, 12, 25);
-    const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(lc), transparent: true, opacity: 0.9 }));
-    spr.scale.set((lc.width / lc.height) * 3.5, 3.5, 1);
-    const labelOffset = new THREE.Group();
-    labelOffset.add(spr);
-    moonGroup.add(labelOffset);
-
-    moonObjects.set(moon.id, {
-        group: moonGroup,
-        body: hitSphere,
-        shipGroup: shipData.shipGroup,
-        plumes: shipData.plumes,
-        acsPlumeRefs: shipData.acsPlumeRefs,
-        navLights: shipData.navLights,
-        dockLight: shipData.dockLight,
-        halo: shipData.halo,
-        haloMat: shipData.haloMat,
-        trail: shipData.trail,
-        trailMat: shipData.trailMat,
-        orbitRing,
-        labelOffset,
-        moonData: moon,
-        angle: moon.orbitPhase,
-        parentPos: new THREE.Vector3(parentNode.x, parentNode.y, parentNode.z)
-    });
-});
-
-// Connection lines
-const connectionLines=[];
-const centerNode=nodesData.find(n=>n.id==="CORE");
-nodesData.forEach(n=>{
-    if(n.id!=="CORE"&&n.id!=="KLEARA"){
-        const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(centerNode.x,centerNode.y,centerNode.z),new THREE.Vector3(n.x,n.y,n.z)]),new THREE.LineBasicMaterial({color:nodeColors[n.id]||0xFFFFFF,transparent:true,opacity:0.3}));
-        l.visible=false; mainGroup.add(l); connectionLines.push(l);
-    }
-});
-
-// ── INTERACTION ──
-const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
-let hoveredNode=null;
-let hoveredMoon=null;
-
-function scaleNode(mesh,ts){
-    const o=nodeObjects.get(mesh.userData.nodeId);
-    if(!o||mesh.userData.nodeId==="KLEARA") return;
-    if(o.starGroup){
-        const s=ts/o.originalSize;
-        o.starGroup.scale.set(s,s,s);
-    } else {
-        const s=ts/o.originalSize;
-        if(o.planet) o.planet.scale.set(s,s,s);
-        if(o.innerGlow) o.innerGlow.scale.set(s,s,s);
-        if(o.outerGlow) o.outerGlow.scale.set(s,s,s);
-    }
-}
-
-function resetNodeScale(mesh){
-    const o=nodeObjects.get(mesh.userData.nodeId);
-    if(!o||mesh.userData.nodeId==="KLEARA") return;
-    if(o.starGroup){
-        o.starGroup.scale.set(1,1,1);
-    } else {
-        if(o.planet) o.planet.scale.set(1,1,1);
-        if(o.innerGlow) o.innerGlow.scale.set(1,1,1);
-        if(o.outerGlow) o.outerGlow.scale.set(1,1,1);
-    }
-}
-
-function scaleMoon(moonRef, scale) {
-    if (!moonRef) return;
-    if (moonRef.shipGroup) moonRef.shipGroup.scale.setScalar(scale);
-    if (moonRef.halo) moonRef.halo.scale.setScalar(scale > 1 ? 1.4 : 1);
-}
-
-// All intersect targets combined
-function getAllClickTargets() { return [...clickableNodes, ...clickableMoons]; }
-
-// Desktop mouse
-window.addEventListener('mousemove',(e)=>{
-    mouse.x=(e.clientX/window.innerWidth)*2-1;
-    mouse.y=-(e.clientY/window.innerHeight)*2+1;
-    raycaster.setFromCamera(mouse,camera);
-    const allTargets = getAllClickTargets();
-    const its=raycaster.intersectObjects(allTargets);
-    const tip=document.getElementById('tooltip');
-
-    if(its.length>0){
-        const hit = its[0].object;
-        const isMoon = hit.userData.isMoon;
-
-        if (isMoon) {
-            // Moon hover
-            if (hoveredNode) { resetNodeScale(hoveredNode); hoveredNode=null; }
-            const moonRef = moonObjects.get(hit.userData.moonData.id);
-            if (hoveredMoon !== moonRef) {
-                if (hoveredMoon) scaleMoon(hoveredMoon, 1);
-                hoveredMoon = moonRef;
-                scaleMoon(hoveredMoon, 1.25);
-            }
-            document.body.style.cursor='pointer';
-            tip.className='moon-tip';
-            tip.style.display='block';
-            tip.style.left=e.clientX+15+'px';
-            tip.style.top=e.clientY+15+'px';
-            tip.innerHTML = `⬡ ${hit.userData.moonData.name}<br><span style="font-size:9px;opacity:0.7;color:rgba(255,200,50,0.7)">EXECUTION SYSTEM</span>`;
-        } else {
-            // Node hover
-            if (hoveredMoon) { scaleMoon(hoveredMoon, 1); hoveredMoon=null; }
-            if(hoveredNode!==hit){if(hoveredNode)resetNodeScale(hoveredNode);hoveredNode=hit;scaleNode(hoveredNode,CONFIG.nodeHoverSize);document.body.style.cursor='pointer';}
-            tip.className='';
-            tip.style.display='block';
-            tip.style.left=e.clientX+15+'px';
-            tip.style.top=e.clientY+15+'px';
-            tip.textContent=hit.userData.nodeData.name;
-        }
-    }else{
-        if(hoveredNode){resetNodeScale(hoveredNode);hoveredNode=null;}
-        if(hoveredMoon){scaleMoon(hoveredMoon,1);hoveredMoon=null;}
-        document.body.style.cursor='grab';
-        tip.style.display='none';
-    }
-});
-
-window.addEventListener('click',(e)=>{
-    if(window.tutorialActive)return;
-    if(hoveredMoon){ openMoonModal(hoveredMoon.moonData); return; }
-    if(hoveredNode) openModal(hoveredNode.userData.nodeData);
-});
-
-// Mobile touch tap
-let tsTime=0,tsX=0,tsY=0,tsMoved=false;
-renderer.domElement.addEventListener('touchstart',(e)=>{tsTime=Date.now();tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;tsMoved=false;},{passive:true});
-renderer.domElement.addEventListener('touchmove',(e)=>{if(Math.abs(e.touches[0].clientX-tsX)>8||Math.abs(e.touches[0].clientY-tsY)>8)tsMoved=true;},{passive:true});
-renderer.domElement.addEventListener('touchend',(e)=>{
-    if(window.tutorialActive)return;
-    if(tsMoved||Date.now()-tsTime>500)return;
-    const t=e.changedTouches[0];
-    mouse.x=(t.clientX/window.innerWidth)*2-1;
-    mouse.y=-(t.clientY/window.innerHeight)*2+1;
-    raycaster.setFromCamera(mouse,camera);
-    const allTargets = getAllClickTargets();
-    const its=raycaster.intersectObjects(allTargets);
-    if(its.length>0){
-        e.preventDefault();
-        const hit = its[0].object;
-        if (hit.userData.isMoon) {
-            openMoonModal(hit.userData.moonData);
-        } else {
-            openModal(hit.userData.nodeData);
-        }
-    }
-},{passive:false});
-
-// ── NODE MODAL ──
-window.openModal=function(data){
-    const isF=document.getElementById('founderToggle').checked;
-    document.getElementById('modalTitle').textContent=data.name;
-    document.getElementById('modalCategory').textContent=data.category;
-    document.getElementById('modalDescription').textContent=isF?data.desc:(data.public_desc||data.desc);
-    document.getElementById('modalProtocol').textContent=isF?data.protocol:(data.public_protocol||data.protocol);
-    const mc = document.getElementById('modalContent');
-    mc.classList.remove('moon-modal');
-    const aa=document.getElementById('modalActionArea'); aa.innerHTML='';
-    if(data.isPortal&&data.portalFile){const btn=document.createElement('button');btn.className='portal-btn';if(data.portalStyle)btn.style.cssText=data.portalStyle;btn.textContent=data.portalLabel||'OPEN TOOL';btn.onclick=()=>window.location.href=data.portalFile;aa.appendChild(btn);}
-    document.getElementById('modal').classList.add('active');
-};
-
-// ── MOON MODAL ──
-window.openMoonModal = function(moonData) {
-    const isF = document.getElementById('founderToggle').checked;
-    const mc = document.getElementById('modalContent');
-    mc.classList.add('moon-modal');
-
-    document.getElementById('modalTitle').textContent = '⬡ ' + moonData.name;
-    document.getElementById('modalCategory').textContent = moonData.category;
-    document.getElementById('modalDescription').textContent = isF ? moonData.desc : (moonData.public_desc || moonData.desc);
-    document.getElementById('modalProtocol').textContent = isF ? moonData.protocol : (moonData.public_protocol || moonData.protocol);
-
-    const aa = document.getElementById('modalActionArea');
-    aa.innerHTML = '';
-
-    // Architecture explainer badge
-    const badge = document.createElement('div');
-    badge.style.cssText = 'background:rgba(255,200,50,0.08);border:1px solid rgba(255,200,50,0.25);border-radius:6px;padding:12px 16px;margin-bottom:14px;font-size:11px;color:rgba(255,200,50,0.8);letter-spacing:1px;line-height:1.8;';
-    badge.innerHTML = '<strong style="color:#ffc832;">BUILD → EXECUTE</strong><br>DRE Workflow = Creation Layer &nbsp;|&nbsp; DRE Console = Execution Layer';
-    aa.appendChild(badge);
-
-    const btn = document.createElement('button');
-    btn.className = 'portal-btn';
-    btn.style.cssText = 'background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;letter-spacing:2px;';
-    btn.textContent = 'OPEN DRE CONSOLE →';
-    btn.onclick = () => window.location.href = moonData.file;
-    aa.appendChild(btn);
-
-    document.getElementById('modal').classList.add('active');
-};
-
-window.closeModal=function(){document.getElementById('modal').classList.remove('active');};
-document.getElementById('modal').addEventListener('click',(e)=>{if(e.target===document.getElementById('modal'))window.closeModal();});
-
-// ── UI ──
-window.resetCamera=()=>{camera.position.set(0,80,isMobile?320:250);controls.target.set(0,0,0);controls.update();};
-window.zoomIn=()=>camera.position.sub(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
-window.zoomOut=()=>camera.position.add(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
-window.toggleSettings=()=>document.getElementById('settingsPanel').classList.toggle('active');
-// ── ACCORDION TOGGLE ──
-(function initAccordion() {
-    const triggers = document.querySelectorAll('.accordion-trigger');
-    triggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-            const targetId = trigger.dataset.target;
-            const content = document.getElementById(targetId);
-            if (!content) return;
-            const isOpen = content.classList.contains('open');
-            // Close all
-            document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
-            document.querySelectorAll('.accordion-trigger').forEach(t => t.classList.remove('open'));
-            // Toggle this one
-            if (!isOpen) {
-                content.classList.add('open');
-                trigger.classList.add('open');
-            }
-        });
-    });
-    // Open first accordion by default
-    const firstTrigger = document.querySelector('.accordion-trigger');
-    if (firstTrigger) {
-        const firstId = firstTrigger.dataset.target;
-        const firstContent = document.getElementById(firstId);
-        if (firstContent) {
-            firstContent.classList.add('open');
-            firstTrigger.classList.add('open');
-        }
-    }
-})();
-
-window.updateModeDisplay=()=>{
-    const isF=document.getElementById('founderToggle').checked;
-    document.getElementById('modeDisplay').textContent=isF?"FOUNDER":"PUBLIC";
-    document.getElementById('modeDisplay').style.color=isF?"#00FF41":"#00d4ff";
-    connectionLines.forEach(l=>l.visible=isF);
-};
-
-document.addEventListener('click',(e)=>{
-    const panel=document.getElementById('settingsPanel');
-    if(panel.classList.contains('active')&&!panel.contains(e.target)&&e.target.id!=='settingsBtn')panel.classList.remove('active');
-});
-
-// Color controls
-(function(){
-    const cont=document.getElementById('nodeColorControls');
-    const sec=document.createElement('div'); sec.className='settings-section';
-    const h=document.createElement('h3'); h.textContent='Node Colors'; sec.appendChild(h);
-    nodesData.forEach(node=>{
-        const div=document.createElement('div');div.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:8px 0;';
-        const lbl=document.createElement('label');lbl.style.cssText='font-size:11px;color:rgba(255,255,255,0.5);';lbl.textContent=node.name;
-        const inp=document.createElement('input');inp.type='color';inp.value='#'+(nodeColors[node.id]||0xFFFFFF).toString(16).padStart(6,'0');inp.style.cssText='border:none;background:transparent;cursor:pointer;width:36px;height:36px;';
-        inp.addEventListener('input',(e)=>{
-            const c=parseInt(e.target.value.replace('#',''),16);
-            nodeColors[node.id]=c;
-            const o=nodeObjects.get(node.id);
-            if(o){
-                if(o.starGroup){
-                    o.starGroup.traverse(child=>{ if(child.isMesh&&child.material&&!child.material.transparent) child.material.color.setHex(c); });
-                } else {
-                    if(o.planet) o.planet.material.color.setHex(c);
-                    if(o.innerGlow) o.innerGlow.material.color.setHex(c);
-                    if(o.outerGlow) o.outerGlow.material.color.setHex(c);
-                }
-            }
-        });
-        div.appendChild(lbl);div.appendChild(inp);sec.appendChild(div);
-    });
-    cont.appendChild(sec);
-})();
-
-// ── ANIMATION ──
-let clock = 0;
-function animate(){
-    requestAnimationFrame(animate);
-    clock += 0.016;
-
-    mainGroup.rotation.y+=CONFIG.rotationSpeed;
-    starField.rotation.y+=CONFIG.rotationSpeed*0.2;
-    if(mainGroup.userData.interfacePlanet) mainGroup.userData.interfacePlanet.rotation.y+=0.002;
-
-    // Spin the 24 Hours star
-    const hoursObj = nodeObjects.get('HOURS_24');
-    if(hoursObj && hoursObj.starGroup) {
-        hoursObj.starGroup.rotation.z += 0.004;
-        hoursObj.starGroup.rotation.y += 0.001;
-    }
-
-    // ── ORION SPACECRAFT ORBIT ANIMATION ──
-    moonObjects.forEach((moonRef, id) => {
-        const moon = moonRef.moonData;
-        const prevAngle = moonRef.angle;
-        moonRef.angle += moon.orbitSpeed;
-
-        // Tilted circular orbit
-        const cosT = Math.cos(moon.orbitTilt);
-        const sinT = Math.sin(moon.orbitTilt);
-
-        const rawX = Math.cos(moonRef.angle) * moon.orbitRadius;
-        const rawY = Math.sin(moonRef.angle) * moon.orbitRadius * sinT;
-        const rawZ = Math.sin(moonRef.angle) * moon.orbitRadius * cosT;
-
-        // Previous frame position — used to compute tangent (travel direction)
-        const prevX = Math.cos(prevAngle) * moon.orbitRadius;
-        const prevY = Math.sin(prevAngle) * moon.orbitRadius * sinT;
-        const prevZ = Math.sin(prevAngle) * moon.orbitRadius * cosT;
-
-        // Position the ship group
-        if (moonRef.shipGroup) {
-            moonRef.shipGroup.position.set(rawX, rawY, rawZ);
-
-            // Align ship so engine (-Y) points away from travel direction
-            // Orion travels capsule-first, engine trailing
-            const travelDir = new THREE.Vector3(
-                rawX - prevX, rawY - prevY, rawZ - prevZ
-            ).normalize();
-
-            if (travelDir.lengthSq() > 0.00001) {
-                // Ship's forward axis = capsule top = +Y in local space
-                // We want +Y to point in travel direction
-                const worldUp = new THREE.Vector3(0, 1, 0);
-                // Build quaternion rotating local +Y → travelDir
-                const q = new THREE.Quaternion().setFromUnitVectors(worldUp, travelDir);
-                moonRef.shipGroup.setRotationFromQuaternion(q);
-            }
-
-            // Subtle attitude drift — living, not static
-            moonRef.shipGroup.rotateZ(Math.sin(clock * 0.4) * 0.008);
-        }
-
-        // Move raycasting hit sphere with ship
-        if (moonRef.body) moonRef.body.position.set(rawX, rawY, rawZ);
-
-        // Float label above ship (capsule points in travel dir, so offset along travelDir)
-        if (moonRef.labelOffset) {
-            moonRef.labelOffset.position.set(
-                rawX, rawY + moon.size * 4.2, rawZ
-            );
-        }
-
-        // ── Engine plume animation (flicker) ──
-        if (moonRef.plumes) {
-            const flicker = 0.75 + 0.25 * Math.sin(clock * 14 + Math.random() * 0.5);
-            const flicker2 = 0.65 + 0.35 * Math.sin(clock * 9);
-            const flicker3 = 0.80 + 0.20 * Math.sin(clock * 18);
-            moonRef.plumes[0].material.opacity = 0.78 * flicker;
-            moonRef.plumes[0].scale.set(flicker, 0.9 + 0.2 * flicker, flicker);
-            moonRef.plumes[1].material.opacity = 0.48 * flicker2;
-            moonRef.plumes[1].scale.set(flicker2, 0.85 + 0.25 * flicker2, flicker2);
-            moonRef.plumes[2].material.opacity = 0.72 * flicker3;
-            moonRef.plumes[2].scale.set(flicker3 * 0.8, 0.9 + 0.15 * flicker3, flicker3 * 0.8);
-        }
-
-        // ── ACS thruster micro-plumes (occasional pulses) ──
-        if (moonRef.acsPlumeRefs) {
-            moonRef.acsPlumeRefs.forEach((ap, i) => {
-                const pulse = Math.max(0, Math.sin(clock * 3 + i * 1.57));
-                ap.material.opacity = pulse * 0.55;
-                ap.visible = pulse > 0.1;
-            });
-        }
-
-        // ── Nav lights (strobe alternating) ──
-        if (moonRef.navLights) {
-            // Port red — strobes on half-cycle
-            const strobeA = Math.sin(clock * 3.5) > 0.3 ? 0.95 : 0.05;
-            // Starboard green — strobes opposite
-            const strobeB = Math.sin(clock * 3.5 + Math.PI) > 0.3 ? 0.95 : 0.05;
-            // Beacon — slow pulse
-            const beaconP = 0.35 + 0.65 * Math.abs(Math.sin(clock * 2.0));
-            moonRef.navLights[0].material.opacity = strobeA;
-            moonRef.navLights[1].material.opacity = strobeB;
-            moonRef.navLights[2].material.opacity = beaconP;
-        }
-
-        // ── Docking target light pulse ──
-        if (moonRef.dockLight) {
-            moonRef.dockLight.material.opacity = 0.4 + 0.4 * Math.sin(clock * 1.2);
-        }
-
-        // ── Halo glow pulse ──
-        if (moonRef.haloMat) {
-            moonRef.haloMat.opacity = 0.03 + 0.025 * Math.sin(clock * 1.8);
-        }
-
-        // ── Trail opacity pulse ──
-        if (moonRef.trailMat) {
-            moonRef.trailMat.opacity = 0.28 + 0.18 * Math.sin(clock * 2.5);
-        }
-
-        // ── Engine point light — follows ship, pulses with plume ──
-        if (enginePointLight) {
-            const plumePulse = 0.8 + 0.4 * Math.sin(clock * 10);
-            enginePointLight.intensity = 1.4 * plumePulse;
-            // Position at engine bell (behind ship along -travelDir)
-            const tDir = new THREE.Vector3(rawX - Math.cos(prevAngle) * moon.orbitRadius,
-                                           rawY - Math.sin(prevAngle) * moon.orbitRadius * sinT,
-                                           rawZ - Math.sin(prevAngle) * moon.orbitRadius * cosT).normalize();
-            // World position = moonGroup.position + ship local position + offset behind
-            const mg = moonRef.group.position;
-            enginePointLight.position.set(
-                mg.x + rawX - tDir.x * moon.size * 1.4,
-                mg.y + rawY - tDir.y * moon.size * 1.4,
-                mg.z + rawZ - tDir.z * moon.size * 1.4
-            );
-        }
-    });
-
-    controls.update();
-    renderer.render(scene,camera);
-}
-
-window.addEventListener('resize',()=>{
-    camera.aspect=window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);
-});
-
-animate();
-
-// ══════════════════════════════════════════════════════════════════
-// TUTORIAL
-// ══════════════════════════════════════════════════════════════════
-
-let tutorialCompleted = false;
-window.tutorialActive = false;
-let currentStep = 0;
-
-function getScreenPos(obj3D) {
-    const v = obj3D.position.clone().project(camera);
-    return { x:(v.x*.5+.5)*window.innerWidth, y:(-(v.y*.5)+.5)*window.innerHeight, is3D:true };
-}
-
-function getElPos(el) {
-    const r=el.getBoundingClientRect();
-    return { x:r.left, y:r.top, width:r.width, height:r.height, is3D:false };
-}
-
-const tutorialSteps = [
-    {
-        title:"Welcome to the DRE Galaxy",
-        desc:"Every glowing planet is a live tool. From help with digital privacy to our loan shark tool. Tap or click any planet to open its info card.",
-        getPosition:null, action:null
-    },
-    {
-        title:"The Core: Andre Go",
-        desc:"This bright blue planet is our primary tool. Tap it to open its card — from there you can get the Andre Go Chrome extension that captures all your AI conversations automatically.",
-        getPosition:()=>{ const n=nodeObjects.get("CORE"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:null
-    },
-    {
-        title:"Build vs Execute",
-        desc:"DRE Workflow (green) is your CREATION LAYER — build logic flows visually. The gold orbiting moon is DRE Console — your EXECUTION LAYER. Build first. Run second.",
-        getPosition:()=>{ const n=nodeObjects.get("DRE_WORKFLOW"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:null
-    },
-    {
-        title:"Navigate the Galaxy",
-        desc:"Drag to rotate the camera. Pinch to zoom on mobile. Use the ⌂ + − buttons below to zoom or reset the view.",
-        getPosition:()=>getElPos(document.getElementById('cameraControls')),
-        targetEl: document.getElementById('cameraControls'),
-        action:null
-    },
-    {
-        title:"Access All Tools",
-        desc:"Tap MENU to open the control deck — every tool in the ecosystem is listed there. DRE Interface, ZIP Tool, Loan Shark, Kleara Studios, and more.",
-        getPosition:()=>getElPos(document.getElementById('settingsBtn')),
-        targetEl: document.getElementById('settingsBtn'),
-        action:()=>{ document.getElementById('settingsPanel').classList.remove('active'); }
-    },
-    {
-        title:"Kleara Studios",
-        desc:"Deep below the main galaxy is a space station — Kleara Studios. DL Ford and Atlas Parks. A completely separate creative universe. Not a tool — the work.",
-        getPosition:()=>{ const n=nodeObjects.get("KLEARA"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:()=>{ document.getElementById('settingsPanel').classList.remove('active'); camera.position.set(200,-80,280); controls.target.set(0,-160,0); controls.update(); }
-    }
-];
-
-function updateHighlight(step){
-    const hl=document.getElementById('tutorialHighlight');
-    const arr=document.getElementById('tutorialArrow');
-    document.querySelectorAll('.tutorial-elevated').forEach(el=>el.classList.remove('tutorial-elevated'));
-    if(!step||!step.getPosition){ hl.classList.remove('active'); arr.classList.remove('active'); return; }
-    const pos=step.getPosition();
-    if(!pos){ hl.classList.remove('active'); arr.classList.remove('active'); return; }
-    if(pos.is3D){
-        const r=38;
-        hl.style.left=(pos.x-r)+'px'; hl.style.top=(pos.y-r)+'px';
-        hl.style.width=(r*2)+'px'; hl.style.height=(r*2)+'px';
-        hl.style.borderRadius='50%';
-        arr.style.left=(pos.x-11)+'px'; arr.style.top=(pos.y+r+8)+'px';
-    } else {
-        const pad=6;
-        hl.style.left=(pos.x-pad)+'px'; hl.style.top=(pos.y-pad)+'px';
-        hl.style.width=(pos.width+pad*2)+'px'; hl.style.height=(pos.height+pad*2)+'px';
-        hl.style.borderRadius='10px';
-        arr.style.left=(pos.x+pos.width/2-11)+'px'; arr.style.top=(pos.y+pos.height+pad+6)+'px';
-        if(step.targetEl) step.targetEl.classList.add('tutorial-elevated');
-    }
-    hl.classList.add('active'); arr.classList.add('active');
-}
-
-function updateTutorialUI(){
-    const step=tutorialSteps[currentStep];
-    document.getElementById('tutorialStep').textContent=`STEP ${currentStep+1} OF ${tutorialSteps.length}`;
-    document.getElementById('tutorialTitle').textContent=step.title;
-    document.getElementById('tutorialDesc').textContent=step.desc;
-    const card=document.getElementById('tutorialCard');
-    card.style.animation='none'; void card.offsetWidth;
-    card.style.animation='tutSlide 0.32s cubic-bezier(0.22,1,0.36,1)';
-    document.querySelectorAll('.tutorial-dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
-    document.getElementById('tutorialPrevBtn').style.display=currentStep===0?'none':'';
-    document.getElementById('tutorialNextBtn').textContent=currentStep===tutorialSteps.length-1?'FINISH ✓':'NEXT →';
-    if(step.action) step.action();
-    setTimeout(()=>updateHighlight(step),150);
-}
-
-function nextStep(){ if(currentStep<tutorialSteps.length-1){currentStep++;updateTutorialUI();}else completeTutorial(); }
-function prevStep(){ if(currentStep>0){currentStep--;updateTutorialUI();} }
-
-function completeTutorial(){
-    window.tutorialActive=false;
-    tutorialCompleted=true;
-    document.getElementById('tutorialOverlay').classList.remove('active');
-    document.getElementById('tutorialBackdrop').classList.remove('active');
-    document.getElementById('tutorialCardWrap').classList.remove('active');
-    document.getElementById('tutorialHighlight').classList.remove('active');
-    document.getElementById('tutorialArrow').classList.remove('active');
-    document.querySelectorAll('.tutorial-elevated').forEach(el=>el.classList.remove('tutorial-elevated'));
-    document.getElementById('settingsPanel').classList.remove('active');
-    resetCamera();
-}
-
-function startTutorial(){
-    if(tutorialCompleted) return;
-    window.tutorialActive=true;
-    currentStep=0;
-    document.getElementById('tutorialOverlay').classList.add('active');
-    document.getElementById('tutorialBackdrop').classList.add('active');
-    document.getElementById('tutorialCardWrap').classList.add('active');
-    updateTutorialUI();
-}
-
-window.replayTutorial=function(){
-    window.tutorialActive=true; currentStep=0;
-    tutorialCompleted=false;
-    document.getElementById('settingsPanel').classList.remove('active');
-    document.getElementById('tutorialOverlay').classList.add('active');
-    document.getElementById('tutorialBackdrop').classList.add('active');
-    document.getElementById('tutorialCardWrap').classList.add('active');
-    updateTutorialUI();
-};
-
-document.getElementById('tutorialNextBtn').addEventListener('click',(e)=>{e.stopPropagation();nextStep();});
-document.getElementById('tutorialPrevBtn').addEventListener('click',(e)=>{e.stopPropagation();prevStep();});
-document.getElementById('tutorialSkipBtn').addEventListener('click',(e)=>{e.stopPropagation();completeTutorial();});
-
-function trackHighlights(){
-    if(window.tutorialActive){
-        const step=tutorialSteps[currentStep];
-        if(step&&step.getPosition){
-            const pos=step.getPosition();
-            if(pos&&pos.is3D) updateHighlight(step);
-        }
-    }
-    requestAnimationFrame(trackHighlights);
-}
-trackHighlights();
-
-// ── MUSIC & ENTRY ──
-const music=document.getElementById('bgMusic'), gate=document.getElementById('entryGate');
-const muteBtn=document.getElementById('muteBtn'), musicUI=document.getElementById('musicControls');
-const tapHint=document.getElementById('tapHint');
-const moonLegend=document.getElementById('moonLegend');
-music.volume=0.6;
-
-window.enterGalaxy=function(){
-    music.play().catch(()=>{});
-    gate.classList.add('leaving');
-    gate.addEventListener('animationend',()=>{
-        gate.style.display='none';
-        musicUI.style.display='flex';
-        moonLegend.style.display='block';
-        if(isMobile){ tapHint.classList.add('show'); setTimeout(()=>tapHint.classList.remove('show'),3500); }
-        setTimeout(()=>startTutorial(),1000);
-    },{once:true});
-};
-
-window.toggleMute=function(){ music.muted=!music.muted; muteBtn.textContent=music.muted?'🔇':'🔊'; };
-window.setVolume=function(v){ music.volume=parseFloat(v); music.muted=false; muteBtn.textContent='🔊'; };
 </script>
 </body>
 </html>
