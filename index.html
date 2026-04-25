@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRE ECOSYSTEM · V11</title>
+    <title>DRE ECOSYSTEM · V12</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -161,6 +161,7 @@
         }
 
         .settings-section { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .settings-section:last-of-type { margin-bottom: 0; }
         .settings-section h3 { font-size: 12px; font-weight: 600; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.8); }
 
         .portal-btn {
@@ -603,6 +604,40 @@
         #tutorialMenuBtn:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,212,255,0.3); }
         #tutorialMenuBtn:active { transform:scale(0.97); }
 
+        /* ── ACCORDION CATEGORIES ── */
+        .settings-accordion { margin-top: 20px; }
+        .accordion-item { border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .accordion-trigger {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; padding: 14px 4px; cursor: pointer;
+            background: transparent; border: none; color: rgba(255,255,255,0.85);
+            font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+            text-transform: uppercase; text-align: left;
+            font-family: inherit; transition: color 0.2s ease;
+            min-height: 48px;
+        }
+        .accordion-trigger:hover { color: #fff; }
+        .accordion-trigger .arrow {
+            display: inline-block;
+            transition: transform 0.25s ease;
+            font-size: 14px; color: rgba(255,255,255,0.3);
+        }
+        .accordion-trigger.open .arrow { transform: rotate(90deg); }
+        .accordion-content {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+            padding: 0 4px;
+        }
+        .accordion-content.open {
+            max-height: 1200px;
+            padding: 0 4px 16px;
+        }
+        .settings-visual-divider {
+            height: 1px;
+            background: linear-gradient(90deg, rgba(0,212,255,0.4) 0%, transparent 100%);
+            margin: 18px 0 20px;
+        }
+
         /* Moon orbit ring indicator in HUD */
         .moon-hud-badge {
             display: inline-flex;
@@ -676,46 +711,100 @@
 <div id="settingsPanel">
     <button class="close-settings" onclick="toggleSettings()">✕</button>
     <div class="settings-header">Control Deck</div>
-    <div class="settings-subtitle">System Navigation & View Modes</div>
+    <div class="settings-subtitle">System Navigation &amp; View Modes</div>
 
-    <div class="settings-section">
-        <h3>🎓 Tutorial</h3>
+    <!-- ── TOP SECTION: Tutorial + Evaluation Portal ── -->
+    <div class="settings-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
         <button id="tutorialMenuBtn" onclick="replayTutorial()">🎓 START TUTORIAL</button>
-    </div>
-
-    <div class="settings-section">
-        <h3>Quick Actions</h3>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#00d4ff 0%,#005f7a 100%);color:#000;font-weight:800;letter-spacing:1px;" onclick="window.location.href='https://project-9dael.vercel.app/DRE_CSInterface_v5.html'">OPEN DRE INTERFACE</button>
         <button class="portal-btn" onclick="window.location.href='https://galaxy-andre-html-deploy.vercel.app/'">OPEN EVALUATION PORTAL</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#00d4ff 0%,#7b2ff7 100%);color:#fff;" onclick="window.location.href='Dre_Go_lndpage.html'">GET ANDRE GO FREE →</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#FF2D78 0%,#8B0038 100%);color:#fff;" onclick="window.location.href='DRE_FLOW_enhanced.html'">OPEN DRE FLOW</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#f59e0b 0%,#b45309 100%);color:#000;" onclick="window.location.href='ZIP_tool.html'">OPEN ZIP TOOL</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#FF8C00 0%,#FF5500 100%);" onclick="window.location.href='dre-extractor-v2.html'">OPEN DRE EXTRACTOR</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#00C853 0%,#009624 100%);" onclick="window.location.href='dre-os-v2__1_.html'">OPEN DRE OS</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#7C3AED 0%,#4C1D95 100%);color:#fff;" onclick="window.location.href='ATS_Config_Pro_v_3_0.html'">OPEN REPRIZAL AI</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#e83000 0%,#ffaa00 100%);color:#fff;" onclick="window.location.href='https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html'">OPEN DRE CODE</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" onclick="window.location.href='loan_shark_full_system.html'">OPEN LOAN SHARK</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;" onclick="window.location.href='24_HOURS_.HTML'">OPEN 24 HOURS →</button>
-        <!-- DRE Workflow & Console in menu -->
-        <button class="portal-btn" style="background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;" onclick="window.location.href='dre_workflow_V2.html'">OPEN DRE WORKFLOW →</button>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;" onclick="window.location.href='DREUserConsolev3.0.HTML'">OPEN DRE CONSOLE →</button>
     </div>
 
-    <div class="settings-section">
-        <h3>✦ Kleara Studios</h3>
-        <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;line-height:1.6;">Separate universe · DL Ford &amp; Atlas Parks</div>
-        <button class="portal-btn" style="background:linear-gradient(135deg,#1a0033 0%,#6b00a8 50%,#c084fc 100%);color:#fff;font-weight:800;letter-spacing:2px;" onclick="window.location.href='authorpage.html'">ENTER KLEARA STUDIOS →</button>
-    </div>
+    <!-- ── VISUAL DIVIDER ── -->
+    <div class="settings-visual-divider"></div>
 
-    <div class="settings-section">
-        <h3>View Mode</h3>
-        <div class="toggle-control">
-            <label>Founder Mode (Private)</label>
-            <input type="checkbox" id="founderToggle" onchange="updateModeDisplay()">
+    <!-- ── ACCORDION SECTION ── -->
+    <div class="settings-accordion" id="settingsAccordion">
+
+        <!-- CATEGORY: Revenue & Core -->
+        <div class="accordion-item">
+            <button class="accordion-trigger" data-target="accordionRevenue">
+                <span>💰 Revenue &amp; Core</span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="accordion-content" id="accordionRevenue">
+                <button class="portal-btn" style="background:linear-gradient(135deg,#00d4ff 0%,#005f7a 100%);color:#000;font-weight:800;letter-spacing:1px;" onclick="window.location.href='https://project-9dael.vercel.app/DRE_CSInterface_v5.html'">OPEN DRE INTERFACE</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#00d4ff 0%,#7b2ff7 100%);color:#fff;" onclick="window.location.href='Dre_Go_lndpage.html'">GET ANDRE GO FREE →</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;" onclick="window.location.href='dre_workflow_V2.html'">OPEN DRE WORKFLOW →</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;" onclick="window.location.href='DREUserConsolev3.0.HTML'">OPEN DRE CONSOLE →</button>
+            </div>
         </div>
-    </div>
 
-    <div id="nodeColorControls"></div>
+        <!-- CATEGORY: Utilities -->
+        <div class="accordion-item">
+            <button class="accordion-trigger" data-target="accordionUtilities">
+                <span>🔧 Utilities</span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="accordion-content" id="accordionUtilities">
+                <button class="portal-btn" style="background:linear-gradient(135deg,#f59e0b 0%,#b45309 100%);color:#000;" onclick="window.location.href='ZIP_tool.html'">OPEN ZIP TOOL</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#FF8C00 0%,#FF5500 100%);color:#000;" onclick="window.location.href='dre-extractor-v2.html'">OPEN DRE EXTRACTOR</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#00C853 0%,#009624 100%);color:#000;" onclick="window.location.href='dre-os-v2__1_.html'">OPEN DRE OS</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#e83000 0%,#ffaa00 100%);color:#fff;" onclick="window.location.href='https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html'">OPEN DRE CODE</button>
+            </div>
+        </div>
+
+        <!-- CATEGORY: Creator & Career -->
+        <div class="accordion-item">
+            <button class="accordion-trigger" data-target="accordionCreator">
+                <span>✍️ Creator &amp; Career</span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="accordion-content" id="accordionCreator">
+                <button class="portal-btn" style="background:linear-gradient(135deg,#FF2D78 0%,#8B0038 100%);color:#fff;" onclick="window.location.href='DRE_FLOW_enhanced.html'">OPEN DRE FLOW</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#7C3AED 0%,#4C1D95 100%);color:#fff;" onclick="window.location.href='ATS_Config_Pro_v_3_0.html'">OPEN REPRIZAL AI</button>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#4a9eff 0%,#8b6fff 100%);color:#fff;font-weight:800;letter-spacing:2px;" onclick="window.location.href='24_HOURS_.HTML'">OPEN 24 HOURS →</button>
+            </div>
+        </div>
+
+        <!-- CATEGORY: Finance & Strategy -->
+        <div class="accordion-item">
+            <button class="accordion-trigger" data-target="accordionFinance">
+                <span>📊 Finance &amp; Strategy</span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="accordion-content" id="accordionFinance">
+                <button class="portal-btn" style="background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" onclick="window.location.href='loan_shark_full_system.html'">OPEN LOAN SHARK</button>
+            </div>
+        </div>
+
+        <!-- CATEGORY: Kleara Studios (separate) -->
+        <div class="accordion-item">
+            <button class="accordion-trigger" data-target="accordionKleara">
+                <span>✦ Kleara Studios</span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="accordion-content" id="accordionKleara">
+                <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;line-height:1.6;">Separate universe · DL Ford &amp; Atlas Parks</div>
+                <button class="portal-btn" style="background:linear-gradient(135deg,#1a0033 0%,#6b00a8 50%,#c084fc 100%);color:#fff;font-weight:800;letter-spacing:2px;" onclick="window.location.href='authorpage.html'">ENTER KLEARA STUDIOS →</button>
+            </div>
+        </div>
+
+        <!-- CATEGORY: View Mode -->
+        <div class="accordion-item">
+            <button class="accordion-trigger" data-target="accordionViewMode">
+                <span>👁️ View Mode</span>
+                <span class="arrow">▶</span>
+            </button>
+            <div class="accordion-content" id="accordionViewMode">
+                <div class="toggle-control">
+                    <label>Founder Mode (Private)</label>
+                    <input type="checkbox" id="founderToggle" onchange="updateModeDisplay()">
+                </div>
+                <div id="nodeColorControls"></div>
+            </div>
+        </div>
+
+    </div><!-- /.settings-accordion -->
 </div>
 
 <div id="tooltip"></div>
@@ -1847,6 +1936,37 @@ window.resetCamera=()=>{camera.position.set(0,80,isMobile?320:250);controls.targ
 window.zoomIn=()=>camera.position.sub(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
 window.zoomOut=()=>camera.position.add(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
 window.toggleSettings=()=>document.getElementById('settingsPanel').classList.toggle('active');
+// ── ACCORDION TOGGLE ──
+(function initAccordion() {
+    const triggers = document.querySelectorAll('.accordion-trigger');
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const targetId = trigger.dataset.target;
+            const content = document.getElementById(targetId);
+            if (!content) return;
+            const isOpen = content.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+            document.querySelectorAll('.accordion-trigger').forEach(t => t.classList.remove('open'));
+            // Toggle this one
+            if (!isOpen) {
+                content.classList.add('open');
+                trigger.classList.add('open');
+            }
+        });
+    });
+    // Open first accordion by default
+    const firstTrigger = document.querySelector('.accordion-trigger');
+    if (firstTrigger) {
+        const firstId = firstTrigger.dataset.target;
+        const firstContent = document.getElementById(firstId);
+        if (firstContent) {
+            firstContent.classList.add('open');
+            firstTrigger.classList.add('open');
+        }
+    }
+})();
+
 window.updateModeDisplay=()=>{
     const isF=document.getElementById('founderToggle').checked;
     document.getElementById('modeDisplay').textContent=isF?"FOUNDER":"PUBLIC";
