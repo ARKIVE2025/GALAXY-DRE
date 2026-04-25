@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ANDRE METHOD — sitemap.xml
+       Domain:       https://andremethod.com
+       Last updated: 2026-04-25
+       Submit to:    Google Search Console → Sitemaps
+                     URL: https://andremethod.com/sitemap.xml
+  ═══════════════════════════════════════════════════════════ -->
+
+  <!-- CORE — Galaxy Homepage (highest priority) -->
+  <url>
+    <loc>https://andremethod.com/</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- ANDRE GO — Primary tool / Chrome Extension landing page -->
+  <url>
+    <loc>https://andremethod.com/Dre_Go_lndpage.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- DRE WORKFLOW — Visual project workflow builder -->
+  <url>
+    <loc>https://andremethod.com/dre_workflow_V2.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ZIP TOOL — Browser-native file archiver -->
+  <url>
+    <loc>https://andremethod.com/ZIP_tool.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- DRE FLOW — Manuscript analysis for authors -->
+  <url>
+    <loc>https://andremethod.com/DRE_FLOW_enhanced.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- DRE EXTRACTOR — Browser-native audio extraction -->
+  <url>
+    <loc>https://andremethod.com/dre-extractor-v2.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- DRE OS — Privacy and exposure dashboard -->
+  <url>
+    <loc>https://andremethod.com/dre-os-v2__1_.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- REPRIZAL AI — ATS Resume Builder -->
+  <url>
+    <loc>https://andremethod.com/ATS_Config_Pro_v_3_0.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- LOAN SHARK — Payday loan survival calculator -->
+  <url>
+    <loc>https://andremethod.com/loan_shark_full_system.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- KLEARA STUDIOS — Literary arm / Author page -->
+  <url>
+    <loc>https://andremethod.com/authorpage.html</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 24 HOURS — Christ-centered wellness and daily rhythm app -->
+  <url>
+    <loc>https://andremethod.com/24_HOURS_.HTML</loc>
+    <lastmod>2026-04-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>
