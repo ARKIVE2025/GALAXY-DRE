@@ -10,13 +10,15 @@
         body {
             margin: 0;
             overflow: hidden;
-            background: #000000;
+            /* ── CHANGE 1: space_bg.png background, centered, fixed, covering full viewport ── */
+            background: #000000 url('space_bg.png') center center / cover no-repeat fixed;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
             color: #FFFFFF;
             -webkit-tap-highlight-color: transparent;
         }
 
-        canvas { display: block; cursor: grab; touch-action: none; }
+        /* ── CHANGE 2: Three.js canvas transparent ── */
+        canvas { display: block; cursor: grab; touch-action: none; background: transparent; }
         canvas:active { cursor: grabbing; }
 
         #interface {
@@ -234,6 +236,10 @@
         .modal-content.moon-modal { border-color: rgba(255,200,50,0.4); }
         .modal-content.moon-modal .modal-protocol { border-left-color: rgba(255,200,50,0.6); }
 
+        /* ORB modal gets special purple/cyan accent */
+        .modal-content.orb-modal { border-color: rgba(180,100,255,0.5); box-shadow: 0 10px 50px rgba(120,50,200,0.3); }
+        .modal-content.orb-modal .modal-protocol { border-left-color: rgba(180,100,255,0.7); }
+
         .close-modal {
             position: absolute;
             top: 16px; right: 16px;
@@ -279,6 +285,12 @@
         #tooltip.moon-tip {
             border-color: rgba(255,200,50,0.6);
             color: #ffc832;
+        }
+
+        /* ORB tooltip */
+        #tooltip.orb-tip {
+            border-color: rgba(180,100,255,0.7);
+            color: #cc88ff;
         }
 
         @media (hover: none) { #tooltip { display: none !important; } }
@@ -604,6 +616,38 @@
         #tutorialMenuBtn:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,212,255,0.3); }
         #tutorialMenuBtn:active { transform:scale(0.97); }
 
+        /* ── ORB BUTTON — CHAT WITH DRE ── */
+        #orbChatBtn {
+            background: linear-gradient(135deg, #7b2ff7 0%, #cc44ff 50%, #00d4ff 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 10px;
+            min-height: 52px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #orbChatBtn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        #orbChatBtn:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(120,50,200,0.5); }
+        #orbChatBtn:active { transform:scale(0.97); }
+
         /* ── ACCORDION CATEGORIES ── */
         .settings-accordion { margin-top: 20px; }
         .accordion-item { border-bottom: 1px solid rgba(255,255,255,0.08); }
@@ -656,6 +700,12 @@
             animation: moonPulse 2s ease-in-out infinite;
         }
         @keyframes moonPulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+        /* ── ORB NODE PULSE ANIMATION ── */
+        @keyframes orbPulse {
+            0%,100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.08); }
+        }
     </style>
 </head>
 <body>
@@ -689,7 +739,7 @@
 <div id="dataDisplay">
     <div class="data-line">→ Try Andre Go and leave a review! </div>
     <div class="data-line">→ 90-DAY GOAL: DRE CODE May 20th</div>
-    <div class="data-line">→ NODES ONLINE: 18</div>
+    <div class="data-line">→ NODES ONLINE: 19</div>
     <div class="data-line">→ CONSOLE: ORBITING CORE</div>
     <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
 </div>
@@ -713,9 +763,11 @@
     <div class="settings-header">Control Deck</div>
     <div class="settings-subtitle">System Navigation &amp; View Modes</div>
 
-    <!-- ── TOP SECTION: Tutorial + Evaluation Portal ── -->
+    <!-- ── TOP SECTION: Tutorial + Chat with DRE ORB + Evaluation Portal ── -->
     <div class="settings-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
         <button id="tutorialMenuBtn" onclick="replayTutorial()">🎓 START TUTORIAL</button>
+        <!-- ORB: Chat with DRE (replaces / sits alongside Evaluation Portal) -->
+        <button id="orbChatBtn" onclick="openOrbModal()">✦ CHAT WITH DRE</button>
         <button class="portal-btn" onclick="window.location.href='https://galaxy-andre-html-deploy.vercel.app/'">OPEN EVALUATION PORTAL</button>
     </div>
 
@@ -877,7 +929,7 @@ const CONFIG = {
 };
 
 // ══════════════════════════════════════════════════════
-// NODE DATA — includes DRE Workflow as standard node
+// NODE DATA — includes DRE Workflow + ORB (Chat with DRE)
 // ══════════════════════════════════════════════════════
 const nodesData = [
     { id:"CORE", x:0, y:0, z:0, name:"Andre Go", isCenter:true, category:"Revenue Engine · Chrome Extension · v5.0.0",
@@ -897,7 +949,16 @@ const nodesData = [
       isPortal:true, portalFile:"dre_workflow_V2.html", portalLabel:"OPEN DRE WORKFLOW →",
       portalStyle:"background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;letter-spacing:2px;" },
 
-    { id:"EVALUATE", x:70, y:30, z:120, name:"START EVALUATION", category:"Action Portal",
+    // ── ORB — CHAT WITH DRE (new node, slightly bigger) ──
+    { id:"ORB_CHAT", x:30, y:55, z:145, name:"Chat with DRE", isOrb:true, category:"AI Chat · DRE Alignment Architect",
+      desc:"[FOUNDER] Direct AI conversation channel running the full DRE Alignment Architect system. Talk to DRE — get strategies, diagnose problems, build execution plans, and navigate your ecosystem in real time.\n\nPowered by the DRE Interface backend. No separate tool to open — the galaxy IS the interface.",
+      protocol:"Action: Open Chat with DRE → Enter your situation or question → Receive DRE-aligned strategy, execution plan, or diagnosis.\n\nBest used for: project unblocking, goal alignment, ecosystem navigation, system design.",
+      public_desc:"✦ CHAT WITH DRE\n\nTalk directly to the DRE Alignment Architect.\n\nGet a real-time strategy session, execution plan, or system diagnosis — no fluff, no generic advice.\n\n🧠 DRE reads your situation\n⚡ Returns structured action steps\n🔗 Links you to the right ecosystem tools\n✝️ Grounded in purpose and truth\n\nThis is the intelligence layer of the whole galaxy.",
+      public_protocol:"Action: Open Chat with DRE → Describe your situation → DRE responds with strategy\n\nNo API key required. Powered by the Andre Cloud.",
+      isPortal:true, portalFile:"https://project-9dael.vercel.app/DRE_CSInterface_v5.html", portalLabel:"CHAT WITH DRE →",
+      portalStyle:"background:linear-gradient(135deg,#7b2ff7 0%,#cc44ff 50%,#00d4ff 100%);color:#fff;font-weight:800;letter-spacing:2px;font-size:13px;" },
+
+    { id:"EVALUATE", x:70, y:30, z:120, name:"Evaluation Portal", category:"Action Portal",
       desc:"[FOUNDER] Gateway to the Andre Rebuilt utility page (Price Reality).", protocol:"Action: Redirect user to /andre.html",
       public_desc:"Stop overpaying. Click here to analyze a service, quote, or contract against our independent standards.", public_protocol:"Action: Open Evaluation Tool",
       isPortal:true, portalFile:"https://galaxy-andre-html-deploy.vercel.app/", portalLabel:"ENTER EVALUATION PORTAL" },
@@ -985,10 +1046,10 @@ const moonsData = [
         id: "DRE_CONSOLE_MOON",
         name: "DRE Console",
         parent: "CORE",
-        orbitRadius: 28,        // distance from parent
-        orbitSpeed: 0.008,      // radians per frame
-        orbitTilt: 0.4,         // orbit plane tilt in radians
-        orbitPhase: 0,          // starting angle
+        orbitRadius: 28,
+        orbitSpeed: 0.008,
+        orbitTilt: 0.4,
+        orbitPhase: 0,
         size: 1.6,
         color: 0xffc832,
         file: "DREUserConsolev3.0.HTML",
@@ -1005,7 +1066,9 @@ const nodeColors = {
     "CONTENT":0xFF6B6B,"EXTENSION_DATA":0x9370DB,"DRE_INTERFACE":0x00d4ff,"ZIP_TOOL":0xf59e0b,
     "DRE_FLOW":0xFF2D78,"DRE_EXTRACTOR":0xFF8C00,"DRE_OS":0x00C853,"REPRIZAL":0x7C3AED,
     "DRE_CODE":0xff4800,"LOAN_SHARK":0x00ff41,"KLEARA":0xff6600,
-    "HOURS_24":0x8b6fff,"DRE_WORKFLOW":0x00ffaa
+    "HOURS_24":0x8b6fff,"DRE_WORKFLOW":0x00ffaa,
+    // ── ORB: purple-to-cyan gradient base color ──
+    "ORB_CHAT":0xcc44ff
 };
 
 // ── SCENE ──
@@ -1019,21 +1082,19 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+// ── CHANGE 2: transparent canvas so space_bg.png shows through ──
+renderer.setClearColor(0x000000, 0);
 document.body.appendChild(renderer.domElement);
 
 // ── CINEMATIC SCENE LIGHTING ──
-// Key: deep-space sunlight — warm, strong, directional
 const sunLight = new THREE.DirectionalLight(0xfff5e0, 2.8);
 sunLight.position.set(120, 80, 60);
 scene.add(sunLight);
-// Fill: cold blue ambient — prevents pure-black shadow sides
 const fillLight = new THREE.AmbientLight(0x0d1a2a, 3.5);
 scene.add(fillLight);
-// Rim: cinematic edge highlight, blue-cold
 const rimLight = new THREE.DirectionalLight(0x88bbff, 1.6);
 rimLight.position.set(-80, -40, -80);
 scene.add(rimLight);
-// Engine point light — follows ship, lights nearby hull
 const enginePointLight = new THREE.PointLight(0xff8833, 0, 30);
 scene.add(enginePointLight);
 
@@ -1047,7 +1108,7 @@ controls.enablePan = false;
 const mainGroup = new THREE.Group();
 scene.add(mainGroup);
 
-// Starfield
+// Starfield — CHANGE 3: opacity reduced from 0.8 to 0.4 to layer softly over bg image
 const starGeo = new THREE.BufferGeometry();
 const sp = [];
 for (let i = 0; i < CONFIG.starCount; i++) {
@@ -1056,7 +1117,7 @@ for (let i = 0; i < CONFIG.starCount; i++) {
 }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
 const starField = new THREE.Group();
-starField.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0xFFFFFF, size:1.5, transparent:true, opacity:0.8 })));
+starField.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0xFFFFFF, size:1.5, transparent:true, opacity:0.4 })));
 scene.add(starField);
 
 // Asteroids
@@ -1070,7 +1131,6 @@ for (let i = 0; i < CONFIG.asteroidCount; i++) {
 // ── NODES ──
 const nodeObjects = new Map();
 const clickableNodes = [];
-// Store moon mesh refs separately
 const moonObjects = new Map();
 const clickableMoons = [];
 
@@ -1106,12 +1166,128 @@ function createStarMesh(size, color) {
     return { group: starGroup, mesh, innerGlow: ig, outerGlow: og };
 }
 
+// ── Helper: build the ORB (Chat with DRE) — slightly bigger, multi-layer pulsing sphere ──
+function createOrbMesh(size, pos, pg) {
+    const orbGroup = new THREE.Group();
+    orbGroup.position.copy(pos);
+
+    // Core sphere — purple/cyan
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0xcc44ff });
+    const coreSphere = new THREE.Mesh(new THREE.SphereGeometry(size, 48, 48), coreMat);
+    orbGroup.add(coreSphere);
+
+    // Inner glow — bright cyan tint
+    const ig1 = new THREE.Mesh(
+        new THREE.SphereGeometry(size * 1.25, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0xaa66ff, transparent:true, opacity:0.45, side:THREE.BackSide })
+    );
+    orbGroup.add(ig1);
+
+    // Mid glow — deep purple
+    const ig2 = new THREE.Mesh(
+        new THREE.SphereGeometry(size * 1.65, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0x7b2ff7, transparent:true, opacity:0.22, side:THREE.BackSide })
+    );
+    orbGroup.add(ig2);
+
+    // Outer halo — soft cyan
+    const ig3 = new THREE.Mesh(
+        new THREE.SphereGeometry(size * 2.2, 24, 24),
+        new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent:true, opacity:0.08, side:THREE.BackSide })
+    );
+    orbGroup.add(ig3);
+
+    // Equatorial ring — gold accent
+    const ring1 = new THREE.Mesh(
+        new THREE.RingGeometry(size * 1.4, size * 1.7, 80),
+        new THREE.MeshBasicMaterial({ color: 0xcc44ff, transparent:true, opacity:0.35, side:THREE.DoubleSide })
+    );
+    ring1.rotation.x = Math.PI / 2.3;
+    orbGroup.add(ring1);
+
+    // Tilted ring 2 — cyan
+    const ring2 = new THREE.Mesh(
+        new THREE.RingGeometry(size * 1.8, size * 2.0, 80),
+        new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent:true, opacity:0.18, side:THREE.DoubleSide })
+    );
+    ring2.rotation.x = Math.PI / 3.5;
+    ring2.rotation.z = Math.PI / 6;
+    orbGroup.add(ring2);
+
+    // ✦ symbol: floating particle ring around orb
+    const particleCount = 28;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+        const angle = (i / particleCount) * Math.PI * 2;
+        pPos[i*3]   = Math.cos(angle) * size * 2.4;
+        pPos[i*3+1] = (Math.random() - 0.5) * size * 0.5;
+        pPos[i*3+2] = Math.sin(angle) * size * 2.4;
+    }
+    pGeo.setAttribute('position', new THREE.Float32BufferAttribute(pPos, 3));
+    const particles = new THREE.Points(pGeo,
+        new THREE.PointsMaterial({ color: 0xcc88ff, size: 0.35, transparent: true, opacity: 0.75 })
+    );
+    orbGroup.add(particles);
+
+    pg.add(orbGroup);
+
+    return {
+        group: orbGroup,
+        planet: coreSphere,
+        innerGlow: ig1,
+        midGlow: ig2,
+        outerGlow: ig3,
+        ring1, ring2,
+        particles
+    };
+}
+
 nodesData.forEach(n => {
-    const size = n.id==="KLEARA" ? 12 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
+    // ORB is slightly bigger than standard nodes (3.2 vs 2.5)
+    const size = n.id==="KLEARA" ? 12 : n.isOrb ? 3.2 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
     const color = nodeColors[n.id] || 0xFFFFFF;
     const pos = new THREE.Vector3(n.x, n.y, n.z);
     const pg = n.id==="KLEARA" ? scene : mainGroup;
     let planet;
+
+    if (n.isOrb) {
+        // ── BUILD ORB ──
+        const orbData = createOrbMesh(size, pos, pg);
+        orbData.planet.userData = { nodeId: n.id, nodeData: n };
+        clickableNodes.push(orbData.planet);
+        // Also push inner glows for better raycasting surface
+        [orbData.innerGlow, orbData.midGlow].forEach(m => {
+            m.userData = { nodeId: n.id, nodeData: n };
+            clickableNodes.push(m);
+        });
+
+        nodeObjects.set(n.id, {
+            planet: orbData.planet,
+            group: orbData.group,
+            innerGlow: orbData.innerGlow,
+            midGlow: orbData.midGlow,
+            outerGlow: orbData.outerGlow,
+            ring1: orbData.ring1,
+            ring2: orbData.ring2,
+            particles: orbData.particles,
+            originalSize: size,
+            isOrb: true
+        });
+
+        // Label sprite
+        const lc=document.createElement('canvas'), lx=lc.getContext('2d');
+        lx.font='bold 48px Arial';
+        const tw=lx.measureText(n.name).width;
+        lc.width=tw+32; lc.height=64;
+        lx.font='bold 48px Arial'; lx.fillStyle='#cc88ff'; lx.textAlign='left'; lx.textBaseline='middle';
+        lx.fillText(n.name,16,32);
+        const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:0.9}));
+        spr.scale.set((lc.width/lc.height)*4,4,1);
+        spr.position.set(n.x, n.y+(size+4), n.z);
+        pg.add(spr);
+        return;
+    }
 
     if (n.id === 'KLEARA') {
         const sg = new THREE.Group();
@@ -1199,7 +1375,6 @@ nodesData.forEach(n => {
             const ring2=new THREE.Mesh(new THREE.RingGeometry(size*3,size*3.5,80),new THREE.MeshBasicMaterial({color:0xaaeeff,transparent:true,opacity:0.12,side:THREE.DoubleSide}));ring2.rotation.x=Math.PI/2.5;ring2.position.copy(pos);pg.add(ring2);
             mainGroup.userData.interfacePlanet=b1;
         }
-        // DRE Workflow gets special ring treatment
         if (n.id === 'DRE_WORKFLOW') {
             const wfRing = new THREE.Mesh(new THREE.RingGeometry(size*1.8, size*2.4, 64),
                 new THREE.MeshBasicMaterial({color:0x00ffaa, transparent:true, opacity:0.25, side:THREE.DoubleSide}));
@@ -1228,107 +1403,52 @@ nodesData.forEach(n => {
 });
 
 // ══════════════════════════════════════════════════════
-// MOON CONSTRUCTION — DRE Console
-// ══════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════
-// SPACESHIP BUILDER — DRE Console orbiting spacecraft
-// Full geometry: fuselage, swept wings, nacelles,
-// cockpit canopy, hull panels, exhaust glow, trail
+// MOON CONSTRUCTION — DRE Console / Spaceship
 // ══════════════════════════════════════════════════════
 function buildSpaceship(moon, moonGroup) {
     const S = moon.size;
     const shipGroup = new THREE.Group();
     moonGroup.add(shipGroup);
 
-    // ═══════════════════════════════════════════════════
-    // MATERIALS — PBR (MeshStandardMaterial) throughout
-    // Requires scene lighting to render correctly
-    // ═══════════════════════════════════════════════════
-    const matMetal = new THREE.MeshStandardMaterial({
-        color: 0xc8d4de, metalness: 0.82, roughness: 0.32
-    });
-    const matMetalDark = new THREE.MeshStandardMaterial({
-        color: 0x2c3a48, metalness: 0.75, roughness: 0.52
-    });
-    const matMetalMid = new THREE.MeshStandardMaterial({
-        color: 0x8aa0b2, metalness: 0.65, roughness: 0.45
-    });
-    const matGold = new THREE.MeshStandardMaterial({
-        color: 0xd4a84f, metalness: 1.0, roughness: 0.22
-    });
-    const matGoldBright = new THREE.MeshStandardMaterial({
-        color: 0xffc832, metalness: 0.9, roughness: 0.18
-    });
-    const matGlass = new THREE.MeshStandardMaterial({
-        color: 0x44aadd, metalness: 0.1, roughness: 0.05,
-        transparent: true, opacity: 0.72
-    });
-    const matThermal = new THREE.MeshStandardMaterial({
-        color: 0xeeeeff, metalness: 0.2, roughness: 0.85
-    });
-    const matPanel = new THREE.MeshStandardMaterial({
-        color: 0x09141e, metalness: 0.35, roughness: 0.75
-    });
-    const matStrut = new THREE.MeshStandardMaterial({
-        color: 0x7a8fa0, metalness: 0.7, roughness: 0.4
-    });
-    const matNozzle = new THREE.MeshStandardMaterial({
-        color: 0x1a2530, metalness: 0.9, roughness: 0.25
-    });
-    const matHeatShield = new THREE.MeshStandardMaterial({
-        color: 0x3a2010, metalness: 0.1, roughness: 0.95
-    });
-    // Emissive materials (glow — no light dependency)
-    const matGlowOrange = new THREE.MeshBasicMaterial({
-        color: 0xff7722, transparent: true, opacity: 0.88
-    });
-    const matGlowAmber = new THREE.MeshBasicMaterial({
-        color: 0xffaa33, transparent: true, opacity: 0.55
-    });
-    const matGlowWhite = new THREE.MeshBasicMaterial({
-        color: 0xffffff, transparent: true, opacity: 0.80
-    });
-    const matGlowBlue = new THREE.MeshBasicMaterial({
-        color: 0x44aaff, transparent: true, opacity: 0.45
-    });
-    const matNavRed = new THREE.MeshBasicMaterial({
-        color: 0xff2244, transparent: true, opacity: 0.9
-    });
-    const matNavGreen = new THREE.MeshBasicMaterial({
-        color: 0x00ff88, transparent: true, opacity: 0.9
-    });
-    const matNavWhite = new THREE.MeshBasicMaterial({
-        color: 0xffffff, transparent: true, opacity: 0.9
-    });
+    const matMetal = new THREE.MeshStandardMaterial({ color: 0xc8d4de, metalness: 0.82, roughness: 0.32 });
+    const matMetalDark = new THREE.MeshStandardMaterial({ color: 0x2c3a48, metalness: 0.75, roughness: 0.52 });
+    const matMetalMid = new THREE.MeshStandardMaterial({ color: 0x8aa0b2, metalness: 0.65, roughness: 0.45 });
+    const matGold = new THREE.MeshStandardMaterial({ color: 0xd4a84f, metalness: 1.0, roughness: 0.22 });
+    const matGoldBright = new THREE.MeshStandardMaterial({ color: 0xffc832, metalness: 0.9, roughness: 0.18 });
+    const matGlass = new THREE.MeshStandardMaterial({ color: 0x44aadd, metalness: 0.1, roughness: 0.05, transparent: true, opacity: 0.72 });
+    const matThermal = new THREE.MeshStandardMaterial({ color: 0xeeeeff, metalness: 0.2, roughness: 0.85 });
+    const matPanel = new THREE.MeshStandardMaterial({ color: 0x09141e, metalness: 0.35, roughness: 0.75 });
+    const matStrut = new THREE.MeshStandardMaterial({ color: 0x7a8fa0, metalness: 0.7, roughness: 0.4 });
+    const matNozzle = new THREE.MeshStandardMaterial({ color: 0x1a2530, metalness: 0.9, roughness: 0.25 });
+    const matHeatShield = new THREE.MeshStandardMaterial({ color: 0x3a2010, metalness: 0.1, roughness: 0.95 });
+    const matGlowOrange = new THREE.MeshBasicMaterial({ color: 0xff7722, transparent: true, opacity: 0.88 });
+    const matGlowAmber = new THREE.MeshBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.55 });
+    const matGlowWhite = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.80 });
+    const matNavRed = new THREE.MeshBasicMaterial({ color: 0xff2244, transparent: true, opacity: 0.9 });
+    const matNavGreen = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.9 });
+    const matNavWhite = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 });
 
-    // ═══════════════════════════════════════════════════
-    // 1. ORION CREW MODULE — truncated cone capsule
-    // ═══════════════════════════════════════════════════
-    // Main capsule body (truncated cone — wider at base)
     const capsuleGeo = new THREE.CylinderGeometry(S * 0.38, S * 0.48, S * 0.55, 32);
     const capsule = new THREE.Mesh(capsuleGeo, matMetal);
     capsule.position.y = S * 0.38;
     shipGroup.add(capsule);
 
-    // Capsule top dome
     const domeCap = new THREE.SphereGeometry(S * 0.38, 32, 16, 0, Math.PI*2, 0, Math.PI/2);
     const dome = new THREE.Mesh(domeCap, matMetal);
     dome.position.y = S * 0.65;
     shipGroup.add(dome);
 
-    // Capsule shoulder ring — gold structural band
     const shoulderGeo = new THREE.TorusGeometry(S * 0.485, S * 0.028, 12, 64);
     const shoulder = new THREE.Mesh(shoulderGeo, matGold);
     shoulder.rotation.x = Math.PI / 2;
     shoulder.position.y = S * 0.11;
     shipGroup.add(shoulder);
 
-    // Abort tower — thin spike on top (Orion LAS)
     const lasBaseGeo = new THREE.CylinderGeometry(S * 0.08, S * 0.04, S * 0.22, 8);
     const lasBase = new THREE.Mesh(lasBaseGeo, matMetalDark);
     lasBase.position.y = S * 1.04;
     shipGroup.add(lasBase);
-    // Tower legs (3 thin struts up)
+
     [0, 120, 240].forEach(deg => {
         const rad = deg * Math.PI / 180;
         const legGeo = new THREE.CylinderGeometry(S * 0.008, S * 0.008, S * 0.52, 4);
@@ -1336,7 +1456,7 @@ function buildSpaceship(moon, moonGroup) {
         leg.position.set(Math.cos(rad) * S * 0.055, S * 1.38, Math.sin(rad) * S * 0.055);
         shipGroup.add(leg);
     });
-    // LAS motor housing (top of tower)
+
     const lasTopGeo = new THREE.CylinderGeometry(S * 0.065, S * 0.065, S * 0.14, 8);
     const lasTop = new THREE.Mesh(lasTopGeo, matMetalDark);
     lasTop.position.y = S * 1.65;
@@ -1346,18 +1466,15 @@ function buildSpaceship(moon, moonGroup) {
     lasTip.position.y = S * 1.78;
     shipGroup.add(lasTip);
 
-    // ── Crew windows (3, evenly spaced around capsule) ──
     [0, 120, 240].forEach(deg => {
         const rad = deg * Math.PI / 180;
         const r = S * 0.45;
-        // Window frame
         const wFrameGeo = new THREE.CylinderGeometry(S * 0.07, S * 0.07, S * 0.022, 20);
         const wFrame = new THREE.Mesh(wFrameGeo, matGold);
         wFrame.position.set(Math.cos(rad) * r, S * 0.45, Math.sin(rad) * r);
         wFrame.rotation.z = Math.PI / 2;
         wFrame.rotation.y = -rad;
         shipGroup.add(wFrame);
-        // Window glass
         const wGlassGeo = new THREE.CircleGeometry(S * 0.058, 20);
         const wGlass = new THREE.Mesh(wGlassGeo, matGlass);
         wGlass.position.set(Math.cos(rad) * (r + S*0.01), S * 0.45, Math.sin(rad) * (r + S*0.01));
@@ -1365,43 +1482,34 @@ function buildSpaceship(moon, moonGroup) {
         shipGroup.add(wGlass);
     });
 
-    // Heat shield (base of capsule — ablative, rough dark)
     const heatShieldGeo = new THREE.CylinderGeometry(S * 0.49, S * 0.44, S * 0.06, 32);
     const heatShield = new THREE.Mesh(heatShieldGeo, matHeatShield);
     heatShield.position.y = S * 0.10;
     shipGroup.add(heatShield);
-    // Gold heat shield ring
     const hsRingGeo = new THREE.TorusGeometry(S * 0.465, S * 0.018, 8, 64);
     const hsRing = new THREE.Mesh(hsRingGeo, matGold);
     hsRing.rotation.x = Math.PI / 2;
     hsRing.position.y = S * 0.07;
     shipGroup.add(hsRing);
 
-    // ═══════════════════════════════════════════════════
-    // 2. SERVICE MODULE — cylindrical, below capsule
-    // ═══════════════════════════════════════════════════
     const smGeo = new THREE.CylinderGeometry(S * 0.36, S * 0.36, S * 0.72, 32);
     const sm = new THREE.Mesh(smGeo, matMetalMid);
     sm.position.y = -S * 0.25;
     shipGroup.add(sm);
 
-    // SM top adapter ring
     const smTopGeo = new THREE.TorusGeometry(S * 0.37, S * 0.022, 10, 48);
     const smTop = new THREE.Mesh(smTopGeo, matGold);
     smTop.rotation.x = Math.PI / 2;
     smTop.position.y = S * 0.11;
     shipGroup.add(smTop);
 
-    // ── Thermal radiator panels on SM sides (4 panels) ──
     [0, 90, 180, 270].forEach((deg, i) => {
         const rad = deg * Math.PI / 180;
-        // Outer panel
         const tpGeo = new THREE.BoxGeometry(S * 0.08, S * 0.42, S * 0.22);
         const tp = new THREE.Mesh(tpGeo, matThermal);
         tp.position.set(Math.cos(rad) * S * 0.41, -S * 0.25, Math.sin(rad) * S * 0.41);
         tp.rotation.y = -rad;
         shipGroup.add(tp);
-        // Radiator cell lines (grid detail)
         for (let row = 0; row < 4; row++) {
             const lineGeo = new THREE.BoxGeometry(S * 0.082, S * 0.008, S * 0.21);
             const line = new THREE.Mesh(lineGeo, matMetalDark);
@@ -1411,42 +1519,33 @@ function buildSpaceship(moon, moonGroup) {
         }
     });
 
-    // SM gold equatorial band
     const smBandGeo = new THREE.TorusGeometry(S * 0.365, S * 0.016, 8, 48);
     const smBand = new THREE.Mesh(smBandGeo, matGoldBright);
     smBand.rotation.x = Math.PI / 2;
     smBand.position.y = -S * 0.25;
     shipGroup.add(smBand);
 
-    // ═══════════════════════════════════════════════════
-    // 3. EUROPEAN SERVICE MODULE ENGINE SECTION
-    // ═══════════════════════════════════════════════════
-    // Adapter skirt (tapers inward to engine)
     const skirtGeo = new THREE.CylinderGeometry(S * 0.22, S * 0.36, S * 0.30, 24);
     const skirt = new THREE.Mesh(skirtGeo, matMetalDark);
     skirt.position.y = -S * 0.76;
     shipGroup.add(skirt);
 
-    // Engine bell — main OMS engine
     const bellGeo = new THREE.CylinderGeometry(S * 0.28, S * 0.18, S * 0.32, 24);
     const bell = new THREE.Mesh(bellGeo, matNozzle);
     bell.position.y = -S * 1.06;
     shipGroup.add(bell);
 
-    // Engine throat
     const throatGeo = new THREE.CylinderGeometry(S * 0.10, S * 0.13, S * 0.14, 16);
     const throat = new THREE.Mesh(throatGeo, matNozzle);
     throat.position.y = -S * 0.92;
     shipGroup.add(throat);
 
-    // Bell lip ring (gold)
     const bellLipGeo = new THREE.TorusGeometry(S * 0.28, S * 0.018, 8, 48);
     const bellLip = new THREE.Mesh(bellLipGeo, matGold);
     bellLip.rotation.x = Math.PI / 2;
     bellLip.position.y = -S * 0.92;
     shipGroup.add(bellLip);
 
-    // 4 ACS (attitude control) thrusters around skirt
     [45, 135, 225, 315].forEach(deg => {
         const rad = deg * Math.PI / 180;
         const acsGeo = new THREE.CylinderGeometry(S * 0.04, S * 0.055, S * 0.14, 8);
@@ -1457,121 +1556,67 @@ function buildSpaceship(moon, moonGroup) {
         shipGroup.add(acs);
     });
 
-    // ═══════════════════════════════════════════════════
-    // 4. SOLAR ARRAYS — 4-panel cross pattern (Orion ESA style)
-    //    Each wing: inner panel + outer panel + connecting beam
-    // ═══════════════════════════════════════════════════
-    // Solar panel cell texture canvas
-    function makeSolarTexture(w, h) {
+    function makeSolarTexture() {
         const c = document.createElement('canvas');
         c.width = 128; c.height = 64;
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#080e18';
-        ctx.fillRect(0, 0, 128, 64);
-        ctx.strokeStyle = '#1a3050';
-        ctx.lineWidth = 1.5;
-        // Cell grid
+        ctx.fillStyle = '#080e18'; ctx.fillRect(0, 0, 128, 64);
+        ctx.strokeStyle = '#1a3050'; ctx.lineWidth = 1.5;
         for (let gx = 0; gx <= 8; gx++) { ctx.beginPath(); ctx.moveTo(gx*16, 0); ctx.lineTo(gx*16, 64); ctx.stroke(); }
         for (let gy = 0; gy <= 4; gy++) { ctx.beginPath(); ctx.moveTo(0, gy*16); ctx.lineTo(128, gy*16); ctx.stroke(); }
-        // Cell fill tint
         ctx.fillStyle = 'rgba(10,30,60,0.4)';
         for (let gx=0;gx<8;gx++) for (let gy=0;gy<4;gy++) ctx.fillRect(gx*16+1,gy*16+1,14,14);
         return new THREE.CanvasTexture(c);
     }
-    const solarTex = makeSolarTexture(128, 64);
-    const matSolar = new THREE.MeshStandardMaterial({
-        map: solarTex, metalness: 0.25, roughness: 0.7, color: 0x101828
-    });
+    const solarTex = makeSolarTexture();
+    const matSolar = new THREE.MeshStandardMaterial({ map: solarTex, metalness: 0.25, roughness: 0.7, color: 0x101828 });
+    const matStrut2 = matStrut;
 
-    function makeSolarWing(side) { // side = +1 (port) or -1 (starboard)
+    function makeSolarWing(side) {
         const wGroup = new THREE.Group();
-
-        // Inner beam
         const beamGeo = new THREE.CylinderGeometry(S * 0.018, S * 0.018, S * 1.08, 8);
-        const beam = new THREE.Mesh(beamGeo, matStrut);
-        beam.rotation.z = Math.PI / 2;
-        beam.position.set(S * 0.54, -S * 0.25, 0);
+        const beam = new THREE.Mesh(beamGeo, matStrut2);
+        beam.rotation.z = Math.PI / 2; beam.position.set(S * 0.54, -S * 0.25, 0);
         wGroup.add(beam);
-
-        // Outer beam extension
         const beam2Geo = new THREE.CylinderGeometry(S * 0.012, S * 0.012, S * 0.82, 8);
-        const beam2 = new THREE.Mesh(beam2Geo, matStrut);
-        beam2.rotation.z = Math.PI / 2;
-        beam2.position.set(S * 1.45, -S * 0.25, 0);
+        const beam2 = new THREE.Mesh(beam2Geo, matStrut2);
+        beam2.rotation.z = Math.PI / 2; beam2.position.set(S * 1.45, -S * 0.25, 0);
         wGroup.add(beam2);
-
-        // Inner panel (larger)
         const ip = new THREE.Mesh(new THREE.BoxGeometry(S * 0.72, S * 0.012, S * 0.42), matSolar);
-        ip.position.set(S * 0.54, -S * 0.25, 0);
-        wGroup.add(ip);
-        // Inner panel frame
-        const ipfGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(S * 0.72, S * 0.014, S * 0.42));
-        wGroup.add(new THREE.LineSegments(ipfGeo, new THREE.LineBasicMaterial({ color: 0x4a6070 })));
-        wGroup.children[wGroup.children.length-1].position.set(S * 0.54, -S * 0.25, 0);
-
-        // Outer panel (smaller)
+        ip.position.set(S * 0.54, -S * 0.25, 0); wGroup.add(ip);
         const op = new THREE.Mesh(new THREE.BoxGeometry(S * 0.58, S * 0.012, S * 0.38), matSolar);
-        op.position.set(S * 1.42, -S * 0.25, 0);
-        wGroup.add(op);
-        // Outer panel frame
-        const opfGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(S * 0.58, S * 0.014, S * 0.38));
-        const opf = new THREE.LineSegments(opfGeo, new THREE.LineBasicMaterial({ color: 0x4a6070 }));
-        opf.position.set(S * 1.42, -S * 0.25, 0);
-        wGroup.add(opf);
-
-        // Gold tip bar
+        op.position.set(S * 1.42, -S * 0.25, 0); wGroup.add(op);
         const tipGeo = new THREE.BoxGeometry(S * 0.04, S * 0.025, S * 0.38);
         const tip = new THREE.Mesh(tipGeo, matGold);
-        tip.position.set(S * 1.73, -S * 0.25, 0);
-        wGroup.add(tip);
-
+        tip.position.set(S * 1.73, -S * 0.25, 0); wGroup.add(tip);
         wGroup.scale.x = side;
         shipGroup.add(wGroup);
     }
+    makeSolarWing(1); makeSolarWing(-1);
 
-    makeSolarWing(1);
-    makeSolarWing(-1);
-
-    // ── Two additional (perpendicular) shorter panels ──
     function makeSolarWingZ(side) {
         const wGroup = new THREE.Group();
         const beamGeo = new THREE.CylinderGeometry(S * 0.016, S * 0.016, S * 0.75, 8);
-        const beam = new THREE.Mesh(beamGeo, matStrut);
-        beam.rotation.x = Math.PI / 2;
-        beam.position.set(0, -S * 0.25, S * 0.375);
+        const beam = new THREE.Mesh(beamGeo, matStrut2);
+        beam.rotation.x = Math.PI / 2; beam.position.set(0, -S * 0.25, S * 0.375);
         wGroup.add(beam);
         const panel = new THREE.Mesh(new THREE.BoxGeometry(S * 0.38, S * 0.012, S * 0.56), matSolar);
-        panel.position.set(0, -S * 0.25, S * 0.37);
-        wGroup.add(panel);
+        panel.position.set(0, -S * 0.25, S * 0.37); wGroup.add(panel);
         wGroup.scale.z = side;
         shipGroup.add(wGroup);
     }
-    makeSolarWingZ(1);
-    makeSolarWingZ(-1);
+    makeSolarWingZ(1); makeSolarWingZ(-1);
 
-    // ═══════════════════════════════════════════════════
-    // 5. ENGINE EXHAUST EFFECTS (BasicMaterial — self-lit)
-    // ═══════════════════════════════════════════════════
-    // Plume — layered cones
     const plume1Geo = new THREE.ConeGeometry(S * 0.22, S * 0.75, 16);
     const plume1 = new THREE.Mesh(plume1Geo, matGlowOrange);
-    plume1.position.y = -S * 1.43;
-    plume1.rotation.x = Math.PI;
-    shipGroup.add(plume1);
-
+    plume1.position.y = -S * 1.43; plume1.rotation.x = Math.PI; shipGroup.add(plume1);
     const plume2Geo = new THREE.ConeGeometry(S * 0.15, S * 1.1, 14);
     const plume2 = new THREE.Mesh(plume2Geo, matGlowAmber);
-    plume2.position.y = -S * 1.65;
-    plume2.rotation.x = Math.PI;
-    shipGroup.add(plume2);
-
+    plume2.position.y = -S * 1.65; plume2.rotation.x = Math.PI; shipGroup.add(plume2);
     const plume3Geo = new THREE.ConeGeometry(S * 0.07, S * 0.55, 10);
     const plume3 = new THREE.Mesh(plume3Geo, matGlowWhite);
-    plume3.position.y = -S * 1.46;
-    plume3.rotation.x = Math.PI;
-    shipGroup.add(plume3);
+    plume3.position.y = -S * 1.46; plume3.rotation.x = Math.PI; shipGroup.add(plume3);
 
-    // ── ACS thruster micro-plumes ──
     const acsPlumeRefs = [];
     [45, 135, 225, 315].forEach(deg => {
         const rad = deg * Math.PI / 180;
@@ -1579,69 +1624,35 @@ function buildSpaceship(moon, moonGroup) {
         const apMat = new THREE.MeshBasicMaterial({ color: 0xff9922, transparent: true, opacity: 0.6 });
         const ap = new THREE.Mesh(apGeo, apMat);
         ap.position.set(Math.cos(rad) * S * 0.32, -S * 0.80, Math.sin(rad) * S * 0.32);
-        ap.rotation.z = Math.PI / 2;
-        ap.rotation.y = -rad;
-        shipGroup.add(ap);
-        acsPlumeRefs.push(ap);
+        ap.rotation.z = Math.PI / 2; ap.rotation.y = -rad;
+        shipGroup.add(ap); acsPlumeRefs.push(ap);
     });
 
-    // ═══════════════════════════════════════════════════
-    // 6. COMMUNICATION ANTENNA — high-gain dish on SM
-    // ═══════════════════════════════════════════════════
     const antBoomGeo = new THREE.CylinderGeometry(S*0.014, S*0.014, S*0.48, 6);
-    const antBoom = new THREE.Mesh(antBoomGeo, matStrut);
-    antBoom.position.set(S * 0.30, -S * 0.14, S * 0.26);
-    antBoom.rotation.z = 0.55;
+    const antBoom = new THREE.Mesh(antBoomGeo, matStrut2);
+    antBoom.position.set(S * 0.30, -S * 0.14, S * 0.26); antBoom.rotation.z = 0.55;
     shipGroup.add(antBoom);
-
     const dishStemGeo = new THREE.CylinderGeometry(S*0.010, S*0.010, S*0.18, 6);
-    const dishStem = new THREE.Mesh(dishStemGeo, matStrut);
-    dishStem.position.set(S * 0.46, S * 0.05, S * 0.38);
-    shipGroup.add(dishStem);
-
+    const dishStem = new THREE.Mesh(dishStemGeo, matStrut2);
+    dishStem.position.set(S * 0.46, S * 0.05, S * 0.38); shipGroup.add(dishStem);
     const dishGeo = new THREE.SphereGeometry(S * 0.12, 16, 8, 0, Math.PI*2, 0, Math.PI/2);
     const dishMesh = new THREE.Mesh(dishGeo, matMetalMid);
-    dishMesh.rotation.x = Math.PI;
-    dishMesh.position.set(S * 0.46, S * 0.13, S * 0.38);
-    shipGroup.add(dishMesh);
+    dishMesh.rotation.x = Math.PI; dishMesh.position.set(S * 0.46, S * 0.13, S * 0.38); shipGroup.add(dishMesh);
     const dishRimGeo = new THREE.TorusGeometry(S * 0.12, S * 0.010, 6, 32);
     const dishRim = new THREE.Mesh(dishRimGeo, matGold);
-    dishRim.rotation.x = Math.PI / 2;
-    dishRim.position.set(S * 0.46, S * 0.13, S * 0.38);
-    shipGroup.add(dishRim);
+    dishRim.rotation.x = Math.PI / 2; dishRim.position.set(S * 0.46, S * 0.13, S * 0.38); shipGroup.add(dishRim);
 
-    // ═══════════════════════════════════════════════════
-    // 7. NAVIGATION & STATUS LIGHTS
-    // ═══════════════════════════════════════════════════
-    // Port (left) — red strobe
-    const navLGeo = new THREE.SphereGeometry(S * 0.05, 8, 8);
-    const navL = new THREE.Mesh(navLGeo, matNavRed);
-    navL.position.set(-S * 1.62, -S * 0.25, 0);
-    shipGroup.add(navL);
-
-    // Starboard (right) — green strobe
-    const navRGeo = new THREE.SphereGeometry(S * 0.05, 8, 8);
-    const navR = new THREE.Mesh(navRGeo, matNavGreen);
-    navR.position.set(S * 1.62, -S * 0.25, 0);
-    shipGroup.add(navR);
-
-    // Beacon on top of LAS
-    const beaconGeo = new THREE.SphereGeometry(S * 0.04, 8, 8);
-    const beacon = new THREE.Mesh(beaconGeo, matNavWhite);
-    beacon.position.y = S * 1.84;
-    shipGroup.add(beacon);
-
-    // Docking target light (below capsule base)
+    const navL = new THREE.Mesh(new THREE.SphereGeometry(S * 0.05, 8, 8), matNavRed);
+    navL.position.set(-S * 1.62, -S * 0.25, 0); shipGroup.add(navL);
+    const navR = new THREE.Mesh(new THREE.SphereGeometry(S * 0.05, 8, 8), matNavGreen);
+    navR.position.set(S * 1.62, -S * 0.25, 0); shipGroup.add(navR);
+    const beacon = new THREE.Mesh(new THREE.SphereGeometry(S * 0.04, 8, 8), matNavWhite);
+    beacon.position.y = S * 1.84; shipGroup.add(beacon);
     const dockLightGeo = new THREE.CircleGeometry(S * 0.035, 12);
     const dockLightMat = new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.8 });
     const dockLight = new THREE.Mesh(dockLightGeo, dockLightMat);
-    dockLight.position.y = S * 0.09;
-    dockLight.rotation.x = -Math.PI / 2;
-    shipGroup.add(dockLight);
+    dockLight.position.y = S * 0.09; dockLight.rotation.x = -Math.PI / 2; shipGroup.add(dockLight);
 
-    // ═══════════════════════════════════════════════════
-    // 8. PARTICLE TRAIL (engine exhaust cloud)
-    // ═══════════════════════════════════════════════════
     const trailCount = 80;
     const trailPos = new Float32Array(trailCount * 3);
     for (let i = 0; i < trailCount; i++) {
@@ -1652,69 +1663,39 @@ function buildSpaceship(moon, moonGroup) {
     }
     const trailGeo = new THREE.BufferGeometry();
     trailGeo.setAttribute('position', new THREE.Float32BufferAttribute(trailPos, 3));
-    const trailMat = new THREE.PointsMaterial({
-        color: 0xff9944, size: S * 0.1, transparent: true,
-        opacity: 0.4, sizeAttenuation: true
-    });
+    const trailMat = new THREE.PointsMaterial({ color: 0xff9944, size: S * 0.1, transparent: true, opacity: 0.4, sizeAttenuation: true });
     const trail = new THREE.Points(trailGeo, trailMat);
     shipGroup.add(trail);
 
-    // ═══════════════════════════════════════════════════
-    // 9. AMBIENT GLOW HALO
-    // ═══════════════════════════════════════════════════
     const haloGeo = new THREE.SphereGeometry(S * 2.8, 16, 16);
-    const haloMat = new THREE.MeshBasicMaterial({
-        color: 0xff8833, transparent: true, opacity: 0.05, side: THREE.BackSide
-    });
+    const haloMat = new THREE.MeshBasicMaterial({ color: 0xff8833, transparent: true, opacity: 0.05, side: THREE.BackSide });
     const halo = new THREE.Mesh(haloGeo, haloMat);
     shipGroup.add(halo);
 
-    // Initial orientation: capsule nose points up (+Y)
-    // The animation loop will rotate to align with orbit tangent
-    shipGroup.rotation.z = 0;
-
-    return {
-        shipGroup,
-        plumes: [plume1, plume2, plume3],
-        acsPlumeRefs,
-        navLights: [navL, navR, beacon],
-        dockLight,
-        halo,
-        haloMat,
-        trail,
-        trailMat
-    };
+    return { shipGroup, plumes: [plume1, plume2, plume3], acsPlumeRefs, navLights: [navL, navR, beacon], dockLight, halo, haloMat, trail, trailMat };
 }
 
 moonsData.forEach(moon => {
     const parentNode = nodesData.find(n => n.id === moon.parent);
     if (!parentNode) return;
-
     const moonGroup = new THREE.Group();
     moonGroup.position.set(parentNode.x, parentNode.y, parentNode.z);
     mainGroup.add(moonGroup);
 
-    // ── Orbit ring ──
     const orbitRingGeo = new THREE.RingGeometry(moon.orbitRadius - 0.15, moon.orbitRadius + 0.15, 128);
-    const orbitRingMat = new THREE.MeshBasicMaterial({
-        color: 0xffc832, transparent: true, opacity: 0.18, side: THREE.DoubleSide
-    });
+    const orbitRingMat = new THREE.MeshBasicMaterial({ color: 0xffc832, transparent: true, opacity: 0.18, side: THREE.DoubleSide });
     const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
     orbitRing.rotation.x = moon.orbitTilt;
     moonGroup.add(orbitRing);
 
     const orbitRing2Geo = new THREE.RingGeometry(moon.orbitRadius - 0.5, moon.orbitRadius + 0.5, 128);
-    const orbitRing2Mat = new THREE.MeshBasicMaterial({
-        color: 0xffc832, transparent: true, opacity: 0.05, side: THREE.DoubleSide
-    });
+    const orbitRing2Mat = new THREE.MeshBasicMaterial({ color: 0xffc832, transparent: true, opacity: 0.05, side: THREE.DoubleSide });
     const orbitRing2 = new THREE.Mesh(orbitRing2Geo, orbitRing2Mat);
     orbitRing2.rotation.x = moon.orbitTilt;
     moonGroup.add(orbitRing2);
 
-    // ── Build the spaceship ──
     const shipData = buildSpaceship(moon, moonGroup);
 
-    // Invisible hit sphere for raycasting (covers whole ship)
     const hitGeo = new THREE.SphereGeometry(moon.size * 3.5, 8, 8);
     const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
     const hitSphere = new THREE.Mesh(hitGeo, hitMat);
@@ -1722,15 +1703,12 @@ moonsData.forEach(moon => {
     moonGroup.add(hitSphere);
     clickableMoons.push(hitSphere);
 
-    // ── Label sprite ──
     const lc = document.createElement('canvas'), lx = lc.getContext('2d');
     const labelText = moon.name;
     lx.font = 'bold 36px Arial';
     const tw2 = lx.measureText(labelText).width;
     lc.width = tw2 + 24; lc.height = 50;
-    lx.font = 'bold 36px Arial';
-    lx.fillStyle = '#ffc832';
-    lx.textAlign = 'left'; lx.textBaseline = 'middle';
+    lx.font = 'bold 36px Arial'; lx.fillStyle = '#ffc832'; lx.textAlign = 'left'; lx.textBaseline = 'middle';
     lx.fillText(labelText, 12, 25);
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(lc), transparent: true, opacity: 0.9 }));
     spr.scale.set((lc.width / lc.height) * 3.5, 3.5, 1);
@@ -1739,21 +1717,11 @@ moonsData.forEach(moon => {
     moonGroup.add(labelOffset);
 
     moonObjects.set(moon.id, {
-        group: moonGroup,
-        body: hitSphere,
-        shipGroup: shipData.shipGroup,
-        plumes: shipData.plumes,
-        acsPlumeRefs: shipData.acsPlumeRefs,
-        navLights: shipData.navLights,
-        dockLight: shipData.dockLight,
-        halo: shipData.halo,
-        haloMat: shipData.haloMat,
-        trail: shipData.trail,
-        trailMat: shipData.trailMat,
-        orbitRing,
-        labelOffset,
-        moonData: moon,
-        angle: moon.orbitPhase,
+        group: moonGroup, body: hitSphere, shipGroup: shipData.shipGroup,
+        plumes: shipData.plumes, acsPlumeRefs: shipData.acsPlumeRefs,
+        navLights: shipData.navLights, dockLight: shipData.dockLight,
+        halo: shipData.halo, haloMat: shipData.haloMat, trail: shipData.trail, trailMat: shipData.trailMat,
+        orbitRing, labelOffset, moonData: moon, angle: moon.orbitPhase,
         parentPos: new THREE.Vector3(parentNode.x, parentNode.y, parentNode.z)
     });
 });
@@ -1770,13 +1738,15 @@ nodesData.forEach(n=>{
 
 // ── INTERACTION ──
 const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
-let hoveredNode=null;
-let hoveredMoon=null;
+let hoveredNode=null, hoveredMoon=null;
 
 function scaleNode(mesh,ts){
     const o=nodeObjects.get(mesh.userData.nodeId);
     if(!o||mesh.userData.nodeId==="KLEARA") return;
-    if(o.starGroup){
+    if(o.isOrb){
+        const s=ts/o.originalSize;
+        if(o.group) o.group.scale.set(s,s,s);
+    } else if(o.starGroup){
         const s=ts/o.originalSize;
         o.starGroup.scale.set(s,s,s);
     } else {
@@ -1790,7 +1760,9 @@ function scaleNode(mesh,ts){
 function resetNodeScale(mesh){
     const o=nodeObjects.get(mesh.userData.nodeId);
     if(!o||mesh.userData.nodeId==="KLEARA") return;
-    if(o.starGroup){
+    if(o.isOrb){
+        if(o.group) o.group.scale.set(1,1,1);
+    } else if(o.starGroup){
         o.starGroup.scale.set(1,1,1);
     } else {
         if(o.planet) o.planet.scale.set(1,1,1);
@@ -1805,10 +1777,8 @@ function scaleMoon(moonRef, scale) {
     if (moonRef.halo) moonRef.halo.scale.setScalar(scale > 1 ? 1.4 : 1);
 }
 
-// All intersect targets combined
 function getAllClickTargets() { return [...clickableNodes, ...clickableMoons]; }
 
-// Desktop mouse
 window.addEventListener('mousemove',(e)=>{
     mouse.x=(e.clientX/window.innerWidth)*2-1;
     mouse.y=-(e.clientY/window.innerHeight)*2+1;
@@ -1822,7 +1792,6 @@ window.addEventListener('mousemove',(e)=>{
         const isMoon = hit.userData.isMoon;
 
         if (isMoon) {
-            // Moon hover
             if (hoveredNode) { resetNodeScale(hoveredNode); hoveredNode=null; }
             const moonRef = moonObjects.get(hit.userData.moonData.id);
             if (hoveredMoon !== moonRef) {
@@ -1831,20 +1800,21 @@ window.addEventListener('mousemove',(e)=>{
                 scaleMoon(hoveredMoon, 1.25);
             }
             document.body.style.cursor='pointer';
-            tip.className='moon-tip';
-            tip.style.display='block';
-            tip.style.left=e.clientX+15+'px';
-            tip.style.top=e.clientY+15+'px';
+            tip.className='moon-tip'; tip.style.display='block';
+            tip.style.left=e.clientX+15+'px'; tip.style.top=e.clientY+15+'px';
             tip.innerHTML = `⬡ ${hit.userData.moonData.name}<br><span style="font-size:9px;opacity:0.7;color:rgba(255,200,50,0.7)">EXECUTION SYSTEM</span>`;
         } else {
-            // Node hover
             if (hoveredMoon) { scaleMoon(hoveredMoon, 1); hoveredMoon=null; }
             if(hoveredNode!==hit){if(hoveredNode)resetNodeScale(hoveredNode);hoveredNode=hit;scaleNode(hoveredNode,CONFIG.nodeHoverSize);document.body.style.cursor='pointer';}
-            tip.className='';
+            const nd = hit.userData.nodeData;
+            if (nd && nd.isOrb) {
+                tip.className='orb-tip';
+            } else {
+                tip.className='';
+            }
             tip.style.display='block';
-            tip.style.left=e.clientX+15+'px';
-            tip.style.top=e.clientY+15+'px';
-            tip.textContent=hit.userData.nodeData.name;
+            tip.style.left=e.clientX+15+'px'; tip.style.top=e.clientY+15+'px';
+            tip.textContent = nd ? nd.name : '';
         }
     }else{
         if(hoveredNode){resetNodeScale(hoveredNode);hoveredNode=null;}
@@ -1860,7 +1830,6 @@ window.addEventListener('click',(e)=>{
     if(hoveredNode) openModal(hoveredNode.userData.nodeData);
 });
 
-// Mobile touch tap
 let tsTime=0,tsX=0,tsY=0,tsMoved=false;
 renderer.domElement.addEventListener('touchstart',(e)=>{tsTime=Date.now();tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;tsMoved=false;},{passive:true});
 renderer.domElement.addEventListener('touchmove',(e)=>{if(Math.abs(e.touches[0].clientX-tsX)>8||Math.abs(e.touches[0].clientY-tsY)>8)tsMoved=true;},{passive:true});
@@ -1876,16 +1845,14 @@ renderer.domElement.addEventListener('touchend',(e)=>{
     if(its.length>0){
         e.preventDefault();
         const hit = its[0].object;
-        if (hit.userData.isMoon) {
-            openMoonModal(hit.userData.moonData);
-        } else {
-            openModal(hit.userData.nodeData);
-        }
+        if (hit.userData.isMoon) { openMoonModal(hit.userData.moonData); }
+        else { openModal(hit.userData.nodeData); }
     }
 },{passive:false});
 
 // ── NODE MODAL ──
 window.openModal=function(data){
+    if (!data) return;
     const isF=document.getElementById('founderToggle').checked;
     document.getElementById('modalTitle').textContent=data.name;
     document.getElementById('modalCategory').textContent=data.category;
@@ -1893,38 +1860,36 @@ window.openModal=function(data){
     document.getElementById('modalProtocol').textContent=isF?data.protocol:(data.public_protocol||data.protocol);
     const mc = document.getElementById('modalContent');
     mc.classList.remove('moon-modal');
+    if (data.isOrb) { mc.classList.add('orb-modal'); } else { mc.classList.remove('orb-modal'); }
     const aa=document.getElementById('modalActionArea'); aa.innerHTML='';
     if(data.isPortal&&data.portalFile){const btn=document.createElement('button');btn.className='portal-btn';if(data.portalStyle)btn.style.cssText=data.portalStyle;btn.textContent=data.portalLabel||'OPEN TOOL';btn.onclick=()=>window.location.href=data.portalFile;aa.appendChild(btn);}
     document.getElementById('modal').classList.add('active');
+};
+
+// ── ORB MODAL — opens via menu button ──
+window.openOrbModal = function() {
+    const orbNode = nodesData.find(n => n.id === 'ORB_CHAT');
+    if (orbNode) window.openModal(orbNode);
 };
 
 // ── MOON MODAL ──
 window.openMoonModal = function(moonData) {
     const isF = document.getElementById('founderToggle').checked;
     const mc = document.getElementById('modalContent');
-    mc.classList.add('moon-modal');
-
+    mc.classList.add('moon-modal'); mc.classList.remove('orb-modal');
     document.getElementById('modalTitle').textContent = '⬡ ' + moonData.name;
     document.getElementById('modalCategory').textContent = moonData.category;
     document.getElementById('modalDescription').textContent = isF ? moonData.desc : (moonData.public_desc || moonData.desc);
     document.getElementById('modalProtocol').textContent = isF ? moonData.protocol : (moonData.public_protocol || moonData.protocol);
-
-    const aa = document.getElementById('modalActionArea');
-    aa.innerHTML = '';
-
-    // Architecture explainer badge
+    const aa = document.getElementById('modalActionArea'); aa.innerHTML = '';
     const badge = document.createElement('div');
     badge.style.cssText = 'background:rgba(255,200,50,0.08);border:1px solid rgba(255,200,50,0.25);border-radius:6px;padding:12px 16px;margin-bottom:14px;font-size:11px;color:rgba(255,200,50,0.8);letter-spacing:1px;line-height:1.8;';
     badge.innerHTML = '<strong style="color:#ffc832;">BUILD → EXECUTE</strong><br>DRE Workflow = Creation Layer &nbsp;|&nbsp; DRE Console = Execution Layer';
     aa.appendChild(badge);
-
-    const btn = document.createElement('button');
-    btn.className = 'portal-btn';
+    const btn = document.createElement('button'); btn.className = 'portal-btn';
     btn.style.cssText = 'background:linear-gradient(135deg,#ffc832 0%,#b8860b 100%);color:#000;font-weight:800;letter-spacing:2px;';
-    btn.textContent = 'OPEN DRE CONSOLE →';
-    btn.onclick = () => window.location.href = moonData.file;
+    btn.textContent = 'OPEN DRE CONSOLE →'; btn.onclick = () => window.location.href = moonData.file;
     aa.appendChild(btn);
-
     document.getElementById('modal').classList.add('active');
 };
 
@@ -1936,7 +1901,7 @@ window.resetCamera=()=>{camera.position.set(0,80,isMobile?320:250);controls.targ
 window.zoomIn=()=>camera.position.sub(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
 window.zoomOut=()=>camera.position.add(camera.position.clone().sub(controls.target).normalize().multiplyScalar(20));
 window.toggleSettings=()=>document.getElementById('settingsPanel').classList.toggle('active');
-// ── ACCORDION TOGGLE ──
+
 (function initAccordion() {
     const triggers = document.querySelectorAll('.accordion-trigger');
     triggers.forEach(trigger => {
@@ -1945,25 +1910,16 @@ window.toggleSettings=()=>document.getElementById('settingsPanel').classList.tog
             const content = document.getElementById(targetId);
             if (!content) return;
             const isOpen = content.classList.contains('open');
-            // Close all
             document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
             document.querySelectorAll('.accordion-trigger').forEach(t => t.classList.remove('open'));
-            // Toggle this one
-            if (!isOpen) {
-                content.classList.add('open');
-                trigger.classList.add('open');
-            }
+            if (!isOpen) { content.classList.add('open'); trigger.classList.add('open'); }
         });
     });
-    // Open first accordion by default
     const firstTrigger = document.querySelector('.accordion-trigger');
     if (firstTrigger) {
         const firstId = firstTrigger.dataset.target;
         const firstContent = document.getElementById(firstId);
-        if (firstContent) {
-            firstContent.classList.add('open');
-            firstTrigger.classList.add('open');
-        }
+        if (firstContent) { firstContent.classList.add('open'); firstTrigger.classList.add('open'); }
     }
 })();
 
@@ -1979,7 +1935,6 @@ document.addEventListener('click',(e)=>{
     if(panel.classList.contains('active')&&!panel.contains(e.target)&&e.target.id!=='settingsBtn')panel.classList.remove('active');
 });
 
-// Color controls
 (function(){
     const cont=document.getElementById('nodeColorControls');
     const sec=document.createElement('div'); sec.className='settings-section';
@@ -1993,7 +1948,10 @@ document.addEventListener('click',(e)=>{
             nodeColors[node.id]=c;
             const o=nodeObjects.get(node.id);
             if(o){
-                if(o.starGroup){
+                if(o.isOrb){
+                    if(o.planet) o.planet.material.color.setHex(c);
+                    if(o.innerGlow) o.innerGlow.material.color.setHex(c);
+                } else if(o.starGroup){
                     o.starGroup.traverse(child=>{ if(child.isMesh&&child.material&&!child.material.transparent) child.material.color.setHex(c); });
                 } else {
                     if(o.planet) o.planet.material.color.setHex(c);
@@ -2017,11 +1975,37 @@ function animate(){
     starField.rotation.y+=CONFIG.rotationSpeed*0.2;
     if(mainGroup.userData.interfacePlanet) mainGroup.userData.interfacePlanet.rotation.y+=0.002;
 
-    // Spin the 24 Hours star
     const hoursObj = nodeObjects.get('HOURS_24');
     if(hoursObj && hoursObj.starGroup) {
         hoursObj.starGroup.rotation.z += 0.004;
         hoursObj.starGroup.rotation.y += 0.001;
+    }
+
+    // ── ORB ANIMATION: pulsing rings + slow rotation ──
+    const orbObj = nodeObjects.get('ORB_CHAT');
+    if (orbObj && orbObj.group) {
+        // Slow spin
+        orbObj.group.rotation.y += 0.005;
+        // Ring pulse
+        if (orbObj.ring1) {
+            const rp = 0.25 + 0.12 * Math.sin(clock * 1.8);
+            orbObj.ring1.material.opacity = rp;
+            orbObj.ring1.rotation.z += 0.003;
+        }
+        if (orbObj.ring2) {
+            const rp2 = 0.12 + 0.08 * Math.sin(clock * 2.4 + 1);
+            orbObj.ring2.material.opacity = rp2;
+            orbObj.ring2.rotation.x += 0.002;
+        }
+        // Inner glow breathe
+        if (orbObj.innerGlow) {
+            const gp = 0.3 + 0.18 * Math.sin(clock * 1.2);
+            orbObj.innerGlow.material.opacity = gp;
+        }
+        // Particle ring spin
+        if (orbObj.particles) {
+            orbObj.particles.rotation.y += 0.008;
+        }
     }
 
     // ── ORION SPACECRAFT ORBIT ANIMATION ──
@@ -2030,53 +2014,29 @@ function animate(){
         const prevAngle = moonRef.angle;
         moonRef.angle += moon.orbitSpeed;
 
-        // Tilted circular orbit
         const cosT = Math.cos(moon.orbitTilt);
         const sinT = Math.sin(moon.orbitTilt);
-
         const rawX = Math.cos(moonRef.angle) * moon.orbitRadius;
         const rawY = Math.sin(moonRef.angle) * moon.orbitRadius * sinT;
         const rawZ = Math.sin(moonRef.angle) * moon.orbitRadius * cosT;
-
-        // Previous frame position — used to compute tangent (travel direction)
         const prevX = Math.cos(prevAngle) * moon.orbitRadius;
         const prevY = Math.sin(prevAngle) * moon.orbitRadius * sinT;
         const prevZ = Math.sin(prevAngle) * moon.orbitRadius * cosT;
 
-        // Position the ship group
         if (moonRef.shipGroup) {
             moonRef.shipGroup.position.set(rawX, rawY, rawZ);
-
-            // Align ship so engine (-Y) points away from travel direction
-            // Orion travels capsule-first, engine trailing
-            const travelDir = new THREE.Vector3(
-                rawX - prevX, rawY - prevY, rawZ - prevZ
-            ).normalize();
-
+            const travelDir = new THREE.Vector3(rawX - prevX, rawY - prevY, rawZ - prevZ).normalize();
             if (travelDir.lengthSq() > 0.00001) {
-                // Ship's forward axis = capsule top = +Y in local space
-                // We want +Y to point in travel direction
                 const worldUp = new THREE.Vector3(0, 1, 0);
-                // Build quaternion rotating local +Y → travelDir
                 const q = new THREE.Quaternion().setFromUnitVectors(worldUp, travelDir);
                 moonRef.shipGroup.setRotationFromQuaternion(q);
             }
-
-            // Subtle attitude drift — living, not static
             moonRef.shipGroup.rotateZ(Math.sin(clock * 0.4) * 0.008);
         }
 
-        // Move raycasting hit sphere with ship
         if (moonRef.body) moonRef.body.position.set(rawX, rawY, rawZ);
+        if (moonRef.labelOffset) moonRef.labelOffset.position.set(rawX, rawY + moon.size * 4.2, rawZ);
 
-        // Float label above ship (capsule points in travel dir, so offset along travelDir)
-        if (moonRef.labelOffset) {
-            moonRef.labelOffset.position.set(
-                rawX, rawY + moon.size * 4.2, rawZ
-            );
-        }
-
-        // ── Engine plume animation (flicker) ──
         if (moonRef.plumes) {
             const flicker = 0.75 + 0.25 * Math.sin(clock * 14 + Math.random() * 0.5);
             const flicker2 = 0.65 + 0.35 * Math.sin(clock * 9);
@@ -2088,53 +2048,30 @@ function animate(){
             moonRef.plumes[2].material.opacity = 0.72 * flicker3;
             moonRef.plumes[2].scale.set(flicker3 * 0.8, 0.9 + 0.15 * flicker3, flicker3 * 0.8);
         }
-
-        // ── ACS thruster micro-plumes (occasional pulses) ──
         if (moonRef.acsPlumeRefs) {
             moonRef.acsPlumeRefs.forEach((ap, i) => {
                 const pulse = Math.max(0, Math.sin(clock * 3 + i * 1.57));
-                ap.material.opacity = pulse * 0.55;
-                ap.visible = pulse > 0.1;
+                ap.material.opacity = pulse * 0.55; ap.visible = pulse > 0.1;
             });
         }
-
-        // ── Nav lights (strobe alternating) ──
         if (moonRef.navLights) {
-            // Port red — strobes on half-cycle
             const strobeA = Math.sin(clock * 3.5) > 0.3 ? 0.95 : 0.05;
-            // Starboard green — strobes opposite
             const strobeB = Math.sin(clock * 3.5 + Math.PI) > 0.3 ? 0.95 : 0.05;
-            // Beacon — slow pulse
             const beaconP = 0.35 + 0.65 * Math.abs(Math.sin(clock * 2.0));
             moonRef.navLights[0].material.opacity = strobeA;
             moonRef.navLights[1].material.opacity = strobeB;
             moonRef.navLights[2].material.opacity = beaconP;
         }
+        if (moonRef.dockLight) moonRef.dockLight.material.opacity = 0.4 + 0.4 * Math.sin(clock * 1.2);
+        if (moonRef.haloMat) moonRef.haloMat.opacity = 0.03 + 0.025 * Math.sin(clock * 1.8);
+        if (moonRef.trailMat) moonRef.trailMat.opacity = 0.28 + 0.18 * Math.sin(clock * 2.5);
 
-        // ── Docking target light pulse ──
-        if (moonRef.dockLight) {
-            moonRef.dockLight.material.opacity = 0.4 + 0.4 * Math.sin(clock * 1.2);
-        }
-
-        // ── Halo glow pulse ──
-        if (moonRef.haloMat) {
-            moonRef.haloMat.opacity = 0.03 + 0.025 * Math.sin(clock * 1.8);
-        }
-
-        // ── Trail opacity pulse ──
-        if (moonRef.trailMat) {
-            moonRef.trailMat.opacity = 0.28 + 0.18 * Math.sin(clock * 2.5);
-        }
-
-        // ── Engine point light — follows ship, pulses with plume ──
         if (enginePointLight) {
             const plumePulse = 0.8 + 0.4 * Math.sin(clock * 10);
             enginePointLight.intensity = 1.4 * plumePulse;
-            // Position at engine bell (behind ship along -travelDir)
             const tDir = new THREE.Vector3(rawX - Math.cos(prevAngle) * moon.orbitRadius,
                                            rawY - Math.sin(prevAngle) * moon.orbitRadius * sinT,
                                            rawZ - Math.sin(prevAngle) * moon.orbitRadius * cosT).normalize();
-            // World position = moonGroup.position + ship local position + offset behind
             const mg = moonRef.group.position;
             enginePointLight.position.set(
                 mg.x + rawX - tDir.x * moon.size * 1.4,
@@ -2156,10 +2093,9 @@ window.addEventListener('resize',()=>{
 
 animate();
 
-// ══════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 // TUTORIAL
-// ══════════════════════════════════════════════════════════════════
-
+// ══════════════════════════════════════════════════════
 let tutorialCompleted = false;
 window.tutorialActive = false;
 let currentStep = 0;
@@ -2187,9 +2123,9 @@ const tutorialSteps = [
         action:null
     },
     {
-        title:"Build vs Execute",
-        desc:"DRE Workflow (green) is your CREATION LAYER — build logic flows visually. The gold orbiting moon is DRE Console — your EXECUTION LAYER. Build first. Run second.",
-        getPosition:()=>{ const n=nodeObjects.get("DRE_WORKFLOW"); return(n&&n.planet)?getScreenPos(n.planet):null; },
+        title:"Chat with DRE · The ORB",
+        desc:"The glowing purple ORB is your direct line to the DRE Alignment Architect. Talk to it — get strategies, execution plans, and system diagnoses in real time.",
+        getPosition:()=>{ const n=nodeObjects.get("ORB_CHAT"); return(n&&n.planet)?getScreenPos(n.planet):null; },
         action:null
     },
     {
@@ -2224,14 +2160,12 @@ function updateHighlight(step){
     if(pos.is3D){
         const r=38;
         hl.style.left=(pos.x-r)+'px'; hl.style.top=(pos.y-r)+'px';
-        hl.style.width=(r*2)+'px'; hl.style.height=(r*2)+'px';
-        hl.style.borderRadius='50%';
+        hl.style.width=(r*2)+'px'; hl.style.height=(r*2)+'px'; hl.style.borderRadius='50%';
         arr.style.left=(pos.x-11)+'px'; arr.style.top=(pos.y+r+8)+'px';
     } else {
         const pad=6;
         hl.style.left=(pos.x-pad)+'px'; hl.style.top=(pos.y-pad)+'px';
-        hl.style.width=(pos.width+pad*2)+'px'; hl.style.height=(pos.height+pad*2)+'px';
-        hl.style.borderRadius='10px';
+        hl.style.width=(pos.width+pad*2)+'px'; hl.style.height=(pos.height+pad*2)+'px'; hl.style.borderRadius='10px';
         arr.style.left=(pos.x+pos.width/2-11)+'px'; arr.style.top=(pos.y+pos.height+pad+6)+'px';
         if(step.targetEl) step.targetEl.classList.add('tutorial-elevated');
     }
@@ -2257,8 +2191,7 @@ function nextStep(){ if(currentStep<tutorialSteps.length-1){currentStep++;update
 function prevStep(){ if(currentStep>0){currentStep--;updateTutorialUI();} }
 
 function completeTutorial(){
-    window.tutorialActive=false;
-    tutorialCompleted=true;
+    window.tutorialActive=false; tutorialCompleted=true;
     document.getElementById('tutorialOverlay').classList.remove('active');
     document.getElementById('tutorialBackdrop').classList.remove('active');
     document.getElementById('tutorialCardWrap').classList.remove('active');
@@ -2271,8 +2204,7 @@ function completeTutorial(){
 
 function startTutorial(){
     if(tutorialCompleted) return;
-    window.tutorialActive=true;
-    currentStep=0;
+    window.tutorialActive=true; currentStep=0;
     document.getElementById('tutorialOverlay').classList.add('active');
     document.getElementById('tutorialBackdrop').classList.add('active');
     document.getElementById('tutorialCardWrap').classList.add('active');
@@ -2280,8 +2212,7 @@ function startTutorial(){
 }
 
 window.replayTutorial=function(){
-    window.tutorialActive=true; currentStep=0;
-    tutorialCompleted=false;
+    window.tutorialActive=true; currentStep=0; tutorialCompleted=false;
     document.getElementById('settingsPanel').classList.remove('active');
     document.getElementById('tutorialOverlay').classList.add('active');
     document.getElementById('tutorialBackdrop').classList.add('active');
