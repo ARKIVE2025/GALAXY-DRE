@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRE ECOSYSTEM · V12</title>
+    <title>DRE ECOSYSTEM · V13</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             margin: 0;
             overflow: hidden;
-            /* ── CHANGE 1: space_bg.png background, centered, fixed, covering full viewport ── */
             background: #000000 url('space_bg.png') center center / cover no-repeat fixed;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
             color: #FFFFFF;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ── CHANGE 2: Three.js canvas transparent ── */
         canvas { display: block; cursor: grab; touch-action: none; background: transparent; }
         canvas:active { cursor: grabbing; }
 
@@ -236,9 +234,13 @@
         .modal-content.moon-modal { border-color: rgba(255,200,50,0.4); }
         .modal-content.moon-modal .modal-protocol { border-left-color: rgba(255,200,50,0.6); }
 
-        /* ORB modal gets special purple/cyan accent */
-        .modal-content.orb-modal { border-color: rgba(180,100,255,0.5); box-shadow: 0 10px 50px rgba(120,50,200,0.3); }
-        .modal-content.orb-modal .modal-protocol { border-left-color: rgba(180,100,255,0.7); }
+        /* Chat with DRE modal gets purple/cyan accent */
+        .modal-content.dre-chat-modal { border-color: rgba(180,100,255,0.5); box-shadow: 0 10px 50px rgba(120,50,200,0.3); }
+        .modal-content.dre-chat-modal .modal-protocol { border-left-color: rgba(180,100,255,0.7); }
+
+        /* Orbit modal gets teal/gold accent */
+        .modal-content.orbit-modal { border-color: rgba(0,220,180,0.4); box-shadow: 0 10px 50px rgba(0,180,150,0.2); }
+        .modal-content.orbit-modal .modal-protocol { border-left-color: rgba(0,220,180,0.6); }
 
         .close-modal {
             position: absolute;
@@ -287,10 +289,16 @@
             color: #ffc832;
         }
 
-        /* ORB tooltip */
-        #tooltip.orb-tip {
+        /* Chat with DRE tooltip */
+        #tooltip.dre-chat-tip {
             border-color: rgba(180,100,255,0.7);
             color: #cc88ff;
+        }
+
+        /* Orbit tooltip */
+        #tooltip.orbit-tip {
+            border-color: rgba(0,220,180,0.6);
+            color: #00dcb4;
         }
 
         @media (hover: none) { #tooltip { display: none !important; } }
@@ -616,8 +624,40 @@
         #tutorialMenuBtn:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,212,255,0.3); }
         #tutorialMenuBtn:active { transform:scale(0.97); }
 
-        /* ── ORB BUTTON — CHAT WITH DRE ── */
-        #orbChatBtn {
+        /* ── ORBIT BUTTON ── */
+        #orbitSocialBtn {
+            background: linear-gradient(135deg, #00dcb4 0%, #0099aa 50%, #005f7a 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 10px;
+            min-height: 52px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #orbitSocialBtn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        #orbitSocialBtn:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(0,200,160,0.4); }
+        #orbitSocialBtn:active { transform:scale(0.97); }
+
+        /* ── CHAT WITH DRE BUTTON ── */
+        #dreChatBtn {
             background: linear-gradient(135deg, #7b2ff7 0%, #cc44ff 50%, #00d4ff 100%);
             color: #fff;
             border: none;
@@ -637,7 +677,7 @@
             overflow: hidden;
         }
 
-        #orbChatBtn::before {
+        #dreChatBtn::before {
             content: '';
             position: absolute;
             inset: 0;
@@ -645,8 +685,8 @@
             pointer-events: none;
         }
 
-        #orbChatBtn:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(120,50,200,0.5); }
-        #orbChatBtn:active { transform:scale(0.97); }
+        #dreChatBtn:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(120,50,200,0.5); }
+        #dreChatBtn:active { transform:scale(0.97); }
 
         /* ── ACCORDION CATEGORIES ── */
         .settings-accordion { margin-top: 20px; }
@@ -700,12 +740,6 @@
             animation: moonPulse 2s ease-in-out infinite;
         }
         @keyframes moonPulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
-
-        /* ── ORB NODE PULSE ANIMATION ── */
-        @keyframes orbPulse {
-            0%,100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.08); }
-        }
     </style>
 </head>
 <body>
@@ -739,7 +773,7 @@
 <div id="dataDisplay">
     <div class="data-line">→ Try Andre Go and leave a review! </div>
     <div class="data-line">→ 90-DAY GOAL: DRE CODE May 20th</div>
-    <div class="data-line">→ NODES ONLINE: 19</div>
+    <div class="data-line">→ NODES ONLINE: 20</div>
     <div class="data-line">→ CONSOLE: ORBITING CORE</div>
     <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
 </div>
@@ -763,12 +797,11 @@
     <div class="settings-header">Control Deck</div>
     <div class="settings-subtitle">System Navigation &amp; View Modes</div>
 
-    <!-- ── TOP SECTION: Tutorial + Chat with DRE ORB + Evaluation Portal ── -->
+    <!-- ── TOP SECTION: Tutorial + Orbit + Chat with DRE ── -->
     <div class="settings-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
         <button id="tutorialMenuBtn" onclick="replayTutorial()">🎓 START TUTORIAL</button>
-        <!-- ORB: Chat with DRE (replaces / sits alongside Evaluation Portal) -->
-        <button id="orbChatBtn" onclick="openOrbModal()">✦ CHAT WITH DRE</button>
-        <button class="portal-btn" onclick="window.location.href='https://galaxy-andre-html-deploy.vercel.app/'">OPEN EVALUATION PORTAL</button>
+        <button id="orbitSocialBtn" onclick="openOrbitModal()">🌐 ORBIT — SOCIAL</button>
+        <button id="dreChatBtn" onclick="openDreChatModal()">✦ CHAT WITH DRE</button>
     </div>
 
     <!-- ── VISUAL DIVIDER ── -->
@@ -881,11 +914,12 @@
 <div id="tutorialOverlay" class="tutorial-overlay"></div>
 <div id="tutorialCardWrap" class="tutorial-card-wrap">
     <div class="tutorial-card" id="tutorialCard">
-        <div class="tutorial-step" id="tutorialStep">STEP 1 OF 6</div>
+        <div class="tutorial-step" id="tutorialStep">STEP 1 OF 7</div>
         <div class="tutorial-title" id="tutorialTitle">Welcome to the Galaxy</div>
         <div class="tutorial-desc" id="tutorialDesc">You're looking at the DRE Ecosystem. Every glowing planet is a live tool. Let's take 30 seconds to show you around.</div>
         <div class="tutorial-progress" id="tutorialProgress">
             <div class="tutorial-dot active"></div>
+            <div class="tutorial-dot"></div>
             <div class="tutorial-dot"></div>
             <div class="tutorial-dot"></div>
             <div class="tutorial-dot"></div>
@@ -929,7 +963,7 @@ const CONFIG = {
 };
 
 // ══════════════════════════════════════════════════════
-// NODE DATA — includes DRE Workflow + ORB (Chat with DRE)
+// NODE DATA
 // ══════════════════════════════════════════════════════
 const nodesData = [
     { id:"CORE", x:0, y:0, z:0, name:"Andre Go", isCenter:true, category:"Revenue Engine · Chrome Extension · v5.0.0",
@@ -949,19 +983,24 @@ const nodesData = [
       isPortal:true, portalFile:"dre_workflow_V2.html", portalLabel:"OPEN DRE WORKFLOW →",
       portalStyle:"background:linear-gradient(135deg,#00ffaa 0%,#007a55 100%);color:#000;font-weight:800;letter-spacing:2px;" },
 
-    // ── ORB — CHAT WITH DRE (new node, slightly bigger) ──
-    { id:"ORB_CHAT", x:30, y:55, z:145, name:"Chat with DRE", isOrb:true, category:"AI Chat · DRE Alignment Architect",
-      desc:"[FOUNDER] Direct AI conversation channel running the full DRE Alignment Architect system. Talk to DRE — get strategies, diagnose problems, build execution plans, and navigate your ecosystem in real time.\n\nPowered by the DRE Interface backend. No separate tool to open — the galaxy IS the interface.",
+    // ── CHAT WITH DRE (formerly Evaluation Portal) ──
+    { id:"EVALUATE", x:70, y:30, z:120, name:"Chat with DRE", category:"AI Chat · DRE Alignment Architect",
+      desc:"[FOUNDER] Direct AI conversation channel running the full DRE Alignment Architect system. Talk to DRE — get strategies, diagnose problems, build execution plans, and navigate your ecosystem in real time.\n\nPowered by the DRE Interface backend.",
       protocol:"Action: Open Chat with DRE → Enter your situation or question → Receive DRE-aligned strategy, execution plan, or diagnosis.\n\nBest used for: project unblocking, goal alignment, ecosystem navigation, system design.",
       public_desc:"✦ CHAT WITH DRE\n\nTalk directly to the DRE Alignment Architect.\n\nGet a real-time strategy session, execution plan, or system diagnosis — no fluff, no generic advice.\n\n🧠 DRE reads your situation\n⚡ Returns structured action steps\n🔗 Links you to the right ecosystem tools\n✝️ Grounded in purpose and truth\n\nThis is the intelligence layer of the whole galaxy.",
       public_protocol:"Action: Open Chat with DRE → Describe your situation → DRE responds with strategy\n\nNo API key required. Powered by the Andre Cloud.",
-      isPortal:true, portalFile:"https://project-9dael.vercel.app/DRE_CSInterface_v5.html", portalLabel:"CHAT WITH DRE →",
+      isPortal:true, portalFile:"https://galaxy-andre-html-deploy.vercel.app/", portalLabel:"CHAT WITH DRE →",
       portalStyle:"background:linear-gradient(135deg,#7b2ff7 0%,#cc44ff 50%,#00d4ff 100%);color:#fff;font-weight:800;letter-spacing:2px;font-size:13px;" },
 
-    { id:"EVALUATE", x:70, y:30, z:120, name:"Evaluation Portal", category:"Action Portal",
-      desc:"[FOUNDER] Gateway to the Andre Rebuilt utility page (Price Reality).", protocol:"Action: Redirect user to /andre.html",
-      public_desc:"Stop overpaying. Click here to analyze a service, quote, or contract against our independent standards.", public_protocol:"Action: Open Evaluation Tool",
-      isPortal:true, portalFile:"https://galaxy-andre-html-deploy.vercel.app/", portalLabel:"ENTER EVALUATION PORTAL" },
+    // ── ORBIT — SOCIAL SECTION ──
+    { id:"ORBIT", x:50, y:60, z:-130, name:"Orbit", category:"Social · Community Hub",
+      desc:"[FOUNDER] The social layer of the DRE Galaxy. Community, updates, followers, collaborators — all in one orbit. This is where the ecosystem connects with the world outside the system.",
+      protocol:"Action: Open Orbit → Connect with the community → Share progress → Follow updates.",
+      public_desc:"✦ ORBIT\n\nThe social layer of the DRE Galaxy.\n\nStay connected with the Andre ecosystem — updates, community, collaborators, and live progress from inside the system.\n\n🌐 Community hub\n📡 Live ecosystem updates\n🤝 Connect with collaborators\n📣 Follow the mission\n\nThe galaxy doesn't run in isolation.",
+      public_protocol:"Action: Open Orbit → Join the community → Stay connected with the DRE ecosystem",
+      isPortal:true, portalFile:"orbit.html", portalLabel:"ENTER ORBIT →",
+      portalStyle:"background:linear-gradient(135deg,#00dcb4 0%,#0099aa 50%,#005f7a 100%);color:#fff;font-weight:800;letter-spacing:2px;" },
+
     { id:"CHRIST", x:0, y:70, z:0, name:"Christ", category:"Foundation",
       desc:"[FOUNDER] Ethics and Purpose filter. Is this honoring?", protocol:"John 14:6 - The Way, The Truth, The Life.",
       public_desc:"The cornerstone of our policy and ethics. Truth without alignment is noise.", public_protocol:"Principle: Integrity in every transaction." },
@@ -1062,13 +1101,12 @@ const moonsData = [
 ];
 
 const nodeColors = {
-    "CORE":0x00d4ff,"CHRIST":0xFFFFFF,"EVALUATE":0x3b82f6,"DRE":0xd4af37,"CONSULT":0x50C878,
+    "CORE":0x00d4ff,"CHRIST":0xFFFFFF,"EVALUATE":0xcc44ff,"DRE":0xd4af37,"CONSULT":0x50C878,
     "CONTENT":0xFF6B6B,"EXTENSION_DATA":0x9370DB,"DRE_INTERFACE":0x00d4ff,"ZIP_TOOL":0xf59e0b,
     "DRE_FLOW":0xFF2D78,"DRE_EXTRACTOR":0xFF8C00,"DRE_OS":0x00C853,"REPRIZAL":0x7C3AED,
     "DRE_CODE":0xff4800,"LOAN_SHARK":0x00ff41,"KLEARA":0xff6600,
     "HOURS_24":0x8b6fff,"DRE_WORKFLOW":0x00ffaa,
-    // ── ORB: purple-to-cyan gradient base color ──
-    "ORB_CHAT":0xcc44ff
+    "ORBIT":0x00dcb4
 };
 
 // ── SCENE ──
@@ -1082,7 +1120,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-// ── CHANGE 2: transparent canvas so space_bg.png shows through ──
 renderer.setClearColor(0x000000, 0);
 document.body.appendChild(renderer.domElement);
 
@@ -1108,7 +1145,7 @@ controls.enablePan = false;
 const mainGroup = new THREE.Group();
 scene.add(mainGroup);
 
-// Starfield — CHANGE 3: opacity reduced from 0.8 to 0.4 to layer softly over bg image
+// Starfield
 const starGeo = new THREE.BufferGeometry();
 const sp = [];
 for (let i = 0; i < CONFIG.starCount; i++) {
@@ -1166,128 +1203,12 @@ function createStarMesh(size, color) {
     return { group: starGroup, mesh, innerGlow: ig, outerGlow: og };
 }
 
-// ── Helper: build the ORB (Chat with DRE) — slightly bigger, multi-layer pulsing sphere ──
-function createOrbMesh(size, pos, pg) {
-    const orbGroup = new THREE.Group();
-    orbGroup.position.copy(pos);
-
-    // Core sphere — purple/cyan
-    const coreMat = new THREE.MeshBasicMaterial({ color: 0xcc44ff });
-    const coreSphere = new THREE.Mesh(new THREE.SphereGeometry(size, 48, 48), coreMat);
-    orbGroup.add(coreSphere);
-
-    // Inner glow — bright cyan tint
-    const ig1 = new THREE.Mesh(
-        new THREE.SphereGeometry(size * 1.25, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0xaa66ff, transparent:true, opacity:0.45, side:THREE.BackSide })
-    );
-    orbGroup.add(ig1);
-
-    // Mid glow — deep purple
-    const ig2 = new THREE.Mesh(
-        new THREE.SphereGeometry(size * 1.65, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0x7b2ff7, transparent:true, opacity:0.22, side:THREE.BackSide })
-    );
-    orbGroup.add(ig2);
-
-    // Outer halo — soft cyan
-    const ig3 = new THREE.Mesh(
-        new THREE.SphereGeometry(size * 2.2, 24, 24),
-        new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent:true, opacity:0.08, side:THREE.BackSide })
-    );
-    orbGroup.add(ig3);
-
-    // Equatorial ring — gold accent
-    const ring1 = new THREE.Mesh(
-        new THREE.RingGeometry(size * 1.4, size * 1.7, 80),
-        new THREE.MeshBasicMaterial({ color: 0xcc44ff, transparent:true, opacity:0.35, side:THREE.DoubleSide })
-    );
-    ring1.rotation.x = Math.PI / 2.3;
-    orbGroup.add(ring1);
-
-    // Tilted ring 2 — cyan
-    const ring2 = new THREE.Mesh(
-        new THREE.RingGeometry(size * 1.8, size * 2.0, 80),
-        new THREE.MeshBasicMaterial({ color: 0x00d4ff, transparent:true, opacity:0.18, side:THREE.DoubleSide })
-    );
-    ring2.rotation.x = Math.PI / 3.5;
-    ring2.rotation.z = Math.PI / 6;
-    orbGroup.add(ring2);
-
-    // ✦ symbol: floating particle ring around orb
-    const particleCount = 28;
-    const pGeo = new THREE.BufferGeometry();
-    const pPos = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
-        const angle = (i / particleCount) * Math.PI * 2;
-        pPos[i*3]   = Math.cos(angle) * size * 2.4;
-        pPos[i*3+1] = (Math.random() - 0.5) * size * 0.5;
-        pPos[i*3+2] = Math.sin(angle) * size * 2.4;
-    }
-    pGeo.setAttribute('position', new THREE.Float32BufferAttribute(pPos, 3));
-    const particles = new THREE.Points(pGeo,
-        new THREE.PointsMaterial({ color: 0xcc88ff, size: 0.35, transparent: true, opacity: 0.75 })
-    );
-    orbGroup.add(particles);
-
-    pg.add(orbGroup);
-
-    return {
-        group: orbGroup,
-        planet: coreSphere,
-        innerGlow: ig1,
-        midGlow: ig2,
-        outerGlow: ig3,
-        ring1, ring2,
-        particles
-    };
-}
-
 nodesData.forEach(n => {
-    // ORB is slightly bigger than standard nodes (3.2 vs 2.5)
-    const size = n.id==="KLEARA" ? 12 : n.isOrb ? 3.2 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
+    const size = n.id==="KLEARA" ? 12 : (n.isCenter ? CONFIG.centerNodeSize : CONFIG.nodeSize);
     const color = nodeColors[n.id] || 0xFFFFFF;
     const pos = new THREE.Vector3(n.x, n.y, n.z);
     const pg = n.id==="KLEARA" ? scene : mainGroup;
     let planet;
-
-    if (n.isOrb) {
-        // ── BUILD ORB ──
-        const orbData = createOrbMesh(size, pos, pg);
-        orbData.planet.userData = { nodeId: n.id, nodeData: n };
-        clickableNodes.push(orbData.planet);
-        // Also push inner glows for better raycasting surface
-        [orbData.innerGlow, orbData.midGlow].forEach(m => {
-            m.userData = { nodeId: n.id, nodeData: n };
-            clickableNodes.push(m);
-        });
-
-        nodeObjects.set(n.id, {
-            planet: orbData.planet,
-            group: orbData.group,
-            innerGlow: orbData.innerGlow,
-            midGlow: orbData.midGlow,
-            outerGlow: orbData.outerGlow,
-            ring1: orbData.ring1,
-            ring2: orbData.ring2,
-            particles: orbData.particles,
-            originalSize: size,
-            isOrb: true
-        });
-
-        // Label sprite
-        const lc=document.createElement('canvas'), lx=lc.getContext('2d');
-        lx.font='bold 48px Arial';
-        const tw=lx.measureText(n.name).width;
-        lc.width=tw+32; lc.height=64;
-        lx.font='bold 48px Arial'; lx.fillStyle='#cc88ff'; lx.textAlign='left'; lx.textBaseline='middle';
-        lx.fillText(n.name,16,32);
-        const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:0.9}));
-        spr.scale.set((lc.width/lc.height)*4,4,1);
-        spr.position.set(n.x, n.y+(size+4), n.z);
-        pg.add(spr);
-        return;
-    }
 
     if (n.id === 'KLEARA') {
         const sg = new THREE.Group();
@@ -1368,6 +1289,23 @@ nodesData.forEach(n => {
         const ig=new THREE.Mesh(new THREE.SphereGeometry(size*1.2,32,32),new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.4,side:THREE.BackSide}));ig.position.copy(pos);pg.add(ig);
         const og=new THREE.Mesh(new THREE.SphereGeometry(size*1.5,32,32),new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.2,side:THREE.BackSide}));og.position.copy(pos);pg.add(og);
         nodeObjects.set(n.id, { innerGlow:ig, outerGlow:og });
+
+        // Special: Chat with DRE node — purple/cyan rings
+        if (n.id === 'EVALUATE') {
+            const ring1=new THREE.Mesh(new THREE.RingGeometry(size*1.7,size*2.4,80),new THREE.MeshBasicMaterial({color:0xcc44ff,transparent:true,opacity:0.35,side:THREE.DoubleSide}));ring1.rotation.x=Math.PI/2.5;ring1.position.copy(pos);pg.add(ring1);
+            const ring2=new THREE.Mesh(new THREE.RingGeometry(size*2.6,size*3.0,80),new THREE.MeshBasicMaterial({color:0x00d4ff,transparent:true,opacity:0.18,side:THREE.DoubleSide}));ring2.rotation.x=Math.PI/2.5;ring2.rotation.z=Math.PI/5;ring2.position.copy(pos);pg.add(ring2);
+            mainGroup.userData.dreChatRing1 = ring1;
+            mainGroup.userData.dreChatRing2 = ring2;
+        }
+
+        // Special: ORBIT node — teal rings
+        if (n.id === 'ORBIT') {
+            const orbitRing=new THREE.Mesh(new THREE.RingGeometry(size*1.8,size*2.5,80),new THREE.MeshBasicMaterial({color:0x00dcb4,transparent:true,opacity:0.3,side:THREE.DoubleSide}));orbitRing.rotation.x=Math.PI/3;orbitRing.position.copy(pos);pg.add(orbitRing);
+            const orbitRing2=new THREE.Mesh(new THREE.RingGeometry(size*2.7,size*3.1,80),new THREE.MeshBasicMaterial({color:0x0099aa,transparent:true,opacity:0.15,side:THREE.DoubleSide}));orbitRing2.rotation.x=Math.PI/4;orbitRing2.rotation.z=Math.PI/6;orbitRing2.position.copy(pos);pg.add(orbitRing2);
+            mainGroup.userData.orbitRing1 = orbitRing;
+            mainGroup.userData.orbitRing2 = orbitRing2;
+        }
+
         if (n.id==='DRE_INTERFACE') {
             const b1=new THREE.Mesh(new THREE.SphereGeometry(size,64,64),new THREE.MeshBasicMaterial({color:0x003344}));b1.position.copy(pos);pg.add(b1);
             const band=new THREE.Mesh(new THREE.TorusGeometry(size*.72,size*.28,4,64),new THREE.MeshBasicMaterial({color:0x00d4ff,transparent:true,opacity:0.45}));band.position.copy(pos);pg.add(band);
@@ -1387,11 +1325,12 @@ nodesData.forEach(n => {
     planet.userData = { nodeId: n.id, nodeData: n };
     clickableNodes.push(planet);
 
+    const labelColor = n.id === 'EVALUATE' ? '#cc88ff' : n.id === 'ORBIT' ? '#00dcb4' : '#FFFFFF';
     const lc=document.createElement('canvas'), lx=lc.getContext('2d');
     lx.font='bold 48px Arial';
     const tw=lx.measureText(n.name).width;
     lc.width=tw+32; lc.height=64;
-    lx.font='bold 48px Arial'; lx.fillStyle='#FFFFFF'; lx.textAlign='left'; lx.textBaseline='middle';
+    lx.font='bold 48px Arial'; lx.fillStyle=labelColor; lx.textAlign='left'; lx.textBaseline='middle';
     lx.fillText(n.name,16,32);
     const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,opacity:0.9}));
     spr.scale.set((lc.width/lc.height)*4,4,1);
@@ -1400,6 +1339,16 @@ nodesData.forEach(n => {
 
     if (nodeObjects.has(n.id)) { const o=nodeObjects.get(n.id); o.planet=planet; o.label=spr; o.originalSize=size; }
     else { nodeObjects.set(n.id, { planet, label:spr, originalSize:size, innerGlow:null, outerGlow:null }); }
+});
+
+// Connection lines
+const connectionLines=[];
+const centerNode=nodesData.find(n=>n.id==="CORE");
+nodesData.forEach(n=>{
+    if(n.id!=="CORE"&&n.id!=="KLEARA"){
+        const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(centerNode.x,centerNode.y,centerNode.z),new THREE.Vector3(n.x,n.y,n.z)]),new THREE.LineBasicMaterial({color:nodeColors[n.id]||0xFFFFFF,transparent:true,opacity:0.3}));
+        l.visible=false; mainGroup.add(l); connectionLines.push(l);
+    }
 });
 
 // ══════════════════════════════════════════════════════
@@ -1726,16 +1675,6 @@ moonsData.forEach(moon => {
     });
 });
 
-// Connection lines
-const connectionLines=[];
-const centerNode=nodesData.find(n=>n.id==="CORE");
-nodesData.forEach(n=>{
-    if(n.id!=="CORE"&&n.id!=="KLEARA"){
-        const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(centerNode.x,centerNode.y,centerNode.z),new THREE.Vector3(n.x,n.y,n.z)]),new THREE.LineBasicMaterial({color:nodeColors[n.id]||0xFFFFFF,transparent:true,opacity:0.3}));
-        l.visible=false; mainGroup.add(l); connectionLines.push(l);
-    }
-});
-
 // ── INTERACTION ──
 const raycaster=new THREE.Raycaster(), mouse=new THREE.Vector2();
 let hoveredNode=null, hoveredMoon=null;
@@ -1743,10 +1682,7 @@ let hoveredNode=null, hoveredMoon=null;
 function scaleNode(mesh,ts){
     const o=nodeObjects.get(mesh.userData.nodeId);
     if(!o||mesh.userData.nodeId==="KLEARA") return;
-    if(o.isOrb){
-        const s=ts/o.originalSize;
-        if(o.group) o.group.scale.set(s,s,s);
-    } else if(o.starGroup){
+    if(o.starGroup){
         const s=ts/o.originalSize;
         o.starGroup.scale.set(s,s,s);
     } else {
@@ -1760,9 +1696,7 @@ function scaleNode(mesh,ts){
 function resetNodeScale(mesh){
     const o=nodeObjects.get(mesh.userData.nodeId);
     if(!o||mesh.userData.nodeId==="KLEARA") return;
-    if(o.isOrb){
-        if(o.group) o.group.scale.set(1,1,1);
-    } else if(o.starGroup){
+    if(o.starGroup){
         o.starGroup.scale.set(1,1,1);
     } else {
         if(o.planet) o.planet.scale.set(1,1,1);
@@ -1807,8 +1741,10 @@ window.addEventListener('mousemove',(e)=>{
             if (hoveredMoon) { scaleMoon(hoveredMoon, 1); hoveredMoon=null; }
             if(hoveredNode!==hit){if(hoveredNode)resetNodeScale(hoveredNode);hoveredNode=hit;scaleNode(hoveredNode,CONFIG.nodeHoverSize);document.body.style.cursor='pointer';}
             const nd = hit.userData.nodeData;
-            if (nd && nd.isOrb) {
-                tip.className='orb-tip';
+            if (nd && nd.id === 'EVALUATE') {
+                tip.className='dre-chat-tip';
+            } else if (nd && nd.id === 'ORBIT') {
+                tip.className='orbit-tip';
             } else {
                 tip.className='';
             }
@@ -1859,24 +1795,31 @@ window.openModal=function(data){
     document.getElementById('modalDescription').textContent=isF?data.desc:(data.public_desc||data.desc);
     document.getElementById('modalProtocol').textContent=isF?data.protocol:(data.public_protocol||data.protocol);
     const mc = document.getElementById('modalContent');
-    mc.classList.remove('moon-modal');
-    if (data.isOrb) { mc.classList.add('orb-modal'); } else { mc.classList.remove('orb-modal'); }
+    mc.classList.remove('moon-modal','dre-chat-modal','orbit-modal');
+    if (data.id === 'EVALUATE') { mc.classList.add('dre-chat-modal'); }
+    else if (data.id === 'ORBIT') { mc.classList.add('orbit-modal'); }
     const aa=document.getElementById('modalActionArea'); aa.innerHTML='';
     if(data.isPortal&&data.portalFile){const btn=document.createElement('button');btn.className='portal-btn';if(data.portalStyle)btn.style.cssText=data.portalStyle;btn.textContent=data.portalLabel||'OPEN TOOL';btn.onclick=()=>window.location.href=data.portalFile;aa.appendChild(btn);}
     document.getElementById('modal').classList.add('active');
 };
 
-// ── ORB MODAL — opens via menu button ──
-window.openOrbModal = function() {
-    const orbNode = nodesData.find(n => n.id === 'ORB_CHAT');
-    if (orbNode) window.openModal(orbNode);
+// ── ORBIT MODAL — from sidebar ──
+window.openOrbitModal = function() {
+    const orbitNode = nodesData.find(n => n.id === 'ORBIT');
+    if (orbitNode) { toggleSettings(); window.openModal(orbitNode); }
+};
+
+// ── DRE CHAT MODAL — from sidebar ──
+window.openDreChatModal = function() {
+    const dreNode = nodesData.find(n => n.id === 'EVALUATE');
+    if (dreNode) { toggleSettings(); window.openModal(dreNode); }
 };
 
 // ── MOON MODAL ──
 window.openMoonModal = function(moonData) {
     const isF = document.getElementById('founderToggle').checked;
     const mc = document.getElementById('modalContent');
-    mc.classList.add('moon-modal'); mc.classList.remove('orb-modal');
+    mc.classList.add('moon-modal'); mc.classList.remove('dre-chat-modal','orbit-modal');
     document.getElementById('modalTitle').textContent = '⬡ ' + moonData.name;
     document.getElementById('modalCategory').textContent = moonData.category;
     document.getElementById('modalDescription').textContent = isF ? moonData.desc : (moonData.public_desc || moonData.desc);
@@ -1948,10 +1891,7 @@ document.addEventListener('click',(e)=>{
             nodeColors[node.id]=c;
             const o=nodeObjects.get(node.id);
             if(o){
-                if(o.isOrb){
-                    if(o.planet) o.planet.material.color.setHex(c);
-                    if(o.innerGlow) o.innerGlow.material.color.setHex(c);
-                } else if(o.starGroup){
+                if(o.starGroup){
                     o.starGroup.traverse(child=>{ if(child.isMesh&&child.material&&!child.material.transparent) child.material.color.setHex(c); });
                 } else {
                     if(o.planet) o.planet.material.color.setHex(c);
@@ -1975,37 +1915,29 @@ function animate(){
     starField.rotation.y+=CONFIG.rotationSpeed*0.2;
     if(mainGroup.userData.interfacePlanet) mainGroup.userData.interfacePlanet.rotation.y+=0.002;
 
+    // Chat with DRE ring pulse
+    if(mainGroup.userData.dreChatRing1) {
+        mainGroup.userData.dreChatRing1.material.opacity = 0.25 + 0.12 * Math.sin(clock * 1.8);
+        mainGroup.userData.dreChatRing1.rotation.z += 0.002;
+    }
+    if(mainGroup.userData.dreChatRing2) {
+        mainGroup.userData.dreChatRing2.material.opacity = 0.10 + 0.08 * Math.sin(clock * 2.4 + 1);
+        mainGroup.userData.dreChatRing2.rotation.x += 0.001;
+    }
+
+    // Orbit ring pulse
+    if(mainGroup.userData.orbitRing1) {
+        mainGroup.userData.orbitRing1.material.opacity = 0.20 + 0.12 * Math.sin(clock * 1.5 + 0.5);
+        mainGroup.userData.orbitRing1.rotation.z += 0.003;
+    }
+    if(mainGroup.userData.orbitRing2) {
+        mainGroup.userData.orbitRing2.material.opacity = 0.08 + 0.07 * Math.sin(clock * 2.0 + 2);
+    }
+
     const hoursObj = nodeObjects.get('HOURS_24');
     if(hoursObj && hoursObj.starGroup) {
         hoursObj.starGroup.rotation.z += 0.004;
         hoursObj.starGroup.rotation.y += 0.001;
-    }
-
-    // ── ORB ANIMATION: pulsing rings + slow rotation ──
-    const orbObj = nodeObjects.get('ORB_CHAT');
-    if (orbObj && orbObj.group) {
-        // Slow spin
-        orbObj.group.rotation.y += 0.005;
-        // Ring pulse
-        if (orbObj.ring1) {
-            const rp = 0.25 + 0.12 * Math.sin(clock * 1.8);
-            orbObj.ring1.material.opacity = rp;
-            orbObj.ring1.rotation.z += 0.003;
-        }
-        if (orbObj.ring2) {
-            const rp2 = 0.12 + 0.08 * Math.sin(clock * 2.4 + 1);
-            orbObj.ring2.material.opacity = rp2;
-            orbObj.ring2.rotation.x += 0.002;
-        }
-        // Inner glow breathe
-        if (orbObj.innerGlow) {
-            const gp = 0.3 + 0.18 * Math.sin(clock * 1.2);
-            orbObj.innerGlow.material.opacity = gp;
-        }
-        // Particle ring spin
-        if (orbObj.particles) {
-            orbObj.particles.rotation.y += 0.008;
-        }
     }
 
     // ── ORION SPACECRAFT ORBIT ANIMATION ──
@@ -2094,7 +2026,7 @@ window.addEventListener('resize',()=>{
 animate();
 
 // ══════════════════════════════════════════════════════
-// TUTORIAL
+// TUTORIAL — 7 steps now includes ORBIT
 // ══════════════════════════════════════════════════════
 let tutorialCompleted = false;
 window.tutorialActive = false;
@@ -2123,9 +2055,15 @@ const tutorialSteps = [
         action:null
     },
     {
-        title:"Chat with DRE · The ORB",
-        desc:"The glowing purple ORB is your direct line to the DRE Alignment Architect. Talk to it — get strategies, execution plans, and system diagnoses in real time.",
-        getPosition:()=>{ const n=nodeObjects.get("ORB_CHAT"); return(n&&n.planet)?getScreenPos(n.planet):null; },
+        title:"Chat with DRE",
+        desc:"This purple planet is your direct line to the DRE Alignment Architect. Tap it to get strategies, execution plans, and system diagnoses — grounded in truth, no fluff.",
+        getPosition:()=>{ const n=nodeObjects.get("EVALUATE"); return(n&&n.planet)?getScreenPos(n.planet):null; },
+        action:null
+    },
+    {
+        title:"Orbit — The Social Layer",
+        desc:"The teal-green planet is Orbit, the social section of the galaxy. Connect with the community, follow updates, and collaborate with others in the ecosystem.",
+        getPosition:()=>{ const n=nodeObjects.get("ORBIT"); return(n&&n.planet)?getScreenPos(n.planet):null; },
         action:null
     },
     {
