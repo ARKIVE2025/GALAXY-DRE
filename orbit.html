@@ -1,0 +1,3105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbit — Where Ideas Are Challenged, Structured, and Completed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #f0f2f5;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #f2f3f5;
+    --border: rgba(0,0,0,0.1);
+    --border-light: rgba(0,0,0,0.12);
+    --navy: #e4e6eb;
+    --cyan: #0a66c2;
+    --cyan-dim: rgba(10,102,194,0.1);
+    --cyan-glow: rgba(10,102,194,0.06);
+    --violet: #5b45e0;
+    --violet-dim: rgba(91,69,224,0.1);
+    --text-primary: #050505;
+    --text-secondary: #65676b;
+    --text-muted: #8a8d91;
+    --promoter: #0a66c2;
+    --promoter-bg: rgba(10,102,194,0.08);
+    --detractor: #e53935;
+    --detractor-bg: rgba(229,57,53,0.07);
+    --neutral: #65676b;
+    --neutral-bg: rgba(101,103,107,0.08);
+    --system: #5b45e0;
+    --system-bg: rgba(91,69,224,0.08);
+    --manned: #e6841a;
+    --clearpath: #0a7c5c;
+    --monitor: #057a8b;
+    --complete: #e53935;
+    --sidebar-w: 260px;
+    --right-w: 300px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* TOPBAR — LinkedIn-style deep blue */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: #0a66c2;
+    border-bottom: none;
+    box-shadow: 0 2px 8px rgba(10,102,194,0.35);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    gap: 20px;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgba(255,255,255,0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: orbitSpin 8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .logo-icon::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(255,255,255,0.6);
+  }
+
+  .logo-dot {
+    width: 5px;
+    height: 5px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255,255,255,0.5);
+  }
+
+  @keyframes orbitSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .topbar-search {
+    flex: 1;
+    max-width: 380px;
+    margin-left: 20px;
+  }
+
+  /* Search bar on blue — white pill like LinkedIn */
+  .search-input {
+    width: 100%;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 8px 14px 8px 36px;
+    color: #ffffff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .search-input::placeholder { color: rgba(255,255,255,0.65); }
+  .search-input:focus {
+    background: rgba(255,255,255,0.28);
+    border-color: rgba(255,255,255,0.6);
+  }
+
+  .search-wrap {
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Topbar buttons on blue background */
+  .topbar-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .topbar-btn:hover {
+    background: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.5);
+    color: #ffffff;
+  }
+
+  .topbar-btn.primary {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #0a66c2;
+    font-weight: 700;
+  }
+
+  .topbar-btn.primary:hover {
+    background: #e8f0fb;
+    border-color: #e8f0fb;
+    color: #0a66c2;
+  }
+
+  .avatar-sm {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.6);
+    cursor: pointer;
+    object-fit: cover;
+    transition: border-color 0.2s;
+  }
+
+  .avatar-sm:hover { border-color: #ffffff; }
+
+  /* LAYOUT */
+  .layout {
+    display: flex;
+    padding-top: 56px;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+    scrollbar-width: none;
+    background: #ffffff;
+  }
+
+  .sidebar::-webkit-scrollbar { display: none; }
+
+  .nav-section {
+    margin-bottom: 28px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 12px;
+    margin-bottom: 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active {
+    background: #e8f0fb;
+    color: #0a66c2;
+    font-weight: 600;
+  }
+
+  .nav-item.active svg { color: #0a66c2; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--cyan);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+
+  .nav-badge.red {
+    background: var(--detractor);
+  }
+
+  .framework-pulse {
+    margin: 16px 0;
+    padding: 14px;
+    background: #f0f2f5;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .fp-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .fp-bar {
+    margin-bottom: 8px;
+  }
+
+  .fp-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .fp-bar-track {
+    height: 4px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .fp-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+
+  .fp-bar-fill.manned { background: var(--manned); width: 72%; }
+  .fp-bar-fill.clearpath { background: var(--clearpath); width: 58%; }
+  .fp-bar-fill.monitor { background: var(--monitor); width: 45%; }
+  .fp-bar-fill.complete { background: var(--complete); width: 31%; }
+
+  .sidebar-profile {
+    margin-top: auto;
+    padding: 14px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .sidebar-profile:hover { background: var(--bg-hover); }
+
+  .sidebar-profile-info { flex: 1; overflow: hidden; }
+  .sidebar-profile-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar-profile-role {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* MAIN FEED */
+  .main {
+    flex: 1;
+    margin-left: var(--sidebar-w);
+    margin-right: var(--right-w);
+    min-height: calc(100vh - 56px);
+    border-right: 1px solid var(--border);
+  }
+
+  .feed-header {
+    position: sticky;
+    top: 56px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .feed-tab {
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .feed-tab:hover { color: var(--text-secondary); }
+  .feed-tab.active {
+    color: #0a66c2;
+    border-bottom-color: #0a66c2;
+  }
+
+  .compose-box {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+  }
+
+  .compose-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--border-light);
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  .compose-inner {
+    flex: 1;
+  }
+
+  .compose-textarea {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    resize: none;
+    outline: none;
+    min-height: 50px;
+    line-height: 1.5;
+  }
+
+  .compose-textarea::placeholder { color: var(--text-muted); }
+
+  .compose-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .compose-tag {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .tag-select {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .post-btn {
+    background: var(--cyan);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .post-btn:hover { background: #0a66c2; }
+
+  /* POSTS */
+  .post {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .post:hover { background: rgba(0,0,0,0.018); }
+
+  .post-system {
+    background: linear-gradient(135deg, rgba(91,69,224,0.04), transparent);
+    border-left: 3px solid var(--system);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .post-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--border-light);
+  }
+
+  .post-avatar.promoter { border-color: var(--border-light); }
+  .post-avatar.detractor { border-color: var(--border-light); }
+  .post-avatar.neutral { border-color: var(--border-light); }
+  .post-avatar.system { border-color: rgba(124,107,255,0.4); }
+
+  .thread-avatar.promoter { border-color: var(--border-light); }
+  .thread-avatar.detractor { border-color: var(--border-light); }
+  .thread-avatar.neutral { border-color: var(--border-light); }
+
+  .post-meta { flex: 1; }
+
+  .post-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+
+  .post-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .role-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  /* Role badges hidden from public view — internal classification only */
+  .role-badge.promoter,
+  .role-badge.detractor,
+  .role-badge.neutral { display: none; }
+  .role-badge.system { background: var(--system-bg); color: var(--system); }
+
+  .post-handle {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .post-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .post-type-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+  }
+
+  .post-type-label.debate { color: var(--detractor); }
+  .post-type-label.scenario { color: var(--cyan); }
+  .post-type-label.failure { color: var(--manned); }
+  .post-type-label.breakdown { color: var(--clearpath); }
+  .post-type-label.insight { color: var(--system); }
+
+  .post-body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+
+  .post-body strong { color: #0053a0; font-weight: 600; }
+
+  .post-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .tag.manned { color: var(--manned); border-color: rgba(255,209,102,0.3); background: rgba(255,209,102,0.06); }
+  .tag.clearpath { color: var(--clearpath); border-color: rgba(6,214,160,0.3); background: rgba(6,214,160,0.06); }
+  .tag.monitor { color: var(--monitor); border-color: rgba(5,122,139,0.3); background: rgba(5,122,139,0.06); }
+  .tag.complete { color: var(--complete); border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.06); }
+  .tag.general { color: var(--text-muted); border-color: var(--border); background: transparent; }
+
+  .signal-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .signal-bars {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+  }
+
+  .signal-bar {
+    width: 3px;
+    border-radius: 2px;
+    background: var(--border);
+  }
+
+  .signal-bar.filled { background: var(--clearpath); }
+
+  .signal-bar:nth-child(1) { height: 6px; }
+  .signal-bar:nth-child(2) { height: 9px; }
+  .signal-bar:nth-child(3) { height: 12px; }
+
+  .post-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .action-btn:hover { background: var(--bg-hover); color: var(--text-secondary); }
+  .action-btn.comment:hover { color: var(--cyan); }
+  .action-btn.like:hover { color: var(--detractor); }
+  .action-btn.share:hover { color: var(--clearpath); }
+
+  .action-btn svg { flex-shrink: 0; }
+
+  /* THREADS */
+  .thread {
+    margin-left: 54px;
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+  }
+
+  .thread-post {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.25s ease;
+  }
+
+  .thread-post:last-child { border-bottom: none; }
+
+  .thread-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .thread-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-light);
+    flex-shrink: 0;
+  }
+
+  .thread-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .thread-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    padding-left: 38px;
+  }
+
+  .show-more-replies {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--cyan);
+    cursor: pointer;
+    padding: 10px 0;
+    margin-left: 54px;
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+  }
+
+  .show-more-replies:hover { color: #0a66c2; }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    width: var(--right-w);
+    position: fixed;
+    top: 56px;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 20px 16px;
+    scrollbar-width: none;
+    background: #f3f6f9;
+    border-left: 1px solid var(--border);
+  }
+
+  .right-panel::-webkit-scrollbar { display: none; }
+
+  .widget {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .widget-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--text-primary);
+  }
+
+  .debate-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .debate-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .debate-item:hover .debate-topic { color: var(--cyan); }
+
+  .debate-topic {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.4;
+    transition: color 0.15s;
+  }
+
+  .debate-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .live-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--detractor);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .trending-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  .trending-item:last-child { border-bottom: none; }
+  .trending-rank {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .trending-topic {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .trending-count {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .insight-box {
+    background: linear-gradient(135deg, rgba(91,69,224,0.06), rgba(10,102,194,0.04));
+    border: 1px solid rgba(91,69,224,0.18);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .insight-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--system);
+    margin-bottom: 6px;
+  }
+
+  .insight-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  .profile-card-sm {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .profile-card-sm:hover .pcs-name { color: var(--cyan); }
+
+  .pcs-info { flex: 1; }
+  .pcs-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color 0.15s;
+  }
+
+  .pcs-role {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .follow-btn {
+    background: none;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .follow-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: var(--cyan-glow);
+  }
+
+  /* GRAVITY BADGE */
+  .gravity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--violet);
+    background: var(--violet-dim);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+
+  /* MODAL OVERLAY */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    padding: 28px;
+    animation: modalIn 0.25s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+
+  .modal-close:hover { color: var(--text-primary); }
+
+  .modal-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bg-surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .modal-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-light);
+  }
+
+  .modal-field {
+    margin-bottom: 14px;
+  }
+
+  .modal-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .modal-value {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .modal-input {
+    width: 100%;
+    background: #f0f2f5;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 10px;
+  }
+
+  .modal-input:focus { border-color: rgba(10,102,194,0.4); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .modal-btn.primary {
+    background: var(--cyan);
+    color: #fff;
+  }
+
+  .modal-btn.primary:hover { background: #0a66c2; }
+
+  .modal-btn.secondary {
+    background: none;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+  }
+
+  .modal-btn.secondary:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+  }
+
+  /* NOTIFICATION TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--cyan);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-primary);
+    z-index: 300;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+    line-height: 1.5;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* SOCIAL SHARE MODAL */
+  .share-modal-body {
+    padding: 4px 0;
+  }
+  .share-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+    color: var(--text-primary);
+  }
+  .share-option:hover { background: var(--bg-hover); }
+  .share-option-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+  .share-option-info { flex: 1; }
+  .share-option-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .share-option-desc { font-size: 12px; color: var(--text-muted); }
+  .share-copy-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .share-copy-url {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .share-copy-btn {
+    background: var(--cyan-dim);
+    border: 1px solid rgba(10,102,194,0.35);
+    color: var(--cyan);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .share-copy-btn:hover { background: rgba(10,102,194,0.25); }
+
+  /* MOBILE BOTTOM NAV */
+  .mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    align-items: stretch;
+  }
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 500;
+    transition: color 0.15s;
+    padding: 6px 0;
+  }
+  .mobile-nav-item.active, .mobile-nav-item:hover { color: #0a66c2; }
+  .mobile-nav-item svg { flex-shrink: 0; }
+
+  /* Mobile right panel drawer */
+  .mobile-drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 150;
+    backdrop-filter: blur(4px);
+  }
+  .mobile-drawer-overlay.open { display: flex; align-items: flex-end; }
+  .mobile-drawer {
+    width: 100%;
+    max-height: 80vh;
+    background: var(--bg-surface);
+    border-radius: 16px 16px 0 0;
+    border: 1px solid var(--border-light);
+    border-bottom: none;
+    overflow-y: auto;
+    padding: 20px 16px 80px;
+    animation: drawerUp 0.3s ease;
+  }
+  @keyframes drawerUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .drawer-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border-light);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  @media (max-width: 720px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding-bottom: 60px; }
+    .topbar-search { display: none; }
+    .mobile-bottom-nav { display: flex; }
+    .toast { bottom: 76px; }
+  }
+
+  @media (max-width: 1100px) {
+    .right-panel { display: none; }
+    .main { margin-right: 0; }
+  }
+
+  /* SCROLLBAR */
+  .main {
+    overflow-y: auto;
+    max-height: calc(100vh - 56px);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  /* ORBIT GLOW EFFECT */
+  .orbit-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(10,102,194,0.04) 0%, transparent 70%);
+    top: -150px;
+    right: 150px;
+    pointer-events: none;
+    animation: glowFloat 10s ease-in-out infinite;
+  }
+
+  @keyframes glowFloat {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(-30px); opacity: 0.6; }
+  }
+
+  .empty-state {
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    display: none;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .join-cta {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(10,102,194,0.06), rgba(91,69,224,0.04));
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  /* ANDRE METHOD GATE — hides detailed framework content from non-members */
+  .method-gate-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  .method-gate-blur {
+    filter: blur(5px);
+    user-select: none;
+    pointer-events: none;
+  }
+  .method-gate-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.92) 55%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 16px;
+    border-radius: 10px;
+  }
+  .method-gate-msg {
+    text-align: center;
+    max-width: 280px;
+  }
+  .method-gate-msg strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary) !important;
+    margin-bottom: 6px;
+  }
+  .method-gate-msg p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .method-gate-btn {
+    background: var(--cyan);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 22px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .method-gate-btn:hover { background: #0a66c2; }
+
+  .join-cta-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
+  /* ── AD UNITS ────────────────────────────────────────────────────── */
+  .ad-unit {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .ad-unit:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.09); }
+  .ad-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 14px 0;
+  }
+  .ad-image {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    background: linear-gradient(135deg, #e8f0fb 0%, #dce8f7 100%);
+    position: relative;
+  }
+  .ad-image-placeholder {
+    width: 100%;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    background: linear-gradient(135deg, #e8f0fb 0%, #f0f4ff 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .ad-body { padding: 12px 14px 14px; }
+  .ad-advertiser {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .ad-advertiser-dot {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .ad-headline {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.35;
+  }
+  .ad-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .ad-cta {
+    display: inline-block;
+    background: var(--cyan);
+    color: #fff;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    text-decoration: none;
+    transition: background 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .ad-cta:hover { background: #084f9a; }
+  .ad-cta.outline {
+    background: transparent;
+    color: var(--cyan);
+    border: 1.5px solid var(--cyan);
+  }
+  .ad-cta.outline:hover { background: var(--cyan-glow); }
+
+  /* Inline feed ad (between posts, Facebook-style) */
+  .feed-ad {
+    background: #fff;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 2px;
+    padding: 14px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .feed-ad-img {
+    width: 80px;
+    height: 64px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    background: linear-gradient(135deg,#e8f0fb,#f0f4ff);
+    border: 1px solid var(--border);
+  }
+  .feed-ad-content { flex: 1; }
+  .feed-ad-tag {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+  .feed-ad-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .feed-ad-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  /* Affiliate card */
+  .affiliate-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .affiliate-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+  }
+  .affiliate-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--violet);
+    background: var(--violet-dim);
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .affiliate-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+  .affiliate-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .affiliate-logo {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .affiliate-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ── WEATHER WIDGET ──────────────────────────────────────────────── */
+  .weather-widget {
+    background: linear-gradient(135deg, #0a66c2 0%, #1e88e5 100%);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .weather-widget::after {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .weather-location {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .weather-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .weather-temp {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .weather-icon { font-size: 36px; }
+  .weather-desc {
+    font-size: 12px;
+    opacity: 0.85;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+  }
+  .weather-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 10px;
+    margin-top: 2px;
+  }
+  .weather-detail {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+  .weather-detail span {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    opacity: 1;
+  }
+  .weather-loading {
+    text-align: center;
+    padding: 12px 0;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  /* ── FORMSPREE PROFILE FORM ──────────────────────────────────────── */
+  .fs-form-group { margin-bottom: 14px; }
+  .fs-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  .fs-input, .fs-select, .fs-textarea {
+    width: 100%;
+    background: #f3f6f9;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 10px 13px;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+  .fs-input:focus, .fs-select:focus, .fs-textarea:focus {
+    border-color: var(--cyan);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(10,102,194,0.08);
+  }
+  .fs-input.error, .fs-textarea.error { border-color: var(--detractor); }
+  .fs-textarea { resize: vertical; min-height: 80px; }
+  .fs-select { cursor: pointer; }
+  .fs-error-msg {
+    font-size: 11px;
+    color: var(--detractor);
+    margin-top: 4px;
+    display: none;
+  }
+  .fs-error-msg.visible { display: block; }
+  .fs-form-error {
+    background: rgba(229,57,53,0.07);
+    border: 1px solid rgba(229,57,53,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--detractor);
+    margin-bottom: 14px;
+    display: none;
+  }
+  .fs-form-error.visible { display: block; }
+  .fs-success {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .fs-success-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+  .fs-success h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .fs-success p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .fs-submit-btn {
+    width: 100%;
+    background: var(--cyan);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 4px;
+  }
+  .fs-submit-btn:hover { background: #084f9a; }
+  .fs-submit-btn:active { transform: scale(0.99); }
+  .fs-submit-btn:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+  }
+  .fs-spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .fs-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 480px) { .fs-row { grid-template-columns: 1fr; } }
+
+</style>
+<body>
+
+<div class="orbit-glow"></div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo" onclick="showToast('Welcome to Orbit')">
+    <div class="logo-icon"><div class="logo-dot"></div></div>
+    Orbit
+  </div>
+  <div class="topbar-search">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-input" placeholder="Search debates, scenarios, profiles..." />
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="topbar-btn" onclick="openNotifications()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      3
+    </button>
+    <button class="topbar-btn" onclick="openJoinModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Join Orbit
+    </button>
+    <button class="topbar-btn primary" onclick="openJoinModal()">Post to Orbit</button>
+    <img class="avatar-sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=viewer&backgroundColor=f0f2f5&radius=50" alt="Profile" onclick="openProfileModal('viewer')" />
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Navigate</div>
+      <div class="nav-item active" onclick="switchTab('feed', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Feed
+        <span class="nav-badge">12</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('debates', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Debates
+        <span class="nav-badge red">5</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('scenarios', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Scenarios
+      </div>
+      <div class="nav-item" onclick="switchTab('gravity', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Gravity Threads
+      </div>
+      <div class="nav-item" onclick="openJoinModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profiles
+      </div>
+      <div class="nav-item" onclick="showToast('Framework docs loading...')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        The Andre Method
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Framework Pulse</div>
+      <div class="framework-pulse">
+        <div class="fp-title">Active Discussions</div>
+        <div class="fp-bar">
+          <div class="fp-bar-label"><span>MANNED</span><span style="color:var(--manned)">72%</span></div>
+          <div class="fp-bar-track"><div class="fp-bar-fill manned"></div></div>
+        </div>
+        <div class="fp-bar">
+          <div class="fp-bar-label"><span>Clear Path</span><span style="color:var(--clearpath)">58%</span></div>
+          <div class="fp-bar-track"><div class="fp-bar-fill clearpath"></div></div>
+        </div>
+        <div class="fp-bar">
+          <div class="fp-bar-label"><span>Monitor & Sustain</span><span style="color:var(--monitor)">45%</span></div>
+          <div class="fp-bar-track"><div class="fp-bar-fill monitor"></div></div>
+        </div>
+        <div class="fp-bar">
+          <div class="fp-bar-label"><span>Complete</span><span style="color:var(--complete)">31%</span></div>
+          <div class="fp-bar-track"><div class="fp-bar-fill complete"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-profile" onclick="openJoinModal()">
+      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=viewer&backgroundColor=f0f2f5&radius=50" alt="You" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
+      <div class="sidebar-profile-info">
+        <div class="sidebar-profile-name">Create Your Profile</div>
+        <div class="sidebar-profile-role">Join the discussion</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+  </aside>
+
+  <!-- MAIN FEED -->
+  <main class="main" id="mainFeed">
+
+    <!-- Feed Header -->
+    <div class="feed-header">
+      <div class="feed-tab active" onclick="switchFeedTab('all', this)">All Posts</div>
+      <div class="feed-tab" onclick="switchFeedTab('debates', this)">Debates</div>
+      <div class="feed-tab" onclick="switchFeedTab('scenarios', this)">Scenarios</div>
+      <div class="feed-tab" onclick="switchFeedTab('insights', this)">System Insights</div>
+    </div>
+
+    <!-- Compose / CTA -->
+    <div class="join-cta">
+      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=viewer&backgroundColor=f0f2f5&radius=50" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
+      <div class="join-cta-text"><strong>Join the discussion.</strong> Create your profile to post, respond to debates, and engage with the Andre Method community.</div>
+      <button class="topbar-btn primary" onclick="openJoinModal()">Join</button>
+    </div>
+
+    <!-- POSTS -->
+    <div id="posts-container"></div>
+
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+
+    <!-- ⛅ WEATHER WIDGET (live via Open-Meteo, no API key) -->
+    <div class="weather-widget" id="weatherWidget">
+      <div class="weather-loading">⛅ Loading weather...</div>
+    </div>
+
+    <!-- 📢 AD SLOT 1 — Sponsored (replace with your own) -->
+    <div class="ad-unit" id="ad-slot-1">
+      <div class="ad-label">Sponsored</div>
+      <div class="ad-image-placeholder">📊</div>
+      <div class="ad-body">
+        <div class="ad-advertiser">
+          <div class="ad-advertiser-dot" style="background:#0a66c2;">B</div>
+          BusinessIQ Pro
+        </div>
+        <div class="ad-headline">Turn Your Business Plan Into a Funded Reality</div>
+        <div class="ad-desc">AI-powered business validation tools trusted by 40,000+ founders. Free 14-day trial.</div>
+        <button class="ad-cta" onclick="showToast('Ad click tracked ✓')">Try Free →</button>
+      </div>
+    </div>
+
+    <!-- 🤝 AFFILIATE #1 — Featured Partner -->
+    <div class="affiliate-card" id="affiliate-1">
+      <div class="affiliate-logo" style="background:#e8f0fb;">📘</div>
+      <div class="affiliate-badge">Featured Partner</div>
+      <div class="affiliate-title">Notion — Build Your Andre Method Workspace</div>
+      <div class="affiliate-desc">Pre-built project templates, MANNED tracking boards, and execution dashboards for serious builders.</div>
+      <button class="ad-cta" onclick="showToast('Affiliate link — opens partner page')">Get Template Free →</button>
+      <div class="affiliate-meta">⭐ Recommended by 89% of Orbit members</div>
+    </div>
+
+    <!-- Active Debates -->
+    <div class="widget">
+      <div class="widget-title">🔥 Active Debates</div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"You can't validate without spending money first."</div>
+        <div class="debate-meta"><div class="live-dot"></div><span>Live · 34 replies</span></div>
+      </div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"Planning is just procrastination with structure."</div>
+        <div class="debate-meta"><span>2h ago · 19 replies</span></div>
+      </div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"Most project managers are professional excuse-makers."</div>
+        <div class="debate-meta"><span>4h ago · 41 replies</span></div>
+      </div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"Completion without impact is just busy work."</div>
+        <div class="debate-meta"><div class="live-dot"></div><span>Live · 12 replies</span></div>
+      </div>
+    </div>
+
+    <!-- 📢 AD SLOT 2 — Sponsored (replace with your own) -->
+    <div class="ad-unit" id="ad-slot-2">
+      <div class="ad-label">Sponsored</div>
+      <div class="ad-image-placeholder">🚀</div>
+      <div class="ad-body">
+        <div class="ad-advertiser">
+          <div class="ad-advertiser-dot" style="background:#e53935;">L</div>
+          LaunchPad Academy
+        </div>
+        <div class="ad-headline">Learn Execution-First Business Strategy</div>
+        <div class="ad-desc">6-week cohort program. Apply structured validation before spending a dollar. Seats limited.</div>
+        <button class="ad-cta outline" onclick="showToast('Ad click tracked ✓')">View Program →</button>
+      </div>
+    </div>
+
+    <!-- Framework Insight -->
+    <div class="widget">
+      <div class="widget-title">💡 Framework Insight</div>
+      <div class="insight-box">
+        <div class="insight-label">Andre Method · MANNED</div>
+        <div class="insight-text">"Every failed project has the same root: someone skipped validation and built something nobody actually needed."</div>
+      </div>
+      <div class="insight-box" style="background: linear-gradient(135deg,rgba(10,124,92,0.07),rgba(10,102,194,0.04)); border-color:rgba(10,124,92,0.2);">
+        <div class="insight-label" style="color:var(--clearpath)">Andre Method · Clear Path</div>
+        <div class="insight-text">"A plan that can't survive first contact with reality was never a real plan — it was a wish list with deadlines."</div>
+      </div>
+    </div>
+
+    <!-- 🤝 AFFILIATE #2 -->
+    <div class="affiliate-card" id="affiliate-2">
+      <div class="affiliate-logo" style="background:#fff3e0;">📧</div>
+      <div class="affiliate-badge">Affiliate</div>
+      <div class="affiliate-title">ConvertKit — Email Your Community</div>
+      <div class="affiliate-desc">Build your audience as you build your method. Automated sequences for business creators.</div>
+      <button class="ad-cta" onclick="showToast('Affiliate link — opens partner page')">Start Free →</button>
+      <div class="affiliate-meta">💰 Earn up to $2,400/yr per referral</div>
+    </div>
+
+    <!-- Trending -->
+    <div class="widget">
+      <div class="widget-title">📈 Trending Topics</div>
+      <div class="trending-item"><div class="trending-rank">Trending · Business</div><div class="trending-topic">#ValidationFirst</div><div class="trending-count">247 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Execution</div><div class="trending-topic">#ClearPathMethod</div><div class="trending-count">183 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Strategy</div><div class="trending-topic">#AndreMethod</div><div class="trending-count">156 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Projects</div><div class="trending-topic">#FinishWhatYouStart</div><div class="trending-count">94 posts today</div></div>
+    </div>
+
+    <!-- Suggested Profiles -->
+    <div class="widget">
+      <div class="widget-title">👤 Active Participants</div>
+      <div id="suggested-profiles"></div>
+    </div>
+
+    <!-- 📢 AD SLOT 3 — Sponsored (replace with your own) -->
+    <div class="ad-unit" id="ad-slot-3">
+      <div class="ad-label">Sponsored</div>
+      <div class="ad-image-placeholder">💼</div>
+      <div class="ad-body">
+        <div class="ad-advertiser">
+          <div class="ad-advertiser-dot" style="background:#5b45e0;">O</div>
+          OperateHQ
+        </div>
+        <div class="ad-headline">Project Management Built for Doers</div>
+        <div class="ad-desc">Stop planning. Start shipping. OperateHQ connects your method to measurable results.</div>
+        <button class="ad-cta" onclick="showToast('Ad click tracked ✓')">Book a Demo →</button>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- JOIN MODAL — Formspree AJAX form -->
+<div class="modal-overlay" id="joinModal" onclick="closeModal(event, 'joinModal')">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <div class="modal-title">Create Your Orbit Profile</div>
+      <button class="modal-close" onclick="document.getElementById('joinModal').classList.remove('open')">×</button>
+    </div>
+
+    <!-- Success state -->
+    <div class="fs-success" id="joinSuccess" style="display:none;">
+      <div class="fs-success-icon">🎉</div>
+      <h3>Welcome to Orbit!</h3>
+      <p>Your profile request has been submitted. You'll receive a confirmation email shortly and will be approved within 24 hours. Real profiles only — that's what makes Orbit work.</p>
+      <button class="modal-btn primary" style="margin-top:16px;" onclick="document.getElementById('joinModal').classList.remove('open'); document.getElementById('joinSuccess').style.display='none'; document.getElementById('joinFormBody').style.display='block';">Close</button>
+    </div>
+
+    <!-- Form body -->
+    <div id="joinFormBody">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:18px;line-height:1.6;">Join the Andre Method community. Structured debates, real execution. All profiles are verified — no anonymous accounts.</p>
+
+      <!-- Global error -->
+      <div class="fs-form-error" id="fsGlobalError">Something went wrong. Please try again.</div>
+
+      <div class="fs-row">
+        <div class="fs-form-group">
+          <label class="fs-label">First Name *</label>
+          <input class="fs-input" id="fs-first-name" name="first_name" type="text" placeholder="Andre" autocomplete="given-name" />
+          <div class="fs-error-msg" id="err-first-name">Please enter your first name.</div>
+        </div>
+        <div class="fs-form-group">
+          <label class="fs-label">Last Name *</label>
+          <input class="fs-input" id="fs-last-name" name="last_name" type="text" placeholder="Wallace" autocomplete="family-name" />
+          <div class="fs-error-msg" id="err-last-name">Please enter your last name.</div>
+        </div>
+      </div>
+
+      <div class="fs-form-group">
+        <label class="fs-label">Email Address *</label>
+        <input class="fs-input" id="fs-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" />
+        <div class="fs-error-msg" id="err-email">Please enter a valid email address.</div>
+      </div>
+
+      <div class="fs-row">
+        <div class="fs-form-group">
+          <label class="fs-label">Professional Title *</label>
+          <input class="fs-input" id="fs-title" name="professional_title" type="text" placeholder="Operations Manager" />
+          <div class="fs-error-msg" id="err-title">Please enter your title.</div>
+        </div>
+        <div class="fs-form-group">
+          <label class="fs-label">Industry *</label>
+          <select class="fs-input fs-select" id="fs-industry" name="industry">
+            <option value="">Select industry…</option>
+            <option>Technology</option>
+            <option>Business Services</option>
+            <option>Finance</option>
+            <option>Healthcare</option>
+            <option>Construction</option>
+            <option>Retail / E-commerce</option>
+            <option>Marketing / Agency</option>
+            <option>Education</option>
+            <option>Real Estate</option>
+            <option>Other</option>
+          </select>
+          <div class="fs-error-msg" id="err-industry">Please select your industry.</div>
+        </div>
+      </div>
+
+      <div class="fs-form-group">
+        <label class="fs-label">How do you participate? *</label>
+        <select class="fs-input fs-select" id="fs-role" name="participation_role">
+          <option value="">Choose your role…</option>
+          <option value="promoter">Promoter — I believe in structured execution</option>
+          <option value="detractor">Detractor — I challenge assumptions</option>
+          <option value="neutral">Neutral — I observe and analyze</option>
+        </select>
+        <div class="fs-error-msg" id="err-role">Please choose how you'll participate.</div>
+      </div>
+
+      <div class="fs-form-group">
+        <label class="fs-label">Why are you joining Orbit? <span style="opacity:.6;font-weight:400;">(optional)</span></label>
+        <textarea class="fs-input fs-textarea" id="fs-why" name="why_joining" placeholder="I want to engage with people who take execution seriously…"></textarea>
+      </div>
+
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
+        By joining, you agree to engage constructively and respect the structured debate format of Orbit. Real profiles only — your information is used to verify identity and will never be sold.
+      </div>
+
+      <button class="fs-submit-btn" id="fsSubmitBtn" onclick="submitJoinForm()">
+        Create My Profile
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profileModal" onclick="closeModal(event, 'profileModal')">
+  <div class="modal" id="profileModalContent">
+    <!-- Filled dynamically -->
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareModal" onclick="closeModal(event, 'shareModal')">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-title">Share to Social</div>
+      <button class="modal-close" onclick="document.getElementById('shareModal').classList.remove('open')">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Share this discussion from the Andre Method community.</p>
+    <div class="share-modal-body" id="shareModalBody">
+      <a class="share-option" id="shareTwitter" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="share-option-icon" style="background:rgba(29,161,242,0.15);">𝕏</div>
+        <div class="share-option-info">
+          <div class="share-option-name">X (Twitter)</div>
+          <div class="share-option-desc">Post to your followers</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="share-option" id="shareLinkedIn" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="share-option-icon" style="background:rgba(0,119,181,0.15);">in</div>
+        <div class="share-option-info">
+          <div class="share-option-name">LinkedIn</div>
+          <div class="share-option-desc">Share with your network</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="share-option" id="shareFacebook" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="share-option-icon" style="background:rgba(24,119,242,0.15);">f</div>
+        <div class="share-option-info">
+          <div class="share-option-name">Facebook</div>
+          <div class="share-option-desc">Share with friends</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="share-option" id="shareWhatsApp" href="#" target="_blank" rel="noopener noreferrer">
+        <div class="share-option-icon" style="background:rgba(37,211,102,0.15);">💬</div>
+        <div class="share-option-info">
+          <div class="share-option-name">WhatsApp</div>
+          <div class="share-option-desc">Send to contacts</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="share-option" id="shareInstagram" href="https://andremethod.com" target="_blank" rel="noopener noreferrer">
+        <div class="share-option-icon" style="background:rgba(225,48,108,0.15);">📸</div>
+        <div class="share-option-info">
+          <div class="share-option-name">Instagram</div>
+          <div class="share-option-desc">Copy link for your story or bio</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted)"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </div>
+    <div class="share-copy-row">
+      <span class="share-copy-url">andremethod.com</span>
+      <button class="share-copy-btn" onclick="copyShareLink()">Copy Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE DRAWER (right panel on mobile) -->
+<div class="mobile-drawer-overlay" id="mobileDrawer" onclick="closeMobileDrawer(event)">
+  <div class="mobile-drawer">
+    <div class="drawer-handle"></div>
+    <div class="widget" style="background:var(--bg-base);border:none;padding:0;margin-bottom:20px;">
+      <div class="widget-title">🔥 Active Debates</div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"You can't validate without spending money first."</div>
+        <div class="debate-meta"><div class="live-dot"></div><span>Live · 34 replies</span></div>
+      </div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"Planning is just procrastination with structure."</div>
+        <div class="debate-meta"><span>2h ago · 19 replies</span></div>
+      </div>
+      <div class="debate-item" onclick="showToast('Opening debate thread...')">
+        <div class="debate-topic">"Completion without impact is just busy work."</div>
+        <div class="debate-meta"><div class="live-dot"></div><span>Live · 12 replies</span></div>
+      </div>
+    </div>
+    <div class="widget" style="background:transparent;border:none;padding:0;margin-bottom:20px;">
+      <div class="widget-title">📈 Trending</div>
+      <div class="trending-item"><div class="trending-rank">Trending · Business</div><div class="trending-topic">#ValidationFirst</div><div class="trending-count">247 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Strategy</div><div class="trending-topic">#AndreMethod</div><div class="trending-count">156 posts today</div></div>
+    </div>
+    <div class="widget" style="background:transparent;border:none;padding:0;">
+      <div class="widget-title">👤 Active Participants</div>
+      <div id="mobileProfiles"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav" id="mobileNav">
+  <div class="mobile-nav-item active" onclick="mobileNavSwitch('feed', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Feed
+  </div>
+  <div class="mobile-nav-item" onclick="mobileNavSwitch('debates', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Debates
+  </div>
+  <div class="mobile-nav-item" onclick="openMobileDrawer()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    Explore
+  </div>
+  <div class="mobile-nav-item" onclick="openNotifications()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Alerts
+  </div>
+  <div class="mobile-nav-item" onclick="openJoinModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Join
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+
+const profiles = [
+  // DETRACTORS
+  { id: 1,  name: "Marcus Hill",    handle: "@mhill_ops",        role: "detractor", tag: "Validation Skeptic",  age: 42, gender: "male",   bg: "Former operations manager, now runs a struggling logistics business. Has seen too many ideas die in validation gaps.", behavior: "Challenges need, ROI assumptions, and mission clarity before anything else." },
+  { id: 2,  name: "Dana Brooks",    handle: "@danabrooks_pm",    role: "detractor", tag: "Overplanner Critic",  age: 37, gender: "female", bg: "Corporate PM turned consultant. Has watched beautiful plans collapse on day one of execution.", behavior: "Attacks plans that don't survive real execution. Exposes the gap between structure and reality." },
+  { id: 3,  name: "Kevin Patel",    handle: "@kpatel_dev",       role: "detractor", tag: "Execution Realist",   age: 34, gender: "male",   bg: "Startup engineer who has shipped and watched three companies fail post-launch.", behavior: "Pushes hard on human behavior, discipline gaps, and real-world follow-through." },
+  { id: 4,  name: "Lisa Carter",    handle: "@lisac_hr",         role: "detractor", tag: "Drop-Off Analyst",    age: 45, gender: "female", bg: "HR director focused on performance failure patterns and organizational burnout.", behavior: "Calls out accountability failures, inconsistency, and momentum collapse." },
+  { id: 5,  name: "Andre Wallace",  handle: "@awallace_exec",    role: "detractor", tag: "Outcome Challenger",  age: 50, gender: "male",   bg: "Former C-suite executive, now an advisor who has seen hundreds of projects 'complete' with zero impact.", behavior: "Questions whether completed work actually delivered real value." },
+
+  // PROMOTERS
+  { id: 6,  name: "Jasmine Lee",    handle: "@jasmine_builds",   role: "promoter",  tag: "Operator",           age: 29, gender: "female", bg: "Startup operator who has taken 4 companies from idea to revenue.", behavior: "Breaks ideas into executable action using the Andre Method framework." },
+  { id: 7,  name: "Eric Thompson",  handle: "@eric_construction", role: "promoter", tag: "PM · Builder",        age: 41, gender: "male",   bg: "Construction project manager who manages $2M+ builds quarterly.", behavior: "Applies structured execution logic to every discussion." },
+  { id: 8,  name: "Carlos Mendez",  handle: "@carlosmendez",     role: "promoter",  tag: "Agency Owner",       age: 36, gender: "male",   bg: "Owns a digital agency. Runs structure-first delivery systems.", behavior: "Connects planning to delivery with no gaps." },
+  { id: 9,  name: "Olivia Chen",    handle: "@olivia_strategy",  role: "promoter",  tag: "Strategist",         age: 44, gender: "female", bg: "Business strategist focused on validation-first methodology.", behavior: "Grounds every argument in evidence before structure." },
+  { id: 10, name: "Malik Johnson",  handle: "@malik_consults",   role: "promoter",  tag: "Consultant",         age: 35, gender: "male",   bg: "Management consultant who translates framework into field application.", behavior: "Connects pillars clearly, bridges theory and action." },
+  { id: 11, name: "Steven Wright",  handle: "@swright_finance",  role: "promoter",  tag: "Finance Lead",       age: 47, gender: "male",   bg: "CFO-turned-advisor who drives ROI clarity in every decision.", behavior: "Brings numbers to the table. Makes abstract ideas concrete." },
+  { id: 12, name: "Nina Patel",     handle: "@nina_product",     role: "promoter",  tag: "Product Manager",    age: 32, gender: "female", bg: "Senior PM at a SaaS company managing 8 concurrent product lines.", behavior: "Champions structured planning and cross-functional ownership." },
+  { id: 13, name: "Alexis Rivera",  handle: "@alexis_creates",   role: "promoter",  tag: "Creator",            age: 28, gender: "female", bg: "Content creator turned business strategist. Translates complex ideas for builders.", behavior: "Makes the Andre Method accessible without dumbing it down." },
+  { id: 14, name: "Brian Cole",     handle: "@briancole_saas",   role: "promoter",  tag: "SaaS Builder",       age: 33, gender: "male",   bg: "Bootstrapped two SaaS products. Systems thinker by default.", behavior: "Builds arguments like he builds software: modular and testable." },
+  { id: 15, name: "Tasha Green",    handle: "@tasha_program",    role: "promoter",  tag: "Program Manager",    age: 38, gender: "female", bg: "Runs enterprise program portfolios across healthcare and finance sectors.", behavior: "Accountability-first voice. Ensures every plan has an owner." },
+  { id: 16, name: "Harold Bennett", handle: "@harold_advisor",   role: "promoter",  tag: "Advisor",            age: 52, gender: "male",   bg: "30 years in business development. Has seen every mistake in the book.", behavior: "Long-term thinking perspective. Patient and precise in structured argument." },
+  { id: 17, name: "Jordan Blake",   handle: "@jordanblake_free", role: "promoter",  tag: "Freelancer",         age: 31, gender: "male",   bg: "Independent contractor managing 12 clients simultaneously.", behavior: "Execution discipline. Holds the line on completion standards." },
+  { id: 18, name: "Kevin Tran",     handle: "@kevintran_dev",    role: "promoter",  tag: "Developer",          age: 30, gender: "male",   bg: "Full-stack developer who builds internal tools for project teams.", behavior: "Applies systems logic to business arguments. No fluff." },
+  { id: 19, name: "Monica Diaz",    handle: "@monicadiaz_data",  role: "promoter",  tag: "Data Analyst",       age: 37, gender: "female", bg: "Analytics lead who tracks execution metrics across product teams.", behavior: "Brings measurement discipline. Defines what 'done' actually means." },
+  { id: 20, name: "Brandon Scott",  handle: "@bscott_coach",     role: "promoter",  tag: "Performance Coach",  age: 38, gender: "male",   bg: "Executive performance coach. Works with founders and operators.", behavior: "Discipline-first voice. Calls out inconsistency constructively." },
+  { id: 21, name: "Tony Brooks",    handle: "@tonybrooks_biz",   role: "promoter",  tag: "Business Owner",     age: 48, gender: "male",   bg: "Small business owner who has survived three recessions.", behavior: "Ground-level realism. Practical execution under resource constraints." },
+  { id: 22, name: "Felicia Grant",  handle: "@felicia_lead",     role: "promoter",  tag: "Team Lead",          age: 41, gender: "female", bg: "Manages a 15-person team at a mid-size firm.", behavior: "Ownership clarity. Ensures arguments address who is responsible." },
+  { id: 23, name: "Marcus Reed",    handle: "@mreed_ops",        role: "promoter",  tag: "Operations Director",age: 46, gender: "male",   bg: "Ops director who has scaled teams from 5 to 200 people.", behavior: "Completion mindset. Will not accept partial as done." },
+  { id: 24, name: "Simone Carter",  handle: "@simonec_coach",    role: "promoter",  tag: "Coach",              age: 40, gender: "female", bg: "Business and executive coach. Focused on clarity and accountability.", behavior: "Connects method to mindset. Human side of execution." },
+
+  // NEUTRALS
+  { id: 25, name: "Emily Sanders",  handle: "@emilysanders",     role: "neutral",   tag: "Curious Builder",    age: 26, gender: "female", bg: "Early-stage entrepreneur exploring business frameworks.", behavior: "Asks clarifying questions. Makes complex threads accessible." },
+  { id: 26, name: "Chris Young",    handle: "@chrisyoung",       role: "neutral",   tag: "Observer",           age: 31, gender: "male",   bg: "Marketing coordinator interested in structured business thinking.", behavior: "Asks 'where does this fit?' and bridges threads." },
+  { id: 27, name: "Daniel Reed",    handle: "@danielreed",       role: "neutral",   tag: "Thread Summarizer",  age: 45, gender: "male",   bg: "Business writer and content strategist.", behavior: "Summarizes long threads. Makes debates digestible." },
+  { id: 28, name: "Nicole Harris",  handle: "@nicoleharris",     role: "neutral",   tag: "Translator",         age: 36, gender: "female", bg: "Operations coordinator trying to apply frameworks to daily work.", behavior: "Asks 'how would I use this today?' — bridges theory to practice." },
+  { id: 29, name: "Sophia Turner",  handle: "@sophiat",          role: "neutral",   tag: "Beginner Lens",      age: 28, gender: "female", bg: "First-year entrepreneur navigating structured business thinking.", behavior: "Represents the newcomer. Asks what veterans forget to explain." },
+  { id: 30, name: "Robert King",    handle: "@rking_biz",        role: "neutral",   tag: "Outcome Seeker",     age: 47, gender: "male",   bg: "Mid-career manager looking for measurable frameworks.", behavior: "Asks 'what does success look like here?' — grounds every debate." },
+];
+
+const posts = [
+  {
+    type: "system",
+    postType: "insight",
+    postTypeLabel: "System Insight",
+    profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
+    body: "Most businesses don't fail from bad ideas. They fail because the team was never honest about whether the idea was actually needed. <strong>MANNED is the first filter. Not the funding round. Not the launch plan.</strong> The question is always: did anyone validate the need before building toward it?",
+    tags: ["manned"],
+    signal: 3,
+    gravity: true,
+    time: "System · 9:00 AM",
+    likes: 247, comments: 89, shares: 44,
+    thread: [
+      { profile: profiles[0], body: "This is the thing nobody wants to hear. I've watched six businesses in my network skip this step and call it 'market intuition.' Every single one burned capital validating something customers never asked for." },
+      { profile: profiles[5], body: "Marcus is right — and the Andre Method names this exactly. MANNED exists because founders need a structure that forces them to slow down before they speed up. You validate first. You build second. Always." },
+      { profile: profiles[24], body: "Can someone explain what 'validation' actually looks like in practice? Like, what are the actual steps?" },
+      { profile: profiles[8], body: "Emily, validation at minimum means: speaking to 20+ potential customers, identifying a consistent pain, confirming willingness to pay, and documenting what 'solved' actually looks like. No assumptions. No projections. Evidence only." },
+    ]
+  },
+  {
+    type: "user",
+    postType: "debate",
+    postTypeLabel: "Debate",
+    profile: profiles[0],
+    body: "I'll say it plainly: <strong>90% of business plans are fiction.</strong> They're written to impress investors, not to survive contact with reality. The Andre Method talks about Clear Path — but most people write a plan and never return to it. What's the point of structure if no one maintains it?",
+    tags: ["clearpath", "manned"],
+    signal: 3,
+    gravity: true,
+    time: "2h ago",
+    likes: 134, comments: 67, shares: 21,
+    thread: [
+      { profile: profiles[6], body: "Marcus, I'll give you the friction points — but not the conclusion. Plans fail when they're built for optics instead of execution. Clear Path isn't about writing a plan. It's about building a plan that tracks. There's a massive difference." },
+      { profile: profiles[1], body: "He's not wrong though. I've reviewed hundreds of project documents in consulting. Most are outdated before the ink dries. The problem is they're built as artifacts, not living systems." },
+      { profile: profiles[19], body: "The Andre Method addresses this directly — Clear Path includes ownership assignment and review cycles. Without those two elements, any plan becomes fiction over time." },
+    ]
+  },
+  {
+    type: "system",
+    postType: "scenario",
+    postTypeLabel: "Scenario",
+    profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
+    body: "🧩 <strong>Orbit Scenario Drop:</strong> You have $8,000 and 45 days. You believe you have a profitable service business idea. Walk us through exactly how you validate, structure, and launch it — or explain why you don't. Using the Andre Method framework. Go.",
+    tags: ["manned", "clearpath", "complete"],
+    signal: 2,
+    time: "System · 11:30 AM",
+    likes: 203, comments: 112, shares: 67,
+    thread: [
+      { profile: profiles[5], body: "Day 1–7: I'm spending nothing on build. I'm talking to 30 potential clients. Qualifying pain, not pitching a solution. If I can't find 10 people with the same problem by day 7, I pause. MANNED first." },
+      { profile: profiles[2], body: "But talking costs time, and time IS money when you're on a 45-day clock. What's your threshold for 'enough validation' before you move? Because most people validate forever to avoid the scary part of actually committing." },
+      { profile: profiles[12], body: "Kevin raises a real execution issue — but validation speed is a skill, not a luxury. Structured discovery conversations, 20 minutes each. 30 conversations = 10 hours of your time in week one. That's not slow — that's smart." },
+      { profile: profiles[28], body: "This is really helpful. Where does the $8K actually get spent in this model?" },
+    ]
+  },
+  {
+    type: "user",
+    postType: "failure",
+    postTypeLabel: "Failure Case",
+    profile: profiles[3],
+    body: "<strong>Drop-Off Pattern Alert:</strong> Teams hit 70% completion and fall apart. Not because of skill. Not because of funding. Because no one built a sustain system. Monitor & Sustain is the most skipped phase of the Andre Method. People love launching. Nobody loves the Tuesday at 4pm meeting about whether momentum is still real.",
+    tags: ["monitor"],
+    signal: 3,
+    time: "3h ago",
+    likes: 98, comments: 44, shares: 18,
+    thread: [
+      { profile: profiles[19], body: "Lisa is correct — and the data backs this up. Most projects die between the 60–80% completion window. Not from failure. From assumed success. Teams celebrate early and lose the final push." },
+      { profile: profiles[22], body: "This is why Monitor & Sustain requires a designated owner, not just a process. Someone has to be accountable for the energy of the project, not just its tasks." },
+      { profile: profiles[26], body: "So how do you build a 'sustain system' practically? What does that look like week to week?" },
+    ]
+  },
+  {
+    type: "user",
+    postType: "breakdown",
+    postTypeLabel: "Success Breakdown",
+    profile: profiles[7],
+    body: "Let me share what actually worked for a client last quarter. Started with 6 months of failed momentum. Three previous project managers. Zero completion. We applied <strong>MANNED → Clear Path → Execute → Monitor → Complete</strong> in strict sequence. Result: delivered in 11 weeks. Here's what made it different:",
+    tags: ["clearpath", "complete", "manned"],
+    signal: 3,
+    gravity: true,
+    time: "5h ago",
+    likes: 311, comments: 88, shares: 103,
+    thread: [
+      { profile: profiles[4], body: "Olivia, I'll give you credit — this is structured. But 'delivered' isn't the same as 'impactful.' What was the actual outcome post-delivery? Did it change anything measurable for the client?" },
+      { profile: profiles[7], body: "Andre W — fair push. Revenue impact: 23% increase in the targeted segment within 60 days. Client renewed for a 12-month engagement. That's the complete metric — not the delivery date. You're right to ask." },
+      { profile: profiles[9], body: "This is exactly what the Complete phase is designed to capture. Delivery ≠ completion. Completion requires measurable outcome and lessons documented. Olivia's case study hits both." },
+    ]
+  },
+  {
+    type: "user",
+    postType: "debate",
+    postTypeLabel: "Debate",
+    profile: profiles[2],
+    body: "<strong>Unpopular opinion:</strong> Discipline is a myth sold to people who don't have good systems. You don't need discipline to execute. You need a structure that makes the right action the easiest action. The Andre Method gets this right — but most people still try to willpower their way through execution phase.",
+    tags: ["clearpath"],
+    signal: 2,
+    time: "6h ago",
+    likes: 156, comments: 73, shares: 29,
+    thread: [
+      { profile: profiles[19], body: "Counterpoint: systems require discipline to build and maintain. You can't escape it. The question is whether you apply discipline upfront to build the system, or grind it out daily without one. Upfront always wins." },
+      { profile: profiles[2], body: "Kevin, I'd argue that if your system requires discipline to maintain, it's a poorly designed system. Good systems are self-correcting and reduce the cognitive load required to stay on track." },
+      { profile: profiles[25], body: "I've seen both sides of this in real companies. Kevin's right that systems still need upkeep. But Kevin P's point is that the right architecture dramatically lowers the energy cost of execution." },
+    ]
+  },
+  {
+    type: "system",
+    postType: "insight",
+    postTypeLabel: "System Insight",
+    profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
+    body: "<strong>Daily Framework Check:</strong> Where are you stuck right now — MANNED (unclear if the idea is valid), Clear Path (unclear what the plan actually is), Monitor & Sustain (losing momentum), or Complete (can't close it out)? Name your phase. The community can help.",
+    tags: ["manned", "clearpath", "monitor", "complete"],
+    signal: 1,
+    time: "System · 8:00 AM",
+    likes: 412, comments: 194, shares: 88,
+    thread: [
+      { profile: profiles[14], body: "Stuck in Monitor & Sustain on a product we launched 90 days ago. Usage is flat after week 3. Not sure if the problem is the product, the onboarding, or the audience targeting." },
+      { profile: profiles[11], body: "Tasha — flat usage at day 21 post-launch is almost always an activation problem, not a product problem. What does your onboarding flow look like and where are users dropping off?" },
+      { profile: profiles[29], body: "This is such a useful question. I'm in MANNED phase and genuinely unsure if I'm building something anyone actually wants or if I just really want to build it." },
+    ]
+  },
+];
+
+// ── RENDER ────────────────────────────────────────────────────────
+
+// Inline feed ads — Facebook-style, injected every 4th post
+const FEED_ADS = [
+  { icon:'📚', title:'The Andre Method Masterclass', sub:'8-week live cohort. Validation → Execution → Completion. Next intake: June 2025.', cta:'Reserve Your Seat', color:'#0a66c2' },
+  { icon:'⚙️', title:'ClickUp for Business Builders', sub:'Manage your MANNED phases in one place. Free forever plan available.', cta:'Try ClickUp Free', color:'#7b68ee' },
+  { icon:'📈', title:'Stripe Atlas — Launch Globally', sub:'Register your business in the US from anywhere. Trusted by 50,000+ founders.', cta:'Start Today', color:'#635bff' },
+];
+
+function renderFeedAd(adIndex) {
+  const ad = FEED_ADS[adIndex % FEED_ADS.length];
+  return `<div class="feed-ad">
+    <div class="feed-ad-img" style="background:linear-gradient(135deg,${ad.color}18,${ad.color}08);">${ad.icon}</div>
+    <div class="feed-ad-content">
+      <div class="feed-ad-tag">Sponsored</div>
+      <div class="feed-ad-title">${ad.title}</div>
+      <div class="feed-ad-sub">${ad.sub}</div>
+      <button class="ad-cta" style="font-size:11px;padding:5px 12px;" onclick="showToast('Ad click tracked ✓')">${ad.cta} →</button>
+    </div>
+  </div>`;
+}
+// Renders post array with inline feed ads injected every 4th post
+function renderFeedWithAds(postArray) {
+  return postArray.map((p, i) => {
+    const post = renderPost(p, i);
+    const injectAd = (i + 1) % 4 === 0 && i < postArray.length - 1;
+    return injectAd ? post + renderFeedAd(Math.floor(i / 4)) : post;
+  }).join('');
+}
+// using DiceBear 'avataaars'
+const MALE_SEEDS   = ['Felix','Liam','Noah','Ethan','Mason','Oliver','James','Logan','Lucas','Henry','Owen','Caleb','Ryan','Jack','Nathan','Dylan','Aaron','Tyler','Blake','Chase'];
+const FEMALE_SEEDS = ['Sophia','Olivia','Emma','Ava','Isabella','Mia','Charlotte','Amelia','Harper','Evelyn','Abigail','Emily','Ella','Luna','Chloe','Grace','Zoey','Nora','Lily','Hannah'];
+
+function getAvatarUrl(profile) {
+  if (!profile) return null;
+  // System profile has no gender
+  if (!profile.gender) return null;
+  const isFemale = profile.gender === 'female';
+  const pool = isFemale ? FEMALE_SEEDS : MALE_SEEDS;
+  // Use profile id (1-based) to pick a consistent seed from the pool
+  const idx = ((profile.id || 1) - 1) % pool.length;
+  const seed = pool[idx];
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=f0f2f5&radius=50`;
+}
+
+function renderSignal(level) {
+  const bars = [1,2,3].map(i => `<div class="signal-bar ${i <= level ? 'filled' : ''}"></div>`).join('');
+  const label = level === 3 ? 'Strong Signal' : level === 2 ? 'Medium Signal' : 'Weak Signal';
+  return `<div class="signal-indicator"><div class="signal-bars">${bars}</div>${label}</div>`;
+}
+
+function renderTag(tag) {
+  const labels = { manned: 'MANNED', clearpath: 'Clear Path', monitor: 'Monitor & Sustain', complete: 'Complete' };
+  return `<span class="tag ${tag}">${labels[tag] || tag}</span>`;
+}
+
+function renderThread(replies) {
+  if (!replies || !replies.length) return '';
+  const shown = replies.slice(0, 3);
+  const more = replies.length > 3;
+  let html = `<div class="thread">`;
+  shown.forEach(r => {
+    const av = getAvatarUrl(r.profile);
+    html += `<div class="thread-post">
+      <div class="thread-header">
+        ${av ? `<img class="thread-avatar ${r.profile.role}" src="${av}" alt="${r.profile.name}" />` : `<div class="thread-avatar ${r.profile.role}" style="background:var(--bg-card);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-muted);">${r.profile.name[0]}</div>`}
+        <span class="thread-name">${r.profile.name}</span>
+        <span class="role-badge ${r.profile.role}">${r.profile.tag || r.profile.role}</span>
+        <span class="post-handle" style="margin-left:auto;">${r.profile.handle}</span>
+      </div>
+      <div class="thread-body">${r.body}</div>
+    </div>`;
+  });
+  html += `</div>`;
+  if (more) {
+    html += `<div class="show-more-replies" onclick="showToast('Loading full thread...')">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 13 5 5 5-5"/><path d="m7 6 5 5 5-5"/></svg>
+      Show ${replies.length - 3} more replies
+    </div>`;
+  }
+  return html;
+}
+
+// Posts that reveal the full Andre Method sequence are gated for non-members
+const GATED_KEYWORDS = [
+  'MANNED → Clear Path → Execute → Monitor → Complete',
+  'every phase has an ROI checkpoint',
+  'MANNED — cost of validation',
+  'each phase should have a defined',
+  'three things: (1) a documented outcome',
+];
+
+function isAndreMethodGated(post) {
+  const body = post.body || '';
+  return GATED_KEYWORDS.some(kw => body.includes(kw));
+}
+
+function renderPost(post, index) {
+  const isSystem = post.type === 'system';
+  const p = post.profile;
+  const av = p.gender ? getAvatarUrl(p) : null;
+  const gated = isAndreMethodGated(post);
+
+  const avatarHtml = av
+    ? `<img class="post-avatar ${p.role}" src="${av}" alt="${p.name}" onclick="openProfileByIndex(${post.profile.id - 1})" />`
+    : `<div class="post-avatar ${p.role}" style="background:var(--bg-card);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--violet);">⊙</div>`;
+
+  // Gated posts show first ~120 chars then blur the rest
+  const bodySnippet = gated
+    ? post.body.replace(/<[^>]+>/g, '').substring(0, 120) + '...'
+    : post.body;
+
+  const bodyAndThread = gated
+    ? `<div class="method-gate-wrap">
+        <div class="method-gate-blur">
+          <div class="post-body">${post.body}</div>
+          ${post.tags ? `<div class="post-tags">${post.tags.map(renderTag).join('')}</div>` : ''}
+          ${post.thread ? renderThread(post.thread) : ''}
+        </div>
+        <div class="method-gate-overlay">
+          <div class="method-gate-msg">
+            <strong>🔒 Members Only</strong>
+            <p>Full framework analysis and Andre Method application details are available to Orbit members.</p>
+            <button class="method-gate-btn" onclick="openJoinModal()">Join to Read More</button>
+          </div>
+        </div>
+      </div>`
+    : `<div class="post-body">${post.body}</div>
+       ${post.tags ? `<div class="post-tags">${post.tags.map(renderTag).join('')}</div>` : ''}
+       ${post.signal ? renderSignal(post.signal) : ''}
+       ${post.thread ? renderThread(post.thread) : ''}`;
+
+  return `
+  <article class="post ${isSystem ? 'post-system' : ''}" style="animation-delay: ${index * 0.06}s">
+    ${post.gravity ? `<div class="gravity-badge">⊙ Gravity Thread</div>` : ''}
+    <div class="post-type-label ${post.postType}">${getTypeIcon(post.postType)} ${post.postTypeLabel}</div>
+    <div class="post-header">
+      ${avatarHtml}
+      <div class="post-meta">
+        <div class="post-name-row">
+          <span class="post-name">${p.name}</span>
+          <span class="role-badge ${p.role}">${p.tag || p.role}</span>
+          ${p.bg ? `<span class="post-handle">${p.handle}</span>` : ''}
+        </div>
+        <span class="post-handle">${p.bg ? (p.age ? `${p.age} · ` : '') + p.bg.split('.')[0] : ''}</span>
+      </div>
+      <span class="post-time">${post.time}</span>
+    </div>
+    ${bodyAndThread}
+    <div class="post-actions">
+      <button class="action-btn comment" onclick="handleAction('comment', this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        ${post.comments}
+      </button>
+      <button class="action-btn like" onclick="handleLike(this, ${post.likes})">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        ${post.likes}
+      </button>
+      <button class="action-btn share" onclick="openShareModal(event, \`${post.body.replace(/<[^>]+>/g,'').substring(0,100)}\`)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        ${post.shares}
+      </button>
+      <button class="action-btn" onclick="openJoinModal()" style="margin-left:auto;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Reply
+      </button>
+    </div>
+  </article>`;
+}
+
+function getTypeIcon(type) {
+  const icons = { debate: '⚡', scenario: '🧩', failure: '🔴', breakdown: '✅', insight: '⊙' };
+  return icons[type] || '·';
+}
+
+function renderSuggestedProfiles() {
+  const show = profiles.slice(0, 6);
+  const container = document.getElementById('suggested-profiles');
+  container.innerHTML = show.map(p => `
+    <div class="profile-card-sm" onclick="openProfileByIndex(${p.id - 1})">
+      <img src="${getAvatarUrl(p)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
+      <div class="pcs-info">
+        <div class="pcs-name">${p.name}</div>
+        <div class="pcs-role">${p.tag}</div>
+      </div>
+      <button class="follow-btn" onclick="event.stopPropagation(); handleFollow(this)">Follow</button>
+    </div>
+  `).join('');
+}
+
+function initFeed() {
+  const container = document.getElementById('posts-container');
+  container.innerHTML = renderFeedWithAds(posts);
+  renderSuggestedProfiles();
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────
+
+function handleAction(type, btn) {
+  openJoinModal();
+}
+
+function handleLike(btn, count) {
+  const liked = btn.dataset.liked;
+  if (liked) {
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${count}`;
+    btn.style.color = '';
+    delete btn.dataset.liked;
+  } else {
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--detractor)" stroke="var(--detractor)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${count + 1}`;
+    btn.style.color = 'var(--detractor)';
+    btn.dataset.liked = '1';
+    showToast('Join Orbit to save your likes and reactions.');
+  }
+}
+
+function handleFollow(btn) {
+  if (btn.dataset.followed) {
+    btn.textContent = 'Follow';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    btn.style.background = '';
+    delete btn.dataset.followed;
+  } else {
+    btn.textContent = 'Following';
+    btn.style.color = 'var(--cyan)';
+    btn.style.borderColor = 'var(--cyan)';
+    btn.style.background = 'var(--cyan-glow)';
+    btn.dataset.followed = '1';
+    showToast('Create a profile to follow participants and track their contributions.');
+  }
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+
+  const feedTabMap = {
+    feed: 'all',
+    debates: 'debates',
+    scenarios: 'scenarios',
+    gravity: 'gravity',
+  };
+
+  const feedTab = feedTabMap[tab];
+  if (feedTab) {
+    // Sync feed header tabs
+    document.querySelectorAll('.feed-tab').forEach(t => {
+      t.classList.remove('active');
+      const tText = t.textContent.trim().toLowerCase();
+      if (
+        (feedTab === 'all' && tText === 'all posts') ||
+        (feedTab === 'debates' && tText === 'debates') ||
+        (feedTab === 'scenarios' && tText === 'scenarios') ||
+        (feedTab === 'gravity' && tText === 'system insights')
+      ) {
+        t.classList.add('active');
+      }
+    });
+    // Render the filtered feed
+    const container = document.getElementById('posts-container');
+    const pool = allPostsPool;
+    if (feedTab === 'all') {
+      container.innerHTML = renderFeedWithAds(posts);
+    } else if (feedTab === 'debates') {
+      const filtered = pool.filter(p => p.postType === 'debate');
+      container.innerHTML = filtered.length
+        ? renderFeedWithAds(filtered)
+        : `<div class="empty-state" style="display:block;">No debates found.</div>`;
+    } else if (feedTab === 'scenarios') {
+      const filtered = pool.filter(p => p.postType === 'scenario');
+      container.innerHTML = filtered.length
+        ? renderFeedWithAds(filtered)
+        : `<div class="empty-state" style="display:block;">No scenarios found.</div>`;
+    } else if (feedTab === 'gravity') {
+      const filtered = pool.filter(p => p.gravity);
+      container.innerHTML = filtered.length
+        ? renderFeedWithAds(filtered)
+        : `<div class="empty-state" style="display:block;">No gravity threads found.</div>`;
+    }
+    // Scroll feed to top
+    const mainFeed = document.getElementById('mainFeed');
+    if (mainFeed) mainFeed.scrollTop = 0;
+  } else {
+    // Profiles or The Andre Method — open join modal
+    openJoinModal();
+  }
+}
+
+function switchFeedTab(tab, el) {
+  document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  const container = document.getElementById('posts-container');
+  if (tab === 'all') {
+    container.innerHTML = renderFeedWithAds(posts);
+  } else if (tab === 'debates') {
+    container.innerHTML = renderFeedWithAds(posts.filter(p => p.postType === 'debate'));
+  } else if (tab === 'scenarios') {
+    container.innerHTML = renderFeedWithAds(posts.filter(p => p.postType === 'scenario'));
+  } else if (tab === 'insights') {
+    container.innerHTML = renderFeedWithAds(posts.filter(p => p.postType === 'insight'));
+  }
+
+  if (!container.innerHTML) {
+    container.innerHTML = `<div class="empty-state" style="display:block;">No posts in this category yet.</div>`;
+  }
+}
+
+// ── MODALS ────────────────────────────────────────────────────────
+
+function openJoinModal() {
+  document.getElementById('joinModal').classList.add('open');
+}
+
+function openNotifications() {
+  showToast('You have 3 new replies to threads you follow. Join Orbit to view them.');
+}
+
+// ── FORMSPREE AJAX PROFILE FORM ───────────────────────────────────
+async function submitJoinForm() {
+  const btn = document.getElementById('fsSubmitBtn');
+  const globalError = document.getElementById('fsGlobalError');
+
+  // Field definitions: [inputId, errorId, validator]
+  const fields = [
+    ['fs-first-name',  'err-first-name',  v => v.trim().length >= 2],
+    ['fs-last-name',   'err-last-name',   v => v.trim().length >= 2],
+    ['fs-email',       'err-email',       v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())],
+    ['fs-title',       'err-title',       v => v.trim().length >= 2],
+    ['fs-industry',    'err-industry',    v => v !== ''],
+    ['fs-role',        'err-role',        v => v !== ''],
+  ];
+
+  // Reset errors
+  globalError.classList.remove('visible');
+  fields.forEach(([id, errId]) => {
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    if (el) el.classList.remove('error');
+    if (err) err.classList.remove('visible');
+  });
+
+  // Validate
+  let valid = true;
+  fields.forEach(([id, errId, validate]) => {
+    const el = document.getElementById(id);
+    const err = document.getElementById(errId);
+    if (!el) return;
+    if (!validate(el.value)) {
+      el.classList.add('error');
+      if (err) err.classList.add('visible');
+      valid = false;
+    }
+  });
+  if (!valid) return;
+
+  // Submit to Formspree
+  btn.disabled = true;
+  btn.innerHTML = '<span class="fs-spinner"></span>Submitting…';
+
+  const formData = {
+    first_name:           document.getElementById('fs-first-name').value.trim(),
+    last_name:            document.getElementById('fs-last-name').value.trim(),
+    email:                document.getElementById('fs-email').value.trim(),
+    professional_title:   document.getElementById('fs-title').value.trim(),
+    industry:             document.getElementById('fs-industry').value,
+    participation_role:   document.getElementById('fs-role').value,
+    why_joining:          document.getElementById('fs-why').value.trim(),
+    _subject:             'New Orbit Profile Request',
+  };
+
+  try {
+    const res = await fetch('https://formspree.io/f/mrejbkgb', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('joinFormBody').style.display = 'none';
+      document.getElementById('joinSuccess').style.display = 'block';
+    } else {
+      // Formspree field errors
+      if (data.errors) {
+        const msgs = data.errors.map(e => e.message).join(' ');
+        globalError.textContent = msgs || 'Please check your entries and try again.';
+      } else {
+        globalError.textContent = 'Submission failed. Please try again shortly.';
+      }
+      globalError.classList.add('visible');
+      btn.disabled = false;
+      btn.innerHTML = 'Create My Profile';
+    }
+  } catch (err) {
+    globalError.textContent = 'Network error. Please check your connection and try again.';
+    globalError.classList.add('visible');
+    btn.disabled = false;
+    btn.innerHTML = 'Create My Profile';
+  }
+}
+
+// Legacy alias (used by other "Join" buttons that call joinSuccess directly)
+function joinSuccess() {
+  document.getElementById('joinModal').classList.remove('open');
+  showToast('🎉 Welcome to Orbit! Your profile is under review.');
+}
+
+// ── WEATHER (Open-Meteo — free, no API key) ───────────────────────
+const WMO_CODES = {
+  0:'Clear Sky', 1:'Mainly Clear', 2:'Partly Cloudy', 3:'Overcast',
+  45:'Fog', 48:'Icy Fog', 51:'Light Drizzle', 53:'Drizzle', 55:'Heavy Drizzle',
+  61:'Light Rain', 63:'Rain', 65:'Heavy Rain', 71:'Light Snow', 73:'Snow', 75:'Heavy Snow',
+  80:'Showers', 81:'Rain Showers', 82:'Violent Showers',
+  95:'Thunderstorm', 96:'Thunderstorm w/ Hail', 99:'Thunderstorm w/ Heavy Hail',
+};
+const WMO_ICONS = {
+  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 48:'🌫️',
+  51:'🌦️', 53:'🌧️', 55:'🌧️', 61:'🌦️', 63:'🌧️', 65:'🌧️',
+  71:'🌨️', 73:'❄️', 75:'❄️', 80:'🌦️', 81:'🌧️', 82:'⛈️',
+  95:'⛈️', 96:'⛈️', 99:'⛈️',
+};
+
+async function loadWeather() {
+  const widget = document.getElementById('weatherWidget');
+  if (!widget) return;
+
+  try {
+    // Get user location
+    const geoRes = await fetch('https://ipapi.co/json/');
+    const geo = await geoRes.json();
+    const { latitude: lat, longitude: lon, city, region_code: state } = geo;
+
+    // Fetch current weather from Open-Meteo
+    const wRes = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m` +
+      `&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`
+    );
+    const w = await wRes.json();
+    const c = w.current;
+
+    const code = c.weather_code;
+    const icon = WMO_ICONS[code] || '🌡️';
+    const desc = WMO_CODES[code] || 'Weather data';
+    const temp = Math.round(c.temperature_2m);
+    const feels = Math.round(c.apparent_temperature);
+    const humidity = c.relative_humidity_2m;
+    const wind = Math.round(c.wind_speed_10m);
+
+    // Get local time
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+    widget.innerHTML = `
+      <div class="weather-location">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${city}, ${state} · ${timeStr}
+      </div>
+      <div class="weather-main">
+        <div class="weather-temp">${temp}°F</div>
+        <div class="weather-icon">${icon}</div>
+      </div>
+      <div class="weather-desc">${desc}</div>
+      <div class="weather-details">
+        <div class="weather-detail">Feels Like<span>${feels}°F</span></div>
+        <div class="weather-detail">Humidity<span>${humidity}%</span></div>
+        <div class="weather-detail">Wind<span>${wind} mph</span></div>
+        <div class="weather-detail">Updated<span>Just now</span></div>
+      </div>`;
+  } catch (e) {
+    // Fallback if geo/weather fails
+    widget.innerHTML = `
+      <div class="weather-location">⛅ Live Weather</div>
+      <div class="weather-main">
+        <div class="weather-temp" style="font-size:22px;">--°F</div>
+        <div class="weather-icon">🌡️</div>
+      </div>
+      <div class="weather-desc">Location access needed</div>
+      <div style="font-size:11px;opacity:.7;margin-top:8px;">Weather updates when location is available.</div>`;
+  }
+}
+
+// Refresh weather every 10 minutes
+loadWeather();
+setInterval(loadWeather, 10 * 60 * 1000);
+
+function openProfileByIndex(index) {
+  const p = profiles[index];
+  if (!p) return;
+  const modal = document.getElementById('profileModal');
+  const content = document.getElementById('profileModalContent');
+  const av = getAvatarUrl(p);
+
+  content.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">Participant Profile</div>
+      <button class="modal-close" onclick="document.getElementById('profileModal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-profile-header">
+      <img class="modal-avatar" src="${av}" alt="${p.name}" />
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:4px;">${p.name}</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">${p.handle} · Age ${p.age}</div>
+        <span class="role-badge ${p.role}" style="font-size:11px;">${p.role.toUpperCase()}</span>
+        <span class="role-badge ${p.role}" style="margin-left:6px;font-size:11px;opacity:0.7;">${p.tag}</span>
+      </div>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Background</div>
+      <div class="modal-value">${p.bg}</div>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Debate Behavior</div>
+      <div class="modal-value">${p.behavior}</div>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Role in Orbit</div>
+      <div class="modal-value">${getRoleDescription(p.role)}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="document.getElementById('profileModal').classList.remove('open')">Close</button>
+      <button class="modal-btn primary" onclick="document.getElementById('profileModal').classList.remove('open'); openJoinModal();">Follow ${p.name.split(' ')[0]}</button>
+    </div>
+  `;
+  modal.classList.add('open');
+}
+
+function openProfileModal(type) {
+  openJoinModal();
+}
+
+function getRoleDescription(role) {
+  const desc = {
+    promoter: 'Promoters defend structured thinking using the Andre Method framework. They ground arguments in evidence, translate theory into practice, and provide constructive paths forward.',
+    detractor: 'Detractors challenge ideas with precision. Each detractor targets a specific failure point in the Andre Method — from validation gaps to execution breakdowns. They exist to sharpen thinking, not destroy it.',
+    neutral: 'Neutrals keep the conversation human. They ask clarifying questions, summarize complex threads, and represent the perspective of people still learning the framework.'
+  };
+  return desc[role] || '';
+}
+
+function closeModal(event, id) {
+  if (event.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('open');
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── POST BANK (extended rotation) ────────────────────────────────
+
+const extraPosts = [
+  {
+    type: "user", postType: "debate", postTypeLabel: "Debate",
+    profile: profiles[8], // Carlos
+    body: "<strong>Accountability without consequences is just encouragement.</strong> The Andre Method talks about ownership at every phase — but if missing a milestone has no real cost, ownership is theoretical. You can't build a completion culture on good intentions alone.",
+    tags: ["monitor", "complete"], signal: 2, time: "1h ago", likes: 87, comments: 31, shares: 14,
+    thread: [
+      { profile: profiles[5], body: "Carlos is pointing at something real. Monitor & Sustain requires assigned owners — but without defined stakes, 'owner' just means 'person who takes the blame later.'" },
+      { profile: profiles[25], body: "So what does consequence look like without being punitive? There has to be a middle ground between no accountability and toxic pressure." },
+    ]
+  },
+  {
+    type: "user", postType: "insight", postTypeLabel: "System Insight",
+    profile: profiles[19], // Monica
+    body: "The phase most people skip isn't MANNED. It's the handoff between Clear Path and execution. That gap — where the plan exists but nobody has moved yet — is where 60% of projects go to die quietly. You need an explicit 'launch moment' that triggers real action.",
+    tags: ["clearpath"], signal: 3, time: "3h ago", likes: 143, comments: 52, shares: 38,
+    thread: [
+      { profile: profiles[9], body: "Monica — this is exactly right. The launch moment needs to be ritualized. Not metaphorical. A specific time, a specific person saying 'we are now in execution.' The transition has to be declared." },
+      { profile: profiles[24], body: "This is something I've never thought about. How do you create that launch moment when the team is remote and async?" },
+    ]
+  },
+  {
+    type: "system", postType: "scenario", postTypeLabel: "Scenario",
+    profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
+    body: "🧩 <strong>Orbit Scenario Drop:</strong> You're 90 days into a project. 80% complete. The client is happy but your team is exhausted and disengaged. Three key people have mentally checked out. Using the Andre Method, how do you close this out without losing quality or the team?",
+    tags: ["monitor", "complete"], signal: 2, time: "System · 2:00 PM", likes: 178, comments: 93, shares: 41,
+    thread: [
+      { profile: profiles[14], body: "This is where Monitor & Sustain actually earns its place. First question I'd ask: when did the energy shift? Was there a specific milestone, decision, or moment that caused disengagement?" },
+      { profile: profiles[3], body: "The team being exhausted and the project being 80% complete is not a coincidence — it's a structural issue. Someone should have flagged momentum loss at 60%. This is what monitoring is for." },
+      { profile: profiles[29], body: "Is there a framework-approved way to run a 'finish sprint' that re-energizes without just adding more pressure?" },
+    ]
+  },
+  {
+    type: "user", postType: "failure", postTypeLabel: "Failure Case",
+    profile: profiles[0], // Marcus Hill
+    body: "<strong>Most 'validated' ideas were never validated.</strong> What happened: a founder surveyed 50 friends. 47 said 'great idea.' They built for 8 months. Zero paying customers at launch. The difference between social validation and market validation is the only difference that matters.",
+    tags: ["manned"], signal: 3, time: "5h ago", likes: 201, comments: 78, shares: 55,
+    thread: [
+      { profile: profiles[5], body: "Marcus nails it. Friends will not tell you the truth. Validation means finding strangers willing to part with money or make a commitment before you build. Everything else is a popularity poll." },
+      { profile: profiles[25], body: "How do you find strangers to validate with when your network is mostly people you know?" },
+    ]
+  },
+  {
+    type: "user", postType: "breakdown", postTypeLabel: "Success Breakdown",
+    profile: profiles[10], // Steven Wright
+    body: "Finance perspective on the Andre Method: every phase has an ROI checkpoint. MANNED — cost of validation vs. cost of building wrong. Clear Path — resource allocation against milestones. Monitor — burn rate against outcomes. Complete — return on total project investment. If you're not measuring at each phase, you're flying blind.",
+    tags: ["manned", "clearpath", "monitor", "complete"], signal: 3, gravity: true,
+    time: "7h ago", likes: 267, comments: 61, shares: 89,
+    thread: [
+      { profile: profiles[8], body: "This framing is underused. Every phase should have a defined 'stop or continue' decision point based on financials. The Andre Method provides the structure; the numbers provide the trigger." },
+      { profile: profiles[4], body: "Steven, where does the ROI calculation break down for non-revenue projects — like internal initiatives or social impact work?" },
+      { profile: profiles[10], body: "Andre W — great question. Non-revenue projects use proxy metrics: time saved, error reduction, adoption rate, team output capacity. ROI isn't always money. It's always return relative to investment." },
+    ]
+  },
+  {
+    type: "user", postType: "debate", postTypeLabel: "Debate",
+    profile: profiles[1], // Dana Brooks
+    body: "Hot take: <strong>most project retrospectives are therapy, not analysis.</strong> Teams spend 45 minutes validating their feelings about what went wrong instead of mapping root cause to method failure. Retrospectives should output one thing: what changes to the system next time?",
+    tags: ["complete"], signal: 2, time: "8h ago", likes: 112, comments: 47, shares: 22,
+    thread: [
+      { profile: profiles[22], body: "Dana — I'd push back slightly. Emotional processing enables honest root cause analysis. If people don't feel safe saying what actually went wrong, you get diplomatic answers, not useful ones." },
+      { profile: profiles[1], body: "Felicia, fair. But the distinction is: emotional safety as a prerequisite, not the outcome. The end product is still a system change, not a feeling." },
+    ]
+  },
+  {
+    type: "system", postType: "insight", postTypeLabel: "System Insight",
+    profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
+    body: "<strong>Framework Check:</strong> The Complete phase isn't just delivery. It requires three things: (1) a documented outcome against original success criteria, (2) a lessons-captured document, and (3) a formal handoff or closure event. Without all three, the project hasn't completed — it's just stopped.",
+    tags: ["complete"], signal: 3, time: "System · 6:00 AM", likes: 334, comments: 107, shares: 76,
+    thread: [
+      { profile: profiles[6], body: "The 'formal closure event' piece is massively underrated. It's not ceremonial. It signals to the team that effort was recognized, chapter is closed, and energy can shift forward. Without it, people carry unresolved loops." },
+      { profile: profiles[26], body: "What does a lessons-captured document actually look like in practice? Is there a template?" },
+      { profile: profiles[9], body: "Chris — at minimum: what we expected vs. what happened, three things to repeat, three things to change, and one systemic fix for the process. One page, max. The goal is future reference, not history." },
+    ]
+  },
+  {
+    type: "user", postType: "debate", postTypeLabel: "Debate",
+    profile: profiles[2], // Kevin Patel
+    body: "People who say 'I work better under pressure' are describing poor planning, not a superpower. Urgency is a symptom of not starting the clear path early enough. The Andre Method builds the pressure point into the beginning — so you're never scrambling at the end.",
+    tags: ["clearpath"], signal: 2, time: "9h ago", likes: 189, comments: 64, shares: 31,
+    thread: [
+      { profile: profiles[19], body: "Kevin — partially correct. Some people do have neurological profiles that require urgency for focus activation. But that's an execution style consideration, not a justification for skipping structured planning." },
+      { profile: profiles[27], body: "Honestly this one hit. I've been telling myself pressure makes me sharper for 20 years. It's possible I've just normalized the chaos." },
+    ]
+  },
+  {
+    type: "user", postType: "failure", postTypeLabel: "Failure Case",
+    profile: profiles[3], // Lisa Carter
+    body: "<strong>HR data point:</strong> 71% of project team burnout cases in my 10 years of practice occurred in the Monitor & Sustain phase, not during initial execution. People sprint to the 70% mark and then collapse because there was no plan for the long hold. Sustained execution is a different muscle.",
+    tags: ["monitor"], signal: 3, time: "11h ago", likes: 156, comments: 58, shares: 43,
+    thread: [
+      { profile: profiles[9], body: "Lisa — this explains why completion rates drop so sharply past the 70% mark across industries. The skills for launching are not the same as the skills for sustaining. Teams train for one and assume the other comes naturally." },
+    ]
+  },
+  {
+    type: "user", postType: "breakdown", postTypeLabel: "Success Breakdown",
+    profile: profiles[12], // Nina Patel
+    body: "We built an internal product tracking system using the Andre Method top to bottom. 8 people. 12 weeks. Here's what we did differently: weekly 15-minute phase check-ins. Not status updates — phase health checks. 'Are we still in Clear Path or have we slipped into reactive execution?' That one question saved us three times.",
+    tags: ["clearpath", "monitor"], signal: 3, gravity: true,
+    time: "Yesterday", likes: 298, comments: 82, shares: 94,
+    thread: [
+      { profile: profiles[5], body: "Nina, this is one of the most practical implementations of the framework I've seen documented on this platform. The phase health check question is something I'm borrowing immediately." },
+      { profile: profiles[25], body: "Did the team ever disagree on which phase they were in? And how did you resolve that?" },
+      { profile: profiles[12], body: "Emily — yes, twice. We used it as signal that the plan needed re-anchoring. Disagreement about phase usually means someone has information the rest of the team doesn't. It surfaces faster than most meetings would." },
+    ]
+  },
+];
+
+// Combined post pool for rotation
+const allPostsPool = [...posts, ...extraPosts];
+let currentPostOffset = 0;
+
+// Rotation system — cycles through posts on a timer
+function startPostRotation() {
+  setInterval(() => {
+    currentPostOffset = (currentPostOffset + 1) % allPostsPool.length;
+
+    const container = document.getElementById('posts-container');
+    const activeTab = document.querySelector('.feed-tab.active');
+    if (container && activeTab && activeTab.textContent.trim() === 'All Posts') {
+      const newData = allPostsPool[(currentPostOffset + Math.floor(Math.random() * allPostsPool.length)) % allPostsPool.length];
+      // Fix: use insertAdjacentHTML, never set outerHTML on a detached element
+      container.insertAdjacentHTML('afterbegin', renderPost(newData, 0));
+      // Keep count stable
+      const all = container.querySelectorAll('.post');
+      if (all.length > 8) all[all.length - 1].remove();
+    }
+  }, 45000); // Rotate every 45 seconds
+}
+
+// ── SOCIAL SHARE ──────────────────────────────────────────────────
+
+const SHARE_URL = 'https://andremethod.com';
+const SHARE_BASE_TEXT = 'Check out this discussion on Orbit — the Andre Method community for structured thinking, debates, and real execution.';
+
+function openShareModal(event, postText) {
+  if (event) event.stopPropagation();
+  const text = postText ? `"${postText.trim()}..." — ${SHARE_BASE_TEXT}` : SHARE_BASE_TEXT;
+  const encodedText = encodeURIComponent(text);
+  const encodedUrl = encodeURIComponent(SHARE_URL);
+
+  document.getElementById('shareTwitter').href =
+    `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+  document.getElementById('shareLinkedIn').href =
+    `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&summary=${encodedText}`;
+  document.getElementById('shareFacebook').href =
+    `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`;
+  document.getElementById('shareWhatsApp').href =
+    `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function copyShareLink() {
+  navigator.clipboard.writeText(SHARE_URL).then(() => {
+    const btn = document.querySelector('.share-copy-btn');
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = 'rgba(6,214,160,0.2)';
+    btn.style.borderColor = 'rgba(6,214,160,0.5)';
+    btn.style.color = 'var(--clearpath)';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = '';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2000);
+  }).catch(() => {
+    showToast('Link: andremethod.com — copy it from your browser.');
+  });
+}
+
+// ── MOBILE NAV ────────────────────────────────────────────────────
+
+function mobileNavSwitch(tab, el) {
+  document.querySelectorAll('.mobile-nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  switchFeedTab(tab, document.querySelector(`.feed-tab`));
+  document.querySelectorAll('.feed-tab').forEach(t => {
+    if (t.textContent.trim().toLowerCase().includes(tab === 'feed' ? 'all' : tab)) {
+      t.click();
+    }
+  });
+}
+
+function openMobileDrawer() {
+  const drawer = document.getElementById('mobileDrawer');
+  drawer.classList.add('open');
+  // Populate mobile profiles
+  const container = document.getElementById('mobileProfiles');
+  if (container) {
+    container.innerHTML = profiles.slice(0, 4).map(p => `
+      <div class="profile-card-sm" onclick="document.getElementById('mobileDrawer').classList.remove('open'); openProfileByIndex(${p.id - 1})">
+        <img src="${getAvatarUrl(p)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
+        <div class="pcs-info">
+          <div class="pcs-name">${p.name}</div>
+          <div class="pcs-role">${p.tag}</div>
+        </div>
+        <button class="follow-btn" onclick="event.stopPropagation(); handleFollow(this)">Follow</button>
+      </div>
+    `).join('');
+  }
+}
+
+function closeMobileDrawer(event) {
+  if (event.target === document.getElementById('mobileDrawer')) {
+    document.getElementById('mobileDrawer').classList.remove('open');
+  }
+}
+
+// ── INIT (updated) ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initFeed();
+  startPostRotation();
+});
+</script>
+</body>
+</html>
