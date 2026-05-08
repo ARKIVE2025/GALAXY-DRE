@@ -575,6 +575,157 @@ button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:no
 .bl-err{color:var(--red);}
 .bl-info{color:var(--accent);}
 .bl-warn{color:var(--orange);}
+
+/* ═══════════════════════════════ SMART BUILD ADVISOR ═══════════════════════════════ */
+.advisor-modal .modal{width:560px;}
+.advisor-intro{
+  background:linear-gradient(135deg,rgba(247,169,74,0.08),rgba(124,106,247,0.08));
+  border:1px solid rgba(247,169,74,0.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;
+}
+.advisor-intro-title{font-size:12px;font-weight:700;color:var(--orange);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+.advisor-intro p{font-size:12px;color:var(--text-mid);line-height:1.6;}
+
+.advisor-build-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.advisor-type-card{
+  padding:12px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);
+  cursor:pointer;transition:all .15s;text-align:left;
+}
+.advisor-type-card:hover{border-color:var(--border-hi);background:var(--surface3);}
+.advisor-type-card.active{border-color:var(--orange);background:rgba(247,169,74,0.08);box-shadow:0 0 0 1px rgba(247,169,74,0.15);}
+.atc-icon{font-size:20px;margin-bottom:6px;display:block;}
+.atc-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.atc-sub{font-size:10px;color:var(--text-dim);line-height:1.4;}
+
+.advisor-feature-grid{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.advisor-feature{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  border-radius:7px;border:1px solid var(--border);background:var(--surface2);
+  cursor:pointer;transition:all .15s;
+}
+.advisor-feature:hover{border-color:var(--border-hi);}
+.advisor-feature.active{border-color:var(--green);background:rgba(0,212,170,0.06);}
+.advisor-feature input[type=checkbox]{accent-color:var(--green);width:13px;height:13px;flex-shrink:0;cursor:pointer;}
+.advisor-feature-label{font-size:12px;color:var(--text-mid);flex:1;}
+.advisor-feature.active .advisor-feature-label{color:var(--text);}
+
+.advisor-result{
+  margin-top:16px;border-radius:10px;border:1px solid var(--border-hi);
+  background:var(--surface2);overflow:hidden;display:none;
+}
+.advisor-result.show{display:block;}
+.advisor-result-header{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(0,212,170,0.06),rgba(124,106,247,0.06));
+}
+.advisor-result-title{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.06em;}
+.advisor-result-body{padding:14px 16px;}
+
+.tool-recommendation{
+  display:flex;align-items:flex-start;gap:12px;padding:12px;
+  border-radius:8px;border:1px solid var(--border);background:var(--surface3);
+  margin-bottom:10px;
+}
+.tool-recommendation:last-child{margin-bottom:0;}
+.tool-rec-badge{
+  min-width:70px;padding:4px 8px;border-radius:6px;
+  font-size:9px;font-family:'Space Mono',monospace;font-weight:700;
+  text-align:center;letter-spacing:.06em;flex-shrink:0;
+}
+.tool-rec-badge.primary{background:rgba(124,106,247,0.2);color:var(--accent);border:1px solid rgba(124,106,247,0.3);}
+.tool-rec-badge.secondary{background:rgba(0,212,170,0.12);color:var(--green);border:1px solid rgba(0,212,170,0.2);}
+.tool-rec-badge.advisory{background:rgba(247,169,74,0.12);color:var(--orange);border:1px solid rgba(247,169,74,0.2);}
+.tool-rec-info{}
+.tool-rec-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.tool-rec-why{font-size:11.5px;color:var(--text-mid);line-height:1.55;}
+
+.ai-assist-section{
+  margin-top:14px;padding:12px;border-radius:8px;
+  border:1px solid rgba(247,169,74,0.2);background:rgba(247,169,74,0.05);
+}
+.ai-assist-title{font-size:11px;font-weight:700;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ai-model-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.ai-chip{
+  padding:4px 10px;border-radius:20px;font-size:10px;font-family:'Space Mono',monospace;
+  border:1px solid var(--border-hi);color:var(--text-mid);background:var(--surface3);
+  cursor:pointer;transition:all .15s;
+}
+.ai-chip:hover{border-color:var(--orange);color:var(--orange);}
+.ai-chip.active{border-color:var(--orange);background:rgba(247,169,74,0.1);color:var(--orange);}
+
+.advisor-gen-btn{
+  width:100%;height:38px;margin-top:14px;border-radius:8px;
+  background:linear-gradient(135deg,var(--orange),#e8820a);
+  color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;
+}
+.advisor-gen-btn:hover{opacity:.9;box-shadow:0 4px 20px rgba(247,169,74,0.4);}
+.advisor-prompt-out{
+  margin-top:14px;padding:12px;border-radius:8px;border:1px solid var(--accent);
+  background:var(--accent-dim);font-size:11.5px;color:var(--text-mid);line-height:1.6;
+  display:none;white-space:pre-wrap;font-family:'DM Sans',sans-serif;max-height:200px;overflow-y:auto;
+}
+.advisor-prompt-out.show{display:block;}
+.advisor-copy-row{display:flex;gap:8px;margin-top:10px;}
+.advisor-copy-btn{
+  flex:1;height:32px;border-radius:7px;border:1px solid var(--border-hi);
+  background:var(--surface3);color:var(--text-mid);font-size:11px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;
+}
+.advisor-copy-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.advisor-copy-btn.green:hover{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+
+/* ═══════════════════════════════ SETTINGS TABS ═══════════════════════════════ */
+.settings-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.settings-tab{
+  padding:7px 14px;font-size:11px;font-weight:600;color:var(--text-dim);
+  border-radius:7px 7px 0 0;border:1px solid transparent;border-bottom:none;
+  margin-bottom:-1px;transition:all .15s;background:none;
+}
+.settings-tab:hover{color:var(--text);}
+.settings-tab.active{background:var(--surface2);border-color:var(--border);border-bottom-color:var(--surface2);color:var(--text);}
+.settings-pane{display:none;}
+.settings-pane.active{display:block;}
+
+/* User Guide styles */
+.guide-section{margin-bottom:20px;}
+.guide-section-title{
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;
+  color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.guide-section-title::before{content:'';display:inline-block;width:3px;height:12px;background:var(--accent);border-radius:2px;}
+.guide-tool-card{
+  display:flex;align-items:flex-start;gap:12px;padding:12px;
+  border-radius:9px;border:1px solid var(--border);background:var(--surface2);margin-bottom:8px;
+}
+.guide-tool-icon{
+  width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:14px;flex-shrink:0;
+}
+.guide-tool-info{}
+.guide-tool-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.guide-tool-tag{font-size:8px;padding:2px 6px;border-radius:4px;font-family:'Space Mono',monospace;letter-spacing:.04em;font-weight:600;}
+.guide-tool-desc{font-size:11px;color:var(--text-mid);line-height:1.55;}
+.guide-tip{
+  padding:10px 12px;border-radius:7px;border:1px solid rgba(0,212,170,0.2);
+  background:rgba(0,212,170,0.04);font-size:11.5px;color:var(--text-mid);
+  line-height:1.6;margin-bottom:8px;display:flex;gap:8px;
+}
+.guide-tip i{color:var(--green);flex-shrink:0;margin-top:2px;}
+.guide-workflow-steps{counter-reset:wf-step;}
+.guide-workflow-step{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  border-radius:7px;border:1px solid var(--border);background:var(--surface2);margin-bottom:6px;
+}
+.guide-step-num{
+  min-width:22px;height:22px;border-radius:50%;background:var(--accent);
+  color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;font-family:'Space Mono',monospace;
+}
+.guide-step-content{font-size:11.5px;color:var(--text-mid);line-height:1.55;}
+.guide-step-content strong{color:var(--text);}
 </style>
 </head>
 <body>
@@ -602,6 +753,7 @@ button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:no
   <button class="hbtn danger-btn" id="clear-btn" title="Clear Canvas"><i class="fas fa-trash-alt"></i> Clear</button>
 
   <div class="header-right">
+    <button class="hbtn advisor-hbtn" id="advisor-btn" title="Smart Build Advisor — AI Tool Recommender" onclick="openModal('advisor-overlay')" style="border-color:rgba(247,169,74,0.4);color:var(--orange);font-weight:600;"><i class="fas fa-compass-drafting"></i> Build Advisor</button>
     <button class="hbtn" id="bridge-btn" title="Send to DRE Tools" style="border-color:rgba(124,106,247,0.3);color:var(--accent);"><i class="fas fa-paper-plane"></i> Send to DRE</button>
     <button class="export-btn" id="export-btn"><i class="fas fa-arrow-up-from-bracket"></i> Export</button>
     <div class="vsep"></div>
@@ -790,28 +942,134 @@ button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:no
 
 <!-- ════════════════════ SETTINGS MODAL ════════════════════ -->
 <div class="overlay" id="settings-overlay">
-  <div class="modal">
+  <div class="modal" style="width:520px;">
     <div class="modal-header">
-      <div class="modal-title">AI PROVIDER SETTINGS</div>
+      <div class="modal-title"><i class="fas fa-sliders" style="color:var(--accent);margin-right:8px;"></i>SETTINGS</div>
       <button class="modal-close" onclick="closeModal('settings-overlay')"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <div class="section-title" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;">Select Provider</div>
-      <div class="provider-grid" id="provider-grid"></div>
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-stab="provider" onclick="switchSettingsTab('provider')">AI Provider</button>
+        <button class="settings-tab" data-stab="guide" onclick="switchSettingsTab('guide')">📖 User Guide</button>
+      </div>
 
-      <div class="form-group" id="api-key-group">
-        <label class="form-label" id="api-key-label">API Key</label>
-        <input type="password" class="form-input" id="api-key-input" placeholder="Paste your API key here...">
+      <!-- TAB: PROVIDER -->
+      <div class="settings-pane active" id="stab-provider">
+        <div class="section-title" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;">Select Provider</div>
+        <div class="provider-grid" id="provider-grid"></div>
+        <div class="form-group" id="api-key-group">
+          <label class="form-label" id="api-key-label">API Key</label>
+          <input type="password" class="form-input" id="api-key-input" placeholder="Paste your API key here...">
+        </div>
+        <div class="form-group" id="model-group">
+          <label class="form-label">Model</label>
+          <select class="form-select" id="model-select"></select>
+        </div>
+        <div class="form-group" id="base-url-group" style="display:none;">
+          <label class="form-label">LM Studio Base URL</label>
+          <input type="text" class="form-input" id="base-url-input" placeholder="http://localhost:1234/v1">
+        </div>
+        <button class="save-settings-btn" id="save-settings-btn"><i class="fas fa-check"></i> Save & Connect</button>
       </div>
-      <div class="form-group" id="model-group">
-        <label class="form-label">Model</label>
-        <select class="form-select" id="model-select"></select>
+
+      <!-- TAB: USER GUIDE -->
+      <div class="settings-pane" id="stab-guide">
+        <div style="max-height:70vh;overflow-y:auto;padding-right:4px;">
+
+          <!-- What is DRE Workflow -->
+          <div class="guide-section">
+            <div class="guide-section-title">What is DRE Workflow?</div>
+            <div class="guide-tip"><i class="fas fa-info-circle"></i><span>DRE Workflow is your project's starting point. Describe what you want to build, and it generates a visual step-by-step map — then routes the right work to the right DRE tool.</span></div>
+          </div>
+
+          <!-- The DRE Tool Suite -->
+          <div class="guide-section">
+            <div class="guide-section-title">The DRE Tool Suite</div>
+            <div class="guide-tool-card">
+              <div class="guide-tool-icon" style="background:rgba(124,106,247,0.15);">💻</div>
+              <div class="guide-tool-info">
+                <div class="guide-tool-name">DRE CODE <span class="guide-tool-tag" style="background:rgba(124,106,247,0.15);color:var(--accent);">Tab 01</span></div>
+                <div class="guide-tool-desc">Your AI-powered code editor. Best for building websites, single-file apps, HTML/CSS/JS projects, and any UI-focused work. The AI can directly rewrite and refine your code with full file awareness.</div>
+              </div>
+            </div>
+            <div class="guide-tool-card">
+              <div class="guide-tool-icon" style="background:rgba(247,169,74,0.15);">🌐</div>
+              <div class="guide-tool-info">
+                <div class="guide-tool-name">NWA <span class="guide-tool-tag" style="background:rgba(247,169,74,0.15);color:var(--orange);">Tab 03</span></div>
+                <div class="guide-tool-desc">Multi-Agent Web App builder. Best for complex programs, apps with logic/state/UI split across agents. Handles programs that need separate Logic, UI, and State pipelines working in parallel.</div>
+              </div>
+            </div>
+            <div class="guide-tool-card">
+              <div class="guide-tool-icon" style="background:rgba(0,212,170,0.15);">🧩</div>
+              <div class="guide-tool-info">
+                <div class="guide-tool-name">Architect <span class="guide-tool-tag" style="background:rgba(0,212,170,0.15);color:var(--green);">Tab 02</span></div>
+                <div class="guide-tool-desc">Template library. Push a production-ready code foundation to DRE CODE instantly. Best used before writing any code — sets up your project scaffold.</div>
+              </div>
+            </div>
+            <div class="guide-tool-card">
+              <div class="guide-tool-icon" style="background:rgba(74,158,255,0.15);">🔍</div>
+              <div class="guide-tool-info">
+                <div class="guide-tool-name">DRE.Architect <span class="guide-tool-tag" style="background:rgba(74,158,255,0.15);color:var(--blue);">Tab 06</span></div>
+                <div class="guide-tool-desc">Paste any code and get a live Mermaid diagram + plain-English breakdown of how it works. Use when you need to understand existing code before editing it.</div>
+              </div>
+            </div>
+            <div class="guide-tool-card">
+              <div class="guide-tool-icon" style="background:rgba(247,106,240,0.15);">🎨</div>
+              <div class="guide-tool-info">
+                <div class="guide-tool-name">Replicated <span class="guide-tool-tag" style="background:rgba(247,106,240,0.15);color:var(--pink);">Tab 05</span></div>
+                <div class="guide-tool-desc">Give it a reference URL or design description. It extracts colors, typography, layout, and component structure and dispatches a design payload to DRE CODE or NWA.</div>
+              </div>
+            </div>
+            <div class="guide-tool-card">
+              <div class="guide-tool-icon" style="background:rgba(255,77,109,0.15);">🔧</div>
+              <div class="guide-tool-info">
+                <div class="guide-tool-name">Debugger <span class="guide-tool-tag" style="background:rgba(255,77,109,0.15);color:var(--red);">Tab 04</span></div>
+                <div class="guide-tool-desc">Test your code in an isolated sandbox. Runtime errors are captured and the AI can fix them in one click. Always the last step before you ship.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- When to use which AI -->
+          <div class="guide-section">
+            <div class="guide-section-title">When to Use External AI (Claude, ChatGPT, Gemini)</div>
+            <div class="guide-tip"><i class="fas fa-lightbulb"></i><span><strong style="color:var(--text);">Use Claude/ChatGPT/Gemini</strong> when you need guidance, explanations, architecture advice, or prompt help before building. They're best for planning and answering "how do I do X?" questions.</span></div>
+            <div class="guide-tip"><i class="fas fa-code"></i><span><strong style="color:var(--text);">Use DRE CODE</strong> when you're ready to actually build — it has direct code-writing powers and knows your full file.</span></div>
+            <div class="guide-tip"><i class="fas fa-network-wired"></i><span><strong style="color:var(--text);">Use NWA</strong> when your app has complex moving parts — authentication flows, state machines, multi-screen logic — that need a structured multi-agent approach.</span></div>
+          </div>
+
+          <!-- Standard Build Workflow -->
+          <div class="guide-section">
+            <div class="guide-section-title">The Standard Build Workflow</div>
+            <div class="guide-workflow-steps">
+              <div class="guide-workflow-step"><div class="guide-step-num">1</div><div class="guide-step-content"><strong>DRE Workflow (here)</strong> — Describe your project, generate a visual architecture map.</div></div>
+              <div class="guide-workflow-step"><div class="guide-step-num">2</div><div class="guide-step-content"><strong>Replicated (Tab 05)</strong> — Optional: extract design tokens from a reference site.</div></div>
+              <div class="guide-workflow-step"><div class="guide-step-num">3</div><div class="guide-step-content"><strong>Architect (Tab 02)</strong> — Push a starter template into DRE CODE to get your scaffold.</div></div>
+              <div class="guide-workflow-step"><div class="guide-step-num">4</div><div class="guide-step-content"><strong>NWA (Tab 03)</strong> — Build complex logic, state, and multi-agent pipelines.</div></div>
+              <div class="guide-workflow-step"><div class="guide-step-num">5</div><div class="guide-step-content"><strong>DRE CODE (Tab 01)</strong> — Refine UI, add features, and polish the final product.</div></div>
+              <div class="guide-workflow-step"><div class="guide-step-num">6</div><div class="guide-step-content"><strong>Debugger (Tab 04)</strong> — Test in sandbox, auto-fix errors before shipping.</div></div>
+            </div>
+          </div>
+
+          <!-- DRE CODE vs NWA -->
+          <div class="guide-section">
+            <div class="guide-section-title">DRE CODE vs NWA — Quick Decision Guide</div>
+            <div class="guide-tip"><i class="fas fa-globe"></i><span>Building a <strong style="color:var(--text);">website, landing page, portfolio, or single-file app</strong>? → <strong style="color:var(--accent);">Use DRE CODE</strong></span></div>
+            <div class="guide-tip"><i class="fas fa-lock"></i><span>Need <strong style="color:var(--text);">authentication, login/signup, user accounts</strong>? → <strong style="color:var(--orange);">Start with NWA</strong> for logic, then refine in DRE CODE</span></div>
+            <div class="guide-tip"><i class="fas fa-database"></i><span>Building an app with <strong style="color:var(--text);">database, API calls, and multi-page flows</strong>? → <strong style="color:var(--orange);">Use NWA</strong></span></div>
+            <div class="guide-tip"><i class="fas fa-paint-brush"></i><span>Mostly <strong style="color:var(--text);">visual/UI work, styling, or adding a feature to existing code</strong>? → <strong style="color:var(--accent);">Use DRE CODE</strong></span></div>
+          </div>
+
+          <!-- Prompting tips -->
+          <div class="guide-section">
+            <div class="guide-section-title">Tips for Better Results</div>
+            <div class="guide-tip"><i class="fas fa-pen-to-square"></i><span>Be specific in your project description. Instead of "make a website," say "a personal portfolio with a hero section, project gallery, and contact form using a dark cyberpunk aesthetic."</span></div>
+            <div class="guide-tip"><i class="fas fa-compass-drafting"></i><span>Use the <strong style="color:var(--text);">🧭 Build Advisor</strong> if you're unsure where to start — it analyzes your build type and recommends the right tool with a ready-made prompt.</span></div>
+            <div class="guide-tip"><i class="fas fa-paper-plane"></i><span>After generating a workflow, use <strong style="color:var(--text);">Send to DRE Tools</strong> to push the workflow directly into DRE CODE or NWA as a starting prompt.</span></div>
+          </div>
+
+        </div>
       </div>
-      <div class="form-group" id="base-url-group" style="display:none;">
-        <label class="form-label">LM Studio Base URL</label>
-        <input type="text" class="form-input" id="base-url-input" placeholder="http://localhost:1234/v1">
-      </div>
-      <button class="save-settings-btn" id="save-settings-btn"><i class="fas fa-check"></i> Save & Connect</button>
+
     </div>
   </div>
 </div>
@@ -965,6 +1223,55 @@ button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:no
   </div>
 </div>
 
+<!-- ════════════════════ SMART BUILD ADVISOR MODAL ════════════════════ -->
+<div class="overlay advisor-modal" id="advisor-overlay">
+  <div class="modal" style="width:580px;max-height:92vh;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-compass-drafting" style="color:var(--orange);margin-right:8px;"></i>🧭 SMART BUILD ADVISOR</div>
+      <button class="modal-close" onclick="closeModal('advisor-overlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="advisor-intro">
+        <div class="advisor-intro-title"><i class="fas fa-lightbulb"></i> Not sure which DRE tool to use?</div>
+        <p>Tell us what you're building. The Advisor analyzes your project type, recommends whether to use DRE CODE or NWA, and optionally suggests which external AI (Claude, ChatGPT, Gemini) to consult first — then generates a ready-to-use prompt for you.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Step 1 — What are you building?</label>
+        <div class="advisor-build-type-grid" id="advisor-type-grid">
+          <div class="advisor-type-card active" data-type="website"><span class="atc-icon">🌐</span><div class="atc-name">Website / Landing Page</div><div class="atc-sub">Portfolio, business site, blog, one-pager, marketing page</div></div>
+          <div class="advisor-type-card" data-type="webapp"><span class="atc-icon">⚙️</span><div class="atc-name">Web Application</div><div class="atc-sub">Dashboard, SaaS tool, form-heavy app, data management</div></div>
+          <div class="advisor-type-card" data-type="auth"><span class="atc-icon">🔐</span><div class="atc-name">App with Authentication</div><div class="atc-sub">Login/signup, user accounts, protected routes, sessions</div></div>
+          <div class="advisor-type-card" data-type="game"><span class="atc-icon">🎮</span><div class="atc-name">Game / Interactive App</div><div class="atc-sub">Browser game, canvas app, interactive simulation</div></div>
+          <div class="advisor-type-card" data-type="tool"><span class="atc-icon">🛠</span><div class="atc-name">Utility / Tool</div><div class="atc-sub">Calculator, converter, generator, browser extension</div></div>
+          <div class="advisor-type-card" data-type="api"><span class="atc-icon">🔌</span><div class="atc-name">API / Backend</div><div class="atc-sub">REST API, server logic, database integration, Node.js</div></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Step 2 — What features do you need? <span style="color:var(--text-dim);font-size:9px;">(check all that apply)</span></label>
+        <div class="advisor-feature-grid" id="advisor-feature-grid">
+          <label class="advisor-feature"><input type="checkbox" value="auth"> <span class="advisor-feature-label">🔐 User authentication / login</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="database"> <span class="advisor-feature-label">🗄 Database / data storage</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="payments"> <span class="advisor-feature-label">💳 Payments / Stripe integration</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="api_calls"> <span class="advisor-feature-label">🔗 External API calls</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="realtime"> <span class="advisor-feature-label">⚡ Real-time updates / websockets</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="responsive"> <span class="advisor-feature-label">📱 Mobile responsive design</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="ai_features"> <span class="advisor-feature-label">🤖 AI / LLM integration</span></label>
+          <label class="advisor-feature"><input type="checkbox" value="forms"> <span class="advisor-feature-label">📝 Forms / contact / lead capture</span></label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Step 3 — Briefly describe what it does <span style="color:var(--text-dim);font-size:9px;">(optional but recommended)</span></label>
+        <input type="text" class="form-input" id="advisor-description" placeholder="e.g. A portfolio site for a freelance designer with a contact form and dark theme...">
+      </div>
+      <button class="advisor-gen-btn" onclick="runBuildAdvisor()"><i class="fas fa-compass-drafting"></i> Analyze &amp; Recommend</button>
+      <div class="advisor-result" id="advisor-result">
+        <div class="advisor-result-header"><i class="fas fa-check-circle" style="color:var(--green);"></i><div class="advisor-result-title">RECOMMENDATION READY</div></div>
+        <div class="advisor-result-body" id="advisor-result-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast-stack" id="toast-stack"></div>
 
@@ -992,6 +1299,7 @@ const TEMPLATES = [
   { id:'aiapp',     label:'AI-Powered App',      icon:'🤖', color:'#7c6af7', desc:'LLM Integration → RAG → Streaming → Deploy' },
   { id:'monorepo',  label:'Monorepo Setup',      icon:'📦', color:'#4a9eff', desc:'Turborepo/Nx → Workspaces → Shared Libs' },
   { id:'novice',    label:'Novice Website Guide', icon:'🌱', color:'#f7c948', desc:'Wix · Squarespace · AI Builder → Real Dev', isNovice:true },
+  { id:'advisor',   label:'Smart Build Advisor',  icon:'🧭', color:'#f7a84a', desc:'Tell me what to build — AI recommends the right DRE tool', isAdvisor:true },
 ];
 
 const TEMPLATE_PROMPTS = {
@@ -1133,6 +1441,8 @@ function buildTemplateGrid() {
     btn.onclick = () => {
       if (t.isNovice) {
         openNoviceModal();
+      } else if (t.isAdvisor) {
+        openModal('advisor-overlay');
       } else {
         document.getElementById('prompt-input').value = TEMPLATE_PROMPTS[t.id];
         generateWorkflow();
@@ -2481,6 +2791,185 @@ function updateBridgeStatus(state_class, text) {
 }
 
 // ── Activity log ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+//  SETTINGS TAB SWITCHER
+// ══════════════════════════════════════════════════════
+function switchSettingsTab(tab) {
+  document.querySelectorAll('.settings-tab').forEach(t => t.classList.toggle('active', t.dataset.stab === tab));
+  document.querySelectorAll('.settings-pane').forEach(p => p.classList.toggle('active', p.id === 'stab-' + tab));
+}
+
+// ══════════════════════════════════════════════════════
+//  SMART BUILD ADVISOR
+// ══════════════════════════════════════════════════════
+const advisorState = { buildType: 'website', features: [] };
+
+(function wireAdvisor() {
+  function doWire() {
+    document.querySelectorAll('.advisor-type-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.advisor-type-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        advisorState.buildType = card.dataset.type;
+      });
+    });
+    document.querySelectorAll('.advisor-feature input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.closest('.advisor-feature').classList.toggle('active', cb.checked);
+        advisorState.features = [...document.querySelectorAll('.advisor-feature input:checked')].map(c => c.value);
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', doWire);
+  else doWire();
+})();
+
+const ADVISOR_DATA = {
+  website: {
+    label: 'Website / Landing Page',
+    primaryTool: 'DRE CODE',
+    primaryBadge: 'primary',
+    primaryWhy: 'DRE CODE is the ideal tool for websites. Its AI agent has direct write access to your entire file, can handle HTML/CSS/JS in one place, and excels at UI-focused work like layouts, animations, and styling. Start here.',
+    secondaryTool: null,
+    aiConsult: ['Claude', 'ChatGPT'],
+    aiReason: 'Use Claude or ChatGPT to plan your site structure, choose a color palette, or get a component checklist before you start building in DRE CODE.',
+    promptTemplate: (desc, features) => `Build a ${desc || 'website'} as a single self-contained HTML file with embedded CSS and JavaScript. ${features.includes('responsive') ? 'Make it fully mobile responsive. ' : ''}${features.includes('forms') ? 'Include a working contact/lead capture form. ' : ''}${features.includes('ai_features') ? 'Integrate an AI API call for smart features. ' : ''}Use a distinctive dark cyberpunk aesthetic with smooth animations. Deliver production-ready code.`,
+  },
+  webapp: {
+    label: 'Web Application',
+    primaryTool: 'NWA',
+    primaryBadge: 'primary',
+    primaryWhy: 'Web apps with multiple views, data management, and complex interactions are best started in NWA. Its multi-agent system splits the work into Logic, UI, and State pipelines — producing clean, structured code.',
+    secondaryTool: 'DRE CODE',
+    secondaryBadge: 'secondary',
+    secondaryWhy: 'After NWA generates the app skeleton, bring it into DRE CODE for UI polish, styling refinements, and feature additions.',
+    aiConsult: ['Claude', 'ChatGPT', 'Gemini'],
+    aiReason: 'Before building, consult an AI to design your data model, define user flows, and map out the component hierarchy. This saves significant rework.',
+    promptTemplate: (desc, features) => `Build a ${desc || 'web application'} with the following requirements:\n- ${features.includes('auth') ? 'User authentication with login/signup/logout flows\n- ' : ''}${features.includes('database') ? 'Local state management simulating database operations\n- ' : ''}${features.includes('realtime') ? 'Real-time UI updates without page refresh\n- ' : ''}${features.includes('responsive') ? 'Fully responsive layout for all screen sizes\n- ' : ''}Clean component architecture with separate logic, UI, and state layers.\nRoute to: UI Agent (components/layout), Logic Agent (interactions/data), State Agent (app state/persistence).`,
+  },
+  auth: {
+    label: 'App with Authentication',
+    primaryTool: 'NWA',
+    primaryBadge: 'primary',
+    primaryWhy: 'Authentication requires coordinated Logic (token handling, validation), UI (forms, error states), and State (session, user object). NWA\'s three-agent pipeline handles this cleanly. Do not try to build auth in DRE CODE alone — NWA first.',
+    secondaryTool: 'DRE CODE',
+    secondaryBadge: 'secondary',
+    secondaryWhy: 'After NWA scaffolds the auth system, use DRE CODE to refine the login/signup UI, add design polish, and wire up additional protected pages.',
+    aiConsult: ['Claude'],
+    aiReason: 'Authentication is complex. Ask Claude to explain JWT vs session-based auth, help you design your user model, and choose the right approach (Supabase, Firebase, custom) BEFORE building. This will save hours of refactoring.',
+    promptTemplate: (desc, features) => `Build ${desc || 'an application'} with a complete authentication system:\n- Registration page with email/password validation\n- Login page with error handling and "remember me"\n- Protected route guard that redirects unauthenticated users\n- User session state (stored in localStorage with expiry)\n- Logout flow that clears session\n${features.includes('database') ? '- User profile storage and retrieval\n' : ''}Route to NWA agents: Logic (auth logic, token management), UI (login/signup/dashboard screens), State (session state machine).`,
+  },
+  game: {
+    label: 'Game / Interactive App',
+    primaryTool: 'DRE CODE',
+    primaryBadge: 'primary',
+    primaryWhy: 'Browser games are typically single-file canvas/JS applications. DRE CODE\'s direct file-writing capabilities and full-context awareness make it perfect for game loop logic, rendering, and input handling.',
+    secondaryTool: 'NWA',
+    secondaryBadge: 'secondary',
+    secondaryWhy: 'For complex games with AI opponents, multiplayer logic, or elaborate state machines, NWA can scaffold the game architecture before you refine it in DRE CODE.',
+    aiConsult: ['Claude', 'ChatGPT'],
+    aiReason: 'Use Claude or ChatGPT to design your game mechanics, scoring system, and entity architecture. Getting this right before coding prevents painful rewrites.',
+    promptTemplate: (desc, features) => `Build ${desc || 'a browser game'} as a complete single-file HTML5 application using Canvas 2D or DOM. Include: game loop with requestAnimationFrame, collision detection, scoring system, game states (start/playing/game-over), keyboard/touch input, local high score storage. ${features.includes('ai_features') ? 'Include AI-controlled entities or procedural generation. ' : ''}Deliver a polished, playable game with a retro arcade aesthetic.`,
+  },
+  tool: {
+    label: 'Utility / Tool',
+    primaryTool: 'DRE CODE',
+    primaryBadge: 'primary',
+    primaryWhy: 'Utility tools — calculators, converters, generators — are typically self-contained HTML/CSS/JS files. DRE CODE builds these extremely well, delivering polished single-file tools instantly.',
+    secondaryTool: null,
+    aiConsult: ['Claude'],
+    aiReason: 'Use Claude to define the input/output schema and edge cases for your tool before building. For complex algorithms (finance, math, data processing), Claude can validate your logic first.',
+    promptTemplate: (desc, features) => `Build ${desc || 'a utility tool'} as a self-contained single HTML file. ${features.includes('forms') ? 'Include clean form inputs with real-time validation. ' : ''}${features.includes('api_calls') ? 'Fetch live data from an external API and display results. ' : ''}${features.includes('responsive') ? 'Make it fully mobile-friendly. ' : ''}Focus on clean UX: clear labels, instant feedback, copy-to-clipboard functionality where useful, and a polished dark UI.`,
+  },
+  api: {
+    label: 'API / Backend',
+    primaryTool: 'NWA',
+    primaryBadge: 'primary',
+    primaryWhy: 'Backend/API projects require coordinated Logic (route handlers, business logic), State (data models, middleware), and sometimes UI (admin panel). NWA\'s multi-agent approach produces clean, structured Node.js/Express code.',
+    secondaryTool: 'DRE CODE',
+    secondaryBadge: 'secondary',
+    secondaryWhy: 'Use DRE CODE to build any frontend admin panel, API docs interface, or client-side component that consumes your backend.',
+    aiConsult: ['Claude', 'ChatGPT'],
+    aiReason: 'API design benefits enormously from upfront planning. Use Claude to design your endpoint schema, authentication strategy, and data model before writing a single line. It will also help you choose between REST, GraphQL, or tRPC.',
+    promptTemplate: (desc, features) => `Build ${desc || 'a REST API'} with the following:\n- Express.js server with organized route structure\n${features.includes('auth') ? '- JWT authentication middleware for protected routes\n' : ''}${features.includes('database') ? '- Data persistence layer (file-based or in-memory store)\n' : ''}${features.includes('payments') ? '- Stripe payment webhook handler\n' : ''}- Input validation and error handling\n- CORS configuration\n- API response formatting\nRoute to NWA: Logic Agent (route handlers, business logic), State Agent (data models, middleware), UI Agent (any admin interface).`,
+  },
+};
+
+function runBuildAdvisor() {
+  const buildType = advisorState.buildType;
+  const features  = advisorState.features;
+  const desc      = document.getElementById('advisor-description').value.trim();
+  const data      = ADVISOR_DATA[buildType];
+  if (!data) return;
+
+  const prompt = data.promptTemplate(desc, features);
+
+  let html = '';
+
+  // Primary tool
+  html += `<div class="tool-recommendation">
+    <div class="tool-rec-badge ${data.primaryBadge}">PRIMARY</div>
+    <div class="tool-rec-info">
+      <div class="tool-rec-name"><i class="fas fa-star" style="color:var(--orange);font-size:10px;margin-right:4px;"></i>${data.primaryTool}</div>
+      <div class="tool-rec-why">${data.primaryWhy}</div>
+    </div>
+  </div>`;
+
+  // Secondary tool if any
+  if (data.secondaryTool) {
+    html += `<div class="tool-recommendation">
+      <div class="tool-rec-badge ${data.secondaryBadge}">THEN</div>
+      <div class="tool-rec-info">
+        <div class="tool-rec-name">${data.secondaryTool}</div>
+        <div class="tool-rec-why">${data.secondaryWhy}</div>
+      </div>
+    </div>`;
+  }
+
+  // AI consulting section
+  if (data.aiConsult && data.aiConsult.length) {
+    html += `<div class="ai-assist-section">
+      <div class="ai-assist-title"><i class="fas fa-robot"></i> Consider Consulting an External AI First</div>
+      <p style="font-size:11.5px;color:var(--text-mid);line-height:1.55;margin-bottom:10px;">${data.aiReason}</p>
+      <div class="ai-model-chips">`;
+    data.aiConsult.forEach(ai => {
+      const icons = { Claude:'🤖', ChatGPT:'🧠', Gemini:'✨' };
+      html += `<span class="ai-chip">${icons[ai]||'🤖'} ${ai}</span>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // Generated prompt
+  html += `<div style="margin-top:14px;">
+    <div class="form-label" style="margin-bottom:6px;">Generated Prompt for ${data.primaryTool}</div>
+    <div class="advisor-prompt-out show" id="advisor-prompt-text">${prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
+    <div class="advisor-copy-row">
+      <button class="advisor-copy-btn" onclick="copyAdvisorPrompt()"><i class="fas fa-copy"></i> Copy Prompt</button>
+      <button class="advisor-copy-btn green" onclick="useAdvisorPrompt()"><i class="fas fa-wand-magic-sparkles"></i> Use in Workflow</button>
+    </div>
+  </div>`;
+
+  document.getElementById('advisor-result-body').innerHTML = html;
+  const result = document.getElementById('advisor-result');
+  result.classList.add('show');
+  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Store raw prompt for copy/use
+  advisorState._lastPrompt = prompt;
+}
+
+function copyAdvisorPrompt() {
+  if (!advisorState._lastPrompt) return;
+  navigator.clipboard.writeText(advisorState._lastPrompt).then(() => toast('Prompt copied!', 'ok'));
+}
+
+function useAdvisorPrompt() {
+  if (!advisorState._lastPrompt) return;
+  document.getElementById('prompt-input').value = advisorState._lastPrompt;
+  closeModal('advisor-overlay');
+  toast('Prompt loaded — hit Generate Workflow!', 'ok');
+}
+
 function bridgeLog(msg, type) {
   const ts   = new Date().toLocaleTimeString('en-US', { hour12: false });
   const cls  = { ok:'bl-ok', err:'bl-err', info:'bl-info', warn:'bl-warn' }[type] || '';
