@@ -740,7 +740,95 @@
             animation: moonPulse 2s ease-in-out infinite;
         }
         @keyframes moonPulse { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+        /* ── ADMIN ANALYTICS OVERLAY (hidden by default, owner-only) ── */
+        #__dreAdminOverlay {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            background: rgba(0,0,0,0.96);
+            border: 1px solid rgba(0,212,255,0.35);
+            border-radius: 10px;
+            padding: 20px 28px 18px;
+            min-width: 300px;
+            max-width: 380px;
+            box-shadow: 0 0 40px rgba(0,212,255,0.12), inset 0 0 30px rgba(0,0,0,0.8);
+            font-family: 'Courier New', monospace;
+            pointer-events: all;
+        }
+        #__dreAdminOverlay.__dreVisible { display: block; }
+        #__dreAdminOverlay .__dreHeader {
+            font-size: 9px;
+            letter-spacing: 4px;
+            color: rgba(0,212,255,0.5);
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(0,212,255,0.12);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #__dreAdminOverlay .__dreClose {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+            cursor: pointer;
+            width: 24px; height: 24px;
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1;
+        }
+        #__dreAdminOverlay .__dreClose:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+        #__dreAdminOverlay .__dreRow {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+        #__dreAdminOverlay .__dreLabel {
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 9px;
+        }
+        #__dreAdminOverlay .__dreValue {
+            color: #00d4ff;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        #__dreAdminOverlay .__dreValue.__dreGold { color: #ffc832; }
+        #__dreAdminOverlay .__dreValue.__dreGreen { color: #00ff41; }
+        #__dreAdminOverlay .__dreFooter {
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 8px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+        }
     </style>
+
+    <!-- ── GA4: async, production-safe, no UI impact ── -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-12KBJQ8QDS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-12KBJQ8QDS', {
+            send_page_view: true,
+            anonymize_ip: true,
+            cookie_flags: 'SameSite=None;Secure'
+        });
+    </script>
 </head>
 <body>
 
@@ -2195,6 +2283,165 @@ window.enterGalaxy=function(){
 
 window.toggleMute=function(){ music.muted=!music.muted; muteBtn.textContent=music.muted?'🔇':'🔊'; };
 window.setVolume=function(v){ music.volume=parseFloat(v); music.muted=false; muteBtn.textContent='🔊'; };
+</script>
+
+<!-- ── ADMIN OVERLAY ELEMENT (invisible to public, owner shortcut only) ── -->
+<div id="__dreAdminOverlay" aria-hidden="true">
+    <div class="__dreHeader">
+        <span>⬡ DRE ANALYTICS · PRIVATE</span>
+        <button class="__dreClose" id="__dreCloseBtn" title="Close (ESC)">✕</button>
+    </div>
+    <div class="__dreRow">
+        <span class="__dreLabel">Total Visits</span>
+        <span class="__dreValue __dreGold" id="__dreVisitCount">—</span>
+    </div>
+    <div class="__dreRow">
+        <span class="__dreLabel">Session Start</span>
+        <span class="__dreValue" id="__dreSession">—</span>
+    </div>
+    <div class="__dreRow">
+        <span class="__dreLabel">Resolution</span>
+        <span class="__dreValue" id="__dreResolution">—</span>
+    </div>
+    <div class="__dreRow">
+        <span class="__dreLabel">Device Type</span>
+        <span class="__dreValue __dreGreen" id="__dreDevice">—</span>
+    </div>
+    <div class="__dreRow">
+        <span class="__dreLabel">Referrer</span>
+        <span class="__dreValue" id="__dreReferrer" style="font-size:10px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>
+    </div>
+    <div class="__dreFooter">SHIFT + ALT + D · ESC TO CLOSE</div>
+</div>
+
+<!-- ── PRIVATE ANALYTICS MODULE (owner-only, zero public visibility) ── -->
+<script>
+(function() {
+    'use strict';
+
+    // ── CONFIG ──────────────────────────────────────────────────────────────
+    const _cfg = {
+        counterEndpoint: 'https://api.counterapi.dev/v1/dre-galaxy/visits/up',
+        adminShortcut: { shift: true, alt: true, key: 'd' },
+        debug: false          // flip to true locally for verbose logs; never in prod
+    };
+
+    // ── INTERNAL STATE ──────────────────────────────────────────────────────
+    const _state = {
+        visitCount: null,
+        sessionStart: new Date().toLocaleString('en-US', {
+            month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        }),
+        overlayOpen: false
+    };
+
+    // ── SILENT LOG (only fires when debug=true) ──────────────────────────────
+    const _log = (...args) => { if (_cfg.debug) console.log('[DRE·Analytics]', ...args); };
+
+    // ── DEVICE DETECTION ────────────────────────────────────────────────────
+    function _getDevice() {
+        const ua = navigator.userAgent;
+        if (/tablet|ipad|playbook|silk/i.test(ua)) return 'TABLET';
+        if (/mobile|android|iphone|ipod|blackberry|opera mini|iemobile/i.test(ua)) return 'MOBILE';
+        return 'DESKTOP';
+    }
+
+    // ── PART 2: PRIVATE VISIT COUNTER ───────────────────────────────────────
+    async function _incrementVisit() {
+        try {
+            const res = await fetch(_cfg.counterEndpoint, {
+                method: 'GET',                      // counterapi.dev uses GET /up
+                cache: 'no-store',
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            // counterapi.dev returns { value: N } or { count: N }
+            _state.visitCount = data.value ?? data.count ?? data.hits ?? '—';
+            _log('Visit count:', _state.visitCount);
+        } catch (err) {
+            _log('Counter failed (graceful):', err.message);
+            _state.visitCount = '—';
+        }
+    }
+
+    // ── PART 3: ADMIN OVERLAY RENDER ────────────────────────────────────────
+    function _renderOverlay() {
+        const el = id => document.getElementById(id);
+        el('__dreVisitCount').textContent = _state.visitCount ?? '…';
+        el('__dreSession').textContent    = _state.sessionStart;
+        el('__dreResolution').textContent = `${window.screen.width}×${window.screen.height}`;
+        el('__dreDevice').textContent     = _getDevice();
+        const ref = document.referrer;
+        el('__dreReferrer').textContent   = ref ? (new URL(ref)).hostname : 'DIRECT';
+    }
+
+    function _showOverlay() {
+        _renderOverlay();
+        document.getElementById('__dreAdminOverlay').classList.add('__dreVisible');
+        _state.overlayOpen = true;
+        _log('Admin overlay opened');
+    }
+
+    function _hideOverlay() {
+        document.getElementById('__dreAdminOverlay').classList.remove('__dreVisible');
+        _state.overlayOpen = false;
+    }
+
+    // ── KEYBOARD SHORTCUT: Shift + Alt + D ──────────────────────────────────
+    document.addEventListener('keydown', function(e) {
+        const k = e.key.toLowerCase();
+        if (e.shiftKey && e.altKey && k === _cfg.adminShortcut.key) {
+            e.preventDefault();
+            _state.overlayOpen ? _hideOverlay() : _showOverlay();
+            return;
+        }
+        if (e.key === 'Escape' && _state.overlayOpen) {
+            _hideOverlay();
+        }
+    }, { passive: false });
+
+    // ── CLOSE BUTTON ────────────────────────────────────────────────────────
+    document.getElementById('__dreCloseBtn').addEventListener('click', _hideOverlay);
+
+    // ── GA4 CUSTOM EVENTS (optional enrichment, silent) ─────────────────────
+    function _fireEvent(name, params) {
+        if (typeof gtag === 'function') {
+            gtag('event', name, params);
+            _log('GA4 event:', name, params);
+        }
+    }
+
+    // Track entry gate click
+    const _origEnter = window.enterGalaxy;
+    window.enterGalaxy = function() {
+        _fireEvent('galaxy_entered', { method: 'entry_gate' });
+        if (typeof _origEnter === 'function') _origEnter.apply(this, arguments);
+    };
+
+    // Track node modal opens
+    const _origModal = window.openModal;
+    window.openModal = function(data) {
+        if (data && data.id) {
+            _fireEvent('node_opened', { node_id: data.id, node_name: data.name });
+        }
+        if (typeof _origModal === 'function') _origModal.apply(this, arguments);
+    };
+
+    // Track tutorial completion
+    const _origReplay = window.replayTutorial;
+    window.replayTutorial = function() {
+        _fireEvent('tutorial_started', { trigger: 'menu' });
+        if (typeof _origReplay === 'function') _origReplay.apply(this, arguments);
+    };
+
+    // ── INIT (deferred off main thread via setTimeout) ───────────────────────
+    setTimeout(_incrementVisit, 800);
+
+    _log('Analytics module initialised. Shortcut: Shift+Alt+D');
+
+})();
 </script>
 </body>
 </html>
