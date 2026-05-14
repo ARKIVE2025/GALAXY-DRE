@@ -1,0 +1,490 @@
+{
+  "_document": "Galaxy-DRE Master Knowledge Base",
+  "_version": "1.0",
+  "_created": "2026-05-14",
+  "_purpose": "External intelligence source for the Galaxy-DRE Intel Archive overlay.",
+  "_deploy_note": "Place this file in the same directory as your galaxy HTML file.",
+
+  "sections": [
+
+    {
+      "id": "start",
+      "label": "START HERE",
+      "icon": "⬡",
+      "title": "START HERE",
+      "subtitle": "New to the Galaxy? This is your entry point. Everything you need to begin.",
+      "what": "Galaxy-DRE is a unified ecosystem of AI tools, privacy systems, financial utilities, and creative platforms — all accessible from a single cinematic interface. Every glowing planet is a live tool. Every orbit is an execution layer.",
+      "how": "Click any planet to open its intelligence card. Use the Control Deck (MENU button) to navigate all tools by category. The gold spaceship orbiting the core is DRE Console — your execution layer. The INTEL button opens this archive at any time. Press ? on your keyboard as a shortcut.",
+      "stats": [
+        { "n": "20+", "l": "Live Tools" },
+        { "n": "10+", "l": "AI Platforms" },
+        { "n": "100%", "l": "Local Data" },
+        { "n": "0", "l": "Required Subscriptions" }
+      ],
+      "paths": [
+        { "icon": "🔵", "title": "FIRST TIME?", "desc": "Tap the blue core planet — Andre Go. Get the Chrome extension free and start capturing AI conversations.", "sec": "systems" },
+        { "icon": "✦", "title": "NEED STRATEGY?", "desc": "Tap Chat with DRE for real-time strategy, execution plans, and system diagnosis.", "sec": "ai" },
+        { "icon": "🔒", "title": "PRIVACY?", "desc": "DRE OS scans your device and gives you a real exposure score with hardening steps.", "sec": "systems" },
+        { "icon": "⚡", "title": "BUILD A SYSTEM?", "desc": "DRE Workflow is your creation layer. DRE Console is your execution layer. Build first, run second.", "sec": "workflows" },
+        { "icon": "✍️", "title": "WRITER?", "desc": "DRE Flow analyzes your manuscript with AI — chapters, characters, timelines. Fully local.", "sec": "systems" },
+        { "icon": "💸", "title": "FINANCIAL STRESS?", "desc": "Loan Shark maps your exact payday loan survival path — reborrow sequences and exit strategies.", "sec": "systems" }
+      ]
+    },
+
+    {
+      "id": "systems",
+      "label": "CORE SYSTEMS",
+      "icon": "◈",
+      "title": "CORE SYSTEMS",
+      "subtitle": "Every active tool in the Galaxy-DRE ecosystem. Full intelligence on purpose, position, and usage.",
+      "entries": [
+        {
+          "icon": "🔵",
+          "name": "Andre Go",
+          "codename": "CORE",
+          "category": "Revenue Engine · Chrome Extension · v5.0.0",
+          "purpose": "Captures every AI conversation across 10+ platforms automatically in real time. Exports to JSON, Markdown, CSV, or plain text. Runs on Chrome, Edge, and Brave.",
+          "description": "Andre Go is the primary revenue node of the entire ecosystem. It solves a critical problem: AI conversations are ephemeral by default. Andre Go makes them permanent, searchable, and exportable — with zero tracking and 100% local storage.",
+          "best_for": "Anyone using AI platforms daily who needs conversation history, cross-platform context, or exportable records.",
+          "workflow_position": "Core revenue node. Top-of-funnel acquisition drives installs.",
+          "related_systems": ["DRE Console", "Chat with DRE", "Session Data"],
+          "technical_details": "Manifest V3 Chrome extension. Content scripts intercept DOM mutations on AI platform pages. All data stored in chrome.storage.local. No background server calls.",
+          "api_requirements": "Andre Cloud included (no key needed). Optional: OpenAI, Anthropic, Google, DeepSeek, Grok via own API key for AI analysis features.",
+          "privacy_notes": "100% local. No data transmitted. No tracking. No analytics on your conversations.",
+          "file": "Dre_Go_lndpage.html",
+          "requires_api": false
+        },
+        {
+          "icon": "🟢",
+          "name": "DRE Workflow",
+          "codename": "DRE_WORKFLOW",
+          "category": "System Builder · Creation Layer",
+          "purpose": "Visual workflow builder with node connections, AND/OR logic gates, AI-assisted generation, template library, and minimap navigation.",
+          "description": "DRE Workflow is the creation layer of the execution stack. You design your system here before running it. Drag nodes, connect them with logic paths, generate via prompt or template, and export your execution plan.",
+          "best_for": "Founders, system builders, and project managers who think visually and need structured execution plans.",
+          "workflow_position": "Creation Layer — always before DRE Console.",
+          "related_systems": ["DRE Console"],
+          "technical_details": "Canvas-based node editor. Supports file and template uploads. Minimap for large flow navigation. AI generation via prompt input.",
+          "api_requirements": "None required for basic workflow building. AI generation features require a provider key.",
+          "privacy_notes": "All data local. Workflows stored in browser.",
+          "file": "dre_workflow_V2.html",
+          "requires_api": false
+        },
+        {
+          "icon": "🟡",
+          "name": "DRE Console",
+          "codename": "DRE_CONSOLE",
+          "category": "Execution System · Command Interface",
+          "purpose": "Command and execution center. Step-by-step execution blocks, plan cards with checklists, tool sidebar, AI execution panel, and progress tracking.",
+          "description": "DRE Console is the execution layer. What DRE Workflow designs, DRE Console runs. Load a plan, follow execution blocks, check items off, and track completion — all with an AI panel available for mid-execution support.",
+          "best_for": "Anyone who needs structured, step-by-step execution with accountability and progress tracking.",
+          "workflow_position": "Execution Layer — runs after DRE Workflow designs.",
+          "related_systems": ["DRE Workflow", "DRE Interface"],
+          "technical_details": "Multi-panel system: sidebar / workspace / AI panel. Orbits the CORE node as a gold spaceship. Click the spaceship in the galaxy to open.",
+          "api_requirements": "AI panel requires provider key for live assistance.",
+          "privacy_notes": "Local session only.",
+          "file": "DREUserConsolev3.0.HTML",
+          "requires_api": false
+        },
+        {
+          "icon": "🟣",
+          "name": "Chat with DRE",
+          "codename": "EVALUATE",
+          "category": "AI Chat · DRE Alignment Architect",
+          "purpose": "Direct channel to the DRE Alignment Architect AI. Get strategies, execution plans, system diagnoses, and ecosystem navigation — no fluff, no generic advice.",
+          "description": "Chat with DRE is the intelligence layer of the galaxy. It runs the full DRE Alignment Architect system prompt and reads your situation before responding. It gives structured action steps, not opinions.",
+          "best_for": "Project unblocking, goal alignment, ecosystem navigation, system design, and strategic decision support.",
+          "workflow_position": "Intelligence layer — consult before and during execution.",
+          "related_systems": ["DRE Interface", "DRE Workflow"],
+          "technical_details": "Powered by Andre Cloud. No API key required. Access via the purple planet in the galaxy or the CHAT WITH DRE button in the Control Deck.",
+          "api_requirements": "None — powered by Andre Cloud.",
+          "privacy_notes": "Conversations handled by Andre Cloud provider. No local storage of chat history by default.",
+          "file": "https://galaxy-andre-html-deploy.vercel.app/",
+          "requires_api": false
+        },
+        {
+          "icon": "🌐",
+          "name": "Orbit",
+          "codename": "ORBIT",
+          "category": "Social · Community Hub",
+          "purpose": "The social layer of the Galaxy-DRE ecosystem. Community updates, collaborator connections, and live ecosystem progress.",
+          "description": "Orbit is where the ecosystem meets the world. Community hub, live progress, collaborator network, and ecosystem news — all in one place. The galaxy doesn't run in isolation.",
+          "best_for": "Staying connected with the DRE community, following ecosystem updates, and finding collaborators.",
+          "workflow_position": "Social perimeter — connects the ecosystem to the outside world.",
+          "related_systems": ["Andre Go", "YouTube / Stream"],
+          "technical_details": "Self-contained social platform. Deployed as orbit.html alongside the galaxy.",
+          "api_requirements": "None.",
+          "privacy_notes": "Platform-dependent. See Orbit terms.",
+          "file": "orbit.html",
+          "requires_api": false
+        },
+        {
+          "icon": "⚡",
+          "name": "DRE Interface",
+          "codename": "DRE_INTERFACE",
+          "category": "AI Chat Terminal · v4",
+          "purpose": "Live AI chat terminal running the full DRE system prompt. Multi-provider, multi-mode. Ford Technical and Book Writing controllers included.",
+          "description": "DRE Interface is the advanced version of Chat with DRE — for power users who bring their own API keys. Supports file attachments, multiple controller modes, and direct provider selection.",
+          "best_for": "Power users with their own API keys who need full control over the AI interaction and context.",
+          "workflow_position": "Advanced intelligence layer — for users who need more control than Chat with DRE provides.",
+          "related_systems": ["Chat with DRE"],
+          "technical_details": "Multi-provider: OpenAI, Anthropic, Google, DeepSeek, Local (LM Studio / Element), Custom endpoint. Controller modes: DRE Default, Ford Technical, Book Writing. File attachments: PDF, JSON, TXT, Markdown.",
+          "api_requirements": "Requires your own API key from any supported provider. No key = no chat.",
+          "privacy_notes": "API key stored in browser localStorage only. Never transmitted to Galaxy-DRE. Goes directly to your chosen provider.",
+          "file": "https://project-9dael.vercel.app/DRE_CSInterface_v5.html",
+          "requires_api": true
+        },
+        {
+          "icon": "🗜️",
+          "name": "ZIP Tool",
+          "codename": "ZIP_TOOL",
+          "category": "File Utility",
+          "purpose": "Browser-native ZIP archiver and extractor. Create ZIP archives from files/folders or extract existing ZIPs — all without server uploads.",
+          "description": "ZIP Tool is a pure browser utility. Drop files to compress. Drop a ZIP to extract. Zero server dependency, zero file upload, zero accounts.",
+          "best_for": "Anyone who needs to archive or extract files without trusting a third-party upload service.",
+          "workflow_position": "Utility layer — standalone, no ecosystem dependencies.",
+          "related_systems": [],
+          "technical_details": "Uses JSZip browser library. All processing client-side. Supports folder structures.",
+          "api_requirements": "None.",
+          "privacy_notes": "100% local. Files never leave your device.",
+          "file": "ZIP_tool.html",
+          "requires_api": false
+        },
+        {
+          "icon": "🎵",
+          "name": "DRE Extractor",
+          "codename": "DRE_EXTRACTOR",
+          "category": "Audio Tool",
+          "purpose": "On-device audio extraction from any video or audio file. Outputs clean WAV. Zero server dependency.",
+          "description": "Drop any media file — video or audio — and DRE Extractor pulls the audio track and outputs a clean WAV file. No uploads. No accounts. Runs entirely in your browser.",
+          "best_for": "Content creators, podcasters, and researchers who need audio without cloud uploads.",
+          "workflow_position": "Utility layer — standalone.",
+          "related_systems": [],
+          "technical_details": "Uses Web Audio API and browser-native decoding. Client-side only.",
+          "api_requirements": "None.",
+          "privacy_notes": "100% local. Files never leave your device.",
+          "file": "dre-extractor-v2.html",
+          "requires_api": false
+        },
+        {
+          "icon": "🔒",
+          "name": "DRE OS",
+          "codename": "DRE_OS",
+          "category": "Privacy System · Exposure Reduction",
+          "purpose": "Browser and network exposure scanner. Scores your digital footprint and provides step-by-step hardening instructions.",
+          "description": "DRE OS scans browser signals, network metadata, and device fingerprinting vectors — then gives you a real exposure score with prioritized steps to reduce it. No tracking. No uploads.",
+          "best_for": "Anyone concerned about device tracking, digital privacy, or browser fingerprinting.",
+          "workflow_position": "Privacy layer — run periodically as a health check.",
+          "related_systems": [],
+          "technical_details": "Reads navigator, screen, canvas, WebGL, and network signals locally. Scoring algorithm built into the browser. No server calls.",
+          "api_requirements": "None.",
+          "privacy_notes": "Reads local signals only. Nothing is transmitted. Results displayed only to you.",
+          "file": "dre-os-v2__1_.html",
+          "requires_api": false
+        },
+        {
+          "icon": "📄",
+          "name": "RePrizal AI",
+          "codename": "REPRIZAL",
+          "category": "Career Tool · Resume Builder",
+          "purpose": "LLM-powered resume builder with PDF import, AI reformatting pipeline, and polished export.",
+          "description": "Import your existing PDF resume. An LLM pipeline converts it to structured JSON. The builder renders a polished resume ready to export — without a monthly subscription.",
+          "best_for": "Job seekers who want AI-quality resume formatting without paying for a SaaS subscription.",
+          "workflow_position": "Career layer — standalone.",
+          "related_systems": ["Chat with DRE"],
+          "technical_details": "PDF import via browser-native reader. AI JSON conversion via provider API. Builder renders from JSON. Export as PDF or plain text.",
+          "api_requirements": "Requires API key (OpenAI or Anthropic recommended). Key stored locally.",
+          "privacy_notes": "Resume data stays local. API key stored in browser only.",
+          "file": "ATS_Config_Pro_v_3_0.html",
+          "requires_api": true
+        },
+        {
+          "icon": "📖",
+          "name": "DRE Flow",
+          "codename": "DRE_FLOW",
+          "category": "Story Intelligence · Manuscript Analysis",
+          "purpose": "AI-powered manuscript analysis dashboard. Chapter summaries, character arc checking, timeline consistency, highlight analysis.",
+          "description": "DRE Flow is built for authors managing complex manuscripts. Upload your .docx or .txt, and DRE Flow runs AI-driven chapter analysis, character thread mapping, scene summaries, and consistency checks — all with your own API key.",
+          "best_for": "Fiction and non-fiction authors managing complex narratives, large character casts, or multi-timeline stories.",
+          "workflow_position": "Creative layer — connects to Kleara Studios universe.",
+          "related_systems": ["Kleara Studios", "DRE Interface"],
+          "technical_details": "Supports Claude, OpenAI, Gemini, and DeepSeek via bring-your-own-key. File processing client-side. Manuscript never leaves device.",
+          "api_requirements": "Requires API key from Claude, OpenAI, Gemini, or DeepSeek.",
+          "privacy_notes": "Manuscript stays local. API key stored in browser only. Sent to AI provider for analysis — choose a provider you trust.",
+          "file": "DRE_FLOW_enhanced.html",
+          "requires_api": true
+        },
+        {
+          "icon": "💻",
+          "name": "Dre Code",
+          "codename": "DRE_CODE",
+          "category": "Code Editor · AI-Powered",
+          "purpose": "AI-powered code editor built for creators. Novice Guard Mode. Smart Code Search. Live Preview.",
+          "description": "Dre Code is the code editor built for people who move different. Professional tools. Zero gatekeeping. Novice Guard Mode prevents destructive edits. Live preview shows output in real time.",
+          "best_for": "Developers and creators building within the DRE ecosystem who need a smart, integrated editor.",
+          "workflow_position": "Development layer — build and preview ecosystem tools.",
+          "related_systems": ["DRE Interface", "DRE Workflow"],
+          "technical_details": "AI-powered with Novice Guard Mode, Smart Code Search, and Live Preview. Currently in early access.",
+          "api_requirements": "TBD at launch.",
+          "privacy_notes": "TBD at launch.",
+          "file": "https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html",
+          "requires_api": false
+        },
+        {
+          "icon": "💸",
+          "name": "Loan Shark",
+          "codename": "LOAN_SHARK",
+          "category": "Financial Engine · Survival Calculator",
+          "purpose": "Payday loan survival calculator. Maps exact reborrow sequences and exit strategies with cash flow timeline.",
+          "description": "Loan Shark calculates the exact sequence of payments and reborrows needed to survive your next payday — and the paydays after that. It maps danger zones, identifies exit windows, and shows you the survival path.",
+          "best_for": "Anyone trapped in the payday loan cycle who needs a structured way out.",
+          "workflow_position": "Financial layer — standalone crisis tool.",
+          "related_systems": ["Chat with DRE"],
+          "technical_details": "Pure calculation engine. Input income, bills, and active loans. Outputs sequenced survival path with reborrow danger tracking.",
+          "api_requirements": "None.",
+          "privacy_notes": "100% local. Financial data never leaves your device.",
+          "file": "loan_shark_full_system.html",
+          "requires_api": false
+        },
+        {
+          "icon": "⭐",
+          "name": "24 Hours",
+          "codename": "HOURS_24",
+          "category": "Wellness · Daily Rhythm · Christ-Centered",
+          "purpose": "Christ-centered daily rhythm app. Habits, bilateral focus sessions, urge resistance tracking, AI life coach, and evening reflection.",
+          "description": "24 Hours is built for people who want structure, accountability, and a coach rooted in truth — not algorithms. Habit streaks, deep work sessions, urge tracking, AI coaching, and daily check-ins grounded in scripture.",
+          "best_for": "Anyone building daily structure, fighting bad habits, or wanting a Christ-centered productivity system.",
+          "workflow_position": "Wellness layer — daily operating rhythm.",
+          "related_systems": ["Chat with DRE", "DRE Workflow"],
+          "technical_details": "AI Coach supports OpenAI, Groq, DeepSeek, Anthropic. Calendar integration. Crisis support mode. All data stored locally. No accounts.",
+          "api_requirements": "AI Coach requires API key (OpenAI, Groq, DeepSeek, or Anthropic).",
+          "privacy_notes": "All data local. API key stored in browser only. No tracking. No accounts.",
+          "file": "24_HOURS_.HTML",
+          "requires_api": true
+        },
+        {
+          "icon": "✦",
+          "name": "Kleara Studios",
+          "codename": "KLEARA",
+          "category": "Author Universe · DL Ford & Atlas Parks",
+          "purpose": "Literary arm of the ecosystem. Two authors, two perspectives on the same world. Completely separate creative universe.",
+          "description": "DL Ford — Light / Exposure. People don't break. They decide. The DEFINED series.\n\nAtlas Parks — Dark / Pattern. The dark doesn't hide things. It reveals what light ignores. HADDER: Isabella Hadder.\n\nThis is not a tool. This is the work.",
+          "best_for": "Readers interested in the DRE extended creative universe.",
+          "workflow_position": "Creative perimeter — separate from the tool ecosystem.",
+          "related_systems": ["DRE Flow"],
+          "technical_details": "Rendered as a deep-space station node below the main galaxy. Completely separate creative universe from the tool ecosystem.",
+          "api_requirements": "None.",
+          "privacy_notes": "N/A.",
+          "file": "authorpage.html",
+          "requires_api": false
+        }
+      ]
+    },
+
+    {
+      "id": "ai",
+      "label": "AI PROVIDERS",
+      "icon": "◉",
+      "title": "AI PROVIDERS",
+      "subtitle": "All supported AI systems, their capabilities, and your responsibilities as the key holder.",
+      "providers": [
+        {
+          "name": "Andre Cloud",
+          "badge": "NO KEY NEEDED",
+          "color": "#00d4ff",
+          "desc": "Built-in AI provider managed by the Andre ecosystem. Powers Chat with DRE and Andre Go premium features. No API key required — included with Andre Go premium."
+        },
+        {
+          "name": "OpenAI",
+          "badge": "KEY REQUIRED",
+          "color": "#10a37f",
+          "desc": "GPT-4o, GPT-4, and o-series models. Industry standard. Supported in DRE Interface, DRE Flow, RePrizal AI, and 24 Hours. Get your key at platform.openai.com."
+        },
+        {
+          "name": "Anthropic Claude",
+          "badge": "KEY REQUIRED",
+          "color": "#cc785c",
+          "desc": "Claude 3.5 Sonnet, Haiku, and Opus. Best for nuanced reasoning, long document analysis, and writing. Supported in DRE Interface, DRE Flow, and 24 Hours. Get your key at console.anthropic.com."
+        },
+        {
+          "name": "Google Gemini",
+          "badge": "KEY REQUIRED",
+          "color": "#4285f4",
+          "desc": "Gemini 1.5 Pro and Flash. Strong multimodal capabilities and speed. Supported in DRE Interface and 24 Hours. Get your key at aistudio.google.com."
+        },
+        {
+          "name": "DeepSeek",
+          "badge": "KEY REQUIRED",
+          "color": "#7b68ee",
+          "desc": "Cost-effective alternative with strong coding and reasoning performance. Supported across DRE Interface and 24 Hours. Get your key at platform.deepseek.com."
+        },
+        {
+          "name": "Groq",
+          "badge": "KEY REQUIRED",
+          "color": "#ff6b35",
+          "desc": "Ultra-fast inference via Groq LPU hardware. Used in 24 Hours for rapid AI coaching responses where speed matters. Get your key at console.groq.com."
+        },
+        {
+          "name": "Local / LM Studio",
+          "badge": "NO CLOUD",
+          "color": "#00ff41",
+          "desc": "Run models entirely on your own machine via LM Studio or any OpenAI-compatible local endpoint. Zero data leaves your device. Supported in DRE Interface via custom endpoint setting."
+        }
+      ]
+    },
+
+    {
+      "id": "workflows",
+      "label": "WORKFLOW MAPS",
+      "icon": "⇢",
+      "title": "WORKFLOW MAPS",
+      "subtitle": "Visualized ecosystem flow relationships. Each path is a proven execution sequence.",
+      "flows": [
+        {
+          "name": "CORE EXECUTION LOOP",
+          "nodes": ["DRE WORKFLOW", "DRE CONSOLE", "CHAT WITH DRE"],
+          "desc": "Build your system architecture in DRE Workflow. Execute step-by-step in DRE Console. Use Chat with DRE for strategic adjustments and unblocking during execution."
+        },
+        {
+          "name": "CONTENT → REVENUE",
+          "nodes": ["YOUTUBE / STREAM", "ANDRE GO LANDING", "DRE CONSOLE"],
+          "desc": "Create content demonstrating the ecosystem tools. Drive viewers to the Andre Go landing page. Track conversions and manage premium users via DRE Console."
+        },
+        {
+          "name": "DAILY SYSTEM",
+          "nodes": ["24 HOURS", "DRE WORKFLOW", "DRE CONSOLE"],
+          "desc": "Start your morning rhythm in 24 Hours. Design the day's execution plan in DRE Workflow. Execute tasks systematically in DRE Console. Review in 24 Hours evening reflection."
+        },
+        {
+          "name": "MANUSCRIPT PIPELINE",
+          "nodes": ["DRE FLOW", "DRE INTERFACE", "KLEARA STUDIOS"],
+          "desc": "Analyze manuscript structure in DRE Flow. Use DRE Interface for deep structural AI feedback and revision planning. Publish and promote via Kleara Studios author platform."
+        },
+        {
+          "name": "PRIVACY AUDIT",
+          "nodes": ["DRE OS", "DRE INTERFACE", "ZIP TOOL"],
+          "desc": "Run full device exposure scan in DRE OS. Document findings and remediation steps via DRE Interface. Archive reports securely with ZIP Tool."
+        },
+        {
+          "name": "CAREER TRACK",
+          "nodes": ["REPRIZAL AI", "CHAT WITH DRE", "24 HOURS"],
+          "desc": "Build and polish resume in RePrizal AI. Get application strategy and positioning from Chat with DRE. Track daily outreach and application habits in 24 Hours."
+        },
+        {
+          "name": "FINANCIAL ESCAPE",
+          "nodes": ["LOAN SHARK", "CHAT WITH DRE", "DRE WORKFLOW"],
+          "desc": "Map your exact loan survival path in Loan Shark. Get strategic financial planning from Chat with DRE. Build a structured escape execution plan in DRE Workflow."
+        }
+      ]
+    },
+
+    {
+      "id": "arch",
+      "label": "ARCHITECTURE",
+      "icon": "⬢",
+      "title": "ARCHITECTURE",
+      "subtitle": "Engineering intelligence. System structure, protocols, and technical design decisions.",
+      "entries": [
+        {
+          "title": "SINGLE-FILE ARCHITECTURE",
+          "tag": "STACK",
+          "body": "Each tool in the ecosystem is a self-contained HTML file. No build system. No framework. No server required for local deployment. Deploy by dropping files in a directory. This enables maximum portability and zero dependency drift."
+        },
+        {
+          "title": "LOCAL-FIRST DATA PROTOCOL",
+          "tag": "PRIVACY",
+          "body": "All user data — sessions, API keys, conversation history, tool state — lives in browser localStorage or IndexedDB. No backend. No accounts required. No tracking by default. The user owns their data completely."
+        },
+        {
+          "title": "THREE.JS RENDERING ENGINE",
+          "tag": "GALAXY",
+          "body": "The galaxy interface uses Three.js r160 for WebGL rendering. OrbitControls handle camera rotation, zoom, and damping. Nodes are SphereGeometry with MeshBasicMaterial for maximum mobile GPU performance. Stars use Points geometry. The spacecraft (DRE Console moon) uses MeshStandardMaterial with solar wing panels and animated engine plumes."
+        },
+        {
+          "title": "MANIFEST V3 EXTENSION",
+          "tag": "ANDRE GO",
+          "body": "Andre Go runs as a Chrome Manifest V3 extension. Content scripts inject into AI platform pages and intercept DOM mutations via MutationObserver to capture messages in real time. All capture and storage is local-only using chrome.storage.local. No background server calls. Supports Chrome 114+, Edge 114+, and Brave."
+        },
+        {
+          "title": "AI PROVIDER ABSTRACTION",
+          "tag": "INTERFACE LAYER",
+          "body": "DRE Interface and compatible tools use a provider abstraction layer — the same chat pipeline routes to OpenAI, Anthropic, Google Gemini, DeepSeek, Groq, or local endpoints via a unified API wrapper. Controller modes (DRE Default, Ford Technical, Book Writing) inject different system prompts into the same pipeline."
+        },
+        {
+          "title": "INTEL ARCHIVE FETCH ARCHITECTURE",
+          "tag": "THIS SYSTEM",
+          "body": "The Intel Archive loads intelligence from galaxy_master_knowledge.json via fetch() on first open. Response is cached in sessionStorage for 30 minutes to avoid redundant fetches during a session. Cache key: ia_knowledge_v1. On cache miss or expiry, a fresh fetch is triggered automatically."
+        },
+        {
+          "title": "ANALYTICS LAYER",
+          "tag": "PRIVATE",
+          "body": "GA4 (G-XXXXXXXXXX) tracks anonymized page events — galaxy_entered, node_opened, tutorial_started, intel_archive_opened. A CounterAPI call increments total visit count server-side. All analytics are invisible to users. Admin overlay accessible via Shift+Alt+D. Debug mode disabled in production."
+        },
+        {
+          "title": "BRIDGE PROTOCOL",
+          "tag": "ECOSYSTEM",
+          "body": "Tools communicate via shared localStorage keys prefixed with dre_. DRE Workflow exports JSON execution plans consumable by DRE Console. DRE Interface can ingest any tool's output via file attachment. The shared context key dre_session holds cross-tool session metadata."
+        }
+      ]
+    },
+
+    {
+      "id": "faq",
+      "label": "FAQ",
+      "icon": "?",
+      "title": "FREQUENTLY ASKED",
+      "subtitle": "Quick-answer intelligence layer. Tap any question to expand.",
+      "items": [
+        {
+          "q": "Is my data safe?",
+          "a": "Yes. All tools in the Galaxy-DRE ecosystem store data locally in your browser. Nothing is transmitted to Galaxy-DRE servers. API keys go directly to the AI provider you choose — we never see them."
+        },
+        {
+          "q": "Do I need an API key?",
+          "a": "Not for everything. Andre Go includes Andre Cloud — no key needed. Chat with DRE also uses Andre Cloud. Some tools like DRE Interface, DRE Flow, 24 Hours, and RePrizal AI require your own key from OpenAI, Anthropic, Google, DeepSeek, or Groq."
+        },
+        {
+          "q": "What is Andre Go?",
+          "a": "Andre Go is a Chrome extension that captures all your AI conversations in real time across 10+ platforms — ChatGPT, Claude, Gemini, Copilot, Grok, DeepSeek, Perplexity, and more. Free tier: 3 sessions. Premium: $9.99/month or $19.99 lifetime."
+        },
+        {
+          "q": "What is the difference between DRE Workflow and DRE Console?",
+          "a": "DRE Workflow is the creation layer — you design execution plans visually using nodes and logic connectors. DRE Console is the execution layer — you run those plans step by step with checklists and AI support. Build first. Execute second."
+        },
+        {
+          "q": "What is Chat with DRE?",
+          "a": "Chat with DRE is a direct channel to the DRE Alignment Architect AI. It reads your situation and returns structured strategy, execution steps, and ecosystem routing — no generic advice. No API key required. Powered by Andre Cloud."
+        },
+        {
+          "q": "What is the difference between Chat with DRE and DRE Interface?",
+          "a": "Chat with DRE uses Andre Cloud — no key needed, simpler interface, great for strategy and quick alignment. DRE Interface is the advanced version — bring your own API key, choose your provider, attach files, and select controller modes. Same intelligence, more control."
+        },
+        {
+          "q": "What is Orbit?",
+          "a": "Orbit is the social layer of the galaxy — community hub, ecosystem updates, collaborator network, and live progress from inside the system. The galaxy doesn't run in isolation."
+        },
+        {
+          "q": "What is Kleara Studios?",
+          "a": "Kleara Studios is the literary arm of the ecosystem — a completely separate creative universe. Two authors: DL Ford (light/exposure) and Atlas Parks (dark/pattern). Not a tool. The work."
+        },
+        {
+          "q": "Does this work on mobile?",
+          "a": "Yes. The galaxy is built mobile-first with touch controls, pinch-to-zoom, tap-to-open, and reduced rendering load for mobile GPUs. Some tools work best on desktop for screen real estate reasons."
+        },
+        {
+          "q": "How do I use the INTEL button?",
+          "a": "Click INTEL in the top-right corner of the galaxy, or press ? on your keyboard. The Intel Archive opens as a full-screen overlay with the complete ecosystem knowledge base. Switch depth levels (USER / SYSTEM / ARCHITECT) for more detail. Press ESC to close."
+        },
+        {
+          "q": "What does the gold spaceship do?",
+          "a": "The gold spaceship orbiting the core planet is DRE Console — your execution layer. Click it to open DRE Console, where you run the plans you built in DRE Workflow."
+        },
+        {
+          "q": "How do I get the most out of the ecosystem?",
+          "a": "Start with Andre Go (the blue core planet). Then use Chat with DRE to design your strategy. Build your execution plan in DRE Workflow. Run it in DRE Console. Track daily progress in 24 Hours. Use this Intel Archive to navigate when you're lost."
+        }
+      ]
+    }
+
+  ]
+}
