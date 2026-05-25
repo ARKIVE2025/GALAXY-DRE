@@ -414,4 +414,94 @@
         },
         {
           "title": "THREE.JS RENDERING ENGINE",
-          "tag": "GALA
+          "tag": "GALAXY",
+          "body": "The galaxy interface uses Three.js r160 for WebGL rendering. OrbitControls handle camera rotation, zoom, and damping. Nodes are SphereGeometry with MeshBasicMaterial for maximum mobile GPU performance. The spacecraft (DRE Console moon) uses MeshStandardMaterial with solar wing panels and animated engine plumes."
+        },
+        {
+          "title": "MANIFEST V3 EXTENSION",
+          "tag": "ANDRE GO",
+          "body": "Andre Go runs as a Chrome Manifest V3 extension. Content scripts inject into AI platform pages and intercept DOM mutations via MutationObserver to capture messages in real time. All capture and storage is local-only using chrome.storage.local. Supports Chrome 114+, Edge 114+, and Brave."
+        },
+        {
+          "title": "AI PROVIDER ABSTRACTION",
+          "tag": "INTERFACE LAYER",
+          "body": "DRE CS Interface and compatible tools use a provider abstraction layer — the same chat pipeline routes to OpenAI, Anthropic, Google Gemini, DeepSeek, Groq, or local endpoints via a unified API wrapper. Controller modes (DRE Default, Ford Technical, Book Writing) inject different system prompts into the same pipeline."
+        },
+        {
+          "title": "INTEL ARCHIVE FETCH ARCHITECTURE",
+          "tag": "THIS SYSTEM",
+          "body": "The Intel Archive loads intelligence from galaxy_master_knowledge.json via fetch() on first open. Response is cached in sessionStorage for 30 minutes. Cache key: ia_knowledge_v1. On cache miss or expiry, a fresh fetch is triggered automatically."
+        },
+        {
+          "title": "ANALYTICS LAYER",
+          "tag": "PRIVATE",
+          "body": "GA4 tracks anonymized page events — galaxy_entered, node_opened, tutorial_started, intel_archive_opened. A CounterAPI call increments total visit count server-side. All analytics are invisible to users. Admin overlay accessible via Shift+Alt+D."
+        },
+        {
+          "title": "BRIDGE PROTOCOL",
+          "tag": "ECOSYSTEM",
+          "body": "Tools communicate via shared localStorage keys prefixed with dre_. DRE Workflow exports JSON execution plans consumable by DRE Console. DRE CS Interface can ingest any tool's output via file attachment. The shared context key dre_session holds cross-tool session metadata."
+        }
+      ]
+    },
+
+    {
+      "id": "faq",
+      "label": "FAQ",
+      "icon": "?",
+      "title": "FREQUENTLY ASKED",
+      "subtitle": "Quick-answer intelligence layer. Tap any question to expand.",
+      "items": [
+        {
+          "q": "Is my data safe?",
+          "a": "Yes. All tools in the Galaxy-DRE ecosystem store data locally in your browser. Nothing is transmitted to Galaxy-DRE servers. API keys go directly to the AI provider you choose — we never see them."
+        },
+        {
+          "q": "Where do I start?",
+          "a": "Save Andre Go to your browser first. It handles privacy and device security — your foundation. Then open DRE CS Interface for planning. Then DRE Workflow to design. Then DRE Code to build. Then NWA or Debugger to fix."
+        },
+        {
+          "q": "What is Andre Go?",
+          "a": "Andre Go is a Chrome extension you save to your browser. It's your privacy and device security tool, and it also captures AI conversations across 10+ platforms automatically. Start here before you build anything."
+        },
+        {
+          "q": "What is the difference between Chat with DRE and DRE CS Interface?",
+          "a": "Chat with DRE is the website AI assistant — it's for customers and new visitors learning about the ecosystem. DRE CS Interface is the operator tool — it uses the Andre Method framework and is for people actively building in the ecosystem. They are different tools for different audiences."
+        },
+        {
+          "q": "What is the difference between DRE Workflow and DRE Console?",
+          "a": "DRE Workflow is the creation layer — you design execution plans visually using nodes and logic connectors. DRE Console is the GTM execution layer — you run those plans step by step. DRE Console doesn't scale on its own, so always start in DRE Workflow."
+        },
+        {
+          "q": "What is the DRE Galaxy suite?",
+          "a": "The DRE Galaxy (not the website, but the suite of tools) includes: DRE Code (the editor), DRE Companion/Architect (template-based builder and real-time visual preview for novices), NWA (general fix tool), Debugger (code error resolution), and Replicated (duplication and scaling)."
+        },
+        {
+          "q": "Do I need an API key?",
+          "a": "Not for everything. Andre Go includes Andre Cloud — no key needed. Chat with DRE also uses Andre Cloud. Tools like DRE CS Interface, DRE Flow, 24 Hours, and RePrizal AI require your own key from OpenAI, Anthropic, Google, DeepSeek, or Groq."
+        },
+        {
+          "q": "What is Orbit?",
+          "a": "Orbit is the social layer of the galaxy — community hub, ecosystem updates, collaborator network, and live progress from inside the system."
+        },
+        {
+          "q": "What is Kleara Studios?",
+          "a": "Kleara Studios is the literary arm of the ecosystem — a completely separate creative universe. Two authors: DL Ford (light/exposure) and Atlas Parks (dark/pattern). Not a tool. The work."
+        },
+        {
+          "q": "Does this work on mobile?",
+          "a": "Yes. The galaxy is built mobile-first with touch controls, pinch-to-zoom, tap-to-open, and reduced rendering load for mobile GPUs."
+        },
+        {
+          "q": "How do I use the INTEL button?",
+          "a": "Click INTEL in the top-right corner of the galaxy, or press ? on your keyboard. The Intel Archive opens as a full-screen overlay with the complete ecosystem knowledge base. Switch depth levels (USER / SYSTEM / ARCHITECT) for more detail. Press ESC to close."
+        },
+        {
+          "q": "What does the gold spaceship do?",
+          "a": "The gold spaceship orbiting the core planet is DRE Console — your GTM execution layer. Click it to open DRE Console, where you run the plans you built in DRE Workflow."
+        }
+      ]
+    }
+
+  ]
+}
