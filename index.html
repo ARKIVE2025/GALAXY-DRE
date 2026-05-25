@@ -329,144 +329,6 @@
             box-shadow: 0 0 6px #ffc832;
         }
 
-        /* ── TUTORIAL ── */
-        #tutorialBackdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.82);
-            backdrop-filter: blur(3px);
-            z-index: 10000;
-            display: none;
-            pointer-events: none;
-        }
-
-        #tutorialBackdrop.active { display: block; }
-
-        .tutorial-overlay {
-            position: fixed;
-            inset: 0;
-            background: transparent;
-            z-index: 10000;
-            display: none;
-            pointer-events: none;
-        }
-
-        .tutorial-overlay.active { display: block; }
-
-        .tutorial-card-wrap {
-            position: fixed;
-            bottom: clamp(12px, 3vh, 28px);
-            left: 0;
-            right: 0;
-            display: none;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 10004;
-            pointer-events: none;
-        }
-
-        .tutorial-card-wrap.active { display: flex; }
-
-        .tutorial-card {
-            pointer-events: all;
-            background: #0a0a0a;
-            border: 1px solid rgba(0,212,255,0.4);
-            border-radius: 16px 16px 12px 12px;
-            padding: clamp(18px, 4vw, 30px) clamp(18px, 4vw, 34px);
-            width: min(480px, calc(100vw - 20px));
-            text-align: center;
-            box-shadow: 0 0 50px rgba(0,212,255,0.18), 0 -8px 30px rgba(0,0,0,0.7);
-        }
-
-        .tutorial-step { font-size: 10px; letter-spacing: 3px; color: #00d4ff; text-transform: uppercase; margin-bottom: 10px; font-weight: 600; }
-        .tutorial-title { font-size: clamp(17px, 4.5vw, 22px); font-weight: 800; margin-bottom: 10px; color: #fff; letter-spacing: 1px; }
-        .tutorial-desc { font-size: clamp(12px, 3.2vw, 14px); line-height: 1.7; color: rgba(255,255,255,0.7); margin-bottom: 18px; }
-
-        .tutorial-highlight {
-            position: fixed;
-            border: 2px solid #00d4ff;
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.5);
-            pointer-events: none;
-            z-index: 10001;
-            transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
-            display: none;
-        }
-
-        .tutorial-highlight.active { display: block; }
-
-        .tutorial-arrow {
-            position: fixed;
-            width: 0; height: 0;
-            border-left: 11px solid transparent;
-            border-right: 11px solid transparent;
-            border-top: 17px solid #00d4ff;
-            filter: drop-shadow(0 0 5px #00d4ff);
-            z-index: 10002;
-            display: none;
-            pointer-events: none;
-        }
-
-        .tutorial-arrow.active { display: block; }
-
-        .tutorial-elevated {
-            position: relative;
-            z-index: 10002 !important;
-        }
-
-        .tutorial-progress { display: flex; justify-content: center; gap: 8px; margin: 14px 0; }
-
-        .tutorial-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.25);
-            transition: all 0.3s ease;
-        }
-
-        .tutorial-dot.active { background: #00d4ff; width: 22px; border-radius: 4px; }
-
-        .tutorial-actions { display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap; }
-
-        .tutorial-btn {
-            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
-            border: none;
-            color: #000;
-            font-weight: 800;
-            padding: 10px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: clamp(11px, 3vw, 13px);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            min-height: 44px;
-            font-family: inherit;
-        }
-
-        .tutorial-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,212,255,0.4); }
-        .tutorial-btn:active { transform: scale(0.96); }
-
-        .tutorial-prev {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.25);
-            color: rgba(255,255,255,0.65);
-        }
-
-        .tutorial-prev:hover { background: rgba(255,255,255,0.07); color: #fff; box-shadow: none; }
-
-        .tutorial-skip {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: rgba(255,255,255,0.4);
-            font-size: 11px;
-        }
-
-        .tutorial-skip:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); box-shadow: none; }
-
-        @keyframes tutSlide {
-            from { opacity: 0; transform: translateY(18px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
         /* ── ENTRY GATE ── */
         #entryGate {
             position: fixed;
@@ -601,28 +463,6 @@
         }
 
         #tapHint.show { opacity: 1; }
-
-        /* Tutorial menu button */
-        #tutorialMenuBtn {
-            background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 100%);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 10px;
-            min-height: 48px;
-            font-family: inherit;
-        }
-
-        #tutorialMenuBtn:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,212,255,0.3); }
-        #tutorialMenuBtn:active { transform:scale(0.97); }
 
         /* ── ORBIT BUTTON ── */
         #orbitSocialBtn {
@@ -1380,7 +1220,7 @@
 
     <!-- ── TOP SECTION: Tutorial + Orbit + Chat with DRE ── -->
     <div class="settings-section" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
-        <button id="tutorialMenuBtn" onclick="replayTutorial()">🎓 START TUTORIAL</button>
+
         <button id="orbitSocialBtn" onclick="openOrbitModal()">🌐 ORBIT — SOCIAL</button>
         <button id="dreChatBtn" onclick="openDreChatModal()">✦ CHAT WITH DRE</button>
     </div>
@@ -1489,34 +1329,6 @@
         <div id="modalActionArea" style="margin-top:20px;"></div>
     </div>
 </div>
-
-<!-- TUTORIAL -->
-<div id="tutorialBackdrop"></div>
-<div id="tutorialOverlay" class="tutorial-overlay"></div>
-<div id="tutorialCardWrap" class="tutorial-card-wrap">
-    <div class="tutorial-card" id="tutorialCard">
-        <div class="tutorial-step" id="tutorialStep">STEP 1 OF 7</div>
-        <div class="tutorial-title" id="tutorialTitle">Welcome to the Galaxy</div>
-        <div class="tutorial-desc" id="tutorialDesc">You're looking at the DRE Ecosystem. Every glowing planet is a live tool. Let's take 30 seconds to show you around.</div>
-        <div class="tutorial-progress" id="tutorialProgress">
-            <div class="tutorial-dot active"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-            <div class="tutorial-dot"></div>
-        </div>
-        <div class="tutorial-actions">
-            <button class="tutorial-btn tutorial-prev" id="tutorialPrevBtn" style="display:none;">← PREV</button>
-            <button class="tutorial-btn" id="tutorialNextBtn">NEXT →</button>
-            <button class="tutorial-btn tutorial-skip" id="tutorialSkipBtn">SKIP</button>
-        </div>
-    </div>
-</div>
-
-<div id="tutorialHighlight" class="tutorial-highlight"></div>
-<div id="tutorialArrow" class="tutorial-arrow"></div>
 
 <script type="importmap">
 {
@@ -2342,7 +2154,6 @@ window.addEventListener('mousemove',(e)=>{
 });
 
 window.addEventListener('click',(e)=>{
-    if(window.tutorialActive)return;
     if(hoveredMoon){ openMoonModal(hoveredMoon.moonData); return; }
     if(hoveredNode) openModal(hoveredNode.userData.nodeData);
 });
@@ -2351,7 +2162,6 @@ let tsTime=0,tsX=0,tsY=0,tsMoved=false;
 renderer.domElement.addEventListener('touchstart',(e)=>{tsTime=Date.now();tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;tsMoved=false;},{passive:true});
 renderer.domElement.addEventListener('touchmove',(e)=>{if(Math.abs(e.touches[0].clientX-tsX)>8||Math.abs(e.touches[0].clientY-tsY)>8)tsMoved=true;},{passive:true});
 renderer.domElement.addEventListener('touchend',(e)=>{
-    if(window.tutorialActive)return;
     if(tsMoved||Date.now()-tsTime>500)return;
     const t=e.changedTouches[0];
     mouse.x=(t.clientX/window.innerWidth)*2-1;
@@ -2606,154 +2416,7 @@ window.addEventListener('resize',()=>{
 
 animate();
 
-// ══════════════════════════════════════════════════════
-// TUTORIAL — 7 steps now includes ORBIT
-// ══════════════════════════════════════════════════════
-let tutorialCompleted = false;
-window.tutorialActive = false;
-let currentStep = 0;
 
-function getScreenPos(obj3D) {
-    const v = obj3D.position.clone().project(camera);
-    return { x:(v.x*.5+.5)*window.innerWidth, y:(-(v.y*.5)+.5)*window.innerHeight, is3D:true };
-}
-
-function getElPos(el) {
-    const r=el.getBoundingClientRect();
-    return { x:r.left, y:r.top, width:r.width, height:r.height, is3D:false };
-}
-
-const tutorialSteps = [
-    {
-        title:"Welcome to the DRE Galaxy",
-        desc:"Every glowing planet is a live tool. From help with digital privacy to our loan shark tool. Tap or click any planet to open its info card.",
-        getPosition:null, action:null
-    },
-    {
-        title:"The Core: Andre Go",
-        desc:"This bright blue planet is our primary tool. Tap it to open its card — from there you can get the Andre Go Chrome extension that captures all your AI conversations automatically.",
-        getPosition:()=>{ const n=nodeObjects.get("CORE"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:null
-    },
-    {
-        title:"Chat with DRE",
-        desc:"This purple planet is your direct line to the DRE Alignment Architect. Tap it to get strategies, execution plans, and system diagnoses — grounded in truth, no fluff.",
-        getPosition:()=>{ const n=nodeObjects.get("EVALUATE"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:null
-    },
-    {
-        title:"Orbit — The Social Layer",
-        desc:"The teal-green planet is Orbit, the social section of the galaxy. Connect with the community, follow updates, and collaborate with others in the ecosystem.",
-        getPosition:()=>{ const n=nodeObjects.get("ORBIT"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:null
-    },
-    {
-        title:"Navigate the Galaxy",
-        desc:"Drag to rotate the camera. Pinch to zoom on mobile. Use the ⌂ + − buttons below to zoom or reset the view.",
-        getPosition:()=>getElPos(document.getElementById('cameraControls')),
-        targetEl: document.getElementById('cameraControls'),
-        action:null
-    },
-    {
-        title:"Access All Tools",
-        desc:"Tap MENU to open the control deck — every tool in the ecosystem is listed there. DRE Interface, ZIP Tool, Loan Shark, Kleara Studios, and more.",
-        getPosition:()=>getElPos(document.getElementById('settingsBtn')),
-        targetEl: document.getElementById('settingsBtn'),
-        action:()=>{ document.getElementById('settingsPanel').classList.remove('active'); }
-    },
-    {
-        title:"Kleara Studios",
-        desc:"Deep below the main galaxy is a space station — Kleara Studios. DL Ford and Atlas Parks. A completely separate creative universe. Not a tool — the work.",
-        getPosition:()=>{ const n=nodeObjects.get("KLEARA"); return(n&&n.planet)?getScreenPos(n.planet):null; },
-        action:()=>{ document.getElementById('settingsPanel').classList.remove('active'); camera.position.set(200,-80,280); controls.target.set(0,-160,0); controls.update(); }
-    }
-];
-
-function updateHighlight(step){
-    const hl=document.getElementById('tutorialHighlight');
-    const arr=document.getElementById('tutorialArrow');
-    document.querySelectorAll('.tutorial-elevated').forEach(el=>el.classList.remove('tutorial-elevated'));
-    if(!step||!step.getPosition){ hl.classList.remove('active'); arr.classList.remove('active'); return; }
-    const pos=step.getPosition();
-    if(!pos){ hl.classList.remove('active'); arr.classList.remove('active'); return; }
-    if(pos.is3D){
-        const r=38;
-        hl.style.left=(pos.x-r)+'px'; hl.style.top=(pos.y-r)+'px';
-        hl.style.width=(r*2)+'px'; hl.style.height=(r*2)+'px'; hl.style.borderRadius='50%';
-        arr.style.left=(pos.x-11)+'px'; arr.style.top=(pos.y+r+8)+'px';
-    } else {
-        const pad=6;
-        hl.style.left=(pos.x-pad)+'px'; hl.style.top=(pos.y-pad)+'px';
-        hl.style.width=(pos.width+pad*2)+'px'; hl.style.height=(pos.height+pad*2)+'px'; hl.style.borderRadius='10px';
-        arr.style.left=(pos.x+pos.width/2-11)+'px'; arr.style.top=(pos.y+pos.height+pad+6)+'px';
-        if(step.targetEl) step.targetEl.classList.add('tutorial-elevated');
-    }
-    hl.classList.add('active'); arr.classList.add('active');
-}
-
-function updateTutorialUI(){
-    const step=tutorialSteps[currentStep];
-    document.getElementById('tutorialStep').textContent=`STEP ${currentStep+1} OF ${tutorialSteps.length}`;
-    document.getElementById('tutorialTitle').textContent=step.title;
-    document.getElementById('tutorialDesc').textContent=step.desc;
-    const card=document.getElementById('tutorialCard');
-    card.style.animation='none'; void card.offsetWidth;
-    card.style.animation='tutSlide 0.32s cubic-bezier(0.22,1,0.36,1)';
-    document.querySelectorAll('.tutorial-dot').forEach((d,i)=>d.classList.toggle('active',i===currentStep));
-    document.getElementById('tutorialPrevBtn').style.display=currentStep===0?'none':'';
-    document.getElementById('tutorialNextBtn').textContent=currentStep===tutorialSteps.length-1?'FINISH ✓':'NEXT →';
-    if(step.action) step.action();
-    setTimeout(()=>updateHighlight(step),150);
-}
-
-function nextStep(){ if(currentStep<tutorialSteps.length-1){currentStep++;updateTutorialUI();}else completeTutorial(); }
-function prevStep(){ if(currentStep>0){currentStep--;updateTutorialUI();} }
-
-function completeTutorial(){
-    window.tutorialActive=false; tutorialCompleted=true;
-    document.getElementById('tutorialOverlay').classList.remove('active');
-    document.getElementById('tutorialBackdrop').classList.remove('active');
-    document.getElementById('tutorialCardWrap').classList.remove('active');
-    document.getElementById('tutorialHighlight').classList.remove('active');
-    document.getElementById('tutorialArrow').classList.remove('active');
-    document.querySelectorAll('.tutorial-elevated').forEach(el=>el.classList.remove('tutorial-elevated'));
-    document.getElementById('settingsPanel').classList.remove('active');
-    resetCamera();
-}
-
-function startTutorial(){
-    if(tutorialCompleted) return;
-    window.tutorialActive=true; currentStep=0;
-    document.getElementById('tutorialOverlay').classList.add('active');
-    document.getElementById('tutorialBackdrop').classList.add('active');
-    document.getElementById('tutorialCardWrap').classList.add('active');
-    updateTutorialUI();
-}
-
-window.replayTutorial=function(){
-    window.tutorialActive=true; currentStep=0; tutorialCompleted=false;
-    document.getElementById('settingsPanel').classList.remove('active');
-    document.getElementById('tutorialOverlay').classList.add('active');
-    document.getElementById('tutorialBackdrop').classList.add('active');
-    document.getElementById('tutorialCardWrap').classList.add('active');
-    updateTutorialUI();
-};
-
-document.getElementById('tutorialNextBtn').addEventListener('click',(e)=>{e.stopPropagation();nextStep();});
-document.getElementById('tutorialPrevBtn').addEventListener('click',(e)=>{e.stopPropagation();prevStep();});
-document.getElementById('tutorialSkipBtn').addEventListener('click',(e)=>{e.stopPropagation();completeTutorial();});
-
-function trackHighlights(){
-    if(window.tutorialActive){
-        const step=tutorialSteps[currentStep];
-        if(step&&step.getPosition){
-            const pos=step.getPosition();
-            if(pos&&pos.is3D) updateHighlight(step);
-        }
-    }
-    requestAnimationFrame(trackHighlights);
-}
-trackHighlights();
 
 // ── MUSIC & ENTRY ──
 const music=document.getElementById('bgMusic'), gate=document.getElementById('entryGate');
@@ -2770,7 +2433,7 @@ window.enterGalaxy=function(){
         musicUI.style.display='flex';
         moonLegend.style.display='block';
         if(isMobile){ tapHint.classList.add('show'); setTimeout(()=>tapHint.classList.remove('show'),3500); }
-        setTimeout(()=>startTutorial(),1000);
+        // Tutorial removed
     },{once:true});
 };
 
