@@ -2,7 +2,7 @@
   "_document": "Galaxy-DRE Master Knowledge Base",
   "_version": "1.1",
   "_created": "2026-05-14",
-  "_updated": "2026-05-23",
+  "_updated": "2026-05-25",
   "_purpose": "External intelligence source for the Galaxy-DRE Intel Archive overlay.",
   "_deploy_note": "Place this file in the same directory as your galaxy HTML file.",
 
@@ -14,8 +14,8 @@
       "icon": "⬡",
       "title": "START HERE",
       "subtitle": "New to the Galaxy? This is your entry point. Everything you need to begin.",
-      "what": "Galaxy-DRE is a unified ecosystem of AI tools, privacy systems, financial utilities, and creative platforms — all accessible from a single cinematic interface. Every glowing planet is a live tool. Every orbit is an execution layer.",
-      "how": "Click any planet to open its intelligence card. Use the Control Deck (MENU button) to navigate all tools by category. The gold spaceship orbiting the core is DRE Console — your execution layer. The INTEL button opens this archive at any time. Press ? on your keyboard as a shortcut.",
+      "what": "Galaxy-DRE is a privacy-first AI operating ecosystem built for builders, creators, founders, operators, and businesses that need to execute at a higher level without relying on fragmented software stacks or large teams.\n\nThe ecosystem combines planning, workflow architecture, development systems, debugging environments, execution infrastructure, privacy foundations, and supporting utilities into a single connected command environment.\n\nUnlike traditional AI platforms focused only on chat or content generation, Galaxy-DRE is designed around operational flow — helping users think, design, build, repair, and execute from one unified system.\n\nAt the center of the ecosystem is the CORE execution stack:\n• DRE CS Interface → operational planning and system direction\n• DRE Workflow → visual execution architecture\n• DRE Code → development and build environment\n• NWA / Debugger → repair, testing, and optimization\n• DRE Console → optional GTM execution layer when deployment or market execution is needed\n\nSupporting systems like Andre Go, ZIP Tool, and DRE Extractor strengthen the workflow with browser security, privacy protection, and utility infrastructure, while community systems like Orbit, 24 Hours, RePrizal, Loan Shark, and DRE OS expand the ecosystem beyond the build environment itself.\n\nThe galaxy interface functions as a live operational map. Every planet represents an active system, execution layer, or support environment connected to the larger ecosystem.\n\nGalaxy-DRE was built for people who want to operate beyond the limitations of disconnected AI tools, scattered workflows, and traditional software environments — giving individuals and small teams the ability to plan, build, execute, and scale from a single connected system.",
+      "how": "Galaxy-DRE is structured as a connected operational workflow designed to move users from planning to execution through a coordinated system environment.\n\nThe primary entry point into the ecosystem is DRE CS Interface.\n\nDRE CS Interface acts as the operational command layer — where users organize ideas, structure projects, diagnose problems, create plans, and establish direction before building anything else inside the ecosystem.\n\nFrom there, projects move into DRE Workflow, where execution systems, logic structures, workflows, and project architecture are visually designed and mapped in real time.\n\nOnce the execution structure is complete, users move into DRE Code — the primary development and build environment inside the Galaxy-DRE ecosystem. DRE Code is where websites, applications, systems, and tools are actively built using the workflow structure established earlier in the process.\n\nIf issues appear during development, NWA and Debugger function as the repair and optimization layer of the ecosystem — helping users troubleshoot, resolve code problems, test systems, and stabilize builds after development.\n\nDRE Console exists as an optional execution layer used primarily for GTM (Go-To-Market) operations, deployment workflows, execution tracking, and operational rollout. It is not intended to be the starting point of the ecosystem, but rather an execution environment used when projects are ready for operational deployment.\n\nSupporting infrastructure systems operate alongside the core workflow:\n• Andre Go → browser security, privacy foundation, and AI conversation management\n• ZIP Tool → local file compression and extraction utility\n• DRE Extractor → local media and audio extraction utility\n\nAdditional ecosystem systems such as Orbit, 24 Hours, Loan Shark, RePrizal, and DRE OS function as community and operator-support platforms rather than core workflow systems.\n\nThe galaxy itself acts as a cinematic command environment. Every planet inside the system represents a connected operational layer, support environment, or active ecosystem system. The Control Deck organizes systems by category, while the INTEL system provides access to the full ecosystem knowledge archive at any time.\n\nGalaxy-DRE is intentionally structured to reduce fragmentation — allowing users to move through planning, workflow design, development, troubleshooting, and execution without constantly switching between disconnected platforms and environments.",
       "stats": [
         { "n": "20+", "l": "Live Tools" },
         { "n": "10+", "l": "AI Platforms" },
@@ -414,94 +414,4 @@
         },
         {
           "title": "THREE.JS RENDERING ENGINE",
-          "tag": "GALAXY",
-          "body": "The galaxy interface uses Three.js r160 for WebGL rendering. OrbitControls handle camera rotation, zoom, and damping. Nodes are SphereGeometry with MeshBasicMaterial for maximum mobile GPU performance. The spacecraft (DRE Console moon) uses MeshStandardMaterial with solar wing panels and animated engine plumes."
-        },
-        {
-          "title": "MANIFEST V3 EXTENSION",
-          "tag": "ANDRE GO",
-          "body": "Andre Go runs as a Chrome Manifest V3 extension. Content scripts inject into AI platform pages and intercept DOM mutations via MutationObserver to capture messages in real time. All capture and storage is local-only using chrome.storage.local. Supports Chrome 114+, Edge 114+, and Brave."
-        },
-        {
-          "title": "AI PROVIDER ABSTRACTION",
-          "tag": "INTERFACE LAYER",
-          "body": "DRE CS Interface and compatible tools use a provider abstraction layer — the same chat pipeline routes to OpenAI, Anthropic, Google Gemini, DeepSeek, Groq, or local endpoints via a unified API wrapper. Controller modes (DRE Default, Ford Technical, Book Writing) inject different system prompts into the same pipeline."
-        },
-        {
-          "title": "INTEL ARCHIVE FETCH ARCHITECTURE",
-          "tag": "THIS SYSTEM",
-          "body": "The Intel Archive loads intelligence from galaxy_master_knowledge.json via fetch() on first open. Response is cached in sessionStorage for 30 minutes. Cache key: ia_knowledge_v1. On cache miss or expiry, a fresh fetch is triggered automatically."
-        },
-        {
-          "title": "ANALYTICS LAYER",
-          "tag": "PRIVATE",
-          "body": "GA4 tracks anonymized page events — galaxy_entered, node_opened, tutorial_started, intel_archive_opened. A CounterAPI call increments total visit count server-side. All analytics are invisible to users. Admin overlay accessible via Shift+Alt+D."
-        },
-        {
-          "title": "BRIDGE PROTOCOL",
-          "tag": "ECOSYSTEM",
-          "body": "Tools communicate via shared localStorage keys prefixed with dre_. DRE Workflow exports JSON execution plans consumable by DRE Console. DRE CS Interface can ingest any tool's output via file attachment. The shared context key dre_session holds cross-tool session metadata."
-        }
-      ]
-    },
-
-    {
-      "id": "faq",
-      "label": "FAQ",
-      "icon": "?",
-      "title": "FREQUENTLY ASKED",
-      "subtitle": "Quick-answer intelligence layer. Tap any question to expand.",
-      "items": [
-        {
-          "q": "Is my data safe?",
-          "a": "Yes. All tools in the Galaxy-DRE ecosystem store data locally in your browser. Nothing is transmitted to Galaxy-DRE servers. API keys go directly to the AI provider you choose — we never see them."
-        },
-        {
-          "q": "Where do I start?",
-          "a": "Save Andre Go to your browser first. It handles privacy and device security — your foundation. Then open DRE CS Interface for planning. Then DRE Workflow to design. Then DRE Code to build. Then NWA or Debugger to fix."
-        },
-        {
-          "q": "What is Andre Go?",
-          "a": "Andre Go is a Chrome extension you save to your browser. It's your privacy and device security tool, and it also captures AI conversations across 10+ platforms automatically. Start here before you build anything."
-        },
-        {
-          "q": "What is the difference between Chat with DRE and DRE CS Interface?",
-          "a": "Chat with DRE is the website AI assistant — it's for customers and new visitors learning about the ecosystem. DRE CS Interface is the operator tool — it uses the Andre Method framework and is for people actively building in the ecosystem. They are different tools for different audiences."
-        },
-        {
-          "q": "What is the difference between DRE Workflow and DRE Console?",
-          "a": "DRE Workflow is the creation layer — you design execution plans visually using nodes and logic connectors. DRE Console is the GTM execution layer — you run those plans step by step. DRE Console doesn't scale on its own, so always start in DRE Workflow."
-        },
-        {
-          "q": "What is the DRE Galaxy suite?",
-          "a": "The DRE Galaxy (not the website, but the suite of tools) includes: DRE Code (the editor), DRE Companion/Architect (template-based builder and real-time visual preview for novices), NWA (general fix tool), Debugger (code error resolution), and Replicated (duplication and scaling)."
-        },
-        {
-          "q": "Do I need an API key?",
-          "a": "Not for everything. Andre Go includes Andre Cloud — no key needed. Chat with DRE also uses Andre Cloud. Tools like DRE CS Interface, DRE Flow, 24 Hours, and RePrizal AI require your own key from OpenAI, Anthropic, Google, DeepSeek, or Groq."
-        },
-        {
-          "q": "What is Orbit?",
-          "a": "Orbit is the social layer of the galaxy — community hub, ecosystem updates, collaborator network, and live progress from inside the system."
-        },
-        {
-          "q": "What is Kleara Studios?",
-          "a": "Kleara Studios is the literary arm of the ecosystem — a completely separate creative universe. Two authors: DL Ford (light/exposure) and Atlas Parks (dark/pattern). Not a tool. The work."
-        },
-        {
-          "q": "Does this work on mobile?",
-          "a": "Yes. The galaxy is built mobile-first with touch controls, pinch-to-zoom, tap-to-open, and reduced rendering load for mobile GPUs."
-        },
-        {
-          "q": "How do I use the INTEL button?",
-          "a": "Click INTEL in the top-right corner of the galaxy, or press ? on your keyboard. The Intel Archive opens as a full-screen overlay with the complete ecosystem knowledge base. Switch depth levels (USER / SYSTEM / ARCHITECT) for more detail. Press ESC to close."
-        },
-        {
-          "q": "What does the gold spaceship do?",
-          "a": "The gold spaceship orbiting the core planet is DRE Console — your GTM execution layer. Click it to open DRE Console, where you run the plans you built in DRE Workflow."
-        }
-      ]
-    }
-
-  ]
-}
+          "tag": "GALA
