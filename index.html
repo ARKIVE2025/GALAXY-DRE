@@ -2919,7 +2919,7 @@ async function _loadData() {
     } catch(_) {}
 
     try {
-        const res = await fetch(IA_JSON + '?v=' + Date.now(), {
+        const res = await fetch(IA_JSON + '?t=' + Date.now(), {
             cache: 'no-store',
             headers: { 'Accept': 'application/json' }
         });
