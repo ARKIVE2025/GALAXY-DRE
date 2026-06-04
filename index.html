@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRE ECOSYSTEM · V14</title>
+    <title>DRE ECOSYSTEM · V13</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1417,13 +1417,7 @@ const nodesData = [
       public_desc:"Create and extract ZIP archives entirely in your browser. No uploads, no accounts.", public_protocol:"Action: Open ZIP Tool → Drop Files → Archive or Extract",
       isPortal:true, portalFile:"ZIP_tool.html", portalLabel:"OPEN ZIP TOOL",
       portalStyle:"background:linear-gradient(135deg,#f59e0b 0%,#b45309 100%);color:#000;" },
-    { id:"DRE_FLOW", x:-140, y:20, z:40, name:"DRE Flow", category:"Story Intelligence",
-      desc:"[FOUNDER] Manuscript analysis dashboard for authors. Multi-AI provider. Character arc checking, timeline consistency, highlight analysis.",
-      protocol:"Route: Writers managing characters, timelines, plot threads. Upsell: AI features via their own API key.",
-      public_desc:"DRE Flow is a Story Intelligence dashboard for authors. Upload your manuscript and get AI-driven chapter analysis, character thread mapping, scene summaries, and consistency checks.\n\nSupports Claude, OpenAI, Gemini, and DeepSeek via your own API key. Your manuscript never leaves your device.",
-      public_protocol:"Action: Upload .docx or .txt manuscript → Analyze → Map your story",
-      isPortal:true, portalFile:"DRE_FLOW_enhanced.html", portalLabel:"OPEN DRE FLOW",
-      portalStyle:"background:linear-gradient(135deg,#FF2D78 0%,#8B0038 100%);color:#fff;" },
+
     { id:"DRE_EXTRACTOR", x:-50, y:60, z:-145, name:"DRE Extractor", category:"Audio Tool",
       desc:"[FOUNDER] On-device audio extraction engine. Zero server dependency.", protocol:"Use: Drop any audio/video file → extract clean WAV. Local-first.",
       public_desc:"Extract audio from any file directly in your browser. No uploads, no accounts — your files never leave your device.", public_protocol:"Action: Open DRE Extractor → Drop file → Extract",
@@ -1499,7 +1493,7 @@ const moonsData = [
 const nodeColors = {
     "CORE":0x00d4ff,"CHRIST":0xFFFFFF,"EVALUATE":0xcc44ff,"DRE":0xd4af37,"CONSULT":0x50C878,
     "CONTENT":0xFF6B6B,"EXTENSION_DATA":0x9370DB,"DRE_INTERFACE":0x00d4ff,"ZIP_TOOL":0xf59e0b,
-    "DRE_FLOW":0xFF2D78,"DRE_EXTRACTOR":0xFF8C00,"DRE_OS":0x00C853,"REPRIZAL":0x7C3AED,
+"DRE_EXTRACTOR":0xFF8C00,"DRE_OS":0x00C853,"REPRIZAL":0x7C3AED,
     "DRE_CODE":0xff4800,"LOAN_SHARK":0x00ff41,"KLEARA":0xff6600,
     "HOURS_24":0x8b6fff,"DRE_WORKFLOW":0x00ffaa,
     "ORBIT":0x00dcb4
@@ -2741,7 +2735,7 @@ function _buildStart(d) {
         { icon:'🤖', title:'NEED AI HELP?', desc:'Tap Chat with DRE for strategy, diagnosis, and execution plans.', sec:'ai' },
         { icon:'🔒', title:'PRIVACY?', desc:'DRE OS scans your device and gives you a real exposure score.', sec:'systems' },
         { icon:'⚡', title:'BUILD A SYSTEM?', desc:'Start with DRE Workflow → then execute in DRE Console.', sec:'workflows' },
-        { icon:'✍️', title:'WRITER?', desc:'DRE Flow analyzes your manuscript with AI. Local-first.', sec:'systems' },
+
         { icon:'📊', title:'FINANCIAL?', desc:'Loan Shark maps your payday loan survival path step by step.', sec:'systems' },
     ];
 
@@ -2824,7 +2818,7 @@ function _getDefaultTools() {
         { icon:'🎵', name:'DRE Extractor', codename:'DRE_EXTRACTOR', category:'Audio Tool', purpose:'On-device audio extraction from any video or audio file. Outputs clean WAV.', best_for:'Content creators needing audio without uploads.', position:'Utility layer', related:[], privacy:'100% local.', file:'dre-extractor-v2.html' },
         { icon:'🔒', name:'DRE OS', codename:'DRE_OS', category:'Privacy System', purpose:'Browser and network exposure scanner. Scores your digital footprint and gives hardening steps.', best_for:'Anyone concerned about device tracking.', position:'Privacy layer', related:[], privacy:'Reads local signals only. No data transmitted.', file:'dre-os-v2__1_.html' },
         { icon:'📄', name:'RePrizal AI', codename:'REPRIZAL', category:'Career Tool', purpose:'LLM-powered resume builder with PDF import and JSON pipeline.', best_for:'Job seekers who want AI-formatted resumes without subscriptions.', position:'Career layer', related:[], privacy:'API key local.', file:'ATS_Config_Pro_v_3_0.html', requires_api:true },
-        { icon:'🩺', name:'DRE Flow', codename:'DRE_FLOW', category:'Story Intelligence', purpose:'Manuscript analysis dashboard. Character arcs, timeline checks, chapter summaries via AI.', best_for:'Authors managing complex manuscripts.', position:'Creative layer', related:['Kleara Studios'], privacy:'Manuscript stays local. API key local.', file:'DRE_FLOW_enhanced.html', requires_api:true },
+
         { icon:'💻', name:'Dre Code', codename:'DRE_CODE', category:'Code Editor', purpose:'AI-powered code editor built for creators. Novice Guard Mode. Live preview.', best_for:'Developers and creators building in the ecosystem.', position:'Development layer', related:[], privacy:'TBD at launch.', file:'https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html' },
         { icon:'💸', name:'Loan Shark', codename:'LOAN_SHARK', category:'Financial Engine', purpose:'Payday loan survival calculator. Maps exact reborrow sequences and exit strategies.', best_for:'Anyone trapped in the payday loan cycle.', position:'Financial layer', related:[], privacy:'100% local.', file:'loan_shark_full_system.html' },
         { icon:'⭐', name:'24 Hours', codename:'HOURS_24', category:'Wellness · Daily Rhythm', purpose:'Christ-centered daily rhythm app. Habits, focus sessions, urge tracking, AI life coach.', best_for:'Anyone building structure and accountability.', position:'Wellness layer', related:[], privacy:'All local. API key local.', file:'24_HOURS_.HTML', requires_api:true },
@@ -2878,7 +2872,7 @@ function _buildAI(d) {
     const providers = d?.providers || [
         { name:'Andre Cloud', desc:'Built-in AI provider. No API key required. Powers Chat with DRE and Andre Go premium. Managed by the Andre ecosystem.', badge:'NO KEY NEEDED', color:'#00d4ff' },
         { name:'OpenAI', desc:'Powers GPT-4, GPT-4o, and o-series models. Industry standard. Required for many tools when Andre Cloud is not used.', badge:'KEY REQUIRED', color:'#10a37f' },
-        { name:'Anthropic Claude', desc:'Claude 3.5 Sonnet and Haiku. Best for nuanced reasoning and long document analysis. Used in DRE Flow and DRE Interface.', badge:'KEY REQUIRED', color:'#cc785c' },
+        { name:'Anthropic Claude', desc:'Claude 3.5 Sonnet and Haiku. Best for nuanced reasoning and long document analysis. Used in DRE Interface.', badge:'KEY REQUIRED', color:'#cc785c' },
         { name:'Google Gemini', desc:'Gemini 1.5 Pro and Flash. Strong multimodal capabilities. Supported in DRE Interface and 24 Hours.', badge:'KEY REQUIRED', color:'#4285f4' },
         { name:'DeepSeek', desc:'Cost-effective alternative with strong coding performance. Supported across DRE Interface and 24 Hours.', badge:'KEY REQUIRED', color:'#7b68ee' },
         { name:'Groq', desc:'Ultra-fast inference via Groq LPU. Used in 24 Hours for rapid AI coaching responses.', badge:'KEY REQUIRED', color:'#ff6b35' },
@@ -2937,7 +2931,7 @@ function _buildWorkflows(d) {
     const flows = d?.flows || [
         { name:'CORE EXECUTION LOOP', nodes:['DRE WORKFLOW','DRE CONSOLE','CHAT WITH DRE'], desc:'Build your system architecture in DRE Workflow. Execute step-by-step in DRE Console. Use Chat with DRE for strategic adjustments mid-execution.' },
         { name:'CONTENT → REVENUE', nodes:['YOUTUBE / STREAM','ANDRE GO','DRE CONSOLE'], desc:'Create content demonstrating the ecosystem. Drive viewers to Andre Go landing page. Track conversions and manage premium users via Console.' },
-        { name:'MANUSCRIPT PIPELINE', nodes:['DRE FLOW','DRE INTERFACE','KLEARA STUDIOS'], desc:'Analyze manuscript in DRE Flow. Use DRE Interface for structural AI feedback. Publish via Kleara Studios author platform.' },
+
         { name:'PRIVACY AUDIT', nodes:['DRE OS','DRE INTERFACE','ZIP TOOL'], desc:'Run exposure scan in DRE OS. Document findings via DRE Interface. Archive reports with ZIP Tool.' },
         { name:'CAREER TRACK', nodes:['REPRIZAL AI','CHAT WITH DRE','24 HOURS'], desc:'Build resume in RePrizal AI. Get application strategy from Chat with DRE. Track daily progress in 24 Hours.' },
         { name:'DAILY SYSTEM', nodes:['24 HOURS','DRE WORKFLOW','DRE CONSOLE'], desc:'Morning rhythm in 24 Hours. Design the day\'s execution plan in DRE Workflow. Execute tasks in DRE Console.' },
@@ -3012,7 +3006,7 @@ function _buildArch(d) {
 function _buildFAQ(d) {
     const items = d?.items || [
         { q:'Is my data safe?', a:'Yes. All tools in the Galaxy-DRE ecosystem store data locally in your browser. Nothing is transmitted to Galaxy-DRE servers. API keys go directly to the AI provider you choose.' },
-        { q:'Do I need an API key?', a:'Not for everything. Andre Go includes Andre Cloud — no key needed. Some tools like DRE Interface, DRE Flow, and 24 Hours require your own key from OpenAI, Anthropic, Google, DeepSeek, or Groq.' },
+        { q:'Do I need an API key?', a:'Not for everything. Andre Go includes Andre Cloud — no key needed. Some tools like DRE Interface and 24 Hours require your own key from OpenAI, Anthropic, Google, DeepSeek, or Groq.' },
         { q:'What is Andre Go?', a:'Andre Go is a Chrome extension that captures all your AI conversations in real time across 10+ platforms — ChatGPT, Claude, Gemini, Copilot, Grok, and more. Free tier: 3 sessions. Premium: $9.99/mo or $19.99 lifetime.' },
         { q:'What is the difference between DRE Workflow and DRE Console?', a:'DRE Workflow is the creation layer — you design execution plans visually. DRE Console is the execution layer — you run those plans step by step. Build first. Execute second.' },
         { q:'What is Chat with DRE?', a:'Chat with DRE is a direct channel to the DRE Alignment Architect AI. It reads your situation and returns structured strategy, execution steps, and ecosystem routing — no generic advice.' },
