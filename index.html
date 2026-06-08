@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRE ECOSYSTEM · V13</title>
+    <title>DRE ECOSYSTEM · V14</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1195,7 +1195,7 @@
 <div id="dataDisplay">
     <div class="data-line">→ Try Andre Go and leave a review! </div>
     <div class="data-line">→ BUILD A WEBSITE WITH DRE CODE</div>
-    <div class="data-line">→ NODES ONLINE: 20</div>
+    <div class="data-line">→ NODES ONLINE: 10</div>
     <div class="data-line">→ CHAT WITH DRE TO LEARN HOW YOUR BUSINESS CAN SAVE MONEY</div>
     <div class="data-line">→ SYSTEM INTEGRITY: OPTIMAL</div>
 </div>
@@ -1275,16 +1275,7 @@
             </div>
         </div>
 
-        <!-- CATEGORY: Finance & Strategy -->
-        <div class="accordion-item">
-            <button class="accordion-trigger" data-target="accordionFinance">
-                <span>📊 Finance &amp; Strategy</span>
-                <span class="arrow">▶</span>
-            </button>
-            <div class="accordion-content" id="accordionFinance">
-                <button class="portal-btn" style="background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" onclick="window.location.href='loan_shark_full_system.html'">OPEN LOAN SHARK</button>
-            </div>
-        </div>
+
 
         <!-- CATEGORY: Kleara Studios (separate) -->
         <div class="accordion-item">
@@ -1438,11 +1429,7 @@ const nodesData = [
       public_desc:"The code editor built for creators who move different. Professional tools. Zero gatekeeping.\n\n⚡ AI-Powered Editor\n🛡️ Novice Guard Mode\n🔍 Smart Code Search\n🌐 Live Preview", public_protocol:"Action: Open Dre Code → Join Waitlist",
       isPortal:true, portalFile:"https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html", portalLabel:"OPEN DRE CODE",
       portalStyle:"background:linear-gradient(135deg,#e83000 0%,#ffaa00 100%);color:#fff;" },
-    { id:"LOAN_SHARK", x:100, y:-90, z:20, name:"Loan Shark", category:"Financial Engine",
-      desc:"[FOUNDER] Payday loan survival and sequence calculator.", protocol:"Input: Income, Bills, Active Nodes → Output: Sequenced survival path.",
-      public_desc:"Trapped in the payday loan cycle? Loan Shark calculates the exact sequence of payments and reborrows needed to survive your next payday.\n\n✅ Maps your cash flow timeline\n✅ Survival and exit strategies\n✅ Reborrow danger tracking", public_protocol:"Action: Open Loan Shark → Input Loans → Run Simulation",
-      isPortal:true, portalFile:"loan_shark_full_system.html", portalLabel:"OPEN LOAN SHARK",
-      portalStyle:"background:linear-gradient(135deg,#003a0f 0%,#00ff41 100%);color:#000;" },
+
     { id:"KLEARA", x:0, y:-160, z:0, name:"Kleara Studios", category:"Author Universe · DL Ford & Atlas Parks",
       desc:"[FOUNDER] The literary arm. Completely separate from Andre ecosystem. DL Ford (Light/Exposure) and Atlas Parks (Dark/Pattern) — two authors, two perspectives, one universe.",
       protocol:"This node does not feed the revenue engine. It is a separate creative universe.",
@@ -2736,7 +2723,7 @@ function _buildStart(d) {
         { icon:'🔒', title:'PRIVACY?', desc:'DRE OS scans your device and gives you a real exposure score.', sec:'systems' },
         { icon:'⚡', title:'BUILD A SYSTEM?', desc:'Start with DRE Workflow → then execute in DRE Console.', sec:'workflows' },
 
-        { icon:'📊', title:'FINANCIAL?', desc:'Loan Shark maps your payday loan survival path step by step.', sec:'systems' },
+        { icon:'📊', title:'FINANCIAL?', desc:'REMOVED_LOAN_SHARK maps your payday loan survival path step by step.', sec:'systems' },
     ];
 
     const stats = d?.stats || [
@@ -2820,7 +2807,7 @@ function _getDefaultTools() {
         { icon:'📄', name:'RePrizal AI', codename:'REPRIZAL', category:'Career Tool', purpose:'LLM-powered resume builder with PDF import and JSON pipeline.', best_for:'Job seekers who want AI-formatted resumes without subscriptions.', position:'Career layer', related:[], privacy:'API key local.', file:'ATS_Config_Pro_v_3_0.html', requires_api:true },
 
         { icon:'💻', name:'Dre Code', codename:'DRE_CODE', category:'Code Editor', purpose:'AI-powered code editor built for creators. Novice Guard Mode. Live preview.', best_for:'Developers and creators building in the ecosystem.', position:'Development layer', related:[], privacy:'TBD at launch.', file:'https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html' },
-        { icon:'💸', name:'Loan Shark', codename:'LOAN_SHARK', category:'Financial Engine', purpose:'Payday loan survival calculator. Maps exact reborrow sequences and exit strategies.', best_for:'Anyone trapped in the payday loan cycle.', position:'Financial layer', related:[], privacy:'100% local.', file:'loan_shark_full_system.html' },
+
         { icon:'⭐', name:'24 Hours', codename:'HOURS_24', category:'Wellness · Daily Rhythm', purpose:'Christ-centered daily rhythm app. Habits, focus sessions, urge tracking, AI life coach.', best_for:'Anyone building structure and accountability.', position:'Wellness layer', related:[], privacy:'All local. API key local.', file:'24_HOURS_.HTML', requires_api:true },
         { icon:'📖', name:'Kleara Studios', codename:'KLEARA', category:'Author Universe', purpose:'Literary arm of the ecosystem. DL Ford (Light) and Atlas Parks (Dark) — two author universes.', best_for:'Readers and writers in the DRE extended universe.', position:'Creative perimeter', related:['DRE Flow'], privacy:'N/A.', file:'authorpage.html' },
     ];
