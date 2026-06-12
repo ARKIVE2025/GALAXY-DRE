@@ -3,7 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orbit — Where Ideas Are Challenged, Structured, and Completed</title>
+<meta name="description" content="Orbit by The Andre Method: AI consulting, automation, startups and small business AI in Huntsville, Madison, Decatur, Athens, Hartselle, Florence, Scottsboro, Cullman, Guntersville and across North Alabama.">
+<meta name="keywords" content="AI consulting Huntsville, AI automation North Alabama, startups Huntsville, small business AI Madison AL, AI consultant Decatur, automation Athens AL, SaaS Huntsville, Andre Method, North Alabama AI builders">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://andremethod.com/orbit">
+<meta property="og:title" content="Orbit — AI, Startups & Builders in Huntsville, North Alabama">
+<meta property="og:description" content="Where AI builders, startup founders, and automation engineers across North Alabama connect, debate, and document real wins.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://andremethod.com/orbit">
+<meta property="og:site_name" content="Andre Method">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Orbit — AI, Startups & Builders in Huntsville, North Alabama">
+<meta name="twitter:description" content="AI consulting, automation, and startup community for Huntsville, Madison, Decatur, Athens & North Alabama.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Andre Method",
+  "url": "https://andremethod.com",
+  "sameAs": ["https://andremethod.com/orbit"],
+  "areaServed": ["Huntsville, AL","Madison, AL","Decatur, AL","Athens, AL","Hartselle, AL","Florence, AL","Scottsboro, AL","Cullman, AL","Guntersville, AL"]
+}
+</script>
+<title>Orbit — AI, Startups & Builders in Huntsville, North Alabama</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -375,7 +397,7 @@
 
   .feed-header {
     position: sticky;
-    top: 56px;
+    top: 0;
     background: rgba(255,255,255,0.97);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
@@ -404,10 +426,20 @@
   }
 
   .compose-box {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
+    margin: 16px 24px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
     display: flex;
     gap: 12px;
+    background: var(--bg-card);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .compose-box:has(.compose-textarea:focus) {
+    border-color: var(--cyan-dim);
+    box-shadow: 0 4px 16px rgba(10,102,194,0.08);
   }
 
   .compose-avatar {
@@ -425,15 +457,23 @@
 
   .compose-textarea {
     width: 100%;
-    background: none;
-    border: none;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
     color: var(--text-primary);
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
     resize: none;
     outline: none;
-    min-height: 50px;
+    min-height: 44px;
     line-height: 1.5;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .compose-textarea:focus {
+    background: var(--bg-surface);
+    border-color: var(--cyan);
   }
 
   .compose-textarea::placeholder { color: var(--text-muted); }
@@ -442,9 +482,9 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-top: 12px;
+    padding-top: 10px;
+    margin-top: 10px;
     border-top: 1px solid var(--border);
-    margin-top: 8px;
   }
 
   .compose-tag {
@@ -471,6 +511,14 @@
     border: none;
     border-radius: 8px;
     padding: 8px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .post-btn:hover:not(:disabled) { background: #084d94; transform: translateY(-1px); }
+  .post-btn:disabled { background: var(--border-light); color: var(--text-muted); cursor: default; }
     font-family: 'Syne', sans-serif;
     font-weight: 700;
     font-size: 13px;
@@ -1213,11 +1261,20 @@
     .topbar-search { display: none; }
     .mobile-bottom-nav { display: flex; }
     .toast { bottom: 76px; }
+    .site-footer { margin-left: 0 !important; margin-right: 0 !important; padding: 16px !important; flex-direction: column; text-align: center; gap: 8px !important; }
   }
 
   @media (max-width: 1100px) {
     .right-panel { display: none; }
     .main { margin-right: 0; }
+    .site-footer { margin-right: 0 !important; }
+  }
+
+  @media (min-width: 721px) and (max-width: 900px) {
+    .sidebar { width: 80px; }
+    .main { margin-left: 80px; }
+    :root { --sidebar-w: 80px; }
+    .sidebar .nav-label, .sidebar .sidebar-section-title { display: none; }
   }
 
   /* SCROLLBAR */
@@ -1714,7 +1771,7 @@
   <div class="topbar-search">
     <div class="search-wrap">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input class="search-input" placeholder="Search debates, scenarios, profiles..." />
+      <input class="search-input" placeholder="Search AI, startups, builders in Huntsville..." />
     </div>
   </div>
   <div class="topbar-right">
@@ -1722,12 +1779,12 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       3
     </button>
-    <button class="topbar-btn" onclick="openJoinModal()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Join Orbit
+    <button class="topbar-btn" onclick="openDiscordModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Join Discord
     </button>
-    <button class="topbar-btn primary" onclick="openJoinModal()">Post to Orbit</button>
-    <img class="avatar-sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=viewer&backgroundColor=f0f2f5&radius=50" alt="Profile" onclick="openProfileModal('viewer')" />
+    <button class="topbar-btn primary" onclick="openDiscordModal()">Join Orbit</button>
+    <img class="avatar-sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e4e6eb'/%3E%3Ccircle cx='20' cy='15' r='7' fill='%23b0b3b8'/%3E%3Cpath d='M6 38c0-8 6-13 14-13s14 5 14 13' fill='%23b0b3b8'/%3E%3C/svg%3E" alt="Profile" onclick="openProfileModal('viewer')" />
   </div>
 </header>
 
@@ -1748,49 +1805,49 @@
         Debates
         <span class="nav-badge red">5</span>
       </div>
-      <div class="nav-item" onclick="switchTab('scenarios', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        Scenarios
+      <div class="nav-item" onclick="switchTab('cities', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Cities
       </div>
-      <div class="nav-item" onclick="switchTab('gravity', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        Gravity Threads
+      <div class="nav-item" onclick="switchTab('builders', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Builders
       </div>
       <div class="nav-item" onclick="openJoinModal()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Profiles
       </div>
-      <div class="nav-item" onclick="showToast('Framework docs loading...')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        The Andre Method
+      <div class="nav-item" onclick="openTheQuestion()" style="opacity:0.45; font-style:italic;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        ?
       </div>
     </div>
 
     <div class="nav-section">
-      <div class="nav-label">Framework Pulse</div>
+      <div class="nav-label">City Pulse</div>
       <div class="framework-pulse">
         <div class="fp-title">Active Discussions</div>
         <div class="fp-bar">
-          <div class="fp-bar-label"><span>MANNED</span><span style="color:var(--manned)">72%</span></div>
+          <div class="fp-bar-label"><span>Huntsville</span><span style="color:var(--manned)">72%</span></div>
           <div class="fp-bar-track"><div class="fp-bar-fill manned"></div></div>
         </div>
         <div class="fp-bar">
-          <div class="fp-bar-label"><span>Clear Path</span><span style="color:var(--clearpath)">58%</span></div>
+          <div class="fp-bar-label"><span>Madison</span><span style="color:var(--clearpath)">58%</span></div>
           <div class="fp-bar-track"><div class="fp-bar-fill clearpath"></div></div>
         </div>
         <div class="fp-bar">
-          <div class="fp-bar-label"><span>Monitor & Sustain</span><span style="color:var(--monitor)">45%</span></div>
+          <div class="fp-bar-label"><span>Decatur</span><span style="color:var(--monitor)">45%</span></div>
           <div class="fp-bar-track"><div class="fp-bar-fill monitor"></div></div>
         </div>
         <div class="fp-bar">
-          <div class="fp-bar-label"><span>Complete</span><span style="color:var(--complete)">31%</span></div>
+          <div class="fp-bar-label"><span>Athens</span><span style="color:var(--complete)">31%</span></div>
           <div class="fp-bar-track"><div class="fp-bar-fill complete"></div></div>
         </div>
       </div>
     </div>
 
     <div class="sidebar-profile" onclick="openJoinModal()">
-      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=viewer&backgroundColor=f0f2f5&radius=50" alt="You" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e4e6eb'/%3E%3Ccircle cx='20' cy='15' r='7' fill='%23b0b3b8'/%3E%3Cpath d='M6 38c0-8 6-13 14-13s14 5 14 13' fill='%23b0b3b8'/%3E%3C/svg%3E" alt="You" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
       <div class="sidebar-profile-info">
         <div class="sidebar-profile-name">Create Your Profile</div>
         <div class="sidebar-profile-role">Join the discussion</div>
@@ -1806,15 +1863,46 @@
     <div class="feed-header">
       <div class="feed-tab active" onclick="switchFeedTab('all', this)">All Posts</div>
       <div class="feed-tab" onclick="switchFeedTab('debates', this)">Debates</div>
-      <div class="feed-tab" onclick="switchFeedTab('scenarios', this)">Scenarios</div>
+      <div class="feed-tab" onclick="switchFeedTab('cities', this)">Cities</div>
       <div class="feed-tab" onclick="switchFeedTab('insights', this)">System Insights</div>
     </div>
 
-    <!-- Compose / CTA -->
+    <!-- Compose Box -->
+    <div class="compose-box">
+      <img class="compose-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e4e6eb'/%3E%3Ccircle cx='20' cy='15' r='7' fill='%23b0b3b8'/%3E%3Cpath d='M6 38c0-8 6-13 14-13s14 5 14 13' fill='%23b0b3b8'/%3E%3C/svg%3E" alt="You" />
+      <div class="compose-inner">
+        <textarea id="composeTextarea" class="compose-textarea" placeholder="Share an insight, debate, or local win..." rows="1" oninput="autoGrowCompose(this)"></textarea>
+        <div class="compose-footer">
+          <div class="compose-tag">
+            <select id="composeType" class="tag-select">
+              <option value="insight">Insight</option>
+              <option value="debate">Debate</option>
+              <option value="breakdown">Success Breakdown</option>
+              <option value="caseStudy">Case Study</option>
+              <option value="automationWin">Automation Win</option>
+            </select>
+            <select id="composeCity" class="tag-select">
+              <option value="">No location</option>
+              <option value="huntsville">Huntsville</option>
+              <option value="madison">Madison</option>
+              <option value="decatur">Decatur</option>
+              <option value="athens">Athens</option>
+              <option value="hartselle">Hartselle</option>
+              <option value="florence">Florence</option>
+              <option value="scottsboro">Scottsboro</option>
+              <option value="cullman">Cullman</option>
+              <option value="guntersville">Guntersville</option>
+            </select>
+          </div>
+          <button class="post-btn" id="composePostBtn" onclick="submitComposePost()" disabled>Post</button>
+        </div>
+      </div>
+    </div>
+
     <div class="join-cta">
-      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=viewer&backgroundColor=f0f2f5&radius=50" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
-      <div class="join-cta-text"><strong>Join the discussion.</strong> Create your profile to post, respond to debates, and engage with the Andre Method community.</div>
-      <button class="topbar-btn primary" onclick="openJoinModal()">Join</button>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e4e6eb'/%3E%3Ccircle cx='20' cy='15' r='7' fill='%23b0b3b8'/%3E%3Cpath d='M6 38c0-8 6-13 14-13s14 5 14 13' fill='%23b0b3b8'/%3E%3C/svg%3E" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);" />
+      <div class="join-cta-text"><strong>Orbit is where discovery happens.</strong> The real conversations are in the Discord — AI, startups, and builders in Huntsville & North Alabama.</div>
+      <button class="topbar-btn primary" onclick="openDiscordModal()">Join Discord</button>
     </div>
 
     <!-- POSTS -->
@@ -1847,31 +1935,31 @@
 
     <!-- 🤝 AFFILIATE #1 — Featured Partner -->
     <div class="affiliate-card" id="affiliate-1">
-      <div class="affiliate-logo" style="background:#e8f0fb;">📘</div>
-      <div class="affiliate-badge">Featured Partner</div>
-      <div class="affiliate-title">Notion — Build Your Andre Method Workspace</div>
-      <div class="affiliate-desc">Pre-built project templates, MANNED tracking boards, and execution dashboards for serious builders.</div>
-      <button class="ad-cta" onclick="showToast('Affiliate link — opens partner page')">Get Template Free →</button>
-      <div class="affiliate-meta">⭐ Recommended by 89% of Orbit members</div>
+      <div class="affiliate-logo" style="background:#e8f0fb;">🤖</div>
+      <div class="affiliate-badge">Featured Resource</div>
+      <div class="affiliate-title">AI Automation for Huntsville Small Businesses</div>
+      <div class="affiliate-desc">Tools and consulting resources for North Alabama businesses ready to automate operations and reduce manual work.</div>
+      <button class="ad-cta" onclick="openDiscordModal()">Explore Resources →</button>
+      <div class="affiliate-meta">⭐ Join the builder community in Discord</div>
     </div>
 
     <!-- Active Debates -->
     <div class="widget">
       <div class="widget-title">🔥 Active Debates</div>
-      <div class="debate-item" onclick="showToast('Opening debate thread...')">
-        <div class="debate-topic">"You can't validate without spending money first."</div>
-        <div class="debate-meta"><div class="live-dot"></div><span>Live · 34 replies</span></div>
+      <div class="debate-item" onclick="showToast('Opening thread...')">
+        <div class="debate-topic">"AI will replace most Huntsville service jobs within 5 years."</div>
+        <div class="debate-meta"><div class="live-dot"></div><span>Live · <!-- TODO: getReplyCount('debate1', 34) --><span class="reply-count" data-debate-id="debate1" data-fallback="34">34</span> replies</span></div>
       </div>
-      <div class="debate-item" onclick="showToast('Opening debate thread...')">
-        <div class="debate-topic">"Planning is just procrastination with structure."</div>
-        <div class="debate-meta"><span>2h ago · 19 replies</span></div>
+      <div class="debate-item" onclick="showToast('Opening thread...')">
+        <div class="debate-topic">"Small businesses in North Alabama aren't ready for AI adoption."</div>
+        <div class="debate-meta"><span>2h ago · <!-- TODO: getReplyCount('debate2', 19) --><span class="reply-count" data-debate-id="debate2" data-fallback="19">19</span> replies</span></div>
       </div>
-      <div class="debate-item" onclick="showToast('Opening debate thread...')">
-        <div class="debate-topic">"Most project managers are professional excuse-makers."</div>
-        <div class="debate-meta"><span>4h ago · 41 replies</span></div>
+      <div class="debate-item" onclick="showToast('Opening thread...')">
+        <div class="debate-topic">"Huntsville's defense sector is the best launchpad for AI startups in the South."</div>
+        <div class="debate-meta"><span>4h ago · <!-- TODO: getReplyCount('debate3', 41) --><span class="reply-count" data-debate-id="debate3" data-fallback="41">41</span> replies</span></div>
       </div>
-      <div class="debate-item" onclick="showToast('Opening debate thread...')">
-        <div class="debate-topic">"Completion without impact is just busy work."</div>
+      <div class="debate-item" onclick="showToast('Opening thread...')">
+        <div class="debate-topic">"Remote-first startups will beat local Huntsville companies for top AI talent."</div>
         <div class="debate-meta"><div class="live-dot"></div><span>Live · 12 replies</span></div>
       </div>
     </div>
@@ -1891,36 +1979,35 @@
       </div>
     </div>
 
-    <!-- Framework Insight -->
+    <!-- Local Intel -->
     <div class="widget">
-      <div class="widget-title">💡 Framework Insight</div>
+      <div class="widget-title">📍 Local Intel</div>
       <div class="insight-box">
-        <div class="insight-label">Andre Method · MANNED</div>
-        <div class="insight-text">"Every failed project has the same root: someone skipped validation and built something nobody actually needed."</div>
+        <div class="insight-label">Huntsville · AI Ecosystem</div>
+        <div class="insight-text">"Huntsville ranks in the top 10 U.S. metros for defense tech employment. AI automation is the next wave hitting every sector — from aerospace contractors to Main Street."</div>
       </div>
       <div class="insight-box" style="background: linear-gradient(135deg,rgba(10,124,92,0.07),rgba(10,102,194,0.04)); border-color:rgba(10,124,92,0.2);">
-        <div class="insight-label" style="color:var(--clearpath)">Andre Method · Clear Path</div>
-        <div class="insight-text">"A plan that can't survive first contact with reality was never a real plan — it was a wish list with deadlines."</div>
+        <div class="insight-label" style="color:var(--clearpath)">North Alabama · Startup Scene</div>
+        <div class="insight-text">"The Huntsville entrepreneurial ecosystem grew 34% over the last 3 years. Capital is moving in. Builders who establish authority now will own the market when it peaks."</div>
       </div>
     </div>
 
     <!-- 🤝 AFFILIATE #2 -->
     <div class="affiliate-card" id="affiliate-2">
-      <div class="affiliate-logo" style="background:#fff3e0;">📧</div>
-      <div class="affiliate-badge">Affiliate</div>
-      <div class="affiliate-title">ConvertKit — Email Your Community</div>
-      <div class="affiliate-desc">Build your audience as you build your method. Automated sequences for business creators.</div>
-      <button class="ad-cta" onclick="showToast('Affiliate link — opens partner page')">Start Free →</button>
-      <div class="affiliate-meta">💰 Earn up to $2,400/yr per referral</div>
+      <div class="affiliate-logo" style="background:#fff3e0;">💬</div>
+      <div class="affiliate-badge">Community</div>
+      <div class="affiliate-title">Orbit Builder Discord — North Alabama</div>
+      <div class="affiliate-desc">Where AI builders, startup founders, and automation engineers in Huntsville actually talk.</div>
+      <button class="ad-cta" onclick="openDiscordModal()">Join Free →</button>
+      <div class="affiliate-meta">🚀 Real conversations. Real builders.</div>
     </div>
 
-    <!-- Trending -->
     <div class="widget">
       <div class="widget-title">📈 Trending Topics</div>
-      <div class="trending-item"><div class="trending-rank">Trending · Business</div><div class="trending-topic">#ValidationFirst</div><div class="trending-count">247 posts today</div></div>
-      <div class="trending-item"><div class="trending-rank">Trending · Execution</div><div class="trending-topic">#ClearPathMethod</div><div class="trending-count">183 posts today</div></div>
-      <div class="trending-item"><div class="trending-rank">Trending · Strategy</div><div class="trending-topic">#AndreMethod</div><div class="trending-count">156 posts today</div></div>
-      <div class="trending-item"><div class="trending-rank">Trending · Projects</div><div class="trending-topic">#FinishWhatYouStart</div><div class="trending-count">94 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Huntsville</div><div class="trending-topic">#AIHuntsville</div><div class="trending-count">247 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · North Alabama</div><div class="trending-topic">#StartupHsv</div><div class="trending-count">183 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Automation</div><div class="trending-topic">#SmallBizAI</div><div class="trending-count">156 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Builders</div><div class="trending-topic">#BuildNorthAL</div><div class="trending-count">94 posts today</div></div>
     </div>
 
     <!-- Suggested Profiles -->
@@ -2113,11 +2200,11 @@
       <div class="widget-title">🔥 Active Debates</div>
       <div class="debate-item" onclick="showToast('Opening debate thread...')">
         <div class="debate-topic">"You can't validate without spending money first."</div>
-        <div class="debate-meta"><div class="live-dot"></div><span>Live · 34 replies</span></div>
+        <div class="debate-meta"><div class="live-dot"></div><span>Live · <!-- TODO: getReplyCount('debate1', 34) --><span class="reply-count" data-debate-id="debate1" data-fallback="34">34</span> replies</span></div>
       </div>
       <div class="debate-item" onclick="showToast('Opening debate thread...')">
         <div class="debate-topic">"Planning is just procrastination with structure."</div>
-        <div class="debate-meta"><span>2h ago · 19 replies</span></div>
+        <div class="debate-meta"><span>2h ago · <!-- TODO: getReplyCount('debate2', 19) --><span class="reply-count" data-debate-id="debate2" data-fallback="19">19</span> replies</span></div>
       </div>
       <div class="debate-item" onclick="showToast('Opening debate thread...')">
         <div class="debate-topic">"Completion without impact is just busy work."</div>
@@ -2126,8 +2213,8 @@
     </div>
     <div class="widget" style="background:transparent;border:none;padding:0;margin-bottom:20px;">
       <div class="widget-title">📈 Trending</div>
-      <div class="trending-item"><div class="trending-rank">Trending · Business</div><div class="trending-topic">#ValidationFirst</div><div class="trending-count">247 posts today</div></div>
-      <div class="trending-item"><div class="trending-rank">Trending · Strategy</div><div class="trending-topic">#AndreMethod</div><div class="trending-count">156 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · Huntsville</div><div class="trending-topic">#AIHuntsville</div><div class="trending-count">247 posts today</div></div>
+      <div class="trending-item"><div class="trending-rank">Trending · North Alabama</div><div class="trending-topic">#StartupHsv</div><div class="trending-count">156 posts today</div></div>
     </div>
     <div class="widget" style="background:transparent;border:none;padding:0;">
       <div class="widget-title">👤 Active Participants</div>
@@ -2146,81 +2233,268 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     Debates
   </div>
-  <div class="mobile-nav-item" onclick="openMobileDrawer()">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    Explore
+  <div class="mobile-nav-item" onclick="mobileNavSwitch('cities', this)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Cities
   </div>
   <div class="mobile-nav-item" onclick="openNotifications()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     Alerts
   </div>
-  <div class="mobile-nav-item" onclick="openJoinModal()">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Join
+  <div class="mobile-nav-item" onclick="openDiscordModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Discord
   </div>
 </nav>
+
+<!-- THE QUESTION MODAL -->
+<div class="modal-overlay" id="theQuestionModal" onclick="closeModal(event, 'theQuestionModal')">
+  <div class="modal" style="max-width:420px;text-align:center;">
+    <div class="modal-header" style="justify-content:center;border-bottom:none;padding-bottom:0;">
+      <button class="modal-close" style="position:absolute;top:20px;right:20px;" onclick="document.getElementById('theQuestionModal').classList.remove('open')">×</button>
+    </div>
+    <div style="padding:20px 10px 28px;">
+      <div style="font-size:48px;margin-bottom:20px;opacity:0.15;">?</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:14px;line-height:1.4;">There is a question behind every system.</div>
+      <div style="font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:24px;font-style:italic;">"You've been using the system.<br>But what built the system?"</div>
+      <div style="font-size:12px;color:var(--text-muted);opacity:0.6;">This part of Orbit isn't ready for you yet.<br>Keep building.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DISCORD MODAL -->
+<div class="modal-overlay" id="discordModal" onclick="closeModal(event, 'discordModal')">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <div class="modal-title">Join the Orbit Builder Discord</div>
+      <button class="modal-close" onclick="document.getElementById('discordModal').classList.remove('open')">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.65;">Orbit is where discovery happens. The real conversations — AI tools, startup ideas, automation projects, and North Alabama builders — live in the Discord.</p>
+    <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Who's in there</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:2;">🤖 &nbsp;AI builders and automation engineers<br>🚀 &nbsp;Huntsville & North Alabama startup founders<br>📊 &nbsp;Small business owners exploring AI<br>🛠 &nbsp;Developers building local tools</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="document.getElementById('discordModal').classList.remove('open')">Maybe Later</button>
+      <button class="modal-btn primary" onclick="if(DISCORD_INVITE){window.open(DISCORD_INVITE,'_blank')}else{showToast('Discord link coming soon — stay tuned.')}; document.getElementById('discordModal').classList.remove('open')">Join Discord →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ORBIT FOOTER -->
+<footer class="site-footer" style="background:#fff;border-top:1px solid var(--border);padding:20px 24px;margin-left:var(--sidebar-w);margin-right:var(--right-w);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+  <div style="font-size:12px;color:var(--text-muted);">Orbit · Huntsville, North Alabama · <a href="https://arkive2025.github.io/GALAXY-DRE/orbit.html" style="color:var(--cyan);text-decoration:none;">arkive2025.github.io</a></div>
+  <div style="font-size:11px;color:var(--text-muted);opacity:0.45;font-style:italic;cursor:pointer;" onclick="openTheQuestion()">There is a question behind every system.</div>
+</footer>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+// ══════════════════════════════════════════════════════════════════
+// SEO ARCHITECTURE — dynamic route generation (no routing yet wired)
+// ══════════════════════════════════════════════════════════════════
+const SEO_CITIES = ["huntsville","madison","decatur","athens","hartselle","florence","scottsboro","cullman","guntersville"];
+const SEO_TOPICS = ["ai-consulting","automation","startups","small-business-ai","saas"];
+
+// TODO: generate /city/[slug] pages from SEO_CITIES
+// TODO: generate /topic/[slug] pages from SEO_TOPICS
+// TODO: generate /profile/[username] from profiles[].handle
+// TODO: generate /discussion/[slug] for every post (slugify post.body / title)
+function getSeoUrl(type, slug) {
+  // type: 'city' | 'topic' | 'profile' | 'discussion'
+  return `/${type}/${slug}`;
+}
+function slugify(str) {
+  return str.toLowerCase().replace(/<[^>]+>/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 60);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SUPABASE INTEGRATION PREP — interfaces & hooks only, NOT connected
+// ══════════════════════════════════════════════════════════════════
+/*
+Tables (future Supabase schema):
+  profiles      — id, username, handle, role, tag, bio, avatar_url, created_at
+  posts         — id, author_id, post_type, body, tags, signal, created_at
+  comments      — id, post_id, author_id, body, created_at
+  cities        — id, slug, name, region, seo_content
+  topics        — id, slug, name, seo_content
+  presence      — id, session_id, user_id, last_seen, scroll_depth, engagement_score
+  agent_actions — id, agent_id, action_type, target_id, payload, created_at
+  seo_pages     — id, route, type (city|topic|profile|discussion), slug, content, updated_at
+*/
+const supabase = null; // TODO: const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// TODO: fetchProfiles() -> supabase.from('profiles').select('*')
+// TODO: fetchPosts(filters) -> supabase.from('posts').select('*')
+// TODO: insertComment(postId, authorId, body) -> supabase.from('comments').insert(...)
+// TODO: fetchSeoPage(type, slug) -> supabase.from('seo_pages').select('*').eq('type', type).eq('slug', slug)
+
+// ══════════════════════════════════════════════════════════════════
+// PRESENCE DETECTION SYSTEM
+// ══════════════════════════════════════════════════════════════════
+const presenceState = {
+  sessionId: null,
+  lastActive: Date.now(),
+  scrollDepth: 0,
+  mouseMoves: 0,
+  tabActive: true,
+  engagement: 0
+};
+
+function trackPresence() {
+  presenceState.sessionId = presenceState.sessionId || `sess_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+  document.addEventListener('visibilitychange', () => {
+    presenceState.tabActive = document.visibilityState === 'visible';
+  });
+
+  window.addEventListener('scroll', () => {
+    const depth = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
+    presenceState.scrollDepth = Math.max(presenceState.scrollDepth, Math.min(depth, 1));
+    presenceState.lastActive = Date.now();
+  });
+
+  window.addEventListener('mousemove', () => {
+    presenceState.mouseMoves++;
+    presenceState.lastActive = Date.now();
+  });
+
+  // TODO: send presence ping to Supabase 'presence' table
+}
+
+function heartbeat() {
+  // TODO: setInterval -> upsert presenceState into Supabase 'presence' table
+  presenceState.engagement = engagementScore();
+}
+
+function engagementScore() {
+  const idleSeconds = (Date.now() - presenceState.lastActive) / 1000;
+  let score = 0;
+  score += presenceState.scrollDepth * 40;
+  score += Math.min(presenceState.mouseMoves, 50);
+  score += presenceState.tabActive ? 10 : 0;
+  score -= Math.min(idleSeconds, 60) * 0.5;
+  return Math.max(0, Math.round(score));
+}
+
+function activeVisitors() {
+  // TODO: query Supabase 'presence' table for sessions with last_seen within threshold
+  return 0;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// COMMUNITY SEEDING ENGINE — placeholder, disabled
+// ══════════════════════════════════════════════════════════════════
+const COMMUNITY_ENGINE = {
+  enabled: false,
+  maxPersonas: 30,
+  supporterRatio: 0.8,
+  skepticRatio: 0.2,
+  triggerVisitors: 2,
+  triggerEngagement: 50
+};
+// TODO: when COMMUNITY_ENGINE.enabled, generate persona posts/comments
+// respecting supporterRatio/skepticRatio once activeVisitors() >= triggerVisitors
+// and engagementScore() >= triggerEngagement.
+
+/*
+═══════════════════════════════════════════════════════════════════
+Future Orbit Agent Rules
+
+1. Never post unless active visitors exist.
+2. Never exceed 30 personas.
+3. Maintain 80/20 support-to-skeptic ratio.
+4. Generate Huntsville and North Alabama content first.
+5. Drive visitors toward Discord.
+6. Never reveal personas are synthetic.
+7. Prioritize SEO-rich discussions.
+═══════════════════════════════════════════════════════════════════
+*/
+
+// ── DISCORD CONFIG ───────────────────────────────────────────────
+const DISCORD_INVITE = ""; // TODO: set live Discord invite URL here
+
+// ── REPLY COUNT DATA (placeholder until live data wired) ─────────
+// TODO: replace hardcoded reply counts with getReplyCount(debateId) from Supabase 'posts'/'comments'
+function getReplyCount(debateId, fallback) {
+  // TODO: return live count from Supabase
+  return fallback;
+}
+
+// ── STRUCTURED CONTENT TYPES ──────────────────────────────────────
+// Existing: insight, debate, city, breakdown, failure
+// Expanded schema (new postType values, render hooks TODO):
+const CONTENT_TYPES_EXTENDED = [
+  "caseStudy", "toolReview", "businessSpotlight",
+  "startupSpotlight", "event", "jobOpportunity", "automationWin"
+];
+// TODO: add postTypeLabel + render styling for each in renderPost()
+// TODO: generate SEO discussion pages preferentially from these types
+
+// ── LOCAL SEO CITY COVERAGE ───────────────────────────────────────
+// Active: Huntsville, Madison, Decatur, Athens
+// Added for North Alabama coverage: Hartselle, Florence, Scottsboro, Cullman, Guntersville
+// TODO: add city-specific posts/insights/case studies for each new city
+// to build out SEO_CITIES coverage (see getSeoUrl('city', slug))
+
 // ── DATA ──────────────────────────────────────────────────────────
 
 const profiles = [
-  // DETRACTORS
-  { id: 1,  name: "Marcus Hill",    handle: "@mhill_ops",        role: "detractor", tag: "Validation Skeptic",  age: 42, gender: "male",   bg: "Former operations manager, now runs a struggling logistics business. Has seen too many ideas die in validation gaps.", behavior: "Challenges need, ROI assumptions, and mission clarity before anything else." },
-  { id: 2,  name: "Dana Brooks",    handle: "@danabrooks_pm",    role: "detractor", tag: "Overplanner Critic",  age: 37, gender: "female", bg: "Corporate PM turned consultant. Has watched beautiful plans collapse on day one of execution.", behavior: "Attacks plans that don't survive real execution. Exposes the gap between structure and reality." },
-  { id: 3,  name: "Kevin Patel",    handle: "@kpatel_dev",       role: "detractor", tag: "Execution Realist",   age: 34, gender: "male",   bg: "Startup engineer who has shipped and watched three companies fail post-launch.", behavior: "Pushes hard on human behavior, discipline gaps, and real-world follow-through." },
-  { id: 4,  name: "Lisa Carter",    handle: "@lisac_hr",         role: "detractor", tag: "Drop-Off Analyst",    age: 45, gender: "female", bg: "HR director focused on performance failure patterns and organizational burnout.", behavior: "Calls out accountability failures, inconsistency, and momentum collapse." },
-  { id: 5,  name: "Andre Wallace",  handle: "@awallace_exec",    role: "detractor", tag: "Outcome Challenger",  age: 50, gender: "male",   bg: "Former C-suite executive, now an advisor who has seen hundreds of projects 'complete' with zero impact.", behavior: "Questions whether completed work actually delivered real value." },
+  // SKEPTICS (20% — constructive friction)
+  { id: 1,  name: "Marcus Hill",    handle: "@mhill_ops",        role: "detractor", tag: "Huntsville · Ops",        age: 42, gender: "male",   bg: "Former operations manager at Redstone Arsenal contractor. Now runs a logistics consultancy in Madison, AL.", behavior: "Challenges AI adoption claims with real operational data. Skeptical but fair." },
+  { id: 2,  name: "Dana Brooks",    handle: "@danabrooks_pm",    role: "detractor", tag: "Decatur · Consultant",     age: 37, gender: "female", bg: "Strategy consultant based in Decatur. Works with North Alabama manufacturers on digital transformation.", behavior: "Questions timelines, ROI projections, and vendor hype around AI tools." },
+  { id: 3,  name: "Kevin Patel",    handle: "@kpatel_dev",       role: "detractor", tag: "Huntsville · Engineer",    age: 34, gender: "male",   bg: "Software engineer at a defense tech firm in Huntsville. Has shipped AI integrations that failed in production.", behavior: "Calls out technical oversimplification. Focused on what actually works in the field." },
+  { id: 4,  name: "Lisa Carter",    handle: "@lisac_hr",         role: "detractor", tag: "Madison · HR",             age: 45, gender: "female", bg: "HR director at a mid-size Huntsville company. Tracks workforce impact of automation decisions.", behavior: "Raises workforce and adoption concerns most builders ignore." },
+  { id: 5,  name: "Andre Wallace",  handle: "@awallace_exec",    role: "detractor", tag: "Huntsville · Executive",   age: 50, gender: "male",   bg: "C-suite advisor with 20 years in Huntsville's defense and aerospace sector.", behavior: "Challenges whether AI investments actually produce business outcomes." },
 
-  // PROMOTERS
-  { id: 6,  name: "Jasmine Lee",    handle: "@jasmine_builds",   role: "promoter",  tag: "Operator",           age: 29, gender: "female", bg: "Startup operator who has taken 4 companies from idea to revenue.", behavior: "Breaks ideas into executable action using the Andre Method framework." },
-  { id: 7,  name: "Eric Thompson",  handle: "@eric_construction", role: "promoter", tag: "PM · Builder",        age: 41, gender: "male",   bg: "Construction project manager who manages $2M+ builds quarterly.", behavior: "Applies structured execution logic to every discussion." },
-  { id: 8,  name: "Carlos Mendez",  handle: "@carlosmendez",     role: "promoter",  tag: "Agency Owner",       age: 36, gender: "male",   bg: "Owns a digital agency. Runs structure-first delivery systems.", behavior: "Connects planning to delivery with no gaps." },
-  { id: 9,  name: "Olivia Chen",    handle: "@olivia_strategy",  role: "promoter",  tag: "Strategist",         age: 44, gender: "female", bg: "Business strategist focused on validation-first methodology.", behavior: "Grounds every argument in evidence before structure." },
-  { id: 10, name: "Malik Johnson",  handle: "@malik_consults",   role: "promoter",  tag: "Consultant",         age: 35, gender: "male",   bg: "Management consultant who translates framework into field application.", behavior: "Connects pillars clearly, bridges theory and action." },
-  { id: 11, name: "Steven Wright",  handle: "@swright_finance",  role: "promoter",  tag: "Finance Lead",       age: 47, gender: "male",   bg: "CFO-turned-advisor who drives ROI clarity in every decision.", behavior: "Brings numbers to the table. Makes abstract ideas concrete." },
-  { id: 12, name: "Nina Patel",     handle: "@nina_product",     role: "promoter",  tag: "Product Manager",    age: 32, gender: "female", bg: "Senior PM at a SaaS company managing 8 concurrent product lines.", behavior: "Champions structured planning and cross-functional ownership." },
-  { id: 13, name: "Alexis Rivera",  handle: "@alexis_creates",   role: "promoter",  tag: "Creator",            age: 28, gender: "female", bg: "Content creator turned business strategist. Translates complex ideas for builders.", behavior: "Makes the Andre Method accessible without dumbing it down." },
-  { id: 14, name: "Brian Cole",     handle: "@briancole_saas",   role: "promoter",  tag: "SaaS Builder",       age: 33, gender: "male",   bg: "Bootstrapped two SaaS products. Systems thinker by default.", behavior: "Builds arguments like he builds software: modular and testable." },
-  { id: 15, name: "Tasha Green",    handle: "@tasha_program",    role: "promoter",  tag: "Program Manager",    age: 38, gender: "female", bg: "Runs enterprise program portfolios across healthcare and finance sectors.", behavior: "Accountability-first voice. Ensures every plan has an owner." },
-  { id: 16, name: "Harold Bennett", handle: "@harold_advisor",   role: "promoter",  tag: "Advisor",            age: 52, gender: "male",   bg: "30 years in business development. Has seen every mistake in the book.", behavior: "Long-term thinking perspective. Patient and precise in structured argument." },
-  { id: 17, name: "Jordan Blake",   handle: "@jordanblake_free", role: "promoter",  tag: "Freelancer",         age: 31, gender: "male",   bg: "Independent contractor managing 12 clients simultaneously.", behavior: "Execution discipline. Holds the line on completion standards." },
-  { id: 18, name: "Kevin Tran",     handle: "@kevintran_dev",    role: "promoter",  tag: "Developer",          age: 30, gender: "male",   bg: "Full-stack developer who builds internal tools for project teams.", behavior: "Applies systems logic to business arguments. No fluff." },
-  { id: 19, name: "Monica Diaz",    handle: "@monicadiaz_data",  role: "promoter",  tag: "Data Analyst",       age: 37, gender: "female", bg: "Analytics lead who tracks execution metrics across product teams.", behavior: "Brings measurement discipline. Defines what 'done' actually means." },
-  { id: 20, name: "Brandon Scott",  handle: "@bscott_coach",     role: "promoter",  tag: "Performance Coach",  age: 38, gender: "male",   bg: "Executive performance coach. Works with founders and operators.", behavior: "Discipline-first voice. Calls out inconsistency constructively." },
-  { id: 21, name: "Tony Brooks",    handle: "@tonybrooks_biz",   role: "promoter",  tag: "Business Owner",     age: 48, gender: "male",   bg: "Small business owner who has survived three recessions.", behavior: "Ground-level realism. Practical execution under resource constraints." },
-  { id: 22, name: "Felicia Grant",  handle: "@felicia_lead",     role: "promoter",  tag: "Team Lead",          age: 41, gender: "female", bg: "Manages a 15-person team at a mid-size firm.", behavior: "Ownership clarity. Ensures arguments address who is responsible." },
-  { id: 23, name: "Marcus Reed",    handle: "@mreed_ops",        role: "promoter",  tag: "Operations Director",age: 46, gender: "male",   bg: "Ops director who has scaled teams from 5 to 200 people.", behavior: "Completion mindset. Will not accept partial as done." },
-  { id: 24, name: "Simone Carter",  handle: "@simonec_coach",    role: "promoter",  tag: "Coach",              age: 40, gender: "female", bg: "Business and executive coach. Focused on clarity and accountability.", behavior: "Connects method to mindset. Human side of execution." },
+  // SUPPORTERS (50% — constructive builders)
+  { id: 6,  name: "Jasmine Lee",    handle: "@jasmine_builds",   role: "promoter",  tag: "Huntsville · Founder",     age: 29, gender: "female", bg: "Founder of an AI automation consultancy in Huntsville serving small businesses in North Alabama.", behavior: "Documents real automation wins for local businesses. Practical and specific." },
+  { id: 7,  name: "Eric Thompson",  handle: "@eric_construction", role: "promoter", tag: "Decatur · Builder",         age: 41, gender: "male",   bg: "General contractor in Decatur using AI scheduling and estimating tools on active projects.", behavior: "Brings construction and trades perspective to AI adoption in North Alabama." },
+  { id: 8,  name: "Carlos Mendez",  handle: "@carlosmendez",     role: "promoter",  tag: "Huntsville · Agency",      age: 36, gender: "male",   bg: "Runs a digital marketing agency in Huntsville focused on AI-assisted content for local businesses.", behavior: "Shares what's working for local SEO and AI marketing in the HSV market." },
+  { id: 9,  name: "Olivia Chen",    handle: "@olivia_strategy",  role: "promoter",  tag: "Madison · Strategist",     age: 44, gender: "female", bg: "Business strategist in Madison, AL. Consults startups entering the North Alabama market.", behavior: "Connects local market data to startup strategy. Evidence-driven." },
+  { id: 10, name: "Malik Johnson",  handle: "@malik_consults",   role: "promoter",  tag: "Huntsville · Consultant",  age: 35, gender: "male",   bg: "AI implementation consultant serving Huntsville small businesses and defense contractors.", behavior: "Translates AI tools into plain-language business decisions." },
+  { id: 11, name: "Steven Wright",  handle: "@swright_finance",  role: "promoter",  tag: "Athens · Finance",         age: 47, gender: "male",   bg: "CFO at a family-owned manufacturing company in Athens, AL exploring AI-driven cost reduction.", behavior: "Anchors AI discussions in real financial outcomes for North Alabama businesses." },
+  { id: 12, name: "Nina Patel",     handle: "@nina_product",     role: "promoter",  tag: "Huntsville · Product",     age: 32, gender: "female", bg: "Product manager at a SaaS startup headquartered in Huntsville.", behavior: "Covers product-market fit for AI tools in the Southeast startup ecosystem." },
+  { id: 13, name: "Alexis Rivera",  handle: "@alexis_creates",   role: "promoter",  tag: "Huntsville · Creator",     age: 28, gender: "female", bg: "Content strategist and AI tools educator based in Huntsville. Writes for builders and small business owners.", behavior: "Makes AI adoption accessible. No jargon. Local examples only." },
+  { id: 14, name: "Brian Cole",     handle: "@briancole_saas",   role: "promoter",  tag: "Madison · SaaS",           age: 33, gender: "male",   bg: "Bootstrapped a SaaS product from Madison, AL. Building vertical AI tools for Southern markets.", behavior: "Documents the bootstrapped startup path in North Alabama. Practical and honest." },
+  { id: 15, name: "Tasha Green",    handle: "@tasha_program",    role: "promoter",  tag: "Huntsville · PM",          age: 38, gender: "female", bg: "Program manager at a Huntsville aerospace company piloting AI workflow automation.", behavior: "Shares what AI adoption looks like inside large Huntsville employers." },
+  { id: 16, name: "Harold Bennett", handle: "@harold_advisor",   role: "promoter",  tag: "Florence · Advisor",       age: 52, gender: "male",   bg: "30-year business veteran in Florence, AL. Mentors North Alabama founders through SBDC.", behavior: "Long-view perspective on building a sustainable business in North Alabama." },
+  { id: 17, name: "Jordan Blake",   handle: "@jordanblake_free", role: "promoter",  tag: "Huntsville · Freelancer",  age: 31, gender: "male",   bg: "Independent AI consultant in Huntsville. Works with startups and contractors.", behavior: "Documents the freelance AI economy growing in Huntsville." },
+  { id: 18, name: "Kevin Tran",     handle: "@kevintran_dev",    role: "promoter",  tag: "Huntsville · Developer",   age: 30, gender: "male",   bg: "Full-stack developer building AI-powered internal tools for Huntsville companies.", behavior: "Technical but accessible. Breaks down AI builds for non-technical founders." },
+  { id: 19, name: "Monica Diaz",    handle: "@monicadiaz_data",  role: "promoter",  tag: "Madison · Data",           age: 37, gender: "female", bg: "Data analyst at a Madison, AL healthcare company using AI to improve patient workflows.", behavior: "Brings healthcare AI adoption stories from the North Alabama market." },
+  { id: 20, name: "Brandon Scott",  handle: "@bscott_coach",     role: "promoter",  tag: "Huntsville · Coach",       age: 38, gender: "male",   bg: "Executive coach in Huntsville working with founders navigating the AI transition.", behavior: "Focused on the human side of AI adoption — leadership, change management, team buy-in." },
+  { id: 21, name: "Tony Brooks",    handle: "@tonybrooks_biz",   role: "promoter",  tag: "Decatur · Owner",          age: 48, gender: "male",   bg: "Small business owner in Decatur, AL. Three locations. Currently piloting AI for scheduling and inventory.", behavior: "Ground-level real talk on AI adoption for Main Street businesses in North Alabama." },
+  { id: 22, name: "Felicia Grant",  handle: "@felicia_lead",     role: "promoter",  tag: "Huntsville · Team Lead",   age: 41, gender: "female", bg: "Team lead at a Huntsville defense tech company piloting generative AI in documentation workflows.", behavior: "Covers AI implementation inside large employers — what works, what gets blocked." },
+  { id: 23, name: "Marcus Reed",    handle: "@mreed_ops",        role: "promoter",  tag: "Scottsboro · Ops",         age: 46, gender: "male",   bg: "Operations director at a Scottsboro manufacturing company scaling AI-assisted quality control.", behavior: "Manufacturing and industrial AI adoption in rural North Alabama." },
+  { id: 24, name: "Simone Carter",  handle: "@simonec_coach",    role: "promoter",  tag: "Huntsville · Coach",       age: 40, gender: "female", bg: "Business and brand coach in Huntsville. Helps founders position themselves in the AI economy.", behavior: "Connects AI adoption to brand, authority, and market positioning in North Alabama." },
 
-  // NEUTRALS
-  { id: 25, name: "Emily Sanders",  handle: "@emilysanders",     role: "neutral",   tag: "Curious Builder",    age: 26, gender: "female", bg: "Early-stage entrepreneur exploring business frameworks.", behavior: "Asks clarifying questions. Makes complex threads accessible." },
-  { id: 26, name: "Chris Young",    handle: "@chrisyoung",       role: "neutral",   tag: "Observer",           age: 31, gender: "male",   bg: "Marketing coordinator interested in structured business thinking.", behavior: "Asks 'where does this fit?' and bridges threads." },
-  { id: 27, name: "Daniel Reed",    handle: "@danielreed",       role: "neutral",   tag: "Thread Summarizer",  age: 45, gender: "male",   bg: "Business writer and content strategist.", behavior: "Summarizes long threads. Makes debates digestible." },
-  { id: 28, name: "Nicole Harris",  handle: "@nicoleharris",     role: "neutral",   tag: "Translator",         age: 36, gender: "female", bg: "Operations coordinator trying to apply frameworks to daily work.", behavior: "Asks 'how would I use this today?' — bridges theory to practice." },
-  { id: 29, name: "Sophia Turner",  handle: "@sophiat",          role: "neutral",   tag: "Beginner Lens",      age: 28, gender: "female", bg: "First-year entrepreneur navigating structured business thinking.", behavior: "Represents the newcomer. Asks what veterans forget to explain." },
-  { id: 30, name: "Robert King",    handle: "@rking_biz",        role: "neutral",   tag: "Outcome Seeker",     age: 47, gender: "male",   bg: "Mid-career manager looking for measurable frameworks.", behavior: "Asks 'what does success look like here?' — grounds every debate." },
+  // NEUTRALS (30% — analysts and curious builders)
+  { id: 25, name: "Emily Sanders",  handle: "@emilysanders",     role: "neutral",   tag: "Huntsville · Curious",     age: 26, gender: "female", bg: "Early-stage entrepreneur in Huntsville exploring AI tools for her first business.", behavior: "Asks the questions beginners are afraid to ask. Makes threads accessible." },
+  { id: 26, name: "Chris Young",    handle: "@chrisyoung",       role: "neutral",   tag: "Madison · Marketing",      age: 31, gender: "male",   bg: "Marketing coordinator at a Madison, AL company watching AI reshape his industry.", behavior: "Bridges discussions. Asks where concepts fit in the real local market." },
+  { id: 27, name: "Daniel Reed",    handle: "@danielreed",       role: "neutral",   tag: "Athens · Writer",          age: 45, gender: "male",   bg: "Business writer and content strategist in Athens, AL. Covers North Alabama's startup scene.", behavior: "Summarizes complex threads. Makes debates readable and shareable." },
+  { id: 28, name: "Nicole Harris",  handle: "@nicoleharris",     role: "neutral",   tag: "Cullman · Ops",            age: 36, gender: "female", bg: "Operations coordinator at a Cullman, AL company figuring out AI adoption on a tight budget.", behavior: "Asks how to apply ideas today with limited resources — the rural Alabama perspective." },
+  { id: 29, name: "Sophia Turner",  handle: "@sophiat",          role: "neutral",   tag: "Huntsville · Student",     age: 28, gender: "female", bg: "UAH graduate navigating the Huntsville tech job market and considering starting an AI-adjacent business.", behavior: "Represents the next generation of North Alabama builders. Fresh perspective." },
+  { id: 30, name: "Robert King",    handle: "@rking_biz",        role: "neutral",   tag: "Hartselle · Business",     age: 47, gender: "male",   bg: "Mid-career business owner in Hartselle, AL watching competitors adopt AI and wondering when to act.", behavior: "Asks what success actually looks like for a North Alabama business adopting AI." },
 ];
 
 const posts = [
   {
     type: "system",
     postType: "insight",
-    postTypeLabel: "System Insight",
+    postTypeLabel: "Local Intel",
     profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
-    body: "Most businesses don't fail from bad ideas. They fail because the team was never honest about whether the idea was actually needed. <strong>MANNED is the first filter. Not the funding round. Not the launch plan.</strong> The question is always: did anyone validate the need before building toward it?",
-    tags: ["manned"],
+    body: "<strong>AI Consultant Huntsville AL:</strong> The demand for AI consulting services in Huntsville is accelerating faster than supply. Defense contractors, small businesses, and healthcare providers are all asking the same question — who can actually implement this? The builders who establish local authority now will own this market in 18 months.",
+    tags: ["huntsville", "ai"],
     signal: 3,
     gravity: true,
     time: "System · 9:00 AM",
     likes: 247, comments: 89, shares: 44,
     thread: [
-      { profile: profiles[0], body: "This is the thing nobody wants to hear. I've watched six businesses in my network skip this step and call it 'market intuition.' Every single one burned capital validating something customers never asked for." },
-      { profile: profiles[5], body: "Marcus is right — and the Andre Method names this exactly. MANNED exists because founders need a structure that forces them to slow down before they speed up. You validate first. You build second. Always." },
-      { profile: profiles[24], body: "Can someone explain what 'validation' actually looks like in practice? Like, what are the actual steps?" },
-      { profile: profiles[8], body: "Emily, validation at minimum means: speaking to 20+ potential customers, identifying a consistent pain, confirming willingness to pay, and documenting what 'solved' actually looks like. No assumptions. No projections. Evidence only." },
+      { profile: profiles[0], body: "I'm seeing this firsthand at Redstone-adjacent contractors. Six months ago nobody was asking about AI. Now every meeting has an AI question in it — and nobody has a vetted local vendor to point to. That gap is real." },
+      { profile: profiles[5], body: "Marcus is right. The gap between demand and qualified local supply is the opportunity. Any consultant who builds a track record of documented wins in Huntsville right now has first-mover advantage." },
+      { profile: profiles[24], body: "How do you actually break into this space if you don't have defense contractor connections? Is there a path for someone newer to the Huntsville market?" },
+      { profile: profiles[9], body: "Emily — start with small businesses on the Huntsville main corridors. They have budget, they have pain, and they have almost zero access to quality AI guidance right now. Win 5 local case studies and the contractor referrals follow." },
     ]
   },
   {
@@ -2228,66 +2502,50 @@ const posts = [
     postType: "debate",
     postTypeLabel: "Debate",
     profile: profiles[0],
-    body: "I'll say it plainly: <strong>90% of business plans are fiction.</strong> They're written to impress investors, not to survive contact with reality. The Andre Method talks about Clear Path — but most people write a plan and never return to it. What's the point of structure if no one maintains it?",
-    tags: ["clearpath", "manned"],
+    body: "<strong>Hot take: most 'AI consultants' in Huntsville right now are just ChatGPT power users with a rate card.</strong> Real AI implementation requires systems thinking, workflow design, and change management — not just prompt writing. The market is about to figure this out and the gap between real implementers and cosplayers will become very obvious.",
+    tags: ["huntsville", "ai"],
     signal: 3,
     gravity: true,
     time: "2h ago",
     likes: 134, comments: 67, shares: 21,
     thread: [
-      { profile: profiles[6], body: "Marcus, I'll give you the friction points — but not the conclusion. Plans fail when they're built for optics instead of execution. Clear Path isn't about writing a plan. It's about building a plan that tracks. There's a massive difference." },
-      { profile: profiles[1], body: "He's not wrong though. I've reviewed hundreds of project documents in consulting. Most are outdated before the ink dries. The problem is they're built as artifacts, not living systems." },
-      { profile: profiles[19], body: "The Andre Method addresses this directly — Clear Path includes ownership assignment and review cycles. Without those two elements, any plan becomes fiction over time." },
+      { profile: profiles[5], body: "Marcus, there's truth here — but the bar is also lower than you think for most small businesses. A Huntsville restaurant that goes from manual scheduling to automated doesn't need an ML engineer. They need someone who can configure the right tools and train the staff." },
+      { profile: profiles[1], body: "Dana agrees with Marcus more than Jasmine here. I've seen the vendor landscape in North Alabama. A lot of it is surface-level. Clients will eventually ask for ROI documentation and that's when the weak vendors disappear." },
+      { profile: profiles[17], body: "The consultant tier matters less than the outcome tier. Document your wins with real numbers. Let the results sort out who's credible in the Huntsville market." },
     ]
   },
   {
     type: "system",
-    postType: "scenario",
-    postTypeLabel: "Scenario",
+    postType: "city",
+    postTypeLabel: "City Spotlight",
     profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
-    body: "🧩 <strong>Orbit Scenario Drop:</strong> You have $8,000 and 45 days. You believe you have a profitable service business idea. Walk us through exactly how you validate, structure, and launch it — or explain why you don't. Using the Andre Method framework. Go.",
-    tags: ["manned", "clearpath", "complete"],
+    body: "🏙️ <strong>Madison, AL — The Quiet Startup Scene:</strong> Madison is emerging as a serious node in North Alabama's startup ecosystem. Lower cost of operations than Huntsville proper, growing residential density, and direct proximity to Cummings Research Park talent. Several bootstrapped SaaS companies are operating here largely under the radar.",
+    tags: ["madison", "startup"],
     signal: 2,
     time: "System · 11:30 AM",
     likes: 203, comments: 112, shares: 67,
     thread: [
-      { profile: profiles[5], body: "Day 1–7: I'm spending nothing on build. I'm talking to 30 potential clients. Qualifying pain, not pitching a solution. If I can't find 10 people with the same problem by day 7, I pause. MANNED first." },
-      { profile: profiles[2], body: "But talking costs time, and time IS money when you're on a 45-day clock. What's your threshold for 'enough validation' before you move? Because most people validate forever to avoid the scary part of actually committing." },
-      { profile: profiles[12], body: "Kevin raises a real execution issue — but validation speed is a skill, not a luxury. Structured discovery conversations, 20 minutes each. 30 conversations = 10 hours of your time in week one. That's not slow — that's smart." },
-      { profile: profiles[28], body: "This is really helpful. Where does the $8K actually get spent in this model?" },
-    ]
-  },
-  {
-    type: "user",
-    postType: "failure",
-    postTypeLabel: "Failure Case",
-    profile: profiles[3],
-    body: "<strong>Drop-Off Pattern Alert:</strong> Teams hit 70% completion and fall apart. Not because of skill. Not because of funding. Because no one built a sustain system. Monitor & Sustain is the most skipped phase of the Andre Method. People love launching. Nobody loves the Tuesday at 4pm meeting about whether momentum is still real.",
-    tags: ["monitor"],
-    signal: 3,
-    time: "3h ago",
-    likes: 98, comments: 44, shares: 18,
-    thread: [
-      { profile: profiles[19], body: "Lisa is correct — and the data backs this up. Most projects die between the 60–80% completion window. Not from failure. From assumed success. Teams celebrate early and lose the final push." },
-      { profile: profiles[22], body: "This is why Monitor & Sustain requires a designated owner, not just a process. Someone has to be accountable for the energy of the project, not just its tasks." },
-      { profile: profiles[26], body: "So how do you build a 'sustain system' practically? What does that look like week to week?" },
+      { profile: profiles[13], body: "This is exactly where I'm building from. Madison gives you access to the Huntsville talent pool without the overhead of operating in Research Park. The tradeoff is visibility — you have to be intentional about showing up in Huntsville spaces." },
+      { profile: profiles[2], body: "The question is whether Madison can retain talent or if it just feeds Huntsville and the Birmingham corridor. Real startup ecosystems need density. One or two companies doesn't make a cluster." },
+      { profile: profiles[8], body: "Brian raises a fair point on density — but the play is to treat Huntsville and Madison as one metro market. The commute is 15 minutes. The talent doesn't care about the city line." },
+      { profile: profiles[27], body: "What industries are actually gaining traction in Madison right now? Defense-adjacent? Consumer? SaaS?" },
     ]
   },
   {
     type: "user",
     postType: "breakdown",
     postTypeLabel: "Success Breakdown",
-    profile: profiles[7],
-    body: "Let me share what actually worked for a client last quarter. Started with 6 months of failed momentum. Three previous project managers. Zero completion. We applied <strong>MANNED → Clear Path → Execute → Monitor → Complete</strong> in strict sequence. Result: delivered in 11 weeks. Here's what made it different:",
-    tags: ["clearpath", "complete", "manned"],
+    profile: profiles[5],
+    body: "<strong>How we automated a Huntsville small business in 6 weeks:</strong> Retail client, 3 locations, 12 employees. Manual inventory, manual scheduling, manual payroll reporting. Total tool cost: $340/month. Time saved per week: 22 hours. Owner now focuses on growth instead of operations. This is what AI automation for small business in Huntsville actually looks like.",
+    tags: ["huntsville", "automation"],
     signal: 3,
     gravity: true,
     time: "5h ago",
     likes: 311, comments: 88, shares: 103,
     thread: [
-      { profile: profiles[4], body: "Olivia, I'll give you credit — this is structured. But 'delivered' isn't the same as 'impactful.' What was the actual outcome post-delivery? Did it change anything measurable for the client?" },
-      { profile: profiles[7], body: "Andre W — fair push. Revenue impact: 23% increase in the targeted segment within 60 days. Client renewed for a 12-month engagement. That's the complete metric — not the delivery date. You're right to ask." },
-      { profile: profiles[9], body: "This is exactly what the Complete phase is designed to capture. Delivery ≠ completion. Completion requires measurable outcome and lessons documented. Olivia's case study hits both." },
+      { profile: profiles[4], body: "Jasmine, what tools specifically? Because $340/month for 22 hours saved is a strong ROI claim and I want to understand if it's repeatable or a best-case scenario." },
+      { profile: profiles[5], body: "Andre W — fair. Tools were: Homebase for scheduling ($80/mo), Cin7 for inventory ($199/mo), and a custom Zapier layer ($59/mo) to connect them and auto-generate reports. Repeatable across similar retail setups — I've now run this at two other locations." },
+      { profile: profiles[9], body: "This is exactly the kind of documented case study the Huntsville market needs. Local businesses don't trust generic AI claims. They trust local proof with local numbers." },
     ]
   },
   {
@@ -2295,31 +2553,63 @@ const posts = [
     postType: "debate",
     postTypeLabel: "Debate",
     profile: profiles[2],
-    body: "<strong>Unpopular opinion:</strong> Discipline is a myth sold to people who don't have good systems. You don't need discipline to execute. You need a structure that makes the right action the easiest action. The Andre Method gets this right — but most people still try to willpower their way through execution phase.",
-    tags: ["clearpath"],
+    body: "<strong>Huntsville's defense economy is both the biggest opportunity and the biggest risk for AI startups here.</strong> Defense contracts bring money and talent — but they also create a risk-averse, compliance-heavy culture that slows down exactly the kind of rapid iteration AI startups need. The founders who win will navigate this tension, not ignore it.",
+    tags: ["huntsville", "startup"],
     signal: 2,
     time: "6h ago",
     likes: 156, comments: 73, shares: 29,
     thread: [
-      { profile: profiles[19], body: "Counterpoint: systems require discipline to build and maintain. You can't escape it. The question is whether you apply discipline upfront to build the system, or grind it out daily without one. Upfront always wins." },
-      { profile: profiles[2], body: "Kevin, I'd argue that if your system requires discipline to maintain, it's a poorly designed system. Good systems are self-correcting and reduce the cognitive load required to stay on track." },
-      { profile: profiles[25], body: "I've seen both sides of this in real companies. Kevin's right that systems still need upkeep. But Kevin P's point is that the right architecture dramatically lowers the energy cost of execution." },
+      { profile: profiles[21], body: "Tasha can speak to this better than anyone — but from the outside, the defense culture friction is real. The procurement timelines alone will kill a startup that isn't properly capitalized. You need runway while you wait." },
+      { profile: profiles[14], body: "Kevin's right about the tension — but there's a workaround. Don't sell directly to contractors at first. Build tools for the commercial market, get traction, and let the defense sector come to you once you have proof. They will." },
+      { profile: profiles[25], body: "Jordan, how long does that typically take? Like what's the realistic timeline from commercial traction to defense contract conversations in Huntsville?" },
     ]
   },
   {
     type: "system",
     postType: "insight",
-    postTypeLabel: "System Insight",
+    postTypeLabel: "Local Intel",
     profile: { name: "Orbit System", handle: "@orbit", role: "system", img: null },
-    body: "<strong>Daily Framework Check:</strong> Where are you stuck right now — MANNED (unclear if the idea is valid), Clear Path (unclear what the plan actually is), Monitor & Sustain (losing momentum), or Complete (can't close it out)? Name your phase. The community can help.",
-    tags: ["manned", "clearpath", "monitor", "complete"],
-    signal: 1,
+    body: "<strong>AI Tools for Small Business in North Alabama:</strong> The five most requested AI implementations among Huntsville small businesses right now — (1) automated customer follow-up, (2) AI scheduling and dispatch, (3) social media content automation, (4) inventory and reorder automation, (5) AI-assisted bookkeeping summaries. All available today for under $500/month combined.",
+    tags: ["huntsville", "ai", "automation"],
+    signal: 3,
     time: "System · 8:00 AM",
     likes: 412, comments: 194, shares: 88,
     thread: [
-      { profile: profiles[14], body: "Stuck in Monitor & Sustain on a product we launched 90 days ago. Usage is flat after week 3. Not sure if the problem is the product, the onboarding, or the audience targeting." },
-      { profile: profiles[11], body: "Tasha — flat usage at day 21 post-launch is almost always an activation problem, not a product problem. What does your onboarding flow look like and where are users dropping off?" },
-      { profile: profiles[29], body: "This is such a useful question. I'm in MANNED phase and genuinely unsure if I'm building something anyone actually wants or if I just really want to build it." },
+      { profile: profiles[20], body: "Tony here — running three locations in Decatur. We implemented #2 and #4 six months ago. Combined savings: roughly $3,100/month in labor hours. Not theory. Real numbers from a real North Alabama business." },
+      { profile: profiles[3], body: "Tony, what was the hardest part of the implementation? Because every vendor makes it sound easy and then the training and change management takes 3x longer than expected." },
+      { profile: profiles[20], body: "Lisa — you're right. The tools took a week. Getting my staff to actually use them took two months. That's the part nobody puts in the brochure." },
+    ]
+  },
+  {
+    type: "user",
+    postType: "city",
+    postTypeLabel: "City Spotlight",
+    profile: profiles[12],
+    body: "<strong>Startup Funding Resources in North Alabama — what actually exists:</strong> EDPA (Economic Development Partnership of Alabama), Huntsville Angel Network, Alabama Launchpad, Innovation Depot Birmingham (1 hour south), and several SBIR grants flowing through UAH and A&M. The funding ecosystem is smaller than Austin or Atlanta — but it's real and it's growing. You have to know where to look.",
+    tags: ["huntsville", "startup", "funding"],
+    signal: 3,
+    gravity: true,
+    time: "Yesterday",
+    likes: 298, comments: 82, shares: 94,
+    thread: [
+      { profile: profiles[15], body: "Harold here — I mentor through SBDC in Huntsville. The Alabama Launchpad program specifically is underutilized. Several North Alabama founders have won $50K–$100K from it with solid applications and almost no competition compared to coastal accelerators." },
+      { profile: profiles[24], body: "Did anyone connect with the Huntsville Angel Network and have a real experience to share? The website feels thin and I can't tell how active they actually are." },
+      { profile: profiles[15], body: "Simone — I can connect you. They're quieter than a formal fund but they're real. Email introductions work better than cold applications there. It's a relationship market." },
+    ]
+  },
+  {
+    type: "user",
+    postType: "debate",
+    postTypeLabel: "Debate",
+    profile: profiles[3],
+    body: "<strong>North Alabama small businesses are not ready for AI adoption — and the vendors pushing them toward it are doing real damage.</strong> I've watched three clients in the last year invest in AI tools they didn't have the staff capacity or digital infrastructure to actually use. The tool wasn't the problem. The readiness gap was. We need more honest conversation about prerequisites before implementation.",
+    tags: ["automation", "huntsville"],
+    signal: 3,
+    time: "8h ago",
+    likes: 112, comments: 47, shares: 22,
+    thread: [
+      { profile: profiles[9], body: "Lisa, this is the right conversation. AI readiness assessment before any implementation pitch should be standard practice. Most vendors skip it because it extends the sales cycle. But it's the difference between a success story and a churned client." },
+      { profile: profiles[1], body: "Dana's seen this too — the honest answer is that the bottleneck in North Alabama is often the owner's digital fluency, not the technology. No amount of tool sophistication fixes an operator who won't change how they work." },
     ]
   },
 ];
@@ -2328,7 +2618,7 @@ const posts = [
 
 // Inline feed ads — Facebook-style, injected every 4th post
 const FEED_ADS = [
-  { icon:'📚', title:'The Andre Method Masterclass', sub:'8-week live cohort. Validation → Execution → Completion. Next intake: June 2025.', cta:'Reserve Your Seat', color:'#0a66c2' },
+  { icon:'📚', title:'The Andre Method Masterclass', sub:'8-week live cohort. Validation → Execution → Completion. Next intake: June 2026.', cta:'Reserve Your Seat', color:'#0a66c2' },
   { icon:'⚙️', title:'ClickUp for Business Builders', sub:'Manage your MANNED phases in one place. Free forever plan available.', cta:'Try ClickUp Free', color:'#7b68ee' },
   { icon:'📈', title:'Stripe Atlas — Launch Globally', sub:'Register your business in the US from anywhere. Trusted by 50,000+ founders.', cta:'Start Today', color:'#635bff' },
 ];
@@ -2353,9 +2643,9 @@ function renderFeedWithAds(postArray) {
     return injectAd ? post + renderFeedAd(Math.floor(i / 4)) : post;
   }).join('');
 }
-// using DiceBear 'avataaars'
-const MALE_SEEDS   = ['Felix','Liam','Noah','Ethan','Mason','Oliver','James','Logan','Lucas','Henry','Owen','Caleb','Ryan','Jack','Nathan','Dylan','Aaron','Tyler','Blake','Chase'];
-const FEMALE_SEEDS = ['Sophia','Olivia','Emma','Ava','Isabella','Mia','Charlotte','Amelia','Harper','Evelyn','Abigail','Emily','Ella','Luna','Chloe','Grace','Zoey','Nora','Lily','Hannah'];
+// Realistic portrait photos (randomuser.me static portrait set, 0-99 per gender)
+const MALE_SEEDS   = [12,32,45,67,8,23,54,71,29,3,88,41,17,60,5,77,92,38,21,49];
+const FEMALE_SEEDS = [44,68,12,9,33,52,71,21,84,5,63,18,90,27,46,8,59,72,35,11];
 
 function getAvatarUrl(profile) {
   if (!profile) return null;
@@ -2363,10 +2653,10 @@ function getAvatarUrl(profile) {
   if (!profile.gender) return null;
   const isFemale = profile.gender === 'female';
   const pool = isFemale ? FEMALE_SEEDS : MALE_SEEDS;
-  // Use profile id (1-based) to pick a consistent seed from the pool
-  const idx = ((profile.id || 1) - 1) % pool.length;
-  const seed = pool[idx];
-  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=f0f2f5&radius=50`;
+  // Use profile id (1-based) to pick a consistent photo index from the pool
+  const idx = (Math.abs(profile.id || 1) - 1) % pool.length;
+  const num = pool[idx];
+  return `https://randomuser.me/api/portraits/${isFemale ? 'women' : 'men'}/${num}.jpg`;
 }
 
 function renderSignal(level) {
@@ -2428,7 +2718,7 @@ function renderPost(post, index) {
   const gated = isAndreMethodGated(post);
 
   const avatarHtml = av
-    ? `<img class="post-avatar ${p.role}" src="${av}" alt="${p.name}" onclick="openProfileByIndex(${post.profile.id - 1})" />`
+    ? `<img class="post-avatar ${p.role}" src="${av}" alt="${p.name}" ${p.id > 0 ? `onclick="openProfileByIndex(${post.profile.id - 1})"` : ''} />`
     : `<div class="post-avatar ${p.role}" style="background:var(--bg-card);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--violet);">⊙</div>`;
 
   // Gated posts show first ~120 chars then blur the rest
@@ -3017,8 +3307,8 @@ function startPostRotation() {
 
 // ── SOCIAL SHARE ──────────────────────────────────────────────────
 
-const SHARE_URL = 'https://andremethod.com';
-const SHARE_BASE_TEXT = 'Check out this discussion on Orbit — the Andre Method community for structured thinking, debates, and real execution.';
+const SHARE_URL = 'https://arkive2025.github.io/GALAXY-DRE/orbit.html';
+const SHARE_BASE_TEXT = 'Check out Orbit — AI, startups, and builders in Huntsville & North Alabama.';
 
 function openShareModal(event, postText) {
   if (event) event.stopPropagation();
@@ -3095,10 +3385,80 @@ function closeMobileDrawer(event) {
   }
 }
 
+// ── COMPOSE BOX ────────────────────────────────────────────────────
+
+function autoGrowCompose(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 240) + 'px';
+  const btn = document.getElementById('composePostBtn');
+  btn.disabled = el.value.trim().length === 0;
+}
+
+const VIEWER_PROFILE = { id: -1, name: "You", handle: "@you", role: "promoter", tag: "Orbit Member" };
+
+function submitComposePost() {
+  const textarea = document.getElementById('composeTextarea');
+  const text = textarea.value.trim();
+  if (!text) return;
+
+  const type = document.getElementById('composeType').value;
+  const cityVal = document.getElementById('composeCity').value;
+  const typeLabels = {
+    insight: "Insight", debate: "Debate", breakdown: "Success Breakdown",
+    caseStudy: "Case Study", automationWin: "Automation Win"
+  };
+
+  const tags = [];
+  if (cityVal) tags.push(cityVal);
+
+  const newPost = {
+    type: "user",
+    postType: type,
+    postTypeLabel: typeLabels[type] || "Insight",
+    profile: VIEWER_PROFILE,
+    body: text,
+    tags,
+    signal: 1,
+    time: "Just now",
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    thread: []
+  };
+
+  // TODO: persist newPost to Supabase 'posts' table (see seo_pages/posts schema)
+  // TODO: generate /discussion/[slug] SEO page via getSeoUrl('discussion', slugify(text))
+
+  const container = document.getElementById('posts-container');
+  container.insertAdjacentHTML('afterbegin', renderPost(newPost, 0));
+
+  textarea.value = '';
+  textarea.style.height = 'auto';
+  document.getElementById('composePostBtn').disabled = true;
+  showToast('Posted to Orbit ✓');
+}
+
+
+// RULES (do not violate):
+// - Never explain the Andre Method here.
+// - Never reveal its purpose.
+// - Remain curiosity-only. Keep hidden.
+// - Do not expand further inside Orbit. Future files connect to this system.
+
+function openTheQuestion() {
+  document.getElementById('theQuestionModal').classList.add('open');
+}
+
+function openDiscordModal() {
+  document.getElementById('discordModal').classList.add('open');
+}
+
 // ── INIT (updated) ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initFeed();
   startPostRotation();
+  trackPresence();
+  setInterval(heartbeat, 15000);
 });
 </script>
 </body>
