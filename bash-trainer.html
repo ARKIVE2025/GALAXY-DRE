@@ -712,26 +712,24 @@ CMD.ls=({args})=>{
     lines.push(`total ${total}`);
   }
   if(showAll&&longFmt){
-    lines.push(`<span class="ls-d">drwxr-xr-x  2 analyst analyst      40 ${ds} ./</span>`);
-    lines.push(`<span class="ls-d">drwxr-xr-x  2 analyst analyst      40 ${ds} ../</span>`);
+    lines.push(`<span class="ls-d">drwxr-xr-x  2 analyst  analyst        40 ${ds} ./</span>`);
+    lines.push(`<span class="ls-d">drwxr-xr-x  2 analyst  analyst        40 ${ds} ../</span>`);
   }
   for(const[name,nd]of entries){
     const isDir=nd.type==='d';
-    const p=nd.perms||(isDir?'755':'644');
-    let pstr='';
-    if(isDir)pstr='drwxr-xr-x';
-    else if(p==='600')pstr='-rw-------';
-    else if(p==='640')pstr='-rw-r-----';
-    else if(p==='444')pstr='-r--r--r--';
-    else if(p==='555')pstr='-r-xr-xr-x';
-    else if(p==='666')pstr='-rw-rw-rw-';
-    else if(p==='755')pstr='-rwxr-xr-x';
-    else pstr='-rw-r--r--';
+    const p=String(nd.perms||(isDir?'755':'644'));
+    let pstr=isDir?'d':'-';
+    for(let i=0;i<3;i++){
+       let val=parseInt(p[i]||'0');
+       pstr+=(val&4?'r':'-')+(val&2?'w':'-')+(val&1?'x':'-');
+    }
     const sz=isDir?'     0':(humanSz?humanSize(fileSize(nd.content||'')).padStart(6):String(fileSize(nd.content||'')).padStart(6));
-    const cls=isDir?'ls-d':(p==='755'?'ls-x':'ls-f');
+    const cls=isDir?'ls-d':(p==='755'||p.includes('x')?'ls-x':'ls-f');
     const suffix=isDir?'/':'';
+    const owner=nd.owner||(target.startsWith('/home/analyst')||target==='/home'?'analyst':'root');
+    const group=nd.group||owner;
     if(oneline&&!longFmt){lines.push(`<span class="${cls}">${esc(name)}${suffix}</span>`);}
-    else{lines.push(`<span class="${cls}">${esc(pstr)}  1 analyst analyst ${sz} ${ds} ${esc(name)}${suffix}</span>`);}
+    else{lines.push(`<span class="${cls}">${esc(pstr)}  1 ${owner.padEnd(8)} ${group.padEnd(8)} ${sz} ${ds} ${esc(name)}${suffix}</span>`);}
   }
   return{html:lines.join('\n')};
 };
@@ -1310,19 +1308,81 @@ CMD.chmod=({args})=>{
   const others=args.filter(a=>!a.startsWith('-'));
   const modeArg=others[0];const targets=others.slice(1);
   if(!modeArg||!targets.length)return{err:'chmod: missing operand'};
+  function parseMode(current, modeStr) {
+    if (/^[0-7]{3,4}$/.test(modeStr)) return modeStr.slice(-3);
+    let perms = parseInt(current, 8);
+    const u = (perms >> 6) & 7, g = (perms >> 3) & 7, o = perms & 7;
+    let newU = u, newG = g, newO = o;
+    const parts = modeStr.split(',');
+    for (const p of parts) {
+      const match = p.match(/^([ugoa]*)([-+=])([rwx]*)$/);
+      if (!match) continue;
+      const [, who, op, perm] = match;
+      let mask = 0;
+      if (perm.includes('r')) mask |= 4;
+      if (perm.includes('w')) mask |= 2;
+      if (perm.includes('x')) mask |= 1;
+      const t = who === '' || who.includes('a') ? ['u', 'g', 'o'] : who.split('');
+      if (t.includes('u')) newU = op === '+' ? newU | mask : op === '-' ? newU & ~mask : mask;
+      if (t.includes('g')) newG = op === '+' ? newG | mask : op === '-' ? newG & ~mask : mask;
+      if (t.includes('o')) newO = op === '+' ? newO | mask : op === '-' ? newO & ~mask : mask;
+    }
+    return ((newU << 6) | (newG << 3) | newO).toString(8).padStart(3, '0');
+  }
   const results=[];
   function applyChmod(p){
     const node=getNode(p);
     if(!node)return{err:`chmod: cannot access '${p}': No such file or directory`};
-    node.perms=modeArg;
+    const owner=node.owner||(p.startsWith('/home/analyst')?'analyst':'root');
+    if(env.USER!=='root'&&env.USER!==owner)return{err:`chmod: changing permissions of '${p}': Operation not permitted`};
+    node.perms=parseMode(node.perms||(node.type==='d'?'755':'644'), modeArg);
     if(recursive&&node.type==='d')for(const[n]of Object.entries(node.children))applyChmod(p+'/'+n);
   }
   for(const t of targets){const r=applyChmod(normPath(t));if(r)results.push(r);}
   return results.length?results:{out:''};
 };
 
-CMD.chown=({args})=>({out:''});
-CMD.chgrp=({args})=>({out:''});
+CMD.chown=({args})=>{
+  const flags=args.filter(a=>a.startsWith('-'));
+  const recursive=flags.some(f=>f.includes('R'));
+  const others=args.filter(a=>!a.startsWith('-'));
+  const ownerArg=others[0];
+  const targets=others.slice(1);
+  if(!ownerArg||!targets.length)return{err:'chown: missing operand'};
+  let newOwner=ownerArg, newGroup=null;
+  if(ownerArg.includes(':')){[newOwner, newGroup] = ownerArg.split(':');}
+  const results=[];
+  function applyChown(p){
+    const node=getNode(p);
+    if(!node)return{err:`chown: cannot access '${p}': No such file or directory`};
+    if(env.USER!=='root')return{err:`chown: changing ownership of '${p}': Operation not permitted`};
+    if(newOwner) node.owner=newOwner;
+    if(newGroup) node.group=newGroup;
+    if(recursive&&node.type==='d')for(const[n]of Object.entries(node.children))applyChown(p+'/'+n);
+  }
+  for(const t of targets){const r=applyChown(normPath(t));if(r)results.push(r);}
+  return results.length?results:{out:''};
+};
+
+CMD.chgrp=({args})=>{
+  const flags=args.filter(a=>a.startsWith('-'));
+  const recursive=flags.some(f=>f.includes('R'));
+  const others=args.filter(a=>!a.startsWith('-'));
+  const groupArg=others[0];
+  const targets=others.slice(1);
+  if(!groupArg||!targets.length)return{err:'chgrp: missing operand'};
+  const results=[];
+  function applyChgrp(p){
+    const node=getNode(p);
+    if(!node)return{err:`chgrp: cannot access '${p}': No such file or directory`};
+    const owner=node.owner||(p.startsWith('/home/analyst')?'analyst':'root');
+    if(env.USER!=='root'&&env.USER!==owner)return{err:`chgrp: changing group of '${p}': Operation not permitted`};
+    node.group=groupArg;
+    if(recursive&&node.type==='d')for(const[n]of Object.entries(node.children))applyChgrp(p+'/'+n);
+  }
+  for(const t of targets){const r=applyChgrp(normPath(t));if(r)results.push(r);}
+  return results.length?results:{out:''};
+};
 
 CMD.history=({args})=>{
   if(!cmdHistory.length)return{out:''};
@@ -1492,8 +1552,17 @@ CMD.stat=({args})=>{
     const isDir=node.type==='d';
     const size=isDir?4096:(node.content||'').length;
     const perms=node.perms||(isDir?'755':'644');
+    const owner=node.owner||(p.startsWith('/home/analyst')?'analyst':'root');
+    const group=node.group||owner;
+    const uid=owner==='root'?'0/root':'1000/analyst';
+    const gid=group==='root'?'0/root':'1000/analyst';
+    let pstr=isDir?'d':'-';
+    for(let i=0;i<3;i++){
+       let val=parseInt(perms[i]||'0');
+       pstr+=(val&4?'r':'-')+(val&2?'w':'-')+(val&1?'x':'-');
+    }
     const d=new Date().toLocaleString();
-    results.push({out:`  File: ${p}\n  Size: ${size}\tBlocks: ${Math.ceil(size/512)}\tIO Block: 4096\t${isDir?'directory':'regular file'}\nDevice: 801h/2049d\tInode: ${Math.floor(Math.random()*999999)+100000}\tLinks: 1\nAccess: (${perms}/${isDir?'drwxr-xr-x':'-rw-r--r--'})\tUid: (1000/analyst)\tGid: (1000/analyst)\nAccess: ${d}\nModify: ${d}\nChange: ${d}`});
+    results.push({out:`  File: ${p}\n  Size: ${size}\tBlocks: ${Math.ceil(size/512)}\tIO Block: 4096\t${isDir?'directory':'regular file'}\nDevice: 801h/2049d\tInode: ${Math.floor(Math.random()*999999)+100000}\tLinks: 1\nAccess: (${perms}/${pstr})\tUid: (${uid})\tGid: (${gid})\nAccess: ${d}\nModify: ${d}\nChange: ${d}`});
   }
   return results;
 };
