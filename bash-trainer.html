@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bash-trainer — Linux CLI Sandbox</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #141414;
+    --border: #1f1f1f;
+    --green: #00e676;
+    --green-dim: #00c853;
+    --yellow: #ffd600;
+    --red: #ff1744;
+    --blue: #40c4ff;
+    --white: #e0e0e0;
+    --dim: #555;
+    --font: 'Courier New', Courier, monospace;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 14px;
+    overflow: hidden;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* Top bar */
+  #topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    flex-shrink: 0;
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red   { background: #ff5f57; }
+  .dot-yellow{ background: #febc2e; }
+  .dot-green { background: #28c840; }
+
+  #topbar-title {
+    flex: 1;
+    text-align: center;
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Output area */
+  #output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+  }
+
+  #output::-webkit-scrollbar { width: 4px; }
+  #output::-webkit-scrollbar-track { background: transparent; }
+  #output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .line { white-space: pre-wrap; word-break: break-all; }
+  .line-cmd  { color: var(--green); }
+  .line-out  { color: var(--white); }
+  .line-err  { color: var(--red); }
+  .line-info { color: var(--blue); }
+  .line-dim  { color: var(--dim); }
+
+  .prompt-echo { color: var(--green); }
+  .prompt-echo .user { color: var(--green-dim); }
+  .prompt-echo .at   { color: var(--dim); }
+  .prompt-echo .host { color: var(--green); }
+  .prompt-echo .sep  { color: var(--dim); }
+  .prompt-echo .path { color: var(--blue); }
+  .prompt-echo .dollar { color: var(--white); }
+
+  /* ls color classes */
+  .ls-dir  { color: var(--blue); font-weight: bold; }
+  .ls-file { color: var(--white); }
+  .ls-exec { color: var(--green); }
+
+  /* Input bar */
+  #inputbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    background: var(--bg2);
+    flex-shrink: 0;
+  }
+
+  #prompt-label {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  #prompt-label .user   { color: var(--green-dim); }
+  #prompt-label .at     { color: var(--dim); }
+  #prompt-label .host   { color: var(--green); }
+  #prompt-label .sep    { color: var(--dim); }
+  #prompt-label .path   { color: var(--blue); }
+  #prompt-label .dollar { color: var(--white); }
+
+  #cmd-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 14px;
+    caret-color: var(--green);
+  }
+
+  /* Autocomplete */
+  #autocomplete {
+    position: fixed;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 4px 0;
+    z-index: 100;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+    min-width: 180px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+
+  .ac-item {
+    padding: 4px 12px;
+    cursor: pointer;
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 13px;
+  }
+
+  .ac-item.selected,
+  .ac-item:hover { background: #2a2a2a; color: var(--green); }
+
+  .ac-item.ac-dir  { color: var(--blue); }
+  .ac-item.ac-cmd  { color: var(--green); }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    html, body { font-size: 12px; }
+    #output { padding: 10px; }
+    #inputbar { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <div id="topbar-title">analyst@bash-trainer: ~</div>
+  </div>
+
+  <div id="output"></div>
+
+  <div id="autocomplete"></div>
+
+  <div id="inputbar">
+    <div id="prompt-label">
+      <span class="user">analyst</span><span class="at">@</span><span class="host">bash-trainer</span><span class="sep">:</span><span class="path">~</span><span class="dollar"> $</span>
+    </div>
+    <input id="cmd-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// VIRTUAL FILESYSTEM
+// ─────────────────────────────────────────────────────────────
+const INITIAL_FS = {
+  type: 'd', children: {
+    home: { type: 'd', children: {
+      analyst: { type: 'd', children: {
+        reports: { type: 'd', children: {
+          'Q1_added_users.txt': { type: 'f', content: 'HR\nFinance\nSales', perms: '644' },
+          'Q2_added_users.txt': { type: 'f', content: 'Engineering', perms: '644' },
+          'Q3_added_users.txt': { type: 'f', content: 'Marketing', perms: '644' },
+          'Q4_added_users.txt': { type: 'f', content: 'Human Resources', perms: '644' },
+        }, perms: '755' },
+        downloads: { type: 'd', children: {}, perms: '755' },
+        projects:  { type: 'd', children: {}, perms: '755' },
+        'notes.txt': { type: 'f', content: 'Welcome Analyst\nUse this environment to practice Linux commands.', perms: '644' },
+        '.bashrc':   { type: 'f', content: '# .bashrc\nexport PATH=$PATH:/usr/bin\nalias ll="ls -la"', perms: '644' },
+        '.bash_history': { type: 'f', content: '', perms: '600' },
+      }, perms: '755' },
+    }},
+    etc: { type: 'd', children: {
+      passwd:  { type: 'f', content: 'root:x:0:0:root:/root:/bin/bash\nanalyst:x:1000:1000::/home/analyst:/bin/bash', perms: '644' },
+      hosts:   { type: 'f', content: '127.0.0.1\tlocalhost\n127.0.1.1\tbash-trainer', perms: '644' },
+      group:   { type: 'f', content: 'root:x:0:\nusers:x:100:analyst\nanalyst:x:1000:', perms: '644' },
+      hostname:{ type: 'f', content: 'bash-trainer', perms: '644' },
+    }, perms: '755' },
+    var: { type: 'd', children: {
+      log: { type: 'd', children: {
+        'syslog': { type: 'f', content: 'Jun 19 00:00:01 bash-trainer kernel: Booted\nJun 19 00:00:02 bash-trainer systemd: Started session', perms: '640' },
+      }, perms: '755' },
+    }, perms: '755' },
+    usr: { type: 'd', children: {
+      bin: { type: 'd', children: {}, perms: '755' },
+      local: { type: 'd', children: {}, perms: '755' },
+    }, perms: '755' },
+    tmp:  { type: 'd', children: {}, perms: '1777' },
+    bin:  { type: 'd', children: {}, perms: '755' },
+    opt:  { type: 'd', children: {}, perms: '755' },
+    root: { type: 'd', children: {}, perms: '700' },
+  }
+};
+
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+let fs   = JSON.parse(JSON.stringify(INITIAL_FS));
+let cwd  = '/home/analyst';
+let env  = { HOME: '/home/analyst', USER: 'analyst', HOSTNAME: 'bash-trainer', PATH: '/usr/bin:/bin', SHELL: '/bin/bash', TERM: 'xterm-256color' };
+let cmdHistory = [];
+let histIdx    = -1;
+let acList     = [];
+let acIdx      = -1;
+
+// ─────────────────────────────────────────────────────────────
+// FS HELPERS
+// ─────────────────────────────────────────────────────────────
+function normalizePath(p) {
+  if (!p.startsWith('/')) p = cwd + '/' + p;
+  const parts = p.split('/').filter(Boolean);
+  const res = [];
+  for (const pt of parts) {
+    if (pt === '.') continue;
+    if (pt === '..') res.pop();
+    else res.push(pt);
+  }
+  return '/' + res.join('/');
+}
+
+function getNode(path, root = fs) {
+  const parts = normalizePath(path).split('/').filter(Boolean);
+  let node = root;
+  for (const p of parts) {
+    if (!node.children || !node.children[p]) return null;
+    node = node.children[p];
+  }
+  return node;
+}
+
+function getParent(path) {
+  const n = normalizePath(path);
+  const parts = n.split('/').filter(Boolean);
+  parts.pop();
+  return '/' + parts.join('/');
+}
+
+function basename(path) {
+  return normalizePath(path).split('/').filter(Boolean).pop() || '/';
+}
+
+function setNode(path, node) {
+  const n = normalizePath(path);
+  const parts = n.split('/').filter(Boolean);
+  let cur = fs;
+  for (let i = 0; i < parts.length - 1; i++) {
+    cur = cur.children[parts[i]];
+  }
+  cur.children[parts[parts.length - 1]] = node;
+}
+
+function deleteNode(path) {
+  const n = normalizePath(path);
+  const parts = n.split('/').filter(Boolean);
+  let cur = fs;
+  for (let i = 0; i < parts.length - 1; i++) {
+    cur = cur.children[parts[i]];
+  }
+  delete cur.children[parts[parts.length - 1]];
+}
+
+function promptStr(forDisplay = false) {
+  let p = normalizePath(cwd);
+  if (p.startsWith('/home/analyst')) p = '~' + p.slice('/home/analyst'.length);
+  return p;
+}
+
+function updatePrompt() {
+  const p = promptStr();
+  document.getElementById('prompt-label').innerHTML =
+    `<span class="user">analyst</span><span class="at">@</span><span class="host">bash-trainer</span><span class="sep">:</span><span class="path">${escHtml(p)}</span><span class="dollar"> $</span>`;
+  document.getElementById('topbar-title').textContent = `analyst@bash-trainer: ${p}`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// OUTPUT
+// ─────────────────────────────────────────────────────────────
+const outputEl = document.getElementById('output');
+
+function print(html, cls = 'line-out') {
+  const d = document.createElement('div');
+  d.className = 'line ' + cls;
+  d.innerHTML = html;
+  outputEl.appendChild(d);
+  outputEl.scrollTop = outputEl.scrollHeight;
+}
+
+function printText(text, cls = 'line-out') {
+  if (text === '') { print('&nbsp;', cls); return; }
+  text.split('\n').forEach(l => print(escHtml(l) || '&nbsp;', cls));
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function printPromptEcho(raw) {
+  const p = promptStr();
+  const d = document.createElement('div');
+  d.className = 'line prompt-echo';
+  d.innerHTML = `<span class="user">analyst</span><span class="at">@</span><span class="host">bash-trainer</span><span class="sep">:</span><span class="path">${escHtml(p)}</span><span class="dollar"> $ </span><span>${escHtml(raw)}</span>`;
+  outputEl.appendChild(d);
+  outputEl.scrollTop = outputEl.scrollHeight;
+}
+
+// ─────────────────────────────────────────────────────────────
+// PARSER
+// ─────────────────────────────────────────────────────────────
+function tokenize(input) {
+  // Very simple tokenizer — supports quotes and basic escaping
+  const tokens = [];
+  let cur = '', inQ = null;
+  for (let i = 0; i < input.length; i++) {
+    const c = input[i];
+    if (inQ) {
+      if (c === inQ) inQ = null;
+      else cur += c;
+    } else if (c === '"' || c === "'") {
+      inQ = c;
+    } else if (c === '\\' && i + 1 < input.length) {
+      cur += input[++i];
+    } else if (c === ' ' || c === '\t') {
+      if (cur) { tokens.push(cur); cur = ''; }
+    } else {
+      cur += c;
+    }
+  }
+  if (cur) tokens.push(cur);
+  return tokens;
+}
+
+function parseInput(input) {
+  // Split by pipe
+  const segments = input.split('|').map(s => s.trim()).filter(Boolean);
+  return segments.map(s => {
+    const toks = tokenize(s);
+    return { cmd: toks[0] || '', args: toks.slice(1) };
+  });
+}
+
+function expandEnv(arg) {
+  return arg.replace(/\$([A-Z_][A-Z0-9_]*)/gi, (_, k) => env[k] !== undefined ? env[k] : '');
+}
+
+function resolveArgs(args) {
+  return args.map(a => expandEnv(a));
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMMAND IMPLEMENTATIONS
+// ─────────────────────────────────────────────────────────────
+const COMMANDS = {};
+
+COMMANDS.pwd = ({ args }) => {
+  return { out: normalizePath(cwd) };
+};
+
+COMMANDS.cd = ({ args }) => {
+  const target = args[0] || env.HOME;
+  const resolved = normalizePath(target);
+  const node = getNode(resolved);
+  if (!node) return { err: `cd: ${args[0]}: No such file or directory` };
+  if (node.type !== 'd') return { err: `cd: ${args[0]}: Not a directory` };
+  if (resolved === '/root') return { err: `cd: /root: Permission denied` };
+  cwd = resolved;
+  updatePrompt();
+  return { out: '' };
+};
+
+COMMANDS.ls = ({ args }) => {
+  const flags = args.filter(a => a.startsWith('-'));
+  const paths = args.filter(a => !a.startsWith('-'));
+  const showAll  = flags.some(f => f.includes('a'));
+  const longFmt  = flags.some(f => f.includes('l'));
+  const humanSz  = flags.some(f => f.includes('h'));
+  const target   = paths[0] ? normalizePath(paths[0]) : normalizePath(cwd);
+  const node = getNode(target);
+  if (!node) return { err: `ls: cannot access '${paths[0] || cwd}': No such file or directory` };
+
+  if (node.type === 'f') {
+    return { html: `<span class="ls-file">${escHtml(basename(target))}</span>` };
+  }
+
+  const entries = Object.entries(node.children).filter(([n]) => showAll || !n.startsWith('.'));
+  entries.sort((a, b) => {
+    if (a[1].type === b[1].type) return a[0].localeCompare(b[0]);
+    return a[1].type === 'd' ? -1 : 1;
+  });
+
+  if (!longFmt) {
+    const parts = entries.map(([name, nd]) => {
+      const cls = nd.type === 'd' ? 'ls-dir' : 'ls-file';
+      const suffix = nd.type === 'd' ? '/' : '';
+      return `<span class="${cls}">${escHtml(name)}${suffix}</span>`;
+    });
+    return { html: parts.join('  ') };
+  }
+
+  // Long format
+  function fmtSize(content) {
+    const b = content ? content.length : 0;
+    if (!humanSz) return String(b).padStart(6);
+    if (b < 1024) return `${b}B`.padStart(6);
+    if (b < 1048576) return `${(b/1024).toFixed(1)}K`.padStart(6);
+    return `${(b/1048576).toFixed(1)}M`.padStart(6);
+  }
+
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${months[now.getMonth()]} ${String(now.getDate()).padStart(2)} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  const lines = [];
+  if (showAll) {
+    lines.push(`<span class="ls-dir">drwxr-xr-x  2 analyst analyst      0 ${dateStr} ./</span>`);
+    lines.push(`<span class="ls-dir">drwxr-xr-x  2 analyst analyst      0 ${dateStr} ../</span>`);
+  }
+  for (const [name, nd] of entries) {
+    const isDir = nd.type === 'd';
+    const perms = (nd.perms || (isDir ? '755' : '644'));
+    const permStr = isDir
+      ? `drwxr-xr-x`
+      : perms === '600' ? '-rw-------' : perms === '640' ? '-rw-r-----' : '-rw-r--r--';
+    const sz = isDir ? '     0' : fmtSize(nd.content || '');
+    const cls = isDir ? 'ls-dir' : 'ls-file';
+    const suffix = isDir ? '/' : '';
+    lines.push(`<span class="${cls}">${escHtml(permStr)}  1 analyst analyst ${sz} ${dateStr} ${escHtml(name)}${suffix}</span>`);
+  }
+  return { html: lines.join('\n') };
+};
+
+COMMANDS.cat = ({ args }) => {
+  if (!args.length) return { err: 'cat: missing operand' };
+  const results = [];
+  for (const a of args) {
+    const p = normalizePath(a);
+    const node = getNode(p);
+    if (!node) { results.push({ err: `cat: ${a}: No such file or directory` }); continue; }
+    if (node.type === 'd') { results.push({ err: `cat: ${a}: Is a directory` }); continue; }
+    results.push({ out: node.content || '' });
+  }
+  return results;
+};
+
+COMMANDS.touch = ({ args }) => {
+  if (!args.length) return { err: 'touch: missing file operand' };
+  for (const a of args) {
+    const p = normalizePath(a);
+    const existing = getNode(p);
+    if (!existing) {
+      const parent = getNode(getParent(p));
+      if (!parent || parent.type !== 'd') return { err: `touch: cannot touch '${a}': No such file or directory` };
+      setNode(p, { type: 'f', content: '', perms: '644' });
+    }
+    // if exists, just "update timestamp" (noop in our sim)
+  }
+  return { out: '' };
+};
+
+COMMANDS.mkdir = ({ args }) => {
+  if (!args.length) return { err: 'mkdir: missing operand' };
+  const p_flag = args.includes('-p');
+  const targets = args.filter(a => !a.startsWith('-'));
+  for (const a of targets) {
+    const p = normalizePath(a);
+    if (getNode(p)) return { err: `mkdir: cannot create directory '${a}': File exists` };
+    const parent = getNode(getParent(p));
+    if (!parent && !p_flag) return { err: `mkdir: cannot create directory '${a}': No such file or directory` };
+    setNode(p, { type: 'd', children: {}, perms: '755' });
+  }
+  return { out: '' };
+};
+
+COMMANDS.rm = ({ args }) => {
+  if (!args.length) return { err: 'rm: missing operand' };
+  const rf = args.some(a => a.includes('r') || a.includes('f'));
+  const targets = args.filter(a => !a.startsWith('-'));
+  for (const a of targets) {
+    const p = normalizePath(a);
+    const node = getNode(p);
+    if (!node) return { err: `rm: cannot remove '${a}': No such file or directory` };
+    if (node.type === 'd' && !rf) return { err: `rm: cannot remove '${a}': Is a directory` };
+    deleteNode(p);
+  }
+  return { out: '' };
+};
+
+COMMANDS.rmdir = ({ args }) => {
+  if (!args.length) return { err: 'rmdir: missing operand' };
+  for (const a of args) {
+    const p = normalizePath(a);
+    const node = getNode(p);
+    if (!node) return { err: `rmdir: failed to remove '${a}': No such file or directory` };
+    if (node.type !== 'd') return { err: `rmdir: failed to remove '${a}': Not a directory` };
+    if (Object.keys(node.children).length > 0) return { err: `rmdir: failed to remove '${a}': Directory not empty` };
+    deleteNode(p);
+  }
+  return { out: '' };
+};
+
+COMMANDS.cp = ({ args }) => {
+  const targets = args.filter(a => !a.startsWith('-'));
+  if (targets.length < 2) return { err: 'cp: missing destination file operand' };
+  const src = normalizePath(targets[0]);
+  let dst = normalizePath(targets[1]);
+  const srcNode = getNode(src);
+  if (!srcNode) return { err: `cp: cannot stat '${targets[0]}': No such file or directory` };
+  const dstNode = getNode(dst);
+  if (dstNode && dstNode.type === 'd') dst = dst + '/' + basename(src);
+  setNode(dst, JSON.parse(JSON.stringify(srcNode)));
+  return { out: '' };
+};
+
+COMMANDS.mv = ({ args }) => {
+  const targets = args.filter(a => !a.startsWith('-'));
+  if (targets.length < 2) return { err: 'mv: missing destination file operand' };
+  const src = normalizePath(targets[0]);
+  let dst = normalizePath(targets[1]);
+  const srcNode = getNode(src);
+  if (!srcNode) return { err: `mv: cannot stat '${targets[0]}': No such file or directory` };
+  const dstNode = getNode(dst);
+  if (dstNode && dstNode.type === 'd') dst = dst + '/' + basename(src);
+  setNode(dst, JSON.parse(JSON.stringify(srcNode)));
+  deleteNode(src);
+  return { out: '' };
+};
+
+COMMANDS.echo = ({ args, rawInput }) => {
+  const noNewline = args[0] === '-n';
+  const parts = noNewline ? args.slice(1) : args;
+  return { out: parts.join(' ') };
+};
+
+COMMANDS.grep = ({ args, stdin }) => {
+  const flags = args.filter(a => a.startsWith('-'));
+  const others = args.filter(a => !a.startsWith('-'));
+  const ignoreCase = flags.some(f => f.includes('i'));
+  const invertMatch = flags.some(f => f.includes('v'));
+  const lineNum = flags.some(f => f.includes('n'));
+  const countOnly = flags.some(f => f.includes('c'));
+  const recursive = flags.some(f => f.includes('r') || f.includes('R'));
+
+  if (!others.length) return { err: 'grep: missing pattern' };
+  const pattern = others[0];
+  const fileArgs = others.slice(1);
+
+  let regex;
+  try { regex = new RegExp(pattern, ignoreCase ? 'i' : ''); }
+  catch(e) { return { err: `grep: invalid pattern: ${pattern}` }; }
+
+  function grepLines(text, label) {
+    const lines = text.split('\n');
+    const matched = [];
+    lines.forEach((l, idx) => {
+      const m = regex.test(l);
+      if ((!invertMatch && m) || (invertMatch && !m)) {
+        let out = '';
+        if (label) out += `${label}:`;
+        if (lineNum) out += `${idx + 1}:`;
+        out += l;
+        matched.push(out);
+      }
+    });
+    return matched;
+  }
+
+  // stdin mode (pipe)
+  if (stdin !== undefined) {
+    const matched = grepLines(stdin, null);
+    if (countOnly) return { out: String(matched.length) };
+    return { out: matched.join('\n') };
+  }
+
+  // recursive
+  if (recursive) {
+    const searchRoot = fileArgs[0] ? normalizePath(fileArgs[0]) : normalizePath(cwd);
+    const results = [];
+    function walk(p, node) {
+      if (node.type === 'f') {
+        const m = grepLines(node.content || '', p);
+        results.push(...m);
+      } else if (node.type === 'd') {
+        for (const [name, child] of Object.entries(node.children)) {
+          walk(p + '/' + name, child);
+        }
+      }
+    }
+    const rootNode = getNode(searchRoot);
+    if (!rootNode) return { err: `grep: ${fileArgs[0]}: No such file or directory` };
+    walk(searchRoot, rootNode);
+    if (countOnly) return { out: String(results.length) };
+    return { out: results.join('\n') };
+  }
+
+  // file mode
+  if (!fileArgs.length) return { err: 'grep: missing file operand (or use with pipe)' };
+  const results = [];
+  const multiFile = fileArgs.length > 1;
+  for (const f of fileArgs) {
+    const p = normalizePath(f);
+    const node = getNode(p);
+    if (!node) { results.push({ err: `grep: ${f}: No such file or directory` }); continue; }
+    if (node.type === 'd') { results.push({ err: `grep: ${f}: Is a directory` }); continue; }
+    const matched = grepLines(node.content || '', multiFile ? f : null);
+    if (countOnly) results.push({ out: String(matched.length) });
+    else matched.forEach(l => results.push({ out: l }));
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.find = ({ args }) => {
+  const startArg = args[0] && !args[0].startsWith('-') ? args[0] : '.';
+  const startPath = normalizePath(startArg);
+  const startNode = getNode(startPath);
+  if (!startNode) return { err: `find: '${startArg}': No such file or directory` };
+
+  // Parse -name, -type, -maxdepth
+  let namePattern = null, typeFilter = null, maxDepth = Infinity;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '-name' && args[i+1]) { namePattern = args[++i]; }
+    if (args[i] === '-type' && args[i+1]) { typeFilter = args[++i]; }
+    if (args[i] === '-maxdepth' && args[i+1]) { maxDepth = parseInt(args[++i]); }
+  }
+
+  const results = [];
+  function walk(path, node, depth) {
+    if (depth > maxDepth) return;
+    const name = basename(path);
+    let match = true;
+    if (namePattern) {
+      // Convert glob to regex
+      const re = new RegExp('^' + namePattern.replace(/\./g,'\\.').replace(/\*/g,'.*').replace(/\?/g,'.') + '$');
+      if (!re.test(name)) match = false;
+    }
+    if (typeFilter) {
+      if (typeFilter === 'f' && node.type !== 'f') match = false;
+      if (typeFilter === 'd' && node.type !== 'd') match = false;
+    }
+    if (match) results.push(path);
+    if (node.type === 'd') {
+      for (const [n, child] of Object.entries(node.children)) {
+        walk(path + '/' + n, child, depth + 1);
+      }
+    }
+  }
+  walk(startPath, startNode, 0);
+  return { out: results.join('\n') };
+};
+
+COMMANDS.wc = ({ args, stdin }) => {
+  const flags = args.filter(a => a.startsWith('-'));
+  const files = args.filter(a => !a.startsWith('-'));
+  const showL = !flags.length || flags.some(f => f.includes('l'));
+  const showW = !flags.length || flags.some(f => f.includes('w'));
+  const showC = !flags.length || flags.some(f => f.includes('c'));
+
+  function count(text) {
+    const lines = (text.match(/\n/g) || []).length;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    return { lines, words, chars };
+  }
+
+  function fmtCount(c, label) {
+    const parts = [];
+    if (showL) parts.push(String(c.lines).padStart(7));
+    if (showW) parts.push(String(c.words).padStart(7));
+    if (showC) parts.push(String(c.chars).padStart(7));
+    if (label) parts.push(' ' + label);
+    return parts.join('');
+  }
+
+  if (stdin !== undefined) {
+    const c = count(stdin);
+    return { out: fmtCount(c) };
+  }
+
+  if (!files.length) return { err: 'wc: missing file operand' };
+  const results = [];
+  let totL = 0, totW = 0, totC = 0;
+  for (const f of files) {
+    const p = normalizePath(f);
+    const node = getNode(p);
+    if (!node) { results.push({ err: `wc: ${f}: No such file or directory` }); continue; }
+    if (node.type === 'd') { results.push({ err: `wc: ${f}: Is a directory` }); continue; }
+    const c = count(node.content || '');
+    totL += c.lines; totW += c.words; totC += c.chars;
+    results.push({ out: fmtCount(c, f) });
+  }
+  if (files.length > 1) results.push({ out: fmtCount({ lines:totL, words:totW, chars:totC }, 'total') });
+  return results;
+};
+
+COMMANDS.head = ({ args, stdin }) => {
+  const nFlag = args.findIndex(a => a === '-n');
+  let n = 10;
+  const others = args.filter(a => !a.startsWith('-'));
+  if (nFlag !== -1 && args[nFlag+1]) { n = parseInt(args[nFlag+1]); }
+  else {
+    const numFlag = args.find(a => /^-\d+$/.test(a));
+    if (numFlag) n = parseInt(numFlag.slice(1));
+  }
+
+  if (stdin !== undefined) {
+    return { out: stdin.split('\n').slice(0, n).join('\n') };
+  }
+  if (!others.length) return { err: 'head: missing file operand' };
+  const node = getNode(normalizePath(others[0]));
+  if (!node) return { err: `head: cannot open '${others[0]}': No such file or directory` };
+  if (node.type === 'd') return { err: `head: ${others[0]}: Is a directory` };
+  return { out: (node.content || '').split('\n').slice(0, n).join('\n') };
+};
+
+COMMANDS.tail = ({ args, stdin }) => {
+  const nFlag = args.findIndex(a => a === '-n');
+  let n = 10;
+  const others = args.filter(a => !a.startsWith('-'));
+  if (nFlag !== -1 && args[nFlag+1]) { n = parseInt(args[nFlag+1]); }
+  else {
+    const numFlag = args.find(a => /^-\d+$/.test(a));
+    if (numFlag) n = parseInt(numFlag.slice(1));
+  }
+
+  if (stdin !== undefined) {
+    const lines = stdin.split('\n');
+    return { out: lines.slice(Math.max(0, lines.length - n)).join('\n') };
+  }
+  if (!others.length) return { err: 'tail: missing file operand' };
+  const node = getNode(normalizePath(others[0]));
+  if (!node) return { err: `tail: cannot open '${others[0]}': No such file or directory` };
+  if (node.type === 'd') return { err: `tail: ${others[0]}: Is a directory` };
+  const lines = (node.content || '').split('\n');
+  return { out: lines.slice(Math.max(0, lines.length - n)).join('\n') };
+};
+
+COMMANDS.sort = ({ args, stdin }) => {
+  const reverse = args.some(a => a.includes('r'));
+  const unique   = args.some(a => a.includes('u'));
+  const files = args.filter(a => !a.startsWith('-'));
+  let text = stdin !== undefined ? stdin : null;
+  if (!text && files.length) {
+    const node = getNode(normalizePath(files[0]));
+    if (!node) return { err: `sort: cannot read: ${files[0]}: No such file or directory` };
+    text = node.content || '';
+  }
+  if (text === null) return { err: 'sort: missing operand' };
+  let lines = text.split('\n').filter(l => l !== '');
+  if (unique) lines = [...new Set(lines)];
+  lines.sort();
+  if (reverse) lines.reverse();
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.uniq = ({ args, stdin }) => {
+  const files = args.filter(a => !a.startsWith('-'));
+  const countFlag = args.some(a => a.includes('c'));
+  let text = stdin !== undefined ? stdin : null;
+  if (!text && files.length) {
+    const node = getNode(normalizePath(files[0]));
+    if (!node) return { err: `uniq: ${files[0]}: No such file or directory` };
+    text = node.content || '';
+  }
+  if (text === null) return { err: 'uniq: missing operand' };
+  const lines = text.split('\n');
+  const result = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (i === 0 || lines[i] !== lines[i-1]) {
+      if (countFlag) {
+        let c = 1;
+        while (i + c < lines.length && lines[i+c] === lines[i]) c++;
+        result.push(`${String(c).padStart(6)} ${lines[i]}`);
+        i += c - 1;
+      } else {
+        result.push(lines[i]);
+      }
+    }
+  }
+  return { out: result.join('\n') };
+};
+
+COMMANDS.cut = ({ args, stdin }) => {
+  const dIdx = args.indexOf('-d');
+  const fIdx = args.indexOf('-f');
+  const delim = dIdx !== -1 ? (args[dIdx+1] || '\t') : '\t';
+  const fieldStr = fIdx !== -1 ? args[fIdx+1] : '1';
+  const field = parseInt(fieldStr) - 1;
+  const files = args.filter(a => !a.startsWith('-'));
+  let text = stdin !== undefined ? stdin : null;
+  if (!text && files.length) {
+    const node = getNode(normalizePath(files[0]));
+    if (!node) return { err: `cut: ${files[0]}: No such file or directory` };
+    text = node.content || '';
+  }
+  if (text === null) return { err: 'cut: missing operand' };
+  const result = text.split('\n').map(l => {
+    const parts = l.split(delim);
+    return parts[field] !== undefined ? parts[field] : l;
+  });
+  return { out: result.join('\n') };
+};
+
+COMMANDS.history = ({ args }) => {
+  if (!cmdHistory.length) return { out: '' };
+  const lines = cmdHistory.map((c, i) => `  ${String(i + 1).padStart(4)}  ${c}`);
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.clear = () => {
+  outputEl.innerHTML = '';
+  return null;
+};
+
+COMMANDS.whoami = () => ({ out: env.USER });
+
+COMMANDS.id = () => ({
+  out: `uid=1000(analyst) gid=1000(analyst) groups=1000(analyst),100(users)`
+});
+
+COMMANDS.groups = () => ({ out: 'analyst users' });
+
+COMMANDS.env = ({ args }) => {
+  const lines = Object.entries(env).map(([k,v]) => `${k}=${v}`);
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.export = ({ args }) => {
+  for (const a of args) {
+    const eq = a.indexOf('=');
+    if (eq === -1) { /* just export existing */ continue; }
+    const key = a.slice(0, eq);
+    const val = a.slice(eq + 1);
+    env[key] = val;
+  }
+  return { out: '' };
+};
+
+COMMANDS.which = ({ args }) => {
+  if (!args.length) return { err: 'which: missing argument' };
+  const cmd = args[0];
+  if (COMMANDS[cmd]) return { out: `/usr/bin/${cmd}` };
+  return { out: `${cmd} not found`, isErr: true };
+};
+
+COMMANDS.chmod = ({ args }) => {
+  const targets = args.filter(a => !a.startsWith('-') && !/^\d{3}$/.test(a));
+  const modeArg = args.find(a => /^\d{3,4}$/.test(a) || /^[ugoa][+-=][rwx]+$/.test(a));
+  if (!modeArg || !targets.length) return { err: 'chmod: missing operand' };
+  for (const t of targets) {
+    const node = getNode(normalizePath(t));
+    if (!node) return { err: `chmod: cannot access '${t}': No such file or directory` };
+    node.perms = modeArg;
+  }
+  return { out: '' };
+};
+
+COMMANDS.tree = ({ args }) => {
+  const target = args[0] ? normalizePath(args[0]) : normalizePath(cwd);
+  const node = getNode(target);
+  if (!node) return { err: `tree: '${args[0] || cwd}': No such file or directory` };
+  const lines = [basename(target) + '/'];
+  function walk(n, prefix) {
+    const entries = Object.entries(n.children || {});
+    entries.forEach(([name, child], idx) => {
+      const last = idx === entries.length - 1;
+      const connector = last ? '└── ' : '├── ';
+      const ext = child.type === 'd' ? '/' : '';
+      lines.push(prefix + connector + name + ext);
+      if (child.type === 'd') walk(child, prefix + (last ? '    ' : '│   '));
+    });
+  }
+  walk(node, '');
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.man = ({ args }) => {
+  if (!args.length) return { err: 'What manual page do you want?' };
+  const cmd = args[0];
+  const manPages = {
+    ls:    'ls - list directory contents\nUsage: ls [OPTION]... [FILE]...\n  -a  do not ignore entries starting with .\n  -l  use a long listing format\n  -h  human-readable sizes',
+    cd:    'cd - change the shell working directory\nUsage: cd [DIR]',
+    grep:  'grep - print lines matching a pattern\nUsage: grep [OPTION]... PATTERN [FILE]...\n  -i  ignore case\n  -v  invert match\n  -n  line numbers\n  -c  count only\n  -r  recursive',
+    find:  'find - search for files\nUsage: find [PATH] [EXPRESSION]\n  -name PATTERN  file name pattern\n  -type f|d      file type\n  -maxdepth N    max depth',
+    cat:   'cat - concatenate files and print\nUsage: cat [FILE]...',
+    mkdir: 'mkdir - make directories\nUsage: mkdir [OPTION]... DIRECTORY...\n  -p  create parent directories as needed',
+    rm:    'rm - remove files or directories\nUsage: rm [OPTION]... [FILE]...\n  -r  remove directories recursively\n  -f  ignore nonexistent files',
+    cp:    'cp - copy files and directories\nUsage: cp [SOURCE] [DEST]',
+    mv:    'mv - move/rename files\nUsage: mv [SOURCE] [DEST]',
+    wc:    'wc - word, line, and byte count\nUsage: wc [OPTION]... [FILE]...\n  -l  lines\n  -w  words\n  -c  bytes',
+    head:  'head - output the first part of files\nUsage: head [-n N] [FILE]',
+    tail:  'tail - output the last part of files\nUsage: tail [-n N] [FILE]',
+    sort:  'sort - sort lines of text\nUsage: sort [OPTION]... [FILE]\n  -r  reverse\n  -u  unique',
+    chmod: 'chmod - change file mode bits\nUsage: chmod MODE FILE...',
+    echo:  'echo - display a line of text\nUsage: echo [STRING]...',
+    tree:  'tree - list contents as tree\nUsage: tree [DIR]',
+    cut:   'cut - remove sections from lines\nUsage: cut -d DELIM -f N [FILE]',
+    uniq:  'uniq - report or omit repeated lines\nUsage: uniq [OPTION] [FILE]\n  -c  prefix count',
+  };
+  if (manPages[cmd]) return { out: `\nNAME\n    ${manPages[cmd]}\n\nPress q to exit man page` };
+  return { err: `No manual entry for ${cmd}` };
+};
+
+COMMANDS.help = () => ({
+  out: `Available commands:\n  Navigation:   cd, ls, pwd, tree\n  Files:        cat, touch, mkdir, rm, rmdir, cp, mv\n  Search:       grep, find, wc, head, tail, sort, uniq, cut\n  Environment:  env, export, echo, which\n  Users:        whoami, id, groups\n  Permissions:  chmod\n  System:       history, clear, help, man\n  Pipes:        supported — e.g. cat file.txt | grep pattern | wc -l`
+});
+
+COMMANDS.date = () => ({ out: new Date().toString() });
+COMMANDS.uname = ({ args }) => {
+  const a = args.includes('-a');
+  if (a) return { out: 'Linux bash-trainer 5.15.0 #1 SMP x86_64 GNU/Linux' };
+  return { out: 'Linux' };
+};
+COMMANDS.uptime = () => ({ out: `${new Date().toTimeString().split(' ')[0]} up 0 days, load average: 0.00, 0.00, 0.00` });
+COMMANDS.hostname = () => ({ out: 'bash-trainer' });
+
+// write-to-file via > redirect (handled in executor)
+// ─────────────────────────────────────────────────────────────
+// EXECUTOR
+// ─────────────────────────────────────────────────────────────
+function executeSegment(seg, stdin) {
+  const args = resolveArgs(seg.args);
+  const fn = COMMANDS[seg.cmd];
+  if (!fn) return { err: `bash: ${seg.cmd}: command not found` };
+  const result = fn({ args, stdin });
+  return result;
+}
+
+function flattenResult(result) {
+  if (!result) return { out: '', err: '' };
+  if (Array.isArray(result)) {
+    let out = [], err = [];
+    for (const r of result) {
+      const f = flattenResult(r);
+      if (f.out) out.push(f.out);
+      if (f.err) err.push(f.err);
+    }
+    return { out: out.join('\n'), err: err.join('\n') };
+  }
+  return { out: result.out || '', err: result.err || '', html: result.html || '' };
+}
+
+function runPipeline(input) {
+  // Handle redirect >
+  let redirectFile = null;
+  const redirMatch = input.match(/^(.*?)\s*>\s*(.+)$/);
+  if (redirMatch) {
+    input = redirMatch[1].trim();
+    redirectFile = redirMatch[2].trim();
+  }
+
+  const segments = parseInput(input);
+  if (!segments.length || !segments[0].cmd) return;
+
+  let stdin = undefined;
+  let lastResult = null;
+
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    const isLast = i === segments.length - 1;
+
+    if (!seg.cmd) continue;
+
+    const raw = executeSegment(seg, stdin);
+    lastResult = raw;
+
+    if (!isLast) {
+      // pipe: feed stdout to next
+      const flat = flattenResult(raw);
+      if (flat.err) {
+        printText(flat.err, 'line-err');
+        return;
+      }
+      stdin = flat.out;
+    }
+  }
+
+  // Output last result
+  if (lastResult !== null) {
+    const flat = flattenResult(lastResult);
+
+    if (redirectFile) {
+      const p = normalizePath(redirectFile);
+      const parent = getNode(getParent(p));
+      if (!parent || parent.type !== 'd') {
+        printText(`bash: ${redirectFile}: No such file or directory`, 'line-err');
+        return;
+      }
+      setNode(p, { type: 'f', content: flat.out, perms: '644' });
+      return;
+    }
+
+    if (flat.err) printText(flat.err, 'line-err');
+    if (flat.html) {
+      const d = document.createElement('div');
+      d.className = 'line line-out';
+      d.innerHTML = flat.html;
+      outputEl.appendChild(d);
+      outputEl.scrollTop = outputEl.scrollHeight;
+    } else if (flat.out !== undefined && flat.out !== null) {
+      if (flat.out !== '') printText(flat.out);
+    }
+  }
+}
+
+function handleInput(raw) {
+  const input = raw.trim();
+  printPromptEcho(raw);
+
+  if (!input) return;
+
+  // History management
+  if (cmdHistory[cmdHistory.length - 1] !== input) cmdHistory.push(input);
+  histIdx = -1;
+
+  // Built-in shell: cd handles via COMMANDS already
+  // Handle multiple commands separated by ;
+  const cmds = input.split(';').map(s => s.trim()).filter(Boolean);
+  for (const cmd of cmds) {
+    runPipeline(cmd);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUTOCOMPLETE
+// ─────────────────────────────────────────────────────────────
+const acEl = document.getElementById('autocomplete');
+
+function getCompletions(val) {
+  const tokens = tokenize(val);
+  const isCmd = tokens.length === 0 || (tokens.length === 1 && !val.endsWith(' '));
+
+  if (isCmd) {
+    const prefix = tokens[0] || '';
+    return Object.keys(COMMANDS).filter(c => c.startsWith(prefix)).map(c => ({ label: c, type: 'cmd' }));
+  }
+
+  // File/directory completion
+  const lastToken = val.endsWith(' ') ? '' : (tokens[tokens.length - 1] || '');
+  const lastSlash = lastToken.lastIndexOf('/');
+  const dirPart  = lastSlash >= 0 ? lastToken.slice(0, lastSlash + 1) : '';
+  const filePart = lastSlash >= 0 ? lastToken.slice(lastSlash + 1)    : lastToken;
+
+  const dirPath = dirPart ? normalizePath(dirPart) : normalizePath(cwd);
+  const dirNode = getNode(dirPath);
+  if (!dirNode || dirNode.type !== 'd') return [];
+
+  return Object.entries(dirNode.children)
+    .filter(([n]) => n.startsWith(filePart))
+    .map(([n, nd]) => ({ label: (dirPart || '') + n + (nd.type === 'd' ? '/' : ''), type: nd.type === 'd' ? 'dir' : 'file' }));
+}
+
+function showAC(list) {
+  acEl.innerHTML = '';
+  if (!list.length) { acEl.style.display = 'none'; return; }
+  list.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'ac-item ' + (item.type === 'dir' ? 'ac-dir' : item.type === 'cmd' ? 'ac-cmd' : '');
+    d.textContent = item.label;
+    d.addEventListener('mousedown', e => { e.preventDefault(); applyAC(item.label); });
+    acEl.appendChild(d);
+  });
+  const inputEl = document.getElementById('cmd-input');
+  const rect = document.getElementById('inputbar').getBoundingClientRect();
+  acEl.style.display = 'block';
+  acEl.style.left = rect.left + 'px';
+  acEl.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+  acEl.style.top = 'auto';
+}
+
+function hideAC() {
+  acEl.style.display = 'none';
+  acList = []; acIdx = -1;
+}
+
+function applyAC(label) {
+  const inputEl = document.getElementById('cmd-input');
+  const val = inputEl.value;
+  const tokens = tokenize(val);
+  const trailingSpace = val.endsWith(' ');
+
+  if (tokens.length === 0 || (tokens.length === 1 && !trailingSpace)) {
+    inputEl.value = label + ' ';
+  } else {
+    tokens[tokens.length - (trailingSpace ? 0 : 1)] = label;
+    inputEl.value = (trailingSpace ? val : tokens.slice(0, -1).join(' ') + (tokens.length > 1 ? ' ' : '')) + label;
+    if (!label.endsWith('/')) inputEl.value += ' ';
+  }
+  hideAC();
+}
+
+// ─────────────────────────────────────────────────────────────
+// INPUT HANDLER
+// ─────────────────────────────────────────────────────────────
+const inputEl = document.getElementById('cmd-input');
+
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    hideAC();
+    const val = inputEl.value;
+    inputEl.value = '';
+    handleInput(val);
+    return;
+  }
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    if (acEl.style.display === 'none' || !acList.length) {
+      acList = getCompletions(inputEl.value);
+      if (acList.length === 1) { applyAC(acList[0].label); acList = []; return; }
+      acIdx = -1;
+      showAC(acList);
+    } else {
+      acIdx = (acIdx + 1) % acList.length;
+      [...acEl.children].forEach((c, i) => c.classList.toggle('selected', i === acIdx));
+    }
+    return;
+  }
+
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (acEl.style.display !== 'none' && acList.length) {
+      acIdx = (acIdx - 1 + acList.length) % acList.length;
+      [...acEl.children].forEach((c, i) => c.classList.toggle('selected', i === acIdx));
+      return;
+    }
+    if (histIdx === -1) histIdx = cmdHistory.length;
+    if (histIdx > 0) { histIdx--; inputEl.value = cmdHistory[histIdx]; }
+    return;
+  }
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (acEl.style.display !== 'none' && acList.length) {
+      acIdx = (acIdx + 1) % acList.length;
+      [...acEl.children].forEach((c, i) => c.classList.toggle('selected', i === acIdx));
+      return;
+    }
+    if (histIdx === -1) return;
+    histIdx++;
+    inputEl.value = histIdx < cmdHistory.length ? cmdHistory[histIdx] : '';
+    if (histIdx >= cmdHistory.length) histIdx = -1;
+    return;
+  }
+
+  if (e.key === 'Escape') { hideAC(); return; }
+
+  if (acEl.style.display !== 'none' && acIdx !== -1 && e.key === 'Enter') {
+    applyAC(acList[acIdx].label); return;
+  }
+});
+
+inputEl.addEventListener('input', () => {
+  hideAC();
+});
+
+document.addEventListener('click', e => {
+  if (!acEl.contains(e.target) && e.target !== inputEl) hideAC();
+});
+
+// Keep focus on input
+document.addEventListener('keydown', e => {
+  if (document.activeElement !== inputEl && e.key.length === 1) inputEl.focus();
+});
+
+// ─────────────────────────────────────────────────────────────
+// PERSISTENCE
+// ─────────────────────────────────────────────────────────────
+const DB_NAME = 'bash-trainer', STORE = 'state', KEY = 'session';
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = e => rej(e);
+  });
+}
+
+async function saveState() {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put({ fs, cwd, env, cmdHistory }, KEY);
+  } catch(e) {
+    try { localStorage.setItem('bash-trainer', JSON.stringify({ fs, cwd, env, cmdHistory })); } catch(_) {}
+  }
+}
+
+async function loadState() {
+  try {
+    const db = await openDB();
+    return new Promise(res => {
+      const tx = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).get(KEY);
+      req.onsuccess = e => res(e.target.result || null);
+      req.onerror   = () => res(null);
+    });
+  } catch(e) {
+    try { const d = localStorage.getItem('bash-trainer'); return d ? JSON.parse(d) : null; } catch(_) { return null; }
+  }
+}
+
+setInterval(saveState, 30000);
+
+// ─────────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────────
+async function boot() {
+  const saved = await loadState();
+  if (saved) {
+    fs  = saved.fs  || fs;
+    cwd = saved.cwd || cwd;
+    env = saved.env || env;
+    cmdHistory = saved.cmdHistory || [];
+  }
+
+  updatePrompt();
+
+  const banner = [
+    `<span style="color:var(--green)">  ██████╗  █████╗ ███████╗██╗  ██╗</span>`,
+    `<span style="color:var(--green)">  ██╔══██╗██╔══██╗██╔════╝██║  ██║</span>`,
+    `<span style="color:var(--green)">  ██████╔╝███████║███████╗███████║</span>`,
+    `<span style="color:var(--green)">  ██╔══██╗██╔══██║╚════██║██╔══██║</span>`,
+    `<span style="color:var(--green)">  ██████╔╝██║  ██║███████║██║  ██║</span>`,
+    `<span style="color:var(--green)">  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝  <span style="color:var(--dim)">trainer v1.0</span></span>`,
+    '',
+    `<span style="color:var(--dim)">  Linux Bash Sandbox — Free Mode</span>`,
+    `<span style="color:var(--dim)">  Type <span style="color:var(--white)">help</span> for available commands | <span style="color:var(--white)">man [cmd]</span> for details</span>`,
+    `<span style="color:var(--dim)">  Session auto-saves every 30s</span>`,
+    '',
+  ];
+
+  for (const line of banner) {
+    const d = document.createElement('div');
+    d.className = 'line';
+    d.innerHTML = line;
+    outputEl.appendChild(d);
+  }
+
+  inputEl.focus();
+}
+
+boot();
+</script>
+</body>
+</html>
