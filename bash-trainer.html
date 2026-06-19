@@ -199,32 +199,75 @@ const INITIAL_FS = {
           'Q3_added_users.txt': { type: 'f', content: 'Marketing', perms: '644' },
           'Q4_added_users.txt': { type: 'f', content: 'Human Resources', perms: '644' },
         }, perms: '755' },
-        downloads: { type: 'd', children: {}, perms: '755' },
-        projects:  { type: 'd', children: {}, perms: '755' },
+        Downloads: { type: 'd', children: {
+          'malware_sample.zip': { type: 'f', content: 'PK\x03\x04...dummy binary data...', perms: '644' }
+        }, perms: '755' },
+        Documents: { type: 'd', children: {
+          'server_configs': { type: 'd', children: {
+            'nginx.conf.bak': { type: 'f', content: 'server {\n  listen 80;\n}', perms: '644' }
+          }, perms: '755' }
+        }, perms: '755' },
+        Desktop: { type: 'd', children: {
+          'todo.txt': { type: 'f', content: '- Check logs\n- Update firewall rules', perms: '644' }
+        }, perms: '755' },
+        workspace: { type: 'd', children: {
+          'script.sh': { type: 'f', content: '#!/bin/bash\necho "Hello World"', perms: '755' },
+          'empty_dir': { type: 'd', children: {}, perms: '755' }
+        }, perms: '755' },
         'notes.txt': { type: 'f', content: 'Welcome Analyst\nUse this environment to practice Linux commands.', perms: '644' },
         '.bashrc':   { type: 'f', content: '# .bashrc\nexport PATH=$PATH:/usr/bin\nalias ll="ls -la"', perms: '644' },
         '.bash_history': { type: 'f', content: '', perms: '600' },
       }, perms: '755' },
     }},
     etc: { type: 'd', children: {
-      passwd:  { type: 'f', content: 'root:x:0:0:root:/root:/bin/bash\nanalyst:x:1000:1000::/home/analyst:/bin/bash', perms: '644' },
+      passwd:  { type: 'f', content: 'root:x:0:0:root:/root:/bin/bash\nanalyst:x:1000:1000::/home/analyst:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin', perms: '644' },
+      shadow:  { type: 'f', content: 'root:$6$...:18000:0:99999:7:::\nanalyst:$6$...:18000:0:99999:7:::', perms: '600' },
       hosts:   { type: 'f', content: '127.0.0.1\tlocalhost\n127.0.1.1\tbash-trainer', perms: '644' },
       group:   { type: 'f', content: 'root:x:0:\nusers:x:100:analyst\nanalyst:x:1000:', perms: '644' },
       hostname:{ type: 'f', content: 'bash-trainer', perms: '644' },
+      ssh: { type: 'd', children: {
+        'sshd_config': { type: 'f', content: 'Port 22\nPermitRootLogin no\nPasswordAuthentication yes', perms: '644' }
+      }, perms: '755' }
     }, perms: '755' },
     var: { type: 'd', children: {
       log: { type: 'd', children: {
         'syslog': { type: 'f', content: 'Jun 19 00:00:01 bash-trainer kernel: Booted\nJun 19 00:00:02 bash-trainer systemd: Started session', perms: '640' },
+        'auth.log': { type: 'f', content: 'Jun 19 08:15:22 bash-trainer sshd[1234]: Accepted publickey for analyst from 192.168.1.50', perms: '640' },
       }, perms: '755' },
+      www: { type: 'd', children: {
+        html: { type: 'd', children: {
+          'index.html': { type: 'f', content: '<html><body><h1>It works!</h1></body></html>', perms: '644' }
+        }, perms: '755' }
+      }, perms: '755' }
+    }, perms: '755' },
+    dev: { type: 'd', children: {
+      'null': { type: 'f', content: '', perms: '666' },
+      'zero': { type: 'f', content: '', perms: '666' },
+      'random': { type: 'f', content: '...binary randomness...', perms: '666' }
+    }, perms: '755' },
+    proc: { type: 'd', children: {
+      'cpuinfo': { type: 'f', content: 'processor\t: 0\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel name\t: Intel(R) Core(TM) i7', perms: '444' },
+      'meminfo': { type: 'f', content: 'MemTotal:        8192000 kB\nMemFree:         1024000 kB', perms: '444' },
+      'version': { type: 'f', content: 'Linux version 5.15.0-generic', perms: '444' }
+    }, perms: '555' },
+    boot: { type: 'd', children: {
+      'vmlinuz-5.15.0': { type: 'f', content: '...kernel binary...', perms: '644' },
+      'grub': { type: 'd', children: {
+        'grub.cfg': { type: 'f', content: '# GRUB config file', perms: '444' }
+      }, perms: '755' }
     }, perms: '755' },
     usr: { type: 'd', children: {
       bin: { type: 'd', children: {}, perms: '755' },
       local: { type: 'd', children: {}, perms: '755' },
     }, perms: '755' },
     tmp:  { type: 'd', children: {}, perms: '1777' },
+    mnt:  { type: 'd', children: {}, perms: '755' },
+    media: { type: 'd', children: {}, perms: '755' },
     bin:  { type: 'd', children: {}, perms: '755' },
     opt:  { type: 'd', children: {}, perms: '755' },
-    root: { type: 'd', children: {}, perms: '700' },
+    root: { type: 'd', children: {
+      '.bashrc': { type: 'f', content: '# Root bashrc', perms: '644' }
+    }, perms: '700' },
   }
 };
 
@@ -343,7 +386,6 @@ function printPromptEcho(raw) {
 // PARSER
 // ─────────────────────────────────────────────────────────────
 function tokenize(input) {
-  // Very simple tokenizer — supports quotes and basic escaping
   const tokens = [];
   let cur = '', inQ = null;
   for (let i = 0; i < input.length; i++) {
@@ -366,7 +408,6 @@ function tokenize(input) {
 }
 
 function parseInput(input) {
-  // Split by pipe
   const segments = input.split('|').map(s => s.trim()).filter(Boolean);
   return segments.map(s => {
     const toks = tokenize(s);
@@ -479,58 +520,85 @@ COMMANDS.cat = ({ args }) => {
 
 COMMANDS.touch = ({ args }) => {
   if (!args.length) return { err: 'touch: missing file operand' };
+  const results = [];
   for (const a of args) {
     const p = normalizePath(a);
     const existing = getNode(p);
     if (!existing) {
       const parent = getNode(getParent(p));
-      if (!parent || parent.type !== 'd') return { err: `touch: cannot touch '${a}': No such file or directory` };
+      if (!parent || parent.type !== 'd') {
+        results.push({ err: `touch: cannot touch '${a}': No such file or directory` });
+        continue;
+      }
       setNode(p, { type: 'f', content: '', perms: '644' });
     }
-    // if exists, just "update timestamp" (noop in our sim)
   }
-  return { out: '' };
+  return results.length ? results : { out: '' };
 };
 
 COMMANDS.mkdir = ({ args }) => {
   if (!args.length) return { err: 'mkdir: missing operand' };
   const p_flag = args.includes('-p');
   const targets = args.filter(a => !a.startsWith('-'));
+  const results = [];
   for (const a of targets) {
     const p = normalizePath(a);
-    if (getNode(p)) return { err: `mkdir: cannot create directory '${a}': File exists` };
+    if (getNode(p)) {
+      results.push({ err: `mkdir: cannot create directory '${a}': File exists` });
+      continue;
+    }
     const parent = getNode(getParent(p));
-    if (!parent && !p_flag) return { err: `mkdir: cannot create directory '${a}': No such file or directory` };
+    if (!parent && !p_flag) {
+      results.push({ err: `mkdir: cannot create directory '${a}': No such file or directory` });
+      continue;
+    }
     setNode(p, { type: 'd', children: {}, perms: '755' });
   }
-  return { out: '' };
+  return results.length ? results : { out: '' };
 };
 
 COMMANDS.rm = ({ args }) => {
   if (!args.length) return { err: 'rm: missing operand' };
   const rf = args.some(a => a.includes('r') || a.includes('f'));
   const targets = args.filter(a => !a.startsWith('-'));
+  const results = [];
   for (const a of targets) {
     const p = normalizePath(a);
     const node = getNode(p);
-    if (!node) return { err: `rm: cannot remove '${a}': No such file or directory` };
-    if (node.type === 'd' && !rf) return { err: `rm: cannot remove '${a}': Is a directory` };
+    if (!node) {
+      if (!rf) results.push({ err: `rm: cannot remove '${a}': No such file or directory` });
+      continue;
+    }
+    if (node.type === 'd' && !rf) {
+      results.push({ err: `rm: cannot remove '${a}': Is a directory` });
+      continue;
+    }
     deleteNode(p);
   }
-  return { out: '' };
+  return results.length ? results : { out: '' };
 };
 
 COMMANDS.rmdir = ({ args }) => {
-  if (!args.length) return { err: 'rmdir: missing operand' };
+  if (!args.length) return { err: 'rmdir: missing operand\nTry \'rmdir --help\' for more information.' };
+  const results = [];
   for (const a of args) {
     const p = normalizePath(a);
     const node = getNode(p);
-    if (!node) return { err: `rmdir: failed to remove '${a}': No such file or directory` };
-    if (node.type !== 'd') return { err: `rmdir: failed to remove '${a}': Not a directory` };
-    if (Object.keys(node.children).length > 0) return { err: `rmdir: failed to remove '${a}': Directory not empty` };
+    if (!node) {
+      results.push({ err: `rmdir: failed to remove '${a}': No such file or directory` });
+      continue;
+    }
+    if (node.type !== 'd') {
+      results.push({ err: `rmdir: failed to remove '${a}': Not a directory` });
+      continue;
+    }
+    if (Object.keys(node.children).length > 0) {
+      results.push({ err: `rmdir: failed to remove '${a}': Directory not empty` });
+      continue;
+    }
     deleteNode(p);
   }
-  return { out: '' };
+  return results.length ? results : { out: '' };
 };
 
 COMMANDS.cp = ({ args }) => {
@@ -649,7 +717,6 @@ COMMANDS.find = ({ args }) => {
   const startNode = getNode(startPath);
   if (!startNode) return { err: `find: '${startArg}': No such file or directory` };
 
-  // Parse -name, -type, -maxdepth
   let namePattern = null, typeFilter = null, maxDepth = Infinity;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '-name' && args[i+1]) { namePattern = args[++i]; }
@@ -663,7 +730,6 @@ COMMANDS.find = ({ args }) => {
     const name = basename(path);
     let match = true;
     if (namePattern) {
-      // Convert glob to regex
       const re = new RegExp('^' + namePattern.replace(/\./g,'\\.').replace(/\*/g,'.*').replace(/\?/g,'.') + '$');
       if (!re.test(name)) match = false;
     }
@@ -861,7 +927,7 @@ COMMANDS.env = ({ args }) => {
 COMMANDS.export = ({ args }) => {
   for (const a of args) {
     const eq = a.indexOf('=');
-    if (eq === -1) { /* just export existing */ continue; }
+    if (eq === -1) continue;
     const key = a.slice(0, eq);
     const val = a.slice(eq + 1);
     env[key] = val;
@@ -880,12 +946,13 @@ COMMANDS.chmod = ({ args }) => {
   const targets = args.filter(a => !a.startsWith('-') && !/^\d{3}$/.test(a));
   const modeArg = args.find(a => /^\d{3,4}$/.test(a) || /^[ugoa][+-=][rwx]+$/.test(a));
   if (!modeArg || !targets.length) return { err: 'chmod: missing operand' };
+  const results = [];
   for (const t of targets) {
     const node = getNode(normalizePath(t));
-    if (!node) return { err: `chmod: cannot access '${t}': No such file or directory` };
+    if (!node) { results.push({ err: `chmod: cannot access '${t}': No such file or directory` }); continue; }
     node.perms = modeArg;
   }
-  return { out: '' };
+  return results.length ? results : { out: '' };
 };
 
 COMMANDS.tree = ({ args }) => {
@@ -918,6 +985,7 @@ COMMANDS.man = ({ args }) => {
     cat:   'cat - concatenate files and print\nUsage: cat [FILE]...',
     mkdir: 'mkdir - make directories\nUsage: mkdir [OPTION]... DIRECTORY...\n  -p  create parent directories as needed',
     rm:    'rm - remove files or directories\nUsage: rm [OPTION]... [FILE]...\n  -r  remove directories recursively\n  -f  ignore nonexistent files',
+    rmdir: 'rmdir - remove empty directories\nUsage: rmdir [DIRECTORY]...',
     cp:    'cp - copy files and directories\nUsage: cp [SOURCE] [DEST]',
     mv:    'mv - move/rename files\nUsage: mv [SOURCE] [DEST]',
     wc:    'wc - word, line, and byte count\nUsage: wc [OPTION]... [FILE]...\n  -l  lines\n  -w  words\n  -c  bytes',
@@ -947,7 +1015,6 @@ COMMANDS.uname = ({ args }) => {
 COMMANDS.uptime = () => ({ out: `${new Date().toTimeString().split(' ')[0]} up 0 days, load average: 0.00, 0.00, 0.00` });
 COMMANDS.hostname = () => ({ out: 'bash-trainer' });
 
-// write-to-file via > redirect (handled in executor)
 // ─────────────────────────────────────────────────────────────
 // EXECUTOR
 // ─────────────────────────────────────────────────────────────
@@ -974,7 +1041,6 @@ function flattenResult(result) {
 }
 
 function runPipeline(input) {
-  // Handle redirect >
   let redirectFile = null;
   const redirMatch = input.match(/^(.*?)\s*>\s*(.+)$/);
   if (redirMatch) {
@@ -998,7 +1064,6 @@ function runPipeline(input) {
     lastResult = raw;
 
     if (!isLast) {
-      // pipe: feed stdout to next
       const flat = flattenResult(raw);
       if (flat.err) {
         printText(flat.err, 'line-err');
@@ -1008,7 +1073,6 @@ function runPipeline(input) {
     }
   }
 
-  // Output last result
   if (lastResult !== null) {
     const flat = flattenResult(lastResult);
 
@@ -1042,12 +1106,9 @@ function handleInput(raw) {
 
   if (!input) return;
 
-  // History management
   if (cmdHistory[cmdHistory.length - 1] !== input) cmdHistory.push(input);
   histIdx = -1;
 
-  // Built-in shell: cd handles via COMMANDS already
-  // Handle multiple commands separated by ;
   const cmds = input.split(';').map(s => s.trim()).filter(Boolean);
   for (const cmd of cmds) {
     runPipeline(cmd);
@@ -1068,7 +1129,6 @@ function getCompletions(val) {
     return Object.keys(COMMANDS).filter(c => c.startsWith(prefix)).map(c => ({ label: c, type: 'cmd' }));
   }
 
-  // File/directory completion
   const lastToken = val.endsWith(' ') ? '' : (tokens[tokens.length - 1] || '');
   const lastSlash = lastToken.lastIndexOf('/');
   const dirPart  = lastSlash >= 0 ? lastToken.slice(0, lastSlash + 1) : '';
@@ -1191,7 +1251,6 @@ document.addEventListener('click', e => {
   if (!acEl.contains(e.target) && e.target !== inputEl) hideAC();
 });
 
-// Keep focus on input
 document.addEventListener('keydown', e => {
   if (document.activeElement !== inputEl && e.key.length === 1) inputEl.focus();
 });
