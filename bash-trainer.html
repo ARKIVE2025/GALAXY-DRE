@@ -1285,6 +1285,61 @@ CMD.chgrp=({args})=>{
   const node=getNode(normPath(others[1]));if(node)node.group=others[0];return{out:''};
 };
 
+// ─── USER MANAGEMENT ──────────────────────────────────────────
+CMD.useradd=CMD.adduser=({args})=>{
+  if(!isRoot)return{err:`${args.rawCmd||'useradd'}: Permission denied. (Try with sudo)`};
+  const flags=args.filter(a=>a.startsWith('-'));
+  const users=args.filter(a=>!a.startsWith('-'));
+  if(!users.length)return{err:`${args.rawCmd||'useradd'}: missing login name`};
+  const username=users[0];
+  const passwdNode=getNode('/etc/passwd');
+  if(passwdNode&&passwdNode.content.includes(username+':')){
+    return{err:`${args.rawCmd||'useradd'}: user '${username}' already exists`};
+  }
+  if(passwdNode){
+    const lines=passwdNode.content.split('\n').filter(Boolean);
+    const newUid=1000+lines.length;
+    passwdNode.content+=`\n${username}:x:${newUid}:${newUid}::/home/${username}:/bin/bash`;
+  }
+  const shadowNode=getNode('/etc/shadow');
+  if(shadowNode)shadowNode.content+=`\n${username}:*:18000:0:99999:7:::`;
+  const groupNode=getNode('/etc/group');
+  if(groupNode){
+    const lines=groupNode.content.split('\n').filter(Boolean);
+    const newGid=1000+lines.length;
+    groupNode.content+=`\n${username}:x:${newGid}:`;
+  }
+  setNode(`/home/${username}`,{type:'d',children:{},perms:'755',owner:username,group:username});
+  return{out:''};
+};
+
+CMD.userdel=CMD.deluser=({args})=>{
+  if(!isRoot)return{err:`${args.rawCmd||'userdel'}: Permission denied. (Try with sudo)`};
+  const flags=args.filter(a=>a.startsWith('-'));
+  const users=args.filter(a=>!a.startsWith('-'));
+  if(!users.length)return{err:`${args.rawCmd||'userdel'}: missing login name`};
+  const username=users[0];
+  const passwdNode=getNode('/etc/passwd');
+  if(!passwdNode||!passwdNode.content.includes(username+':')){
+    return{err:`${args.rawCmd||'userdel'}: user '${username}' does not exist`};
+  }
+  if(passwdNode){
+    passwdNode.content=passwdNode.content.split('\n').filter(l=>!l.startsWith(username+':')).join('\n');
+  }
+  const shadowNode=getNode('/etc/shadow');
+  if(shadowNode){
+    shadowNode.content=shadowNode.content.split('\n').filter(l=>!l.startsWith(username+':')).join('\n');
+  }
+  const groupNode=getNode('/etc/group');
+  if(groupNode){
+    groupNode.content=groupNode.content.split('\n').filter(l=>!l.startsWith(username+':')).join('\n');
+  }
+  if(flags.includes('-r')){
+    deleteNode(`/home/${username}`);
+  }
+  return{out:''};
+};
+
 // ─── SUDO ─────────────────────────────────────────────────────
 CMD.sudo=({args})=>{
   if(!args.length)return{err:'usage: sudo [-u user] command [args]'};
@@ -1342,6 +1397,7 @@ CMD.which=({args})=>{
 };
 
 CMD.clear=()=>{outEl.innerHTML='';return null;};
+CMD.reset=()=>{outEl.innerHTML='';return{out:'\x1bc'};};
 CMD.whoami=()=>({out:isRoot?'root':env.USER});
 CMD.id=()=>isRoot?{out:'uid=0(root) gid=0(root) groups=0(root)'}:{out:'uid=1000(analyst) gid=1000(analyst) groups=1000(analyst),100(users),27(sudo)'};
 CMD.groups=()=>({out:isRoot?'root':'analyst users sudo'});
@@ -1353,7 +1409,7 @@ CMD.set=({args})=>args.length?{out:''}:{out:Object.entries(env).map(([k,v])=>`${
 
 CMD.date=({args})=>{
   const d=new Date();const fmt=args.find(a=>a.startsWith('+'));
-  if(fmt){let s=fmt.slice(1);s=s.replace('%Y',d.getFullYear()).replace('%m',String(d.getMonth()+1).padStart(2,'0')).replace('%d',String(d.getDate()).padStart(2,'0')).replace('%H',String(d.getHours()).padStart(2,'0')).replace('%M',String(d.getMinutes()).padStart(2,'0')).replace('%S',String(d.getSeconds()).padStart(2,'0'));return{out:s};}
+  if(fmt){let s=fmt.slice(1);s=s.replace('%Y',d.getFullYear()).replace('%m',String(d.getMonth()+1).padStart(2,'0')).replace('%d',String(d.getDate()).padStart(2,'0')).replace('%H',String(d.getHours()).padStart(2,'0')).replace('%M',String(d.getMinutes()).padStart(2,'0')).replace('%S',String(d.getSeconds()).padStart(2,'0')).replace('%A',['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()]).replace('%B',['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()]);return{out:s};}
   return{out:d.toString()};
 };
 CMD.uname=({args})=>{
@@ -1487,7 +1543,7 @@ CMD.help=()=>({out:`bash built-ins and available commands:
   Files:         cat touch nano less more head tail cp mv rm rmdir mkdir ln
   Search:        grep find locate updatedb wc sort uniq cut sed awk tr xargs diff
   Permissions:   chmod chown chgrp
-  System:        ps kill free df du file date uname uptime hostname lsb_release
+  System:        ps kill free df du file date uname uptime hostname lsb_release useradd userdel
   Text:          echo printf tee md5sum sha256sum basename dirname realpath
   Shell:         history alias unalias source type which test true false sudo su
   Network:       ping curl wget ssh
