@@ -974,6 +974,13 @@ COMMANDS.tree = ({ args }) => {
   return { out: lines.join('\n') };
 };
 
+COMMANDS.reset = () => {
+  indexedDB.deleteDatabase('bash-trainer');
+  localStorage.removeItem('bash-trainer');
+  setTimeout(() => location.reload(), 200);
+  return { out: 'Resetting environment...' };
+};
+
 COMMANDS.man = ({ args }) => {
   if (!args.length) return { err: 'What manual page do you want?' };
   const cmd = args[0];
@@ -997,13 +1004,14 @@ COMMANDS.man = ({ args }) => {
     tree:  'tree - list contents as tree\nUsage: tree [DIR]',
     cut:   'cut - remove sections from lines\nUsage: cut -d DELIM -f N [FILE]',
     uniq:  'uniq - report or omit repeated lines\nUsage: uniq [OPTION] [FILE]\n  -c  prefix count',
+    reset: 'reset - factory reset the terminal sandbox environment\nUsage: reset',
   };
   if (manPages[cmd]) return { out: `\nNAME\n    ${manPages[cmd]}\n\nPress q to exit man page` };
   return { err: `No manual entry for ${cmd}` };
 };
 
 COMMANDS.help = () => ({
-  out: `Available commands:\n  Navigation:   cd, ls, pwd, tree\n  Files:        cat, touch, mkdir, rm, rmdir, cp, mv\n  Search:       grep, find, wc, head, tail, sort, uniq, cut\n  Environment:  env, export, echo, which\n  Users:        whoami, id, groups\n  Permissions:  chmod\n  System:       history, clear, help, man\n  Pipes:        supported — e.g. cat file.txt | grep pattern | wc -l`
+  out: `Available commands:\n  Navigation:   cd, ls, pwd, tree\n  Files:        cat, touch, mkdir, rm, rmdir, cp, mv\n  Search:       grep, find, wc, head, tail, sort, uniq, cut\n  Environment:  env, export, echo, which, reset\n  Users:        whoami, id, groups\n  Permissions:  chmod\n  System:       history, clear, help, man\n  Pipes:        supported — e.g. cat file.txt | grep pattern | wc -l`
 });
 
 COMMANDS.date = () => ({ out: new Date().toString() });
