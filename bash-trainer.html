@@ -3,2170 +3,1565 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DRE Lending Simulator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<title>bash-trainer — Linux CLI Sandbox</title>
 <style>
-:root {
-  --bg-primary: #0a0c10;
-  --bg-secondary: #111418;
-  --bg-card: #161b22;
-  --bg-card-hover: #1c2230;
-  --bg-input: #0d1117;
-  --border: rgba(255,255,255,0.08);
-  --border-accent: rgba(255,255,255,0.14);
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-  --text-muted: #484f58;
-  --accent: #3fb950;
-  --accent-dim: rgba(63,185,80,0.12);
-  --accent-blue: #58a6ff;
-  --accent-blue-dim: rgba(88,166,255,0.12);
-  --accent-amber: #d29922;
-  --accent-amber-dim: rgba(210,153,34,0.12);
-  --accent-red: #f85149;
-  --accent-red-dim: rgba(248,81,73,0.12);
-  --accent-purple: #bc8cff;
-  --accent-purple-dim: rgba(188,140,255,0.12);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #141414;
+    --border: #1f1f1f;
+    --green: #00e676;
+    --green-dim: #00c853;
+    --yellow: #ffd600;
+    --red: #ff1744;
+    --blue: #40c4ff;
+    --white: #e0e0e0;
+    --dim: #555;
+    --bg-nano: #000;
+    --nano-header: #ddd;
+    --font: 'Courier New', Courier, monospace;
+  }
 
-body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font);
-  font-size: 14px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 14px;
+    overflow: hidden;
+  }
 
-/* ── LAYOUT ── */
-#app { display: flex; flex-direction: column; height: 100vh; }
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+  }
 
-.top-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  gap: 16px;
-}
+  /* Top bar */
+  #topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    flex-shrink: 0;
+  }
 
-.top-bar .logo {
-  font-weight: 700; font-size: 15px; letter-spacing: 0.5px;
-  color: var(--accent);
-  display: flex; align-items: center; gap: 8px;
-}
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red   { background: #ff5f57; }
+  .dot-yellow{ background: #febc2e; }
+  .dot-green { background: #28c840; }
 
-.top-bar .logo span { color: var(--text-secondary); font-weight: 400; font-size: 12px; }
+  #topbar-title {
+    flex: 1;
+    text-align: center;
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
 
-.tab-nav { display: flex; gap: 4px; }
+  /* Output area */
+  #output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+  }
 
-.tab-btn {
-  padding: 6px 14px; border-radius: var(--radius-sm);
-  border: none; background: transparent;
-  color: var(--text-secondary); font-size: 13px; font-family: var(--font);
-  cursor: pointer; transition: all 0.15s;
-}
-.tab-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
-.tab-btn.active { background: rgba(255,255,255,0.08); color: var(--text-primary); font-weight: 500; }
+  #output::-webkit-scrollbar { width: 4px; }
+  #output::-webkit-scrollbar-track { background: transparent; }
+  #output::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-.top-actions { display: flex; align-items: center; gap: 10px; }
+  .line { white-space: pre-wrap; word-break: break-all; }
+  .line-cmd  { color: var(--green); }
+  .line-out  { color: var(--white); }
+  .line-err  { color: var(--red); }
+  .line-info { color: var(--blue); }
+  .line-dim  { color: var(--dim); }
 
-.user-pill {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 12px; border-radius: 20px;
-  background: var(--bg-card); border: 1px solid var(--border);
-  cursor: pointer; font-size: 13px; transition: all 0.15s;
-}
-.user-pill:hover { border-color: var(--border-accent); }
-.user-pill .avatar {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  background: var(--accent); color: #000;
-}
+  .prompt-echo { color: var(--green); }
+  .prompt-echo .user { color: var(--green-dim); }
+  .prompt-echo .at   { color: var(--dim); }
+  .prompt-echo .host { color: var(--green); }
+  .prompt-echo .sep  { color: var(--dim); }
+  .prompt-echo .path { color: var(--blue); }
+  .prompt-echo .dollar { color: var(--white); }
 
-.main-layout {
-  display: flex; flex: 1; overflow: hidden;
-}
+  /* ls color classes */
+  .ls-dir  { color: var(--blue); font-weight: bold; }
+  .ls-file { color: var(--white); }
+  .ls-exec { color: var(--green); }
 
-.sidebar {
-  width: 240px; flex-shrink: 0;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  overflow-y: auto;
-}
+  /* Input bar */
+  #inputbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    background: var(--bg2);
+    flex-shrink: 0;
+  }
 
-.main-content {
-  flex: 1; overflow-y: auto; padding: 20px;
-  display: flex; flex-direction: column; gap: 16px;
-}
+  #prompt-label {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  #prompt-label .user   { color: var(--green-dim); }
+  #prompt-label .at     { color: var(--dim); }
+  #prompt-label .host   { color: var(--green); }
+  #prompt-label .sep    { color: var(--dim); }
+  #prompt-label .path   { color: var(--blue); }
+  #prompt-label .dollar { color: var(--white); }
 
-/* ── CARDS ── */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-}
+  #cmd-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 14px;
+    caret-color: var(--green);
+  }
 
-.card-title {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
-  text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 14px;
-}
+  /* Autocomplete */
+  #autocomplete {
+    position: fixed;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 4px 0;
+    z-index: 100;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+    min-width: 180px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
 
-/* ── METRIC CARDS ── */
-.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.metrics-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.metrics-row-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .ac-item {
+    padding: 4px 12px;
+    cursor: pointer;
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 13px;
+  }
 
-.insight-list { display: flex; flex-direction: column; gap: 8px; }
-.insight-item {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 10px 12px; background: var(--bg-secondary);
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 13px; line-height: 1.5; color: var(--text-secondary);
-}
-.insight-item .i-dot { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+  .ac-item.selected,
+  .ac-item:hover { background: #2a2a2a; color: var(--green); }
+  .ac-item.ac-dir  { color: var(--blue); }
+  .ac-item.ac-cmd  { color: var(--green); }
 
-.metric-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-}
-.metric-card .m-label {
-  font-size: 11px; color: var(--text-muted); margin-bottom: 6px;
-  text-transform: uppercase; letter-spacing: 0.6px;
-}
-.metric-card .m-value {
-  font-size: 22px; font-weight: 600; color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-}
-.metric-card .m-sub {
-  font-size: 11px; color: var(--text-secondary); margin-top: 4px;
-}
-.metric-card.accent-green { border-color: rgba(63,185,80,0.3); background: var(--accent-dim); }
-.metric-card.accent-blue { border-color: rgba(88,166,255,0.3); background: var(--accent-blue-dim); }
-.metric-card.accent-amber { border-color: rgba(210,153,34,0.3); background: var(--accent-amber-dim); }
-.metric-card.accent-purple { border-color: rgba(188,140,255,0.3); background: var(--accent-purple-dim); }
+  /* Nano Overlay */
+  #nano-view {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-nano);
+    z-index: 500;
+    color: var(--white);
+    font-family: var(--font);
+  }
+  #nano-header {
+    background: var(--nano-header);
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 8px;
+    font-weight: bold;
+  }
+  #nano-editor {
+    flex: 1;
+    background: transparent;
+    color: var(--white);
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-family: var(--font);
+    font-size: 14px;
+    resize: none;
+  }
+  #nano-message {
+    background: var(--bg-nano);
+    color: var(--white);
+    padding: 2px 8px;
+    min-height: 20px;
+  }
+  #nano-message-input {
+    background: transparent;
+    color: var(--white);
+    border: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 14px;
+    width: 60%;
+    display: none;
+  }
+  #nano-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 4px 8px;
+    gap: 16px;
+    background: var(--bg-nano);
+    border-top: 1px solid #333;
+    font-size: 13px;
+  }
+  .n-key { font-weight: bold; }
 
-/* ── BUTTONS ── */
-.btn {
-  padding: 7px 14px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border-accent);
-  background: transparent; color: var(--text-primary);
-  font-size: 13px; font-family: var(--font);
-  cursor: pointer; transition: all 0.15s;
-}
-.btn:hover { background: rgba(255,255,255,0.06); }
-.btn-primary {
-  background: var(--accent); border-color: var(--accent);
-  color: #000; font-weight: 600;
-}
-.btn-primary:hover { background: #46c957; }
-.btn-sm { padding: 4px 10px; font-size: 12px; }
-.btn-danger { border-color: var(--accent-red); color: var(--accent-red); }
-.btn-danger:hover { background: var(--accent-red-dim); }
-
-/* ── INPUTS ── */
-input[type=text], input[type=number], input[type=password], textarea, select {
-  background: var(--bg-input); border: 1px solid var(--border-accent);
-  color: var(--text-primary); border-radius: var(--radius-sm);
-  padding: 7px 10px; font-size: 13px; font-family: var(--font);
-  width: 100%; outline: none;
-  transition: border-color 0.15s;
-}
-input:focus, textarea:focus, select:focus { border-color: var(--accent-blue); }
-textarea { resize: vertical; min-height: 70px; }
-select option { background: #1c2230; }
-
-label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
-
-.form-row { margin-bottom: 12px; }
-.form-row-inline { display: flex; gap: 10px; }
-.form-row-inline .form-row { flex: 1; }
-
-/* ── SIDEBAR PANELS ── */
-.sidebar-section { padding: 14px 16px; border-bottom: 1px solid var(--border); }
-.sidebar-section-title {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;
-}
-
-.user-list { display: flex; flex-direction: column; gap: 6px; }
-.user-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-radius: var(--radius-sm);
-  cursor: pointer; transition: background 0.12s;
-  border: 1px solid transparent;
-}
-.user-item:hover { background: var(--bg-card-hover); }
-.user-item.active { background: var(--accent-dim); border-color: rgba(63,185,80,0.25); }
-.user-item .u-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; flex-shrink: 0;
-}
-.user-item .u-info { flex: 1; min-width: 0; }
-.user-item .u-name { font-size: 13px; font-weight: 500; }
-.user-item .u-amount { font-size: 11px; color: var(--text-secondary); }
-.user-item .u-badge {
-  font-size: 10px; padding: 2px 6px; border-radius: 10px;
-  background: var(--accent-dim); color: var(--accent); font-weight: 600;
-}
-
-/* ── POOL SUMMARY ── */
-.pool-bar-wrap { margin-top: 8px; }
-.pool-bar-track {
-  height: 6px; background: rgba(255,255,255,0.06);
-  border-radius: 3px; overflow: hidden; margin-bottom: 4px;
-}
-.pool-bar-fill {
-  height: 100%; background: var(--accent); border-radius: 3px;
-  transition: width 0.4s ease;
-}
-.pool-bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
-
-/* ── LOAN TABLE ── */
-.loan-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.loan-table th {
-  text-align: left; padding: 8px 10px;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
-  color: var(--text-muted); border-bottom: 1px solid var(--border);
-}
-.loan-table td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-.loan-table tr:last-child td { border-bottom: none; }
-.loan-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
-}
-.badge-active { background: var(--accent-blue-dim); color: var(--accent-blue); }
-.badge-complete { background: var(--accent-dim); color: var(--accent); }
-.badge-default { background: var(--accent-red-dim); color: var(--accent-red); }
-.badge-pending { background: var(--accent-amber-dim); color: var(--accent-amber); }
-
-/* ── CHART AREA ── */
-.chart-wrap { position: relative; width: 100%; }
-
-/* ── TABS (view) ── */
-.view { display: none; }
-.view.active { display: flex; flex-direction: column; gap: 16px; }
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000; padding: 20px;
-}
-.modal-overlay.hidden { display: none; }
-.modal {
-  background: var(--bg-card); border: 1px solid var(--border-accent);
-  border-radius: var(--radius-lg); padding: 24px;
-  width: 100%; max-width: 480px;
-  max-height: 85vh; overflow-y: auto;
-}
-.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 18px; }
-.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-
-/* ── LOGIN ── */
-#login-screen {
-  position: fixed; inset: 0;
-  background: var(--bg-primary);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 2000;
-}
-.login-box {
-  width: 360px; background: var(--bg-card);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-lg); padding: 32px;
-}
-.login-logo { font-size: 22px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
-.login-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
-
-/* ── MESSAGES ── */
-.message-thread { display: flex; flex-direction: column; gap: 12px; height: 400px; overflow-y: auto; }
-.msg {
-  display: flex; gap: 10px; align-items: flex-start;
-}
-.msg.self { flex-direction: row-reverse; }
-.msg .m-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; flex-shrink: 0;
-}
-.msg .m-bubble {
-  max-width: 75%; padding: 8px 12px;
-  border-radius: 10px; font-size: 13px; line-height: 1.5;
-  background: var(--bg-secondary); border: 1px solid var(--border);
-}
-.msg.self .m-bubble { background: var(--accent-blue-dim); border-color: rgba(88,166,255,0.25); }
-.msg .m-meta { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
-.msg.self .m-meta { text-align: right; }
-.msg-input-row { display: flex; gap: 8px; margin-top: 12px; }
-.msg-input-row input { flex: 1; }
-
-/* ── PROJECTION TABLE ── */
-.proj-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.proj-table th {
-  text-align: right; padding: 6px 12px;
-  font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border);
-}
-.proj-table th:first-child { text-align: left; }
-.proj-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: right; }
-.proj-table td:first-child { text-align: left; color: var(--text-secondary); }
-.proj-table tr:last-child td { border-bottom: none; }
-.proj-table .highlight { color: var(--accent); font-weight: 600; }
-
-/* ── CYCLE HISTORY ── */
-.cycle-log { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
-.cycle-entry {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; background: var(--bg-secondary);
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-size: 13px;
-}
-.cycle-entry .ce-num { font-size: 11px; color: var(--text-muted); width: 40px; }
-.cycle-entry .ce-bar { flex: 1; }
-.ce-info { display: flex; justify-content: space-between; margin-bottom: 4px; }
-.ce-bar-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
-.ce-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
-.cycle-entry .ce-profit { color: var(--accent); font-weight: 600; font-size: 12px; }
-
-/* ── RISK GAUGE ── */
-.risk-items { display: flex; flex-direction: column; gap: 10px; }
-.risk-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-.risk-row .r-label { width: 130px; color: var(--text-secondary); flex-shrink: 0; }
-.risk-row .r-track {
-  flex: 1; height: 6px; background: rgba(255,255,255,0.06);
-  border-radius: 3px; overflow: hidden;
-}
-.risk-row .r-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
-.risk-row .r-val { width: 50px; text-align: right; font-weight: 500; font-size: 12px; }
-
-/* ── NOTIFICATION DOT ── */
-.notif-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent-red); display: inline-block;
-  margin-left: 5px; vertical-align: middle;
-}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
-
-/* ── DIVIDER ── */
-.divider { height: 1px; background: var(--border); margin: 6px 0; }
-
-/* ── UTILITY ── */
-.text-green { color: var(--accent); }
-.text-red { color: var(--accent-red); }
-.text-blue { color: var(--accent-blue); }
-.text-amber { color: var(--accent-amber); }
-.text-muted { color: var(--text-muted); }
-.text-secondary { color: var(--text-secondary); }
-.mono { font-family: var(--font-mono); }
-.flex { display: flex; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-8 { gap: 8px; }
-.gap-12 { gap: 12px; }
-.mb-8 { margin-bottom: 8px; }
-.mb-12 { margin-bottom: 12px; }
-.mb-16 { margin-bottom: 16px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-.empty-state {
-  text-align: center; padding: 40px 20px;
-  color: var(--text-muted); font-size: 13px;
-}
-.empty-state .e-icon { font-size: 32px; margin-bottom: 8px; }
-
-.tag {
-  display: inline-flex; align-items: center;
-  padding: 2px 7px; border-radius: 4px; font-size: 11px;
-  background: rgba(255,255,255,0.06); color: var(--text-secondary);
-}
-
-.section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 14px;
-}
-.section-title { font-size: 14px; font-weight: 600; }
+  /* Mobile */
+  @media (max-width: 600px) {
+    html, body { font-size: 12px; }
+    #output { padding: 10px; }
+    #inputbar { padding: 8px 10px; }
+    #nano-shortcuts { gap: 8px; }
+  }
 </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">DRE Capital</div>
-    <div class="login-sub">Micro-Lending Simulator</div>
-    <div id="login-view">
-      <div class="form-row">
-        <label>Username</label>
-        <input type="text" id="login-username" placeholder="Enter username" />
-      </div>
-      <div class="form-row">
-        <label>PIN (4 digits)</label>
-        <input type="password" id="login-pin" placeholder="••••" maxlength="4" />
-      </div>
-      <div id="login-error" style="color:var(--accent-red);font-size:12px;margin-bottom:8px;display:none"></div>
-      <div style="display:flex;gap:8px;margin-top:16px">
-        <button class="btn btn-primary" style="flex:1" onclick="doLogin()">Sign In</button>
-        <button class="btn" onclick="showRegister()">Register</button>
-      </div>
-    </div>
-    <div id="register-view" style="display:none">
-      <div class="form-row">
-        <label>Display Name</label>
-        <input type="text" id="reg-name" placeholder="Your name" />
-      </div>
-      <div class="form-row">
-        <label>Username</label>
-        <input type="text" id="reg-username" placeholder="Choose a username" />
-      </div>
-      <div class="form-row">
-        <label>PIN (4 digits)</label>
-        <input type="password" id="reg-pin" placeholder="••••" maxlength="4" />
-      </div>
-      <div class="form-row">
-        <label>Initial Contribution ($)</label>
-        <input type="number" id="reg-contribution" value="25" min="10" />
-      </div>
-      <div id="reg-error" style="color:var(--accent-red);font-size:12px;margin-bottom:8px;display:none"></div>
-      <div style="display:flex;gap:8px;margin-top:16px">
-        <button class="btn" onclick="showLoginView()">← Back</button>
-        <button class="btn btn-primary" style="flex:1" onclick="doRegister()">Create Account</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN APP -->
-<div id="app" style="display:none">
-  <div class="top-bar">
-    <div class="logo">
-      DRE <span style="color:var(--accent-blue);font-weight:700;font-size:15px">Capital</span>
-      <span>/ Lending Simulator</span>
-    </div>
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
-      <button class="tab-btn" onclick="switchTab('loans')">Loans</button>
-      <button class="tab-btn" onclick="switchTab('projections')">Projections</button>
-      <button class="tab-btn" onclick="switchTab('messages')">
-        Messages <span id="msg-notif" class="notif-dot" style="display:none"></span>
-      </button>
-      <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
-    </div>
-    <div class="top-actions">
-      <button class="btn btn-sm" onclick="runCycle()">▶ Run Cycle</button>
-      <div class="user-pill" onclick="openUserMenu()">
-        <div class="avatar" id="top-avatar">?</div>
-        <span id="top-username">User</span>
-      </div>
-    </div>
+<div id="app">
+  <div id="topbar">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <div id="topbar-title">analyst@bash-trainer: ~</div>
   </div>
 
-  <div class="main-layout">
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Pool Members</div>
-        <div class="user-list" id="user-list"></div>
-        <div style="margin-top:10px">
-          <div class="pool-bar-wrap" id="pool-bar-wrap">
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px">
-              <span>Pool Capital</span>
-              <span id="pool-total-label">$0</span>
-            </div>
-            <div class="pool-bar-track">
-              <div class="pool-bar-fill" id="pool-bar-fill" style="width:0%"></div>
-            </div>
-            <div class="pool-bar-labels">
-              <span id="pool-active-label">Active: $0</span>
-              <span id="pool-avail-label">Avail: $0</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div id="output"></div>
+  <div id="autocomplete"></div>
 
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Quick Stats</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;justify-content:space-between;font-size:12px">
-            <span class="text-secondary">Cycles Run</span>
-            <span id="qs-cycles" class="text-primary mono">0</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:12px">
-            <span class="text-secondary">Active Loans</span>
-            <span id="qs-active" class="text-blue mono">0</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:12px">
-            <span class="text-secondary">Total Profit</span>
-            <span id="qs-profit" class="text-green mono">$0.00</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:12px">
-            <span class="text-secondary">Loan Slots</span>
-            <span id="qs-slots" class="text-amber mono">0</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:12px">
-            <span class="text-secondary">Avg Tip/Loan</span>
-            <span id="qs-avg-tip" class="text-purple mono">$0</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Cycle Mode</div>
-        <select id="sim-mode" onchange="saveSettings()">
-          <option value="perfect">Perfect Repayment</option>
-          <option value="realistic">Realistic (5-15% default)</option>
-          <option value="stress">Stress Test (20-30% default)</option>
-        </select>
-        <div style="margin-top:10px">
-          <label>Tip Range</label>
-          <div class="flex gap-8" style="margin-top:4px">
-            <input type="number" id="tip-min" value="10" min="1" max="50" style="width:60px" onchange="saveSettings()" />
-            <span style="align-self:center;color:var(--text-muted)">–</span>
-            <input type="number" id="tip-max" value="15" min="1" max="50" style="width:60px" onchange="saveSettings()" />
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-section" style="flex:1;border-bottom:none">
-        <button class="btn btn-danger btn-sm" style="width:100%" onclick="logout()">Sign Out</button>
-      </div>
+  <div id="inputbar">
+    <div id="prompt-label">
+      <span class="user">analyst</span><span class="at">@</span><span class="host">bash-trainer</span><span class="sep">:</span><span class="path">~</span><span class="dollar"> $</span>
     </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-
-      <!-- DASHBOARD VIEW -->
-      <div class="view active" id="view-dashboard">
-        <div class="metrics-row">
-          <div class="metric-card accent-green">
-            <div class="m-label">Total Pool</div>
-            <div class="m-value" id="m-pool">$0</div>
-            <div class="m-sub" id="m-pool-sub">0 members</div>
-          </div>
-          <div class="metric-card accent-blue">
-            <div class="m-label">Active Capital</div>
-            <div class="m-value" id="m-active">$0</div>
-            <div class="m-sub" id="m-active-sub">0 loans out</div>
-          </div>
-          <div class="metric-card accent-amber">
-            <div class="m-label">Total Profit</div>
-            <div class="m-value" id="m-profit">$0.00</div>
-            <div class="m-sub" id="m-profit-sub">+0% ROI</div>
-          </div>
-          <div class="metric-card accent-purple">
-            <div class="m-label">Cycle Return Rate</div>
-            <div class="m-value" id="m-rate">12.5%</div>
-            <div class="m-sub">Per 14-day cycle</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">Your Stake</div>
-            <div class="tag" id="mv-name-tag">—</div>
-          </div>
-          <div class="metrics-row-6" id="member-value-grid">
-            <div class="metric-card">
-              <div class="m-label">Contribution</div>
-              <div class="m-value" id="mv-contribution" style="font-size:18px">$0</div>
-            </div>
-            <div class="metric-card">
-              <div class="m-label">Ownership</div>
-              <div class="m-value" id="mv-ownership" style="font-size:18px">0%</div>
-            </div>
-            <div class="metric-card accent-green">
-              <div class="m-label">Profit Earned</div>
-              <div class="m-value" id="mv-profit" style="font-size:18px">$0.00</div>
-            </div>
-            <div class="metric-card accent-blue">
-              <div class="m-label">Current Value</div>
-              <div class="m-value" id="mv-current" style="font-size:18px">$0.00</div>
-            </div>
-            <div class="metric-card accent-amber">
-              <div class="m-label">Proj. 6 Month</div>
-              <div class="m-value" id="mv-proj6" style="font-size:18px">$0.00</div>
-            </div>
-            <div class="metric-card accent-purple">
-              <div class="m-label">Proj. 12 Month</div>
-              <div class="m-value" id="mv-proj12" style="font-size:18px">$0.00</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Pool Health</div>
-            <div style="display:flex;flex-direction:column;gap:9px">
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">Total Pool Value</span><span id="ph-total" class="mono">$0</span></div>
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">Active Capital</span><span id="ph-active" class="mono text-blue">$0</span></div>
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">Available Capital</span><span id="ph-available" class="mono">$0</span></div>
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">Profit Earned</span><span id="ph-profit" class="mono text-green">$0.00</span></div>
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">Capital Lost</span><span id="ph-lost" class="mono text-red">$0.00</span></div>
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">Default Rate</span><span id="ph-default" class="mono text-amber">0%</span></div>
-              <div class="flex justify-between" style="font-size:13px"><span class="text-secondary">ROI</span><span id="ph-roi" class="mono text-green">0%</span></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Actual vs. Projection</div>
-            <div class="metrics-row" style="grid-template-columns:repeat(2,1fr)">
-              <div class="metric-card">
-                <div class="m-label">Expected Value</div>
-                <div class="m-value" id="avp-expected" style="font-size:18px">$0</div>
-                <div class="m-sub">Perfect-mode rate</div>
-              </div>
-              <div class="metric-card">
-                <div class="m-label">Actual Value</div>
-                <div class="m-value" id="avp-actual" style="font-size:18px">$0</div>
-                <div class="m-sub" id="avp-cycles-sub">0 cycles run</div>
-              </div>
-            </div>
-            <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border)">
-              <span class="text-secondary" style="font-size:13px">Variance</span>
-              <span id="avp-variance" class="mono" style="font-size:15px;font-weight:600">$0.00 (0%)</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="section-header">
-              <div class="section-title">Growth Curve</div>
-              <div class="tag" id="growth-mode-tag">Perfect</div>
-            </div>
-            <div class="chart-wrap" style="height:200px">
-              <canvas id="growth-chart" role="img" aria-label="Pool capital growth over cycles">Capital growth data</canvas>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="section-header">
-              <div class="section-title">Member Contributions</div>
-            </div>
-            <div class="chart-wrap" style="height:200px">
-              <canvas id="members-chart" role="img" aria-label="Member contribution breakdown">Member data</canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">Cycle History</div>
-            <button class="btn btn-sm" onclick="runCycle()">▶ Run Cycle</button>
-          </div>
-          <div class="cycle-log" id="cycle-log">
-            <div class="empty-state">
-              <div class="e-icon">◎</div>
-              No cycles run yet. Click "Run Cycle" to begin.
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">AI Portfolio Advisor</div>
-            <span class="tag">Auto-generated</span>
-          </div>
-          <div class="insight-list" id="advisor-insights">
-            <div class="empty-state">Run a few cycles to generate insights.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- LOANS VIEW -->
-      <div class="view" id="view-loans">
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">Active & Historical Loans</div>
-            <button class="btn btn-sm btn-primary" onclick="openNewLoanModal()">+ New Loan</button>
-          </div>
-          <table class="loan-table">
-            <thead>
-              <tr>
-                <th>Loan ID</th>
-                <th>Borrower</th>
-                <th>Amount</th>
-                <th>Tip</th>
-                <th>Status</th>
-                <th>Loss</th>
-                <th>Return</th>
-                <th>Assigned To</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="loan-table-body">
-              <tr><td colspan="9" class="empty-state">No loans yet. Add a loan to begin.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Loan Performance</div>
-            <div class="chart-wrap" style="height:180px">
-              <canvas id="loan-perf-chart" role="img" aria-label="Loan performance pie chart">Loan status breakdown</canvas>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-title">Risk Analysis</div>
-            <div class="risk-items" id="risk-items">
-              <div class="risk-row">
-                <div class="r-label">Default Rate</div>
-                <div class="r-track"><div class="r-fill" id="risk-default" style="width:0%;background:var(--accent-red)"></div></div>
-                <div class="r-val text-red" id="risk-default-val">0%</div>
-              </div>
-              <div class="risk-row">
-                <div class="r-label">Active Exposure</div>
-                <div class="r-track"><div class="r-fill" id="risk-exposure" style="width:0%;background:var(--accent-amber)"></div></div>
-                <div class="r-val text-amber" id="risk-exposure-val">0%</div>
-              </div>
-              <div class="risk-row">
-                <div class="r-label">Concentration Risk</div>
-                <div class="r-track"><div class="r-fill" id="risk-conc" style="width:0%;background:var(--accent-blue)"></div></div>
-                <div class="r-val text-blue" id="risk-conc-val">0%</div>
-              </div>
-            </div>
-            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
-                <span class="text-secondary">Portfolio Stats</span>
-              </div>
-              <div class="flex justify-between" style="font-size:12px;margin-bottom:4px">
-                <span class="text-muted">Total Funded</span><span id="stat-funded" class="mono">$0</span>
-              </div>
-              <div class="flex justify-between" style="font-size:12px;margin-bottom:4px">
-                <span class="text-muted">Total Repaid</span><span id="stat-repaid" class="mono text-green">$0</span>
-              </div>
-              <div class="flex justify-between" style="font-size:12px;margin-bottom:4px">
-                <span class="text-muted">Total Defaulted</span><span id="stat-defaulted" class="mono text-red">0</span>
-              </div>
-              <div class="flex justify-between" style="font-size:12px;margin-bottom:4px">
-                <span class="text-muted">Capital Lost</span><span id="stat-lost" class="mono text-red">$0</span>
-              </div>
-              <div class="flex justify-between" style="font-size:12px">
-                <span class="text-muted">Net Return</span><span id="stat-net" class="mono text-green">$0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">Default History</div>
-            <span class="tag" id="default-count-tag">0 defaults</span>
-          </div>
-          <table class="loan-table">
-            <thead>
-              <tr>
-                <th>Loan ID</th>
-                <th>Borrower</th>
-                <th>Amount</th>
-                <th>Tip</th>
-                <th>Status</th>
-                <th>Loss</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody id="default-history-body">
-              <tr><td colspan="7" class="empty-state">No defaults recorded.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- PROJECTIONS VIEW -->
-      <div class="view" id="view-projections">
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">Growth Projections</div>
-            <div class="flex gap-8">
-              <select id="proj-scenario" onchange="renderProjections()">
-                <option value="perfect">Perfect Execution</option>
-                <option value="moderate">Moderate Delays (80% efficiency)</option>
-                <option value="stress">High Default Stress (65% efficiency)</option>
-              </select>
-            </div>
-          </div>
-          <div class="chart-wrap" style="height:260px">
-            <canvas id="proj-chart" role="img" aria-label="Capital projection over time">Projection data</canvas>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Projection Table — Compounding at FV = PV(1+r)^n</div>
-          <table class="proj-table" id="proj-table">
-            <thead>
-              <tr>
-                <th>Time Horizon</th>
-                <th>Cycles</th>
-                <th>Projected Capital</th>
-                <th>Profit</th>
-                <th>ROI</th>
-                <th>Active Loans</th>
-              </tr>
-            </thead>
-            <tbody id="proj-body"></tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Target Simulator</div>
-          <div class="flex gap-12 items-center mb-16">
-            <div class="form-row" style="flex:1;margin-bottom:0">
-              <label>Target Amount ($)</label>
-              <input type="number" id="target-input" value="1000" min="100" onchange="calcTarget()" />
-            </div>
-            <div style="flex:2">
-              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Time to Target</div>
-              <div id="target-result" style="font-size:18px;font-weight:600;color:var(--accent)">— cycles</div>
-              <div id="target-date" style="font-size:12px;color:var(--text-secondary);margin-top:2px"></div>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-            <div class="metric-card" id="target-200" style="cursor:pointer" onclick="setTarget(200)">
-              <div class="m-label">$200</div>
-              <div class="m-value" id="t200-cycles" style="font-size:15px">—</div>
-              <div class="m-sub">cycles</div>
-            </div>
-            <div class="metric-card" id="target-500" style="cursor:pointer" onclick="setTarget(500)">
-              <div class="m-label">$500</div>
-              <div class="m-value" id="t500-cycles" style="font-size:15px">—</div>
-              <div class="m-sub">cycles</div>
-            </div>
-            <div class="metric-card" id="target-1000" style="cursor:pointer" onclick="setTarget(1000)">
-              <div class="m-label">$1,000</div>
-              <div class="m-value" id="t1000-cycles" style="font-size:15px">—</div>
-              <div class="m-sub">cycles</div>
-            </div>
-            <div class="metric-card" id="target-2000" style="cursor:pointer" onclick="setTarget(2000)">
-              <div class="m-label">$2,000</div>
-              <div class="m-value" id="t2000-cycles" style="font-size:15px">—</div>
-              <div class="m-sub">cycles</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MESSAGES VIEW -->
-      <div class="view" id="view-messages">
-        <div class="card">
-          <div class="section-header">
-            <div class="section-title">Team Messages</div>
-            <span class="tag" id="msg-count-tag">0 messages</span>
-          </div>
-          <div class="message-thread" id="msg-thread"></div>
-          <div class="msg-input-row">
-            <input type="text" id="msg-input" placeholder="Share a suggestion, update, or question…" onkeydown="if(event.key==='Enter')sendMsg()" />
-            <button class="btn btn-primary" onclick="sendMsg()">Send</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- SETTINGS VIEW -->
-      <div class="view" id="view-settings">
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Pool Configuration</div>
-            <div class="form-row">
-              <label>Pool Name</label>
-              <input type="text" id="s-pool-name" value="DRE Capital Pool" />
-            </div>
-            <div class="form-row">
-              <label>Max Users</label>
-              <input type="number" id="s-max-users" value="10" min="2" max="20" />
-            </div>
-            <div class="form-row">
-              <label>Preferred Loan Size ($)</label>
-              <select id="s-loan-size">
-                <option value="100">$100</option>
-                <option value="50">$50</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <label>Min Tip to Accept ($)</label>
-              <input type="number" id="s-min-tip" value="10" min="1" />
-            </div>
-            <div class="form-row">
-              <label>Reserve % (0 = fully deployed)</label>
-              <input type="number" id="s-reserve" value="0" min="0" max="50" />
-            </div>
-            <button class="btn btn-primary" style="margin-top:8px" onclick="savePoolSettings()">Save Settings</button>
-          </div>
-
-          <div class="card">
-            <div class="card-title">My Account</div>
-            <div class="form-row">
-              <label>Display Name</label>
-              <input type="text" id="s-my-name" />
-            </div>
-            <div class="form-row">
-              <label>My Contribution ($)</label>
-              <input type="number" id="s-my-contribution" min="10" />
-            </div>
-            <div class="form-row">
-              <label>Change PIN</label>
-              <input type="password" id="s-new-pin" placeholder="New PIN (4 digits)" maxlength="4" />
-            </div>
-            <button class="btn btn-primary" style="margin-top:8px" onclick="saveAccountSettings()">Update Account</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Profit Allocation Summary</div>
-          <div class="flex justify-between" style="font-size:13px;margin-bottom:8px">
-            <span class="text-secondary">Allocation Method</span>
-            <span class="tag">Proportional to ownership %</span>
-          </div>
-          <div class="metrics-row" style="grid-template-columns:repeat(3,1fr)">
-            <div class="metric-card">
-              <div class="m-label">Total Contributions</div>
-              <div class="m-value" id="pas-contributions" style="font-size:18px">$0</div>
-            </div>
-            <div class="metric-card accent-green">
-              <div class="m-label">Total Profit Distributed</div>
-              <div class="m-value" id="pas-profit" style="font-size:18px">$0.00</div>
-            </div>
-            <div class="metric-card accent-blue">
-              <div class="m-label">Members Sharing Pool</div>
-              <div class="m-value" id="pas-members" style="font-size:18px">0</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Member Performance</div>
-          <table class="loan-table">
-            <thead>
-              <tr><th>Member</th><th>Contribution</th><th>Ownership %</th><th>Profit Earned</th><th>Current Value</th><th>Projected 6 Month</th><th>Projected 12 Month</th><th></th></tr>
-            </thead>
-            <tbody id="team-table-body"></tbody>
-          </table>
-        </div>
-
-        <div class="card" style="border-color:var(--accent-red-dim)">
-          <div class="card-title" style="color:var(--accent-red)">Danger Zone</div>
-          <div class="flex gap-8">
-            <button class="btn btn-danger" onclick="confirmReset()">Reset All Simulation Data</button>
-            <button class="btn btn-danger" onclick="confirmResetAll()">Full Factory Reset</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    <input id="cmd-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
   </div>
-</div>
 
-<!-- NEW LOAN MODAL -->
-<div class="modal-overlay hidden" id="new-loan-modal">
-  <div class="modal">
-    <div class="modal-title">Add New Loan</div>
-    <div class="form-row-inline">
-      <div class="form-row">
-        <label>Borrower Name / ID</label>
-        <input type="text" id="nl-borrower" placeholder="e.g. JD-001" />
-      </div>
-      <div class="form-row">
-        <label>Loan Amount</label>
-        <select id="nl-amount">
-          <option value="100">$100</option>
-          <option value="50">$50</option>
-        </select>
-      </div>
+  <!-- NANO EDITOR OVERLAY -->
+  <div id="nano-view">
+    <div id="nano-header">
+      <span>GNU nano 6.2</span>
+      <span id="nano-title">New Buffer</span>
+      <span></span>
     </div>
-    <div class="form-row">
-      <label>Tip Amount ($)</label>
-      <input type="number" id="nl-tip" value="12" min="1" />
+    <textarea id="nano-editor" spellcheck="false"></textarea>
+    <div id="nano-message">
+      <span id="nano-msg-text"></span>
+      <input type="text" id="nano-message-input" autocomplete="off" spellcheck="false">
     </div>
-    <div class="form-row">
-      <label>Assigned To</label>
-      <select id="nl-assigned"></select>
-    </div>
-    <div class="form-row">
-      <label>Notes</label>
-      <textarea id="nl-notes" placeholder="Optional notes about this borrower…"></textarea>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('new-loan-modal')">Cancel</button>
-      <button class="btn btn-primary" onclick="addLoan()">Fund Loan</button>
-    </div>
-  </div>
-</div>
-
-<!-- USER MENU MODAL -->
-<div class="modal-overlay hidden" id="user-menu-modal">
-  <div class="modal" style="max-width:320px">
-    <div class="modal-title">Switch User</div>
-    <div id="user-switch-list" style="display:flex;flex-direction:column;gap:6px"></div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('user-menu-modal')">Cancel</button>
+    <div id="nano-shortcuts">
+      <div><span class="n-key">^O</span> Write Out</div>
+      <div><span class="n-key">^X</span> Exit</div>
     </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONSTANTS & STATE
-// ══════════════════════════════════════════════
-const CYCLE_DAYS = 14;
-const LS = {
-  USERS: 'dre_users',
-  LOANS: 'dre_loans',
-  CYCLES: 'dre_cycles',
-  MESSAGES: 'dre_messages',
-  SETTINGS: 'dre_settings',
-  CURRENT_USER: 'dre_current_user'
+// ─────────────────────────────────────────────────────────────
+// VIRTUAL FILESYSTEM
+// ─────────────────────────────────────────────────────────────
+const INITIAL_FS = {
+  type: 'd', children: {
+    home: { type: 'd', children: {
+      analyst: { type: 'd', children: {
+        reports: { type: 'd', children: {
+          'Q1_added_users.txt': { type: 'f', content: 'HR\nFinance\nSales', perms: '644' },
+          'Q2_added_users.txt': { type: 'f', content: 'Engineering', perms: '644' },
+          'Q3_added_users.txt': { type: 'f', content: 'Marketing', perms: '644' },
+          'Q4_added_users.txt': { type: 'f', content: 'Human Resources', perms: '644' },
+        }, perms: '755' },
+        Downloads: { type: 'd', children: {
+          'malware_sample.zip': { type: 'f', content: 'PK\x03\x04...dummy binary data...', perms: '644' }
+        }, perms: '755' },
+        Documents: { type: 'd', children: {
+          'server_configs': { type: 'd', children: {
+            'nginx.conf.bak': { type: 'f', content: 'server {\n  listen 80;\n}', perms: '644' }
+          }, perms: '755' }
+        }, perms: '755' },
+        Desktop: { type: 'd', children: {
+          'todo.txt': { type: 'f', content: '- Check logs\n- Update firewall rules', perms: '644' }
+        }, perms: '755' },
+        workspace: { type: 'd', children: {
+          'script.sh': { type: 'f', content: '#!/bin/bash\necho "Hello World"', perms: '755' },
+          'empty_dir': { type: 'd', children: {}, perms: '755' }
+        }, perms: '755' },
+        'notes.txt': { type: 'f', content: 'Welcome Analyst\nUse this environment to practice Linux commands.', perms: '644' },
+        '.bashrc':   { type: 'f', content: '# .bashrc\nexport PATH=$PATH:/usr/bin\nalias ll="ls -la"', perms: '644' },
+        '.bash_history': { type: 'f', content: '', perms: '600' },
+      }, perms: '755' },
+    }},
+    etc: { type: 'd', children: {
+      passwd:  { type: 'f', content: 'root:x:0:0:root:/root:/bin/bash\nanalyst:x:1000:1000::/home/analyst:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin', perms: '644' },
+      shadow:  { type: 'f', content: 'root:$6$...:18000:0:99999:7:::\nanalyst:$6$...:18000:0:99999:7:::', perms: '600' },
+      hosts:   { type: 'f', content: '127.0.0.1\tlocalhost\n127.0.1.1\tbash-trainer', perms: '644' },
+      group:   { type: 'f', content: 'root:x:0:\nusers:x:100:analyst\nanalyst:x:1000:', perms: '644' },
+      hostname:{ type: 'f', content: 'bash-trainer', perms: '644' },
+      ssh: { type: 'd', children: {
+        'sshd_config': { type: 'f', content: 'Port 22\nPermitRootLogin no\nPasswordAuthentication yes', perms: '644' }
+      }, perms: '755' }
+    }, perms: '755' },
+    var: { type: 'd', children: {
+      log: { type: 'd', children: {
+        'syslog': { type: 'f', content: 'Jun 19 00:00:01 bash-trainer kernel: Booted\nJun 19 00:00:02 bash-trainer systemd: Started session', perms: '640' },
+        'auth.log': { type: 'f', content: 'Jun 19 08:15:22 bash-trainer sshd[1234]: Accepted publickey for analyst from 192.168.1.50', perms: '640' },
+      }, perms: '755' },
+      www: { type: 'd', children: {
+        html: { type: 'd', children: {
+          'index.html': { type: 'f', content: '<html><body><h1>It works!</h1></body></html>', perms: '644' }
+        }, perms: '755' }
+      }, perms: '755' }
+    }, perms: '755' },
+    dev: { type: 'd', children: {
+      'null': { type: 'f', content: '', perms: '666' },
+      'zero': { type: 'f', content: '', perms: '666' },
+      'random': { type: 'f', content: '...binary randomness...', perms: '666' }
+    }, perms: '755' },
+    proc: { type: 'd', children: {
+      'cpuinfo': { type: 'f', content: 'processor\t: 0\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel name\t: Intel(R) Core(TM) i7', perms: '444' },
+      'meminfo': { type: 'f', content: 'MemTotal:        8192000 kB\nMemFree:         1024000 kB', perms: '444' },
+      'version': { type: 'f', content: 'Linux version 5.15.0-generic', perms: '444' }
+    }, perms: '555' },
+    boot: { type: 'd', children: {
+      'vmlinuz-5.15.0': { type: 'f', content: '...kernel binary...', perms: '644' },
+      'grub': { type: 'd', children: {
+        'grub.cfg': { type: 'f', content: '# GRUB config file', perms: '444' }
+      }, perms: '755' }
+    }, perms: '755' },
+    usr: { type: 'd', children: {
+      bin: { type: 'd', children: {}, perms: '755' },
+      local: { type: 'd', children: {}, perms: '755' },
+    }, perms: '755' },
+    tmp:  { type: 'd', children: {}, perms: '1777' },
+    mnt:  { type: 'd', children: {}, perms: '755' },
+    media: { type: 'd', children: {}, perms: '755' },
+    bin:  { type: 'd', children: {}, perms: '755' },
+    opt:  { type: 'd', children: {}, perms: '755' },
+    root: { type: 'd', children: {
+      '.bashrc': { type: 'f', content: '# Root bashrc', perms: '644' }
+    }, perms: '700' },
+  }
 };
 
-let state = {
-  currentUser: null,
-  users: [],
-  loans: [],
-  cycles: [],
-  messages: [],
-  settings: {}
-};
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+let fs   = JSON.parse(JSON.stringify(INITIAL_FS));
+let cwd  = '/home/analyst';
+let env  = { HOME: '/home/analyst', USER: 'analyst', HOSTNAME: 'bash-trainer', PATH: '/usr/bin:/bin', SHELL: '/bin/bash', TERM: 'xterm-256color' };
+let cmdHistory = [];
+let histIdx    = -1;
+let acList     = [];
+let acIdx      = -1;
 
-const AVATAR_COLORS = ['#3fb950','#58a6ff','#d29922','#bc8cff','#f0977b','#5dcaa5','#d4537e','#e24b4a'];
-const DEFAULT_SETTINGS = {
-  poolName: 'DRE Capital Pool',
-  maxUsers: 10,
-  loanSize: 100,
-  minTip: 10,
-  reserve: 0,
-  tipMin: 10,
-  tipMax: 15,
-  simMode: 'perfect'
-};
+// Nano State
+let inNano = false;
+let nanoState = 'EDIT'; // EDIT, PROMPT_SAVE, PROMPT_NAME
+let nanoFilePath = '';
+let nanoOriginalContent = '';
 
-// ══════════════════════════════════════════════
-//  PERSISTENCE
-// ══════════════════════════════════════════════
-function save() {
-  localStorage.setItem(LS.USERS, JSON.stringify(state.users));
-  localStorage.setItem(LS.LOANS, JSON.stringify(state.loans));
-  localStorage.setItem(LS.CYCLES, JSON.stringify(state.cycles));
-  localStorage.setItem(LS.MESSAGES, JSON.stringify(state.messages));
-  localStorage.setItem(LS.SETTINGS, JSON.stringify(state.settings));
-  if (state.currentUser) localStorage.setItem(LS.CURRENT_USER, state.currentUser.username);
-}
-
-function load() {
-  state.users = JSON.parse(localStorage.getItem(LS.USERS) || '[]');
-  state.loans = JSON.parse(localStorage.getItem(LS.LOANS) || '[]');
-  state.cycles = JSON.parse(localStorage.getItem(LS.CYCLES) || '[]');
-  state.messages = JSON.parse(localStorage.getItem(LS.MESSAGES) || '[]');
-  state.settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(LS.SETTINGS) || '{}') };
-  const saved = localStorage.getItem(LS.CURRENT_USER);
-  if (saved) state.currentUser = state.users.find(u => u.username === saved) || null;
-}
-
-// ══════════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════════
-function showRegister() {
-  document.getElementById('login-view').style.display = 'none';
-  document.getElementById('register-view').style.display = '';
-}
-function showLoginView() {
-  document.getElementById('register-view').style.display = 'none';
-  document.getElementById('login-view').style.display = '';
-}
-
-function doLogin() {
-  const username = document.getElementById('login-username').value.trim();
-  const pin = document.getElementById('login-pin').value.trim();
-  const user = state.users.find(u => u.username === username && u.pin === pin);
-  if (!user) {
-    document.getElementById('login-error').textContent = 'Invalid username or PIN.';
-    document.getElementById('login-error').style.display = '';
-    return;
+// ─────────────────────────────────────────────────────────────
+// FS HELPERS
+// ─────────────────────────────────────────────────────────────
+function normalizePath(p) {
+  if (!p.startsWith('/')) p = cwd + '/' + p;
+  const parts = p.split('/').filter(Boolean);
+  const res = [];
+  for (const pt of parts) {
+    if (pt === '.') continue;
+    if (pt === '..') res.pop();
+    else res.push(pt);
   }
-  loginUser(user);
+  return '/' + res.join('/');
 }
 
-function doRegister() {
-  const name = document.getElementById('reg-name').value.trim();
-  const username = document.getElementById('reg-username').value.trim();
-  const pin = document.getElementById('reg-pin').value.trim();
-  const contribution = parseFloat(document.getElementById('reg-contribution').value) || 25;
-
-  if (!name || !username || pin.length !== 4) {
-    document.getElementById('reg-error').textContent = 'Fill all fields. PIN must be 4 digits.';
-    document.getElementById('reg-error').style.display = '';
-    return;
+function getNode(path, root = fs) {
+  const parts = normalizePath(path).split('/').filter(Boolean);
+  let node = root;
+  for (const p of parts) {
+    if (!node.children || !node.children[p]) return null;
+    node = node.children[p];
   }
-  if (state.users.find(u => u.username === username)) {
-    document.getElementById('reg-error').textContent = 'Username already taken.';
-    document.getElementById('reg-error').style.display = '';
-    return;
+  return node;
+}
+
+function getParent(path) {
+  const n = normalizePath(path);
+  const parts = n.split('/').filter(Boolean);
+  parts.pop();
+  return '/' + parts.join('/');
+}
+
+function basename(path) {
+  return normalizePath(path).split('/').filter(Boolean).pop() || '/';
+}
+
+function setNode(path, node) {
+  const n = normalizePath(path);
+  const parts = n.split('/').filter(Boolean);
+  let cur = fs;
+  for (let i = 0; i < parts.length - 1; i++) {
+    cur = cur.children[parts[i]];
   }
-  if (state.users.length >= (state.settings.maxUsers || 10)) {
-    document.getElementById('reg-error').textContent = 'Pool is full.';
-    document.getElementById('reg-error').style.display = '';
-    return;
+  cur.children[parts[parts.length - 1]] = node;
+}
+
+function deleteNode(path) {
+  const n = normalizePath(path);
+  const parts = n.split('/').filter(Boolean);
+  let cur = fs;
+  for (let i = 0; i < parts.length - 1; i++) {
+    cur = cur.children[parts[i]];
   }
-
-  const user = {
-    id: 'u_' + Date.now(),
-    name, username, pin,
-    contribution,
-    joinedAt: Date.now(),
-    colorIdx: state.users.length % AVATAR_COLORS.length
-  };
-  state.users.push(user);
-  save();
-  loginUser(user);
+  delete cur.children[parts[parts.length - 1]];
 }
 
-function loginUser(user) {
-  state.currentUser = user;
-  save();
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = '';
-  initApp();
+function promptStr() {
+  let p = normalizePath(cwd);
+  if (p.startsWith('/home/analyst')) p = '~' + p.slice('/home/analyst'.length);
+  return p;
 }
 
-function logout() {
-  state.currentUser = null;
-  localStorage.removeItem(LS.CURRENT_USER);
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = '';
-  document.getElementById('login-username').value = '';
-  document.getElementById('login-pin').value = '';
-  document.getElementById('login-error').style.display = 'none';
-  destroyCharts();
+function updatePrompt() {
+  const p = promptStr();
+  document.getElementById('prompt-label').innerHTML =
+    `<span class="user">analyst</span><span class="at">@</span><span class="host">bash-trainer</span><span class="sep">:</span><span class="path">${escHtml(p)}</span><span class="dollar"> $</span>`;
+  document.getElementById('topbar-title').textContent = `analyst@bash-trainer: ${p}`;
 }
 
-// ══════════════════════════════════════════════
-//  MATH ENGINE
-// ══════════════════════════════════════════════
-function getPoolTotal() {
-  return state.users.reduce((s, u) => s + u.contribution, 0) + getTotalProfit();
+// ─────────────────────────────────────────────────────────────
+// OUTPUT
+// ─────────────────────────────────────────────────────────────
+const outputEl = document.getElementById('output');
+
+function print(html, cls = 'line-out') {
+  const d = document.createElement('div');
+  d.className = 'line ' + cls;
+  d.innerHTML = html;
+  outputEl.appendChild(d);
+  outputEl.scrollTop = outputEl.scrollHeight;
 }
 
-function getTotalProfit() {
-  return state.cycles.reduce((s, c) => s + (c.profit || 0), 0);
+function printText(text, cls = 'line-out') {
+  if (text === '') { print('&nbsp;', cls); return; }
+  text.split('\n').forEach(l => print(escHtml(l) || '&nbsp;', cls));
 }
 
-function getActiveLoans() {
-  return state.loans.filter(l => l.status === 'active');
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function getActiveCapital() {
-  return getActiveLoans().reduce((s, l) => s + l.amount, 0);
+function printPromptEcho(raw) {
+  const p = promptStr();
+  const d = document.createElement('div');
+  d.className = 'line prompt-echo';
+  d.innerHTML = `<span class="user">analyst</span><span class="at">@</span><span class="host">bash-trainer</span><span class="sep">:</span><span class="path">${escHtml(p)}</span><span class="dollar"> $ </span><span>${escHtml(raw)}</span>`;
+  outputEl.appendChild(d);
+  outputEl.scrollTop = outputEl.scrollHeight;
 }
 
-function getAvailableCapital() {
-  const pool = getPoolTotal();
-  const active = getActiveCapital();
-  const reserve = (state.settings.reserve || 0) / 100 * pool;
-  return Math.max(0, pool - active - reserve);
-}
-
-function getLoanSlots() {
-  const pool = getPoolTotal();
-  const thresholds = [
-    { min: 500, slots: 5 },
-    { min: 300, slots: 3 },
-    { min: 200, slots: 2 },
-    { min: 100, slots: 1 }
-  ];
-  for (const t of thresholds) if (pool >= t.min) return t.slots;
-  return 0;
-}
-
-function getCycleReturnRate() {
-  const tipMin = parseFloat(state.settings.tipMin) || 10;
-  const tipMax = parseFloat(state.settings.tipMax) || 15;
-  const avgTip = (tipMin + tipMax) / 2;
-  return avgTip / (state.settings.loanSize || 100);
-}
-
-// FV = PV * (1 + r)^n
-function projectCapital(pv, cycles, efficiency = 1.0) {
-  const r = getCycleReturnRate() * efficiency;
-  return pv * Math.pow(1 + r, cycles);
-}
-
-function cyclesTo(target, efficiency = 1.0) {
-  const pv = getPoolTotal();
-  if (pv <= 0 || target <= pv) return 0;
-  const r = getCycleReturnRate() * efficiency;
-  if (r <= 0) return Infinity;
-  return Math.ceil(Math.log(target / pv) / Math.log(1 + r));
-}
-
-// Ownership-based profit allocation (replaces the old DRE Score model)
-const CYCLES_6MO = Math.round(182 / CYCLE_DAYS);
-const CYCLES_12MO = Math.round(365 / CYCLE_DAYS);
-
-function getTotalContributions() {
-  return state.users.reduce((s, u) => s + u.contribution, 0);
-}
-
-function getMemberOwnershipPercent(user) {
-  const total = getTotalContributions();
-  return total > 0 ? (user.contribution / total * 100) : 0;
-}
-
-function getMemberProfit(user) {
-  return getTotalProfit() * (getMemberOwnershipPercent(user) / 100);
-}
-
-function getMemberCurrentValue(user) {
-  return user.contribution + getMemberProfit(user);
-}
-
-// Projects a member's future share assuming the pool keeps growing at the
-// "perfect repayment" rate and the member's ownership % stays constant.
-function getMemberProjectedValue(user, cyclesAhead) {
-  const ownership = getMemberOwnershipPercent(user) / 100;
-  return ownership * projectCapital(getPoolTotal(), cyclesAhead, 1.0);
-}
-
-// ══════════════════════════════════════════════
-//  SIMULATION ENGINE
-// ══════════════════════════════════════════════
-function runCycle() {
-  const activeLoans = getActiveLoans();
-  if (activeLoans.length === 0 && state.loans.length === 0) {
-    alert('Add at least one loan before running a cycle.');
-    return;
-  }
-
-  const mode = state.settings.simMode || 'perfect';
-  let defaultRate = 0;
-  if (mode === 'realistic') defaultRate = 0.05 + Math.random() * 0.10;
-  if (mode === 'stress') defaultRate = 0.20 + Math.random() * 0.10;
-
-  let cycleProfit = 0;
-  let loansProcessed = 0;
-  let loansDefaulted = 0;
-
-  activeLoans.forEach(loan => {
-    const isDefault = Math.random() < defaultRate;
-    if (isDefault) {
-      loan.status = 'defaulted';
-      loan.repaymentStatus = 'defaulted';
-      loan.lossAmount = loan.amount;
-      loan.defaultDate = Date.now();
-      loan.defaultReason = loan.defaultReason || 'Simulated default (cycle mode)';
-      loan.profitLoss = -loan.amount;
-      loansDefaulted++;
-      cycleProfit -= loan.amount;
+// ─────────────────────────────────────────────────────────────
+// PARSER
+// ─────────────────────────────────────────────────────────────
+function tokenize(input) {
+  const tokens = [];
+  let cur = '', inQ = null;
+  for (let i = 0; i < input.length; i++) {
+    const c = input[i];
+    if (inQ) {
+      if (c === inQ) inQ = null;
+      else cur += c;
+    } else if (c === '"' || c === "'") {
+      inQ = c;
+    } else if (c === '\\' && i + 1 < input.length) {
+      cur += input[++i];
+    } else if (c === ' ' || c === '\t') {
+      if (cur) { tokens.push(cur); cur = ''; }
     } else {
-      const tip = loan.tip || ((parseFloat(state.settings.tipMin) + parseFloat(state.settings.tipMax)) / 2);
-      loan.status = 'completed';
-      loan.repaymentStatus = 'repaid';
-      loan.profitLoss = tip;
-      cycleProfit += tip;
-      loansProcessed++;
+      cur += c;
     }
-  });
-
-  const cycleNum = state.cycles.length + 1;
-  const cycle = {
-    id: 'c_' + Date.now(),
-    num: cycleNum,
-    date: Date.now(),
-    profit: cycleProfit,
-    loansProcessed,
-    loansDefaulted,
-    poolBefore: getPoolTotal() - cycleProfit,
-    poolAfter: getPoolTotal(),
-    mode
-  };
-  state.cycles.push(cycle);
-
-  // Auto-post message about cycle
-  state.messages.push({
-    id: 'm_sys_' + Date.now(),
-    userId: 'system',
-    text: `📊 Cycle ${cycleNum} complete: ${loansProcessed} loan(s) repaid, ${loansDefaulted} defaulted. Net: ${cycleProfit >= 0 ? '+' : ''}$${cycleProfit.toFixed(2)}`,
-    timestamp: Date.now(),
-    system: true
-  });
-
-  save();
-  renderAll();
+  }
+  if (cur) tokens.push(cur);
+  return tokens;
 }
 
-// ══════════════════════════════════════════════
-//  LOANS
-// ══════════════════════════════════════════════
-function openNewLoanModal() {
-  const avail = getAvailableCapital();
-  const slots = getLoanSlots();
-  const active = getActiveLoans().length;
-  if (active >= slots) {
-    alert(`Loan slots full (${slots} max at current pool size $${getPoolTotal().toFixed(2)}). Run a cycle or grow the pool first.`);
-    return;
-  }
-  if (avail < 50) {
-    alert(`Insufficient capital. Available: $${avail.toFixed(2)}`);
-    return;
+function parseInput(input) {
+  const segments = input.split('|').map(s => s.trim()).filter(Boolean);
+  return segments.map(s => {
+    const toks = tokenize(s);
+    return { cmd: toks[0] || '', args: toks.slice(1) };
+  });
+}
+
+function expandEnv(arg) {
+  return arg.replace(/\$([A-Z_][A-Z0-9_]*)/gi, (_, k) => env[k] !== undefined ? env[k] : '');
+}
+
+function resolveArgs(args) {
+  return args.map(a => expandEnv(a));
+}
+
+// ─────────────────────────────────────────────────────────────
+// NANO EDITOR LOGIC
+// ─────────────────────────────────────────────────────────────
+function openNano(filePath) {
+  const p = normalizePath(filePath);
+  const node = getNode(p);
+
+  if (node && node.type === 'd') {
+    return { err: `nano: ${filePath}: Is a directory` };
   }
 
-  const select = document.getElementById('nl-assigned');
-  select.innerHTML = state.users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
-  if (state.currentUser) select.value = state.currentUser.id;
-
-  document.getElementById('nl-borrower').value = '';
-  document.getElementById('nl-tip').value = state.settings.tipMin || 10;
-  document.getElementById('nl-notes').value = '';
-  document.getElementById('new-loan-modal').classList.remove('hidden');
+  inNano = true;
+  nanoState = 'EDIT';
+  nanoFilePath = filePath;
+  nanoOriginalContent = node ? (node.content || '') : '';
+  
+  document.getElementById('nano-view').style.display = 'flex';
+  document.getElementById('nano-title').textContent = `File: ${filePath}`;
+  document.getElementById('nano-editor').value = nanoOriginalContent;
+  document.getElementById('nano-msg-text').textContent = node ? '' : '[ New File ]';
+  document.getElementById('nano-message-input').style.display = 'none';
+  document.getElementById('nano-editor').focus();
+  
+  return { out: '' };
 }
 
-function addLoan() {
-  const borrower = document.getElementById('nl-borrower').value.trim();
-  const amount = parseInt(document.getElementById('nl-amount').value);
-  const tip = parseFloat(document.getElementById('nl-tip').value);
-  const assignedTo = document.getElementById('nl-assigned').value;
-  const notes = document.getElementById('nl-notes').value.trim();
-
-  if (!borrower) { alert('Enter a borrower name or ID.'); return; }
-  const tipMin = parseFloat(state.settings.tipMin) || 10;
-  if (tip < tipMin) { alert(`Tip below minimum ($${tipMin}). Loan rejected.`); return; }
-
-  const avail = getAvailableCapital();
-  if (avail < amount) { alert(`Insufficient capital. Available: $${avail.toFixed(2)}`); return; }
-
-  const cycleStart = Date.now();
-  const cycleEnd = cycleStart + CYCLE_DAYS * 86400000;
-  const loan = {
-    id: 'L' + String(state.loans.length + 1).padStart(4, '0'),
-    borrower, amount, tip, assignedTo, notes,
-    status: 'active',
-    repaymentStatus: 'pending',
-    cycleStartDate: cycleStart,
-    cycleEndDate: cycleEnd,
-    profitLoss: 0,
-    createdAt: Date.now()
-  };
-  state.loans.push(loan);
-  save();
-  closeModal('new-loan-modal');
-  renderAll();
+function closeNano() {
+  inNano = false;
+  document.getElementById('nano-view').style.display = 'none';
+  const inputEl = document.getElementById('cmd-input');
+  inputEl.focus();
 }
 
-function closeLoan(id, asDefault) {
-  const loan = state.loans.find(l => l.id === id);
-  if (!loan) return;
-  if (asDefault) {
-    const reason = prompt('Reason for default (optional):', '') || 'Not specified';
-    loan.status = 'defaulted';
-    loan.repaymentStatus = 'defaulted';
-    loan.profitLoss = -loan.amount;
-    loan.lossAmount = loan.amount;
-    loan.defaultDate = Date.now();
-    loan.defaultReason = reason;
+function saveNanoFile(path, content) {
+  const p = normalizePath(path);
+  const existing = getNode(p);
+  if (!existing) {
+    const parent = getNode(getParent(p));
+    if (!parent || parent.type !== 'd') {
+      document.getElementById('nano-msg-text').textContent = `[ Error writing ${path}: No such directory ]`;
+      return false;
+    }
+    setNode(p, { type: 'f', content: content, perms: '644' });
   } else {
-    loan.status = 'completed';
-    loan.repaymentStatus = 'repaid';
-    loan.profitLoss = loan.tip;
+    existing.content = content;
   }
-  save();
-  renderAll();
+  nanoOriginalContent = content;
+  nanoFilePath = path;
+  document.getElementById('nano-title').textContent = `File: ${path}`;
+  document.getElementById('nano-msg-text').textContent = `[ Wrote ${content.split('\n').length} lines ]`;
+  return true;
 }
 
-// ══════════════════════════════════════════════
-//  MESSAGES
-// ══════════════════════════════════════════════
-function sendMsg() {
-  const input = document.getElementById('msg-input');
-  const text = input.value.trim();
-  if (!text || !state.currentUser) return;
-  state.messages.push({
-    id: 'm_' + Date.now(),
-    userId: state.currentUser.id,
-    text,
-    timestamp: Date.now(),
-    system: false
-  });
-  input.value = '';
-  save();
-  renderMessages();
-}
-
-// ══════════════════════════════════════════════
-//  CHARTS
-// ══════════════════════════════════════════════
-let charts = {};
-
-function destroyCharts() {
-  Object.values(charts).forEach(c => { try { c.destroy(); } catch(e){} });
-  charts = {};
-}
-
-function renderGrowthChart() {
-  const ctx = document.getElementById('growth-chart');
-  if (!ctx) return;
-  if (charts.growth) { charts.growth.destroy(); }
-
-  const data = [getPoolTotal() - getTotalProfit()];
-  let running = data[0];
-  const labels = ['Start'];
-  state.cycles.forEach((c, i) => {
-    running += c.profit;
-    data.push(Math.round(running * 100) / 100);
-    labels.push('C' + (i + 1));
-  });
-
-  charts.growth = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        borderColor: '#3fb950',
-        backgroundColor: 'rgba(63,185,80,0.08)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 3,
-        pointBackgroundColor: '#3fb950'
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: '#484f58', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: {
-          ticks: { color: '#484f58', font: { size: 11 }, callback: v => '$' + v },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        }
-      }
-    }
-  });
-}
-
-function renderMembersChart() {
-  const ctx = document.getElementById('members-chart');
-  if (!ctx || state.users.length === 0) return;
-  if (charts.members) { charts.members.destroy(); }
-
-  charts.members = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: state.users.map(u => u.name),
-      datasets: [{
-        data: state.users.map(u => u.contribution),
-        backgroundColor: state.users.map((u, i) => AVATAR_COLORS[i % AVATAR_COLORS.length]),
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { color: '#8b949e', font: { size: 11 }, boxWidth: 10, padding: 8 } } },
-      cutout: '65%'
-    }
-  });
-}
-
-function renderLoanPerfChart() {
-  const ctx = document.getElementById('loan-perf-chart');
-  if (!ctx) return;
-  if (charts.loanPerf) { charts.loanPerf.destroy(); }
-
-  const active = state.loans.filter(l => l.status === 'active').length;
-  const complete = state.loans.filter(l => l.status === 'completed').length;
-  const defaulted = state.loans.filter(l => l.status === 'defaulted').length;
-
-  if (active + complete + defaulted === 0) return;
-
-  charts.loanPerf = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Active', 'Repaid', 'Defaulted'],
-      datasets: [{
-        data: [active, complete, defaulted],
-        backgroundColor: ['#58a6ff', '#3fb950', '#f85149'],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'right', labels: { color: '#8b949e', font: { size: 11 }, boxWidth: 10, padding: 8 } } },
-      cutout: '65%'
-    }
-  });
-}
-
-function renderProjChart() {
-  const ctx = document.getElementById('proj-chart');
-  if (!ctx) return;
-  if (charts.proj) { charts.proj.destroy(); }
-
-  const scenario = document.getElementById('proj-scenario')?.value || 'perfect';
-  const efficiency = scenario === 'perfect' ? 1.0 : scenario === 'moderate' ? 0.80 : 0.65;
-
-  const pv = getPoolTotal();
-  const labels = [], perfect = [], chosen = [];
-  for (let i = 0; i <= 26; i++) {
-    labels.push('C' + i);
-    perfect.push(parseFloat(projectCapital(pv, i, 1.0).toFixed(2)));
-    if (scenario !== 'perfect') {
-      chosen.push(parseFloat(projectCapital(pv, i, efficiency).toFixed(2)));
-    }
-  }
-
-  const datasets = [{
-    label: 'Perfect',
-    data: perfect,
-    borderColor: '#3fb950',
-    borderDash: scenario !== 'perfect' ? [4, 4] : [],
-    backgroundColor: 'transparent',
-    tension: 0.3,
-    pointRadius: 0
-  }];
-  if (scenario !== 'perfect') {
-    datasets.push({
-      label: scenario === 'moderate' ? 'Moderate' : 'Stress',
-      data: chosen,
-      borderColor: scenario === 'moderate' ? '#d29922' : '#f85149',
-      backgroundColor: 'transparent',
-      tension: 0.3,
-      pointRadius: 0
-    });
-  }
-
-  charts.proj = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: '#8b949e', font: { size: 11 }, boxWidth: 10 } }
-      },
-      scales: {
-        x: { ticks: { color: '#484f58', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-        y: {
-          ticks: { color: '#484f58', font: { size: 11 }, callback: v => '$' + v },
-          grid: { color: 'rgba(255,255,255,0.04)' }
-        }
-      }
-    }
-  });
-}
-
-// ══════════════════════════════════════════════
-//  RENDERERS
-// ══════════════════════════════════════════════
-function renderAll() {
-  renderTopBar();
-  renderSidebar();
-  renderDashboard();
-  renderLoans();
-  renderProjections();
-  renderMessages();
-  renderSettings();
-}
-
-function renderTopBar() {
-  if (!state.currentUser) return;
-  const u = state.currentUser;
-  document.getElementById('top-avatar').textContent = u.name.slice(0, 2).toUpperCase();
-  document.getElementById('top-avatar').style.background = AVATAR_COLORS[u.colorIdx % AVATAR_COLORS.length];
-  document.getElementById('top-avatar').style.color = '#000';
-  document.getElementById('top-username').textContent = u.name;
-  const unread = state.messages.filter(m => !m.readBy || !m.readBy.includes(u.id)).length;
-  document.getElementById('msg-notif').style.display = unread > 0 ? '' : 'none';
-}
-
-function renderSidebar() {
-  const pool = getPoolTotal();
-  const active = getActiveCapital();
-  const avail = getAvailableCapital();
-  const profit = getTotalProfit();
-
-  document.getElementById('pool-total-label').textContent = '$' + pool.toFixed(2);
-  const pct = pool > 0 ? Math.round(active / pool * 100) : 0;
-  document.getElementById('pool-bar-fill').style.width = pct + '%';
-  document.getElementById('pool-active-label').textContent = 'Active: $' + active.toFixed(2);
-  document.getElementById('pool-avail-label').textContent = 'Avail: $' + avail.toFixed(2);
-
-  document.getElementById('qs-cycles').textContent = state.cycles.length;
-  document.getElementById('qs-active').textContent = getActiveLoans().length;
-  document.getElementById('qs-profit').textContent = '$' + profit.toFixed(2);
-  document.getElementById('qs-slots').textContent = getLoanSlots();
-
-  const tipped = state.loans.filter(l => l.tip > 0);
-  const avgTip = tipped.length > 0 ? tipped.reduce((s, l) => s + l.tip, 0) / tipped.length : 0;
-  document.getElementById('qs-avg-tip').textContent = '$' + avgTip.toFixed(2);
-
-  // apply saved settings to sidebar controls
-  document.getElementById('sim-mode').value = state.settings.simMode || 'perfect';
-  document.getElementById('tip-min').value = state.settings.tipMin || 10;
-  document.getElementById('tip-max').value = state.settings.tipMax || 15;
-
-  const ul = document.getElementById('user-list');
-  ul.innerHTML = state.users.map((u, i) => {
-    const isMe = state.currentUser && u.id === state.currentUser.id;
-    const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    return `<div class="user-item ${isMe ? 'active' : ''}" onclick="switchUser('${u.id}')">
-      <div class="u-avatar" style="background:${color};color:#000">${u.name.slice(0,2).toUpperCase()}</div>
-      <div class="u-info">
-        <div class="u-name">${u.name}</div>
-        <div class="u-amount">$${u.contribution.toFixed(2)} + $${getMemberProfit(u).toFixed(2)}</div>
-      </div>
-      ${isMe ? '<div class="u-badge">you</div>' : ''}
-    </div>`;
-  }).join('');
-}
-
-function renderDashboard() {
-  const pool = getPoolTotal();
-  const active = getActiveCapital();
-  const profit = getTotalProfit();
-  const initPool = getTotalContributions();
-  const roi = initPool > 0 ? ((profit / initPool) * 100).toFixed(1) : '0.0';
-
-  document.getElementById('m-pool').textContent = '$' + pool.toFixed(2);
-  document.getElementById('m-pool-sub').textContent = state.users.length + ' member' + (state.users.length !== 1 ? 's' : '');
-  document.getElementById('m-active').textContent = '$' + active.toFixed(2);
-  document.getElementById('m-active-sub').textContent = getActiveLoans().length + ' loan' + (getActiveLoans().length !== 1 ? 's' : '') + ' out';
-  document.getElementById('m-profit').textContent = '$' + profit.toFixed(2);
-  document.getElementById('m-profit-sub').textContent = '+' + roi + '% ROI';
-  document.getElementById('m-rate').textContent = (getCycleReturnRate() * 100).toFixed(1) + '%';
-
-  const mode = state.settings.simMode || 'perfect';
-  document.getElementById('growth-mode-tag').textContent =
-    mode === 'perfect' ? 'Perfect' : mode === 'realistic' ? 'Realistic' : 'Stress';
-
-  renderGrowthChart();
-  renderMembersChart();
-
-  // ── Your Stake (member value) widget ──
-  const me = state.currentUser;
-  document.getElementById('mv-name-tag').textContent = me ? me.name : '—';
-  if (me) {
-    document.getElementById('mv-contribution').textContent = '$' + me.contribution.toFixed(2);
-    document.getElementById('mv-ownership').textContent = getMemberOwnershipPercent(me).toFixed(1) + '%';
-    document.getElementById('mv-profit').textContent = '$' + getMemberProfit(me).toFixed(2);
-    document.getElementById('mv-current').textContent = '$' + getMemberCurrentValue(me).toFixed(2);
-    document.getElementById('mv-proj6').textContent = '$' + getMemberProjectedValue(me, CYCLES_6MO).toFixed(2);
-    document.getElementById('mv-proj12').textContent = '$' + getMemberProjectedValue(me, CYCLES_12MO).toFixed(2);
-  }
-
-  // ── Pool Health widget ──
-  const defaultedLoans = state.loans.filter(l => l.status === 'defaulted');
-  const capitalLost = defaultedLoans.reduce((s, l) => s + (l.lossAmount || l.amount), 0);
-  const defaultRatePct = state.loans.length > 0 ? (defaultedLoans.length / state.loans.length * 100) : 0;
-  document.getElementById('ph-total').textContent = '$' + pool.toFixed(2);
-  document.getElementById('ph-active').textContent = '$' + active.toFixed(2);
-  document.getElementById('ph-available').textContent = '$' + getAvailableCapital().toFixed(2);
-  document.getElementById('ph-profit').textContent = '$' + profit.toFixed(2);
-  document.getElementById('ph-lost').textContent = '$' + capitalLost.toFixed(2);
-  document.getElementById('ph-default').textContent = defaultRatePct.toFixed(1) + '%';
-  document.getElementById('ph-roi').textContent = roi + '%';
-
-  // ── Actual vs. Projection widget ──
-  const cyclesRun = state.cycles.length;
-  const expectedValue = projectCapital(initPool, cyclesRun, 1.0);
-  const variance = pool - expectedValue;
-  const variancePct = expectedValue > 0 ? (variance / expectedValue * 100) : 0;
-  document.getElementById('avp-expected').textContent = '$' + expectedValue.toFixed(2);
-  document.getElementById('avp-actual').textContent = '$' + pool.toFixed(2);
-  document.getElementById('avp-cycles-sub').textContent = cyclesRun + ' cycle' + (cyclesRun !== 1 ? 's' : '') + ' run';
-  const varEl = document.getElementById('avp-variance');
-  varEl.textContent = (variance >= 0 ? '+' : '') + '$' + variance.toFixed(2) + ' (' + (variance >= 0 ? '+' : '') + variancePct.toFixed(1) + '%)';
-  varEl.style.color = variance >= 0 ? 'var(--accent)' : 'var(--accent-red)';
-
-  // Cycle log
-  const log = document.getElementById('cycle-log');
-  if (state.cycles.length === 0) {
-    log.innerHTML = '<div class="empty-state"><div class="e-icon">◎</div>No cycles run yet. Click "Run Cycle" to begin.</div>';
-  } else {
-    const maxProfit = Math.max(...state.cycles.map(c => Math.abs(c.profit)), 1);
-    log.innerHTML = [...state.cycles].reverse().map(c => {
-      const pct = Math.round(Math.abs(c.profit) / maxProfit * 100);
-      const color = c.profit >= 0 ? 'var(--accent)' : 'var(--accent-red)';
-      const d = new Date(c.date);
-      return `<div class="cycle-entry">
-        <div class="ce-num">C${c.num}</div>
-        <div class="ce-bar">
-          <div class="ce-info">
-            <span class="text-secondary">${d.toLocaleDateString()} — ${c.loansProcessed} repaid${c.loansDefaulted > 0 ? ', ' + c.loansDefaulted + ' defaulted' : ''}</span>
-            <span class="ce-profit" style="color:${color}">${c.profit >= 0 ? '+' : ''}$${c.profit.toFixed(2)}</span>
-          </div>
-          <div class="ce-bar-track">
-            <div class="ce-bar-fill" style="width:${pct}%;background:${color}"></div>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  renderAdvisorInsights();
-}
-
-function renderAdvisorInsights() {
-  const box = document.getElementById('advisor-insights');
-  if (!box) return;
-  if (state.loans.length === 0) {
-    box.innerHTML = '<div class="empty-state">Add and run loans to generate insights.</div>';
+document.getElementById('nano-editor').addEventListener('keydown', (e) => {
+  if (nanoState !== 'EDIT') {
+    e.preventDefault();
     return;
   }
 
-  const insights = [];
-  const tippedLoans = state.loans.filter(l => l.tip > 0);
-  const avgTip = tippedLoans.length > 0 ? tippedLoans.reduce((s, l) => s + l.tip, 0) / tippedLoans.length : 0;
-  insights.push(`Average tip per funded loan is $${avgTip.toFixed(2)}.`);
-
-  const sizeProfits = {};
-  state.loans.filter(l => l.status === 'completed').forEach(l => {
-    sizeProfits[l.amount] = (sizeProfits[l.amount] || 0) + l.profitLoss;
-  });
-  const sizeEntries = Object.entries(sizeProfits);
-  if (sizeEntries.length > 0) {
-    const totalCompletedProfit = sizeEntries.reduce((s, [, v]) => s + v, 0);
-    const [bestSize, bestProfit] = sizeEntries.reduce((m, e) => (e[1] > m[1] ? e : m));
-    const share = totalCompletedProfit > 0 ? (bestProfit / totalCompletedProfit * 100) : 0;
-    insights.push(`$${bestSize} loans generated ${share.toFixed(0)}% of total realized profit.`);
+  // Ctrl+O (Write Out)
+  if (e.ctrlKey && (e.key === 'o' || e.key === 'O')) {
+    e.preventDefault();
+    nanoState = 'PROMPT_NAME';
+    document.getElementById('nano-msg-text').textContent = 'File Name to Write: ';
+    const msgInput = document.getElementById('nano-message-input');
+    msgInput.style.display = 'inline-block';
+    msgInput.value = nanoFilePath;
+    msgInput.focus();
+    return;
   }
 
-  const defaultedCount = state.loans.filter(l => l.status === 'defaulted').length;
-  const defaultRate = state.loans.length > 0 ? (defaultedCount / state.loans.length * 100) : 0;
-  insights.push(defaultRate === 0
-    ? 'No defaults recorded yet — perfect repayment streak.'
-    : `Default rate stands at ${defaultRate.toFixed(1)}% across ${state.loans.length} loan(s).`);
-
-  const initPool = getTotalContributions();
-  const pool = getPoolTotal();
-  const growthPct = initPool > 0 ? ((pool - initPool) / initPool * 100) : 0;
-  insights.push(`Pool has grown ${growthPct >= 0 ? '+' : ''}${growthPct.toFixed(1)}% since initial contributions.`);
-
-  const roi = initPool > 0 ? (getTotalProfit() / initPool * 100) : 0;
-  insights.push(`Cumulative ROI is ${roi.toFixed(1)}% across ${state.cycles.length} cycle(s).`);
-
-  const utilization = pool > 0 ? (getActiveCapital() / pool * 100) : 0;
-  insights.push(`Capital utilization is ${utilization.toFixed(1)}% (active capital vs. total pool).`);
-
-  box.innerHTML = insights.map(text => `<div class="insight-item"><span class="i-dot">●</span><span>${text}</span></div>`).join('');
-}
-
-function renderLoans() {
-  const tbody = document.getElementById('loan-table-body');
-  if (state.loans.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty-state" style="padding:30px;text-align:center;color:var(--text-muted)">No loans yet.</td></tr>';
-  } else {
-    tbody.innerHTML = state.loans.map(l => {
-      const user = state.users.find(u => u.id === l.assignedTo);
-      const statusBadge = {
-        active: '<span class="badge badge-active">Active</span>',
-        completed: '<span class="badge badge-complete">Repaid</span>',
-        defaulted: '<span class="badge badge-default">Defaulted</span>'
-      }[l.status] || '';
-      const ret = l.status === 'active' ? `<span class="text-secondary">+$${l.tip.toFixed(2)}</span>` :
-        l.status === 'completed' ? `<span class="text-green">+$${l.profitLoss.toFixed(2)}</span>` :
-        `<span class="text-red">-$${l.amount.toFixed(2)}</span>`;
-      const actions = l.status === 'active' ? `
-        <div class="flex gap-8">
-          <button class="btn btn-sm text-green" onclick="closeLoan('${l.id}',false)" style="font-size:11px;padding:3px 8px">✓ Repaid</button>
-          <button class="btn btn-sm btn-danger" onclick="closeLoan('${l.id}',true)" style="font-size:11px;padding:3px 8px">✗ Default</button>
-        </div>` : '';
-      const scoreColor = l.dreScore >= 85 ? 'var(--accent)' : l.dreScore >= 70 ? 'var(--accent-amber)' : l.dreScore >= 50 ? 'var(--accent-blue)' : 'var(--accent-red)';
-      return `<tr>
-        <td class="mono" style="font-size:12px;color:var(--text-muted)">${l.id}</td>
-        <td style="font-weight:500">${l.borrower}</td>
-        <td class="mono">$${l.amount}</td>
-        <td class="mono text-green">$${l.tip.toFixed(2)}</td>
-        <td><span style="color:${scoreColor};font-weight:600;font-size:13px">${l.dreScore}</span></td>
-        <td>${statusBadge}</td>
-        <td>${ret}</td>
-        <td class="text-secondary">${user ? user.name : '—'}</td>
-        <td>${actions}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  renderLoanPerfChart();
-
-  // Risk
-  const total = state.loans.length;
-  const defaulted = state.loans.filter(l => l.status === 'defaulted').length;
-  const pool = getPoolTotal();
-  const defaultRate = total > 0 ? Math.round(defaulted / total * 100) : 0;
-  const exposurePct = pool > 0 ? Math.round(getActiveCapital() / pool * 100) : 0;
-
-  const userLoans = {};
-  state.loans.filter(l => l.status === 'active').forEach(l => {
-    userLoans[l.assignedTo] = (userLoans[l.assignedTo] || 0) + 1;
-  });
-  const maxConc = Object.values(userLoans).reduce((m, v) => Math.max(m, v), 0);
-  const activeCount = getActiveLoans().length;
-  const concPct = activeCount > 0 ? Math.round(maxConc / activeCount * 100) : 0;
-
-  const scores = state.loans.filter(l => l.dreScore).map(l => l.dreScore);
-  const avgScore = scores.length > 0 ? Math.round(scores.reduce((s, v) => s + v, 0) / scores.length) : 0;
-
-  setRisk('default', defaultRate, '%');
-  setRisk('exposure', exposurePct, '%');
-  setRisk('conc', concPct, '%');
-  setRisk('score', avgScore, '');
-
-  const totalFunded = state.loans.reduce((s, l) => s + l.amount, 0);
-  const totalRepaid = state.loans.filter(l => l.status === 'completed').reduce((s, l) => s + l.amount + l.profitLoss, 0);
-  const netReturn = state.loans.filter(l => l.status !== 'active').reduce((s, l) => s + (l.profitLoss || 0), 0);
-  const defaultedLoans = state.loans.filter(l => l.status === 'defaulted');
-  const capitalLost = defaultedLoans.reduce((s, l) => s + (l.lossAmount || l.amount), 0);
-
-  document.getElementById('stat-funded').textContent = '$' + totalFunded.toFixed(2);
-  document.getElementById('stat-repaid').textContent = '$' + totalRepaid.toFixed(2);
-  document.getElementById('stat-defaulted').textContent = defaultedLoans.length;
-  document.getElementById('stat-lost').textContent = '$' + capitalLost.toFixed(2);
-  document.getElementById('stat-net').textContent = (netReturn >= 0 ? '+' : '') + '$' + netReturn.toFixed(2);
-  document.getElementById('stat-net').style.color = netReturn >= 0 ? 'var(--accent)' : 'var(--accent-red)';
-
-  const defBody = document.getElementById('default-history-body');
-  const defCount = document.getElementById('default-count-tag');
-  if (defBody) {
-    if (defaultedLoans.length === 0) {
-      defBody.innerHTML = '<tr><td colspan="7" class="empty-state" style="padding:20px;text-align:center;color:var(--text-muted)">No defaults recorded.</td></tr>';
+  // Ctrl+X (Exit)
+  if (e.ctrlKey && (e.key === 'x' || e.key === 'X')) {
+    e.preventDefault();
+    const currentContent = document.getElementById('nano-editor').value;
+    if (currentContent !== nanoOriginalContent) {
+      nanoState = 'PROMPT_SAVE';
+      document.getElementById('nano-msg-text').textContent = 'Save modified buffer? (Y)es / (N)o / ^C Cancel';
     } else {
-      defBody.innerHTML = defaultedLoans.map(l => {
-        const d = new Date(l.defaultDate || l.createdAt);
-        return `<tr>
-          <td class="mono" style="font-size:12px;color:var(--text-muted)">${l.id}</td>
-          <td style="font-weight:500">${l.borrower}</td>
-          <td class="mono">$${l.amount}</td>
-          <td class="mono text-green">$${l.tip.toFixed(2)}</td>
-          <td><span class="badge badge-default">Defaulted</span></td>
-          <td class="mono text-red">-$${(l.lossAmount || l.amount).toFixed(2)}</td>
-          <td class="text-muted" style="font-size:12px">${d.toLocaleDateString()}</td>
-        </tr>`;
-      }).join('');
+      closeNano();
     }
-    if (defCount) defCount.textContent = defaultedLoans.length + ' default' + (defaultedLoans.length !== 1 ? 's' : '');
-  }
-}
-
-function setRisk(key, val, suffix) {
-  document.getElementById('risk-' + key).style.width = Math.min(val, 100) + '%';
-  document.getElementById('risk-' + key + '-val').textContent = val + suffix;
-}
-
-function renderProjections() {
-  renderProjChart();
-  renderProjectionTable();
-  calcTarget();
-}
-
-function renderProjectionTable() {
-  const scenario = document.getElementById('proj-scenario')?.value || 'perfect';
-  const eff = scenario === 'perfect' ? 1.0 : scenario === 'moderate' ? 0.80 : 0.65;
-  const pv = getPoolTotal();
-  const r = getCycleReturnRate() * eff;
-
-  const horizons = [
-    { label: '2 weeks', cycles: 1 },
-    { label: '1 month', cycles: 2 },
-    { label: '3 months', cycles: 6 },
-    { label: '6 months', cycles: 13 },
-    { label: '12 months', cycles: 26 }
-  ];
-
-  const rows = horizons.map(h => {
-    const fv = projectCapital(pv, h.cycles, eff);
-    const profit = fv - pv;
-    const roi = pv > 0 ? (profit / pv * 100) : 0;
-    const activeSlots = getLoanSlots();
-    let projSlots = activeSlots;
-    let poolCheck = pv;
-    for (let i = 0; i < h.cycles; i++) poolCheck *= (1 + r);
-    projSlots = poolCheck >= 500 ? 5 : poolCheck >= 300 ? 3 : poolCheck >= 200 ? 2 : poolCheck >= 100 ? 1 : 0;
-    return `<tr>
-      <td>${h.label}</td>
-      <td>${h.cycles}</td>
-      <td class="highlight mono">$${fv.toFixed(2)}</td>
-      <td class="text-green mono">+$${profit.toFixed(2)}</td>
-      <td class="text-amber mono">${roi.toFixed(1)}%</td>
-      <td class="mono">${projSlots}</td>
-    </tr>`;
-  });
-  document.getElementById('proj-body').innerHTML = rows.join('');
-}
-
-function calcTarget() {
-  const target = parseFloat(document.getElementById('target-input')?.value) || 1000;
-  const scenario = document.getElementById('proj-scenario')?.value || 'perfect';
-  const eff = scenario === 'perfect' ? 1.0 : scenario === 'moderate' ? 0.80 : 0.65;
-  const cycles = cyclesTo(target, eff);
-  const days = cycles * CYCLE_DAYS;
-  const targetDate = new Date(Date.now() + days * 86400000);
-
-  if (!isFinite(cycles) || cycles === 0) {
-    document.getElementById('target-result').textContent = getPoolTotal() >= target ? 'Already reached' : '∞ cycles';
-    document.getElementById('target-date').textContent = '';
-  } else {
-    document.getElementById('target-result').textContent = cycles + ' cycle' + (cycles !== 1 ? 's' : '') + ' (~' + days + ' days)';
-    document.getElementById('target-date').textContent = 'Est. ' + targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  // mini targets
-  [200, 500, 1000, 2000].forEach(t => {
-    const c = cyclesTo(t, eff);
-    const el = document.getElementById('t' + t + '-cycles');
-    if (el) el.textContent = !isFinite(c) || c === 0 ? (getPoolTotal() >= t ? '✓' : '∞') : c;
-  });
-}
-
-function setTarget(val) {
-  document.getElementById('target-input').value = val;
-  calcTarget();
-}
-
-function renderMessages() {
-  const thread = document.getElementById('msg-thread');
-  if (!thread) return;
-
-  if (state.messages.length === 0) {
-    thread.innerHTML = '<div class="empty-state" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px"><div>💬</div><div>No messages yet.</div></div>';
-  } else {
-    thread.innerHTML = state.messages.map(m => {
-      const user = m.system ? null : state.users.find(u => u.id === m.userId);
-      const isMe = state.currentUser && m.userId === state.currentUser?.id;
-      const color = user ? AVATAR_COLORS[user.colorIdx % AVATAR_COLORS.length] : '#484f58';
-      const initials = user ? user.name.slice(0, 2).toUpperCase() : 'SYS';
-      const d = new Date(m.timestamp);
-      const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
-      if (m.system) {
-        return `<div style="text-align:center;padding:4px 0">
-          <span style="font-size:11px;color:var(--text-muted);background:var(--bg-secondary);padding:3px 10px;border-radius:10px">${m.text}</span>
-        </div>`;
-      }
-      return `<div class="msg ${isMe ? 'self' : ''}">
-        <div class="m-avatar" style="background:${color};color:#000">${initials}</div>
-        <div>
-          <div class="m-bubble">${escapeHtml(m.text)}</div>
-          <div class="m-meta">${user ? user.name : 'System'} · ${dateStr} ${time}</div>
-        </div>
-      </div>`;
-    }).join('');
-    thread.scrollTop = thread.scrollHeight;
-  }
-
-  document.getElementById('msg-count-tag').textContent = state.messages.length + ' message' + (state.messages.length !== 1 ? 's' : '');
-  const unread = state.messages.filter(m => !m.readBy || !m.readBy.includes(state.currentUser?.id)).length;
-  document.getElementById('msg-notif').style.display = unread > 0 ? '' : 'none';
-}
-
-function markMessagesRead() {
-  if (!state.currentUser) return;
-  state.messages.forEach(m => {
-    if (!m.readBy) m.readBy = [];
-    if (!m.readBy.includes(state.currentUser.id)) m.readBy.push(state.currentUser.id);
-  });
-  save();
-  document.getElementById('msg-notif').style.display = 'none';
-}
-
-function renderSettings() {
-  const s = state.settings;
-  const f = id => { const el = document.getElementById(id); if (el) return el; };
-  if (f('s-pool-name')) f('s-pool-name').value = s.poolName || 'DRE Capital Pool';
-  if (f('s-max-users')) f('s-max-users').value = s.maxUsers || 10;
-  if (f('s-loan-size')) f('s-loan-size').value = s.loanSize || 100;
-  if (f('s-min-tip')) f('s-min-tip').value = s.minTip || 10;
-  if (f('s-reserve')) f('s-reserve').value = s.reserve || 0;
-
-  if (state.currentUser) {
-    if (f('s-my-name')) f('s-my-name').value = state.currentUser.name;
-    if (f('s-my-contribution')) f('s-my-contribution').value = state.currentUser.contribution;
-  }
-
-  const pool = getPoolTotal();
-  const totalContribs = getTotalContributions();
-  const totalProfit = getTotalProfit();
-  if (document.getElementById('pas-contributions')) document.getElementById('pas-contributions').textContent = '$' + totalContribs.toFixed(2);
-  if (document.getElementById('pas-profit')) document.getElementById('pas-profit').textContent = '$' + totalProfit.toFixed(2);
-  if (document.getElementById('pas-members')) document.getElementById('pas-members').textContent = state.users.length;
-
-  const tbody = document.getElementById('team-table-body');
-  if (tbody) {
-    tbody.innerHTML = state.users.map((u, i) => {
-      const ownership = getMemberOwnershipPercent(u).toFixed(1);
-      const profit = getMemberProfit(u).toFixed(2);
-      const currentVal = getMemberCurrentValue(u).toFixed(2);
-      const proj6 = getMemberProjectedValue(u, CYCLES_6MO).toFixed(2);
-      const proj12 = getMemberProjectedValue(u, CYCLES_12MO).toFixed(2);
-      const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
-      return `<tr>
-        <td>
-          <div class="flex items-center gap-8">
-            <div style="width:24px;height:24px;border-radius:50%;background:${color};color:#000;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${u.name.slice(0,2).toUpperCase()}</div>
-            <span>${u.name}</span>
-            ${state.currentUser && u.id === state.currentUser.id ? '<span class="tag">you</span>' : ''}
-          </div>
-        </td>
-        <td class="mono">$${u.contribution.toFixed(2)}</td>
-        <td class="mono text-secondary">${ownership}%</td>
-        <td class="mono text-green">$${profit}</td>
-        <td class="mono">$${currentVal}</td>
-        <td class="mono text-amber">$${proj6}</td>
-        <td class="mono text-purple">$${proj12}</td>
-        <td>${state.currentUser && u.id === state.currentUser.id ? '' : `<button class="btn btn-sm btn-danger" onclick="removeUser('${u.id}')">Remove</button>`}</td>
-      </tr>`;
-    }).join('');
-  }
-}
-
-// ══════════════════════════════════════════════
-//  SETTINGS ACTIONS
-// ══════════════════════════════════════════════
-function saveSettings() {
-  state.settings.simMode = document.getElementById('sim-mode').value;
-  state.settings.tipMin = parseFloat(document.getElementById('tip-min').value) || 10;
-  state.settings.tipMax = parseFloat(document.getElementById('tip-max').value) || 15;
-  save();
-}
-
-function savePoolSettings() {
-  state.settings.poolName = document.getElementById('s-pool-name').value;
-  state.settings.maxUsers = parseInt(document.getElementById('s-max-users').value);
-  state.settings.loanSize = parseInt(document.getElementById('s-loan-size').value);
-  state.settings.minTip = parseFloat(document.getElementById('s-min-tip').value);
-  state.settings.reserve = parseFloat(document.getElementById('s-reserve').value);
-  save();
-  alert('Pool settings saved.');
-}
-
-function saveAccountSettings() {
-  if (!state.currentUser) return;
-  const name = document.getElementById('s-my-name').value.trim();
-  const contribution = parseFloat(document.getElementById('s-my-contribution').value);
-  const pin = document.getElementById('s-new-pin').value.trim();
-
-  if (!name) { alert('Name required.'); return; }
-  state.currentUser.name = name;
-  state.currentUser.contribution = contribution;
-  if (pin.length === 4) state.currentUser.pin = pin;
-
-  const idx = state.users.findIndex(u => u.id === state.currentUser.id);
-  if (idx >= 0) state.users[idx] = state.currentUser;
-  save();
-  renderAll();
-  alert('Account updated.');
-}
-
-function removeUser(id) {
-  if (!confirm('Remove this member from the pool?')) return;
-  state.users = state.users.filter(u => u.id !== id);
-  save();
-  renderAll();
-}
-
-function confirmReset() {
-  if (!confirm('Reset all simulation data (loans, cycles)? User accounts are preserved.')) return;
-  state.loans = [];
-  state.cycles = [];
-  state.messages = [];
-  state.users.forEach(u => u.profit = 0);
-  save();
-  destroyCharts();
-  renderAll();
-}
-
-function confirmResetAll() {
-  if (!confirm('FULL RESET: Delete all data including all user accounts?')) return;
-  Object.values(LS).forEach(k => localStorage.removeItem(k));
-  db.collection('state').doc('main').delete().then(() => location.reload());
-}
-
-// ══════════════════════════════════════════════
-//  UI HELPERS
-// ══════════════════════════════════════════════
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    const tabs = ['dashboard','loans','projections','messages','settings'];
-    b.classList.toggle('active', tabs[i] === tab);
-  });
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + tab)?.classList.add('active');
-
-  if (tab === 'projections') { setTimeout(renderProjections, 50); }
-  if (tab === 'messages') { markMessagesRead(); }
-  if (tab === 'loans') { renderLoans(); }
-}
-
-function closeModal(id) {
-  document.getElementById(id)?.classList.add('hidden');
-}
-
-function openUserMenu() {
-  const list = document.getElementById('user-switch-list');
-  list.innerHTML = state.users.map((u, i) => {
-    const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    const isMe = state.currentUser && u.id === state.currentUser.id;
-    return `<div class="user-item ${isMe ? 'active' : ''}" onclick="switchUser('${u.id}');closeModal('user-menu-modal')">
-      <div class="u-avatar" style="background:${color};color:#000">${u.name.slice(0,2).toUpperCase()}</div>
-      <div class="u-info"><div class="u-name">${u.name}</div><div class="u-amount">$${u.contribution.toFixed(2)}</div></div>
-      ${isMe ? '<div class="u-badge">active</div>' : ''}
-    </div>`;
-  }).join('');
-  document.getElementById('user-menu-modal').classList.remove('hidden');
-}
-
-function switchUser(userId) {
-  const user = state.users.find(u => u.id === userId);
-  if (!user) return;
-  const pin = prompt(`Enter PIN for ${user.name}:`);
-  if (pin !== user.pin) { alert('Incorrect PIN.'); return; }
-  state.currentUser = user;
-  save();
-  renderAll();
-}
-
-function renderProjections() {
-  renderProjChart();
-  renderProjectionTable();
-  calcTarget();
-}
-
-function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-function initApp() {
-  renderAll();
-  // Seed settings controls
-  const s = state.settings;
-  document.getElementById('sim-mode').value = s.simMode || 'perfect';
-  document.getElementById('tip-min').value = s.tipMin || 10;
-  document.getElementById('tip-max').value = s.tipMax || 15;
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  load();
-  if (state.currentUser) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = '';
-    initApp();
+    return;
   }
 });
+
+document.getElementById('nano-message-input').addEventListener('keydown', (e) => {
+  if (nanoState === 'PROMPT_NAME') {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const newPath = e.target.value;
+      if (newPath) {
+        const currentContent = document.getElementById('nano-editor').value;
+        if (saveNanoFile(newPath, currentContent)) {
+          nanoState = 'EDIT';
+          e.target.style.display = 'none';
+          document.getElementById('nano-editor').focus();
+        }
+      }
+    } else if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+      e.preventDefault();
+      nanoState = 'EDIT';
+      e.target.style.display = 'none';
+      document.getElementById('nano-msg-text').textContent = 'Cancelled';
+      document.getElementById('nano-editor').focus();
+    }
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (inNano && nanoState === 'PROMPT_SAVE') {
+    if (e.key.toLowerCase() === 'y') {
+      e.preventDefault();
+      nanoState = 'PROMPT_NAME';
+      document.getElementById('nano-msg-text').textContent = 'File Name to Write: ';
+      const msgInput = document.getElementById('nano-message-input');
+      msgInput.style.display = 'inline-block';
+      msgInput.value = nanoFilePath;
+      msgInput.focus();
+    } else if (e.key.toLowerCase() === 'n') {
+      e.preventDefault();
+      closeNano();
+    } else if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+      e.preventDefault();
+      nanoState = 'EDIT';
+      document.getElementById('nano-msg-text').textContent = 'Cancelled';
+      document.getElementById('nano-editor').focus();
+    }
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// COMMAND IMPLEMENTATIONS
+// ─────────────────────────────────────────────────────────────
+const COMMANDS = {};
+
+COMMANDS.pwd = ({ args }) => {
+  return { out: normalizePath(cwd) };
+};
+
+COMMANDS.cd = ({ args }) => {
+  const target = args[0] || env.HOME;
+  const resolved = normalizePath(target);
+  const node = getNode(resolved);
+  if (!node) return { err: `cd: ${args[0]}: No such file or directory` };
+  if (node.type !== 'd') return { err: `cd: ${args[0]}: Not a directory` };
+  if (resolved === '/root') return { err: `cd: /root: Permission denied` };
+  cwd = resolved;
+  updatePrompt();
+  return { out: '' };
+};
+
+COMMANDS.ls = ({ args }) => {
+  const flags = args.filter(a => a.startsWith('-'));
+  const paths = args.filter(a => !a.startsWith('-'));
+  const showAll  = flags.some(f => f.includes('a'));
+  const longFmt  = flags.some(f => f.includes('l'));
+  const humanSz  = flags.some(f => f.includes('h'));
+  const target   = paths[0] ? normalizePath(paths[0]) : normalizePath(cwd);
+  const node = getNode(target);
+  if (!node) return { err: `ls: cannot access '${paths[0] || cwd}': No such file or directory` };
+
+  if (node.type === 'f') {
+    return { html: `<span class="ls-file">${escHtml(basename(target))}</span>` };
+  }
+
+  const entries = Object.entries(node.children).filter(([n]) => showAll || !n.startsWith('.'));
+  entries.sort((a, b) => {
+    if (a[1].type === b[1].type) return a[0].localeCompare(b[0]);
+    return a[1].type === 'd' ? -1 : 1;
+  });
+
+  if (!longFmt) {
+    const parts = entries.map(([name, nd]) => {
+      const cls = nd.type === 'd' ? 'ls-dir' : 'ls-file';
+      const suffix = nd.type === 'd' ? '/' : '';
+      return `<span class="${cls}">${escHtml(name)}${suffix}</span>`;
+    });
+    return { html: parts.join('  ') };
+  }
+
+  function fmtSize(content) {
+    const b = content ? content.length : 0;
+    if (!humanSz) return String(b).padStart(6);
+    if (b < 1024) return `${b}B`.padStart(6);
+    if (b < 1048576) return `${(b/1024).toFixed(1)}K`.padStart(6);
+    return `${(b/1048576).toFixed(1)}M`.padStart(6);
+  }
+
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${months[now.getMonth()]} ${String(now.getDate()).padStart(2)} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  const lines = [];
+  if (showAll) {
+    lines.push(`<span class="ls-dir">drwxr-xr-x  2 analyst analyst      0 ${dateStr} ./</span>`);
+    lines.push(`<span class="ls-dir">drwxr-xr-x  2 analyst analyst      0 ${dateStr} ../</span>`);
+  }
+  for (const [name, nd] of entries) {
+    const isDir = nd.type === 'd';
+    const perms = (nd.perms || (isDir ? '755' : '644'));
+    const permStr = isDir
+      ? `drwxr-xr-x`
+      : perms === '600' ? '-rw-------' : perms === '640' ? '-rw-r-----' : '-rw-r--r--';
+    const sz = isDir ? '     0' : fmtSize(nd.content || '');
+    const cls = isDir ? 'ls-dir' : 'ls-file';
+    const suffix = isDir ? '/' : '';
+    lines.push(`<span class="${cls}">${escHtml(permStr)}  1 analyst analyst ${sz} ${dateStr} ${escHtml(name)}${suffix}</span>`);
+  }
+  return { html: lines.join('\n') };
+};
+
+COMMANDS.cat = ({ args }) => {
+  if (!args.length) return { err: 'cat: missing operand' };
+  const results = [];
+  for (const a of args) {
+    const p = normalizePath(a);
+    const node = getNode(p);
+    if (!node) { results.push({ err: `cat: ${a}: No such file or directory` }); continue; }
+    if (node.type === 'd') { results.push({ err: `cat: ${a}: Is a directory` }); continue; }
+    results.push({ out: node.content || '' });
+  }
+  return results;
+};
+
+COMMANDS.nano = ({ args }) => {
+  if (!args.length) return { err: 'nano: missing file operand' };
+  return openNano(args[0]);
+};
+
+COMMANDS.touch = ({ args }) => {
+  if (!args.length) return { err: 'touch: missing file operand' };
+  const results = [];
+  for (const a of args) {
+    const p = normalizePath(a);
+    const existing = getNode(p);
+    if (!existing) {
+      const parent = getNode(getParent(p));
+      if (!parent || parent.type !== 'd') {
+        results.push({ err: `touch: cannot touch '${a}': No such file or directory` });
+        continue;
+      }
+      setNode(p, { type: 'f', content: '', perms: '644' });
+    }
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.mkdir = ({ args }) => {
+  if (!args.length) return { err: 'mkdir: missing operand' };
+  const p_flag = args.includes('-p');
+  const targets = args.filter(a => !a.startsWith('-'));
+  const results = [];
+  for (const a of targets) {
+    const p = normalizePath(a);
+    if (getNode(p)) {
+      results.push({ err: `mkdir: cannot create directory '${a}': File exists` });
+      continue;
+    }
+    const parent = getNode(getParent(p));
+    if (!parent && !p_flag) {
+      results.push({ err: `mkdir: cannot create directory '${a}': No such file or directory` });
+      continue;
+    }
+    setNode(p, { type: 'd', children: {}, perms: '755' });
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.rm = ({ args }) => {
+  if (!args.length) return { err: 'rm: missing operand' };
+  const rf = args.some(a => a.includes('r') || a.includes('f'));
+  const targets = args.filter(a => !a.startsWith('-'));
+  const results = [];
+  for (const a of targets) {
+    const p = normalizePath(a);
+    const node = getNode(p);
+    if (!node) {
+      if (!rf) results.push({ err: `rm: cannot remove '${a}': No such file or directory` });
+      continue;
+    }
+    if (node.type === 'd' && !rf) {
+      results.push({ err: `rm: cannot remove '${a}': Is a directory` });
+      continue;
+    }
+    deleteNode(p);
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.rmdir = ({ args }) => {
+  if (!args.length) return { err: 'rmdir: missing operand\nTry \'rmdir --help\' for more information.' };
+  const results = [];
+  for (const a of args) {
+    const p = normalizePath(a);
+    const node = getNode(p);
+    if (!node) {
+      results.push({ err: `rmdir: failed to remove '${a}': No such file or directory` });
+      continue;
+    }
+    if (node.type !== 'd') {
+      results.push({ err: `rmdir: failed to remove '${a}': Not a directory` });
+      continue;
+    }
+    if (Object.keys(node.children).length > 0) {
+      results.push({ err: `rmdir: failed to remove '${a}': Directory not empty` });
+      continue;
+    }
+    deleteNode(p);
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.cp = ({ args }) => {
+  const targets = args.filter(a => !a.startsWith('-'));
+  if (targets.length < 2) return { err: 'cp: missing destination file operand' };
+  const src = normalizePath(targets[0]);
+  let dst = normalizePath(targets[1]);
+  const srcNode = getNode(src);
+  if (!srcNode) return { err: `cp: cannot stat '${targets[0]}': No such file or directory` };
+  const dstNode = getNode(dst);
+  if (dstNode && dstNode.type === 'd') dst = dst + '/' + basename(src);
+  setNode(dst, JSON.parse(JSON.stringify(srcNode)));
+  return { out: '' };
+};
+
+COMMANDS.mv = ({ args }) => {
+  const targets = args.filter(a => !a.startsWith('-'));
+  if (targets.length < 2) return { err: 'mv: missing destination file operand' };
+  const src = normalizePath(targets[0]);
+  let dst = normalizePath(targets[1]);
+  const srcNode = getNode(src);
+  if (!srcNode) return { err: `mv: cannot stat '${targets[0]}': No such file or directory` };
+  const dstNode = getNode(dst);
+  if (dstNode && dstNode.type === 'd') dst = dst + '/' + basename(src);
+  setNode(dst, JSON.parse(JSON.stringify(srcNode)));
+  deleteNode(src);
+  return { out: '' };
+};
+
+COMMANDS.echo = ({ args, rawInput }) => {
+  const noNewline = args[0] === '-n';
+  const parts = noNewline ? args.slice(1) : args;
+  return { out: parts.join(' ') };
+};
+
+COMMANDS.grep = ({ args, stdin }) => {
+  const flags = args.filter(a => a.startsWith('-'));
+  const others = args.filter(a => !a.startsWith('-'));
+  const ignoreCase = flags.some(f => f.includes('i'));
+  const invertMatch = flags.some(f => f.includes('v'));
+  const lineNum = flags.some(f => f.includes('n'));
+  const countOnly = flags.some(f => f.includes('c'));
+  const recursive = flags.some(f => f.includes('r') || f.includes('R'));
+
+  if (!others.length) return { err: 'grep: missing pattern' };
+  const pattern = others[0];
+  const fileArgs = others.slice(1);
+
+  let regex;
+  try { regex = new RegExp(pattern, ignoreCase ? 'i' : ''); }
+  catch(e) { return { err: `grep: invalid pattern: ${pattern}` }; }
+
+  function grepLines(text, label) {
+    const lines = text.split('\n');
+    const matched = [];
+    lines.forEach((l, idx) => {
+      const m = regex.test(l);
+      if ((!invertMatch && m) || (invertMatch && !m)) {
+        let out = '';
+        if (label) out += `${label}:`;
+        if (lineNum) out += `${idx + 1}:`;
+        out += l;
+        matched.push(out);
+      }
+    });
+    return matched;
+  }
+
+  if (stdin !== undefined) {
+    const matched = grepLines(stdin, null);
+    if (countOnly) return { out: String(matched.length) };
+    return { out: matched.join('\n') };
+  }
+
+  if (recursive) {
+    const searchRoot = fileArgs[0] ? normalizePath(fileArgs[0]) : normalizePath(cwd);
+    const results = [];
+    function walk(p, node) {
+      if (node.type === 'f') {
+        const m = grepLines(node.content || '', p);
+        results.push(...m);
+      } else if (node.type === 'd') {
+        for (const [name, child] of Object.entries(node.children)) {
+          walk(p + '/' + name, child);
+        }
+      }
+    }
+    const rootNode = getNode(searchRoot);
+    if (!rootNode) return { err: `grep: ${fileArgs[0]}: No such file or directory` };
+    walk(searchRoot, rootNode);
+    if (countOnly) return { out: String(results.length) };
+    return { out: results.join('\n') };
+  }
+
+  if (!fileArgs.length) return { err: 'grep: missing file operand (or use with pipe)' };
+  const results = [];
+  const multiFile = fileArgs.length > 1;
+  for (const f of fileArgs) {
+    const p = normalizePath(f);
+    const node = getNode(p);
+    if (!node) { results.push({ err: `grep: ${f}: No such file or directory` }); continue; }
+    if (node.type === 'd') { results.push({ err: `grep: ${f}: Is a directory` }); continue; }
+    const matched = grepLines(node.content || '', multiFile ? f : null);
+    if (countOnly) results.push({ out: String(matched.length) });
+    else matched.forEach(l => results.push({ out: l }));
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.find = ({ args }) => {
+  const startArg = args[0] && !args[0].startsWith('-') ? args[0] : '.';
+  const startPath = normalizePath(startArg);
+  const startNode = getNode(startPath);
+  if (!startNode) return { err: `find: '${startArg}': No such file or directory` };
+
+  let namePattern = null, typeFilter = null, maxDepth = Infinity;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '-name' && args[i+1]) { namePattern = args[++i]; }
+    if (args[i] === '-type' && args[i+1]) { typeFilter = args[++i]; }
+    if (args[i] === '-maxdepth' && args[i+1]) { maxDepth = parseInt(args[++i]); }
+  }
+
+  const results = [];
+  function walk(path, node, depth) {
+    if (depth > maxDepth) return;
+    const name = basename(path);
+    let match = true;
+    if (namePattern) {
+      const re = new RegExp('^' + namePattern.replace(/\./g,'\\.').replace(/\*/g,'.*').replace(/\?/g,'.') + '$');
+      if (!re.test(name)) match = false;
+    }
+    if (typeFilter) {
+      if (typeFilter === 'f' && node.type !== 'f') match = false;
+      if (typeFilter === 'd' && node.type !== 'd') match = false;
+    }
+    if (match) results.push(path);
+    if (node.type === 'd') {
+      for (const [n, child] of Object.entries(node.children)) {
+        walk(path + '/' + n, child, depth + 1);
+      }
+    }
+  }
+  walk(startPath, startNode, 0);
+  return { out: results.join('\n') };
+};
+
+COMMANDS.wc = ({ args, stdin }) => {
+  const flags = args.filter(a => a.startsWith('-'));
+  const files = args.filter(a => !a.startsWith('-'));
+  const showL = !flags.length || flags.some(f => f.includes('l'));
+  const showW = !flags.length || flags.some(f => f.includes('w'));
+  const showC = !flags.length || flags.some(f => f.includes('c'));
+
+  function count(text) {
+    const lines = (text.match(/\n/g) || []).length;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    return { lines, words, chars };
+  }
+
+  function fmtCount(c, label) {
+    const parts = [];
+    if (showL) parts.push(String(c.lines).padStart(7));
+    if (showW) parts.push(String(c.words).padStart(7));
+    if (showC) parts.push(String(c.chars).padStart(7));
+    if (label) parts.push(' ' + label);
+    return parts.join('');
+  }
+
+  if (stdin !== undefined) {
+    const c = count(stdin);
+    return { out: fmtCount(c) };
+  }
+
+  if (!files.length) return { err: 'wc: missing file operand' };
+  const results = [];
+  let totL = 0, totW = 0, totC = 0;
+  for (const f of files) {
+    const p = normalizePath(f);
+    const node = getNode(p);
+    if (!node) { results.push({ err: `wc: ${f}: No such file or directory` }); continue; }
+    if (node.type === 'd') { results.push({ err: `wc: ${f}: Is a directory` }); continue; }
+    const c = count(node.content || '');
+    totL += c.lines; totW += c.words; totC += c.chars;
+    results.push({ out: fmtCount(c, f) });
+  }
+  if (files.length > 1) results.push({ out: fmtCount({ lines:totL, words:totW, chars:totC }, 'total') });
+  return results;
+};
+
+COMMANDS.head = ({ args, stdin }) => {
+  const nFlag = args.findIndex(a => a === '-n');
+  let n = 10;
+  const others = args.filter(a => !a.startsWith('-'));
+  if (nFlag !== -1 && args[nFlag+1]) { n = parseInt(args[nFlag+1]); }
+  else {
+    const numFlag = args.find(a => /^-\d+$/.test(a));
+    if (numFlag) n = parseInt(numFlag.slice(1));
+  }
+
+  if (stdin !== undefined) {
+    return { out: stdin.split('\n').slice(0, n).join('\n') };
+  }
+  if (!others.length) return { err: 'head: missing file operand' };
+  const node = getNode(normalizePath(others[0]));
+  if (!node) return { err: `head: cannot open '${others[0]}': No such file or directory` };
+  if (node.type === 'd') return { err: `head: ${others[0]}: Is a directory` };
+  return { out: (node.content || '').split('\n').slice(0, n).join('\n') };
+};
+
+COMMANDS.tail = ({ args, stdin }) => {
+  const nFlag = args.findIndex(a => a === '-n');
+  let n = 10;
+  const others = args.filter(a => !a.startsWith('-'));
+  if (nFlag !== -1 && args[nFlag+1]) { n = parseInt(args[nFlag+1]); }
+  else {
+    const numFlag = args.find(a => /^-\d+$/.test(a));
+    if (numFlag) n = parseInt(numFlag.slice(1));
+  }
+
+  if (stdin !== undefined) {
+    const lines = stdin.split('\n');
+    return { out: lines.slice(Math.max(0, lines.length - n)).join('\n') };
+  }
+  if (!others.length) return { err: 'tail: missing file operand' };
+  const node = getNode(normalizePath(others[0]));
+  if (!node) return { err: `tail: cannot open '${others[0]}': No such file or directory` };
+  if (node.type === 'd') return { err: `tail: ${others[0]}: Is a directory` };
+  const lines = (node.content || '').split('\n');
+  return { out: lines.slice(Math.max(0, lines.length - n)).join('\n') };
+};
+
+COMMANDS.sort = ({ args, stdin }) => {
+  const reverse = args.some(a => a.includes('r'));
+  const unique   = args.some(a => a.includes('u'));
+  const files = args.filter(a => !a.startsWith('-'));
+  let text = stdin !== undefined ? stdin : null;
+  if (!text && files.length) {
+    const node = getNode(normalizePath(files[0]));
+    if (!node) return { err: `sort: cannot read: ${files[0]}: No such file or directory` };
+    text = node.content || '';
+  }
+  if (text === null) return { err: 'sort: missing operand' };
+  let lines = text.split('\n').filter(l => l !== '');
+  if (unique) lines = [...new Set(lines)];
+  lines.sort();
+  if (reverse) lines.reverse();
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.uniq = ({ args, stdin }) => {
+  const files = args.filter(a => !a.startsWith('-'));
+  const countFlag = args.some(a => a.includes('c'));
+  let text = stdin !== undefined ? stdin : null;
+  if (!text && files.length) {
+    const node = getNode(normalizePath(files[0]));
+    if (!node) return { err: `uniq: ${files[0]}: No such file or directory` };
+    text = node.content || '';
+  }
+  if (text === null) return { err: 'uniq: missing operand' };
+  const lines = text.split('\n');
+  const result = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (i === 0 || lines[i] !== lines[i-1]) {
+      if (countFlag) {
+        let c = 1;
+        while (i + c < lines.length && lines[i+c] === lines[i]) c++;
+        result.push(`${String(c).padStart(6)} ${lines[i]}`);
+        i += c - 1;
+      } else {
+        result.push(lines[i]);
+      }
+    }
+  }
+  return { out: result.join('\n') };
+};
+
+COMMANDS.cut = ({ args, stdin }) => {
+  const dIdx = args.indexOf('-d');
+  const fIdx = args.indexOf('-f');
+  const delim = dIdx !== -1 ? (args[dIdx+1] || '\t') : '\t';
+  const fieldStr = fIdx !== -1 ? args[fIdx+1] : '1';
+  const field = parseInt(fieldStr) - 1;
+  const files = args.filter(a => !a.startsWith('-'));
+  let text = stdin !== undefined ? stdin : null;
+  if (!text && files.length) {
+    const node = getNode(normalizePath(files[0]));
+    if (!node) return { err: `cut: ${files[0]}: No such file or directory` };
+    text = node.content || '';
+  }
+  if (text === null) return { err: 'cut: missing operand' };
+  const result = text.split('\n').map(l => {
+    const parts = l.split(delim);
+    return parts[field] !== undefined ? parts[field] : l;
+  });
+  return { out: result.join('\n') };
+};
+
+COMMANDS.history = ({ args }) => {
+  if (!cmdHistory.length) return { out: '' };
+  const lines = cmdHistory.map((c, i) => `  ${String(i + 1).padStart(4)}  ${c}`);
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.clear = () => {
+  outputEl.innerHTML = '';
+  return null;
+};
+
+COMMANDS.whoami = () => ({ out: env.USER });
+
+COMMANDS.id = () => ({
+  out: `uid=1000(analyst) gid=1000(analyst) groups=1000(analyst),100(users)`
+});
+
+COMMANDS.groups = () => ({ out: 'analyst users' });
+
+COMMANDS.env = ({ args }) => {
+  const lines = Object.entries(env).map(([k,v]) => `${k}=${v}`);
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.export = ({ args }) => {
+  for (const a of args) {
+    const eq = a.indexOf('=');
+    if (eq === -1) continue;
+    const key = a.slice(0, eq);
+    const val = a.slice(eq + 1);
+    env[key] = val;
+  }
+  return { out: '' };
+};
+
+COMMANDS.which = ({ args }) => {
+  if (!args.length) return { err: 'which: missing argument' };
+  const cmd = args[0];
+  if (COMMANDS[cmd]) return { out: `/usr/bin/${cmd}` };
+  return { out: `${cmd} not found`, isErr: true };
+};
+
+COMMANDS.chmod = ({ args }) => {
+  const targets = args.filter(a => !a.startsWith('-') && !/^\d{3}$/.test(a));
+  const modeArg = args.find(a => /^\d{3,4}$/.test(a) || /^[ugoa][+-=][rwx]+$/.test(a));
+  if (!modeArg || !targets.length) return { err: 'chmod: missing operand' };
+  const results = [];
+  for (const t of targets) {
+    const node = getNode(normalizePath(t));
+    if (!node) { results.push({ err: `chmod: cannot access '${t}': No such file or directory` }); continue; }
+    node.perms = modeArg;
+  }
+  return results.length ? results : { out: '' };
+};
+
+COMMANDS.tree = ({ args }) => {
+  const target = args[0] ? normalizePath(args[0]) : normalizePath(cwd);
+  const node = getNode(target);
+  if (!node) return { err: `tree: '${args[0] || cwd}': No such file or directory` };
+  const lines = [basename(target) + '/'];
+  function walk(n, prefix) {
+    const entries = Object.entries(n.children || {});
+    entries.forEach(([name, child], idx) => {
+      const last = idx === entries.length - 1;
+      const connector = last ? '└── ' : '├── ';
+      const ext = child.type === 'd' ? '/' : '';
+      lines.push(prefix + connector + name + ext);
+      if (child.type === 'd') walk(child, prefix + (last ? '    ' : '│   '));
+    });
+  }
+  walk(node, '');
+  return { out: lines.join('\n') };
+};
+
+COMMANDS.reset = () => {
+  indexedDB.deleteDatabase('bash-trainer');
+  localStorage.removeItem('bash-trainer');
+  setTimeout(() => location.reload(), 200);
+  return { out: 'Resetting environment...' };
+};
+
+COMMANDS.man = ({ args }) => {
+  if (!args.length) return { err: 'What manual page do you want?' };
+  const cmd = args[0];
+  const manPages = {
+    ls:    'ls - list directory contents\nUsage: ls [OPTION]... [FILE]...\n  -a  do not ignore entries starting with .\n  -l  use a long listing format\n  -h  human-readable sizes',
+    cd:    'cd - change the shell working directory\nUsage: cd [DIR]',
+    grep:  'grep - print lines matching a pattern\nUsage: grep [OPTION]... PATTERN [FILE]...\n  -i  ignore case\n  -v  invert match\n  -n  line numbers\n  -c  count only\n  -r  recursive',
+    find:  'find - search for files\nUsage: find [PATH] [EXPRESSION]\n  -name PATTERN  file name pattern\n  -type f|d      file type\n  -maxdepth N    max depth',
+    cat:   'cat - concatenate files and print\nUsage: cat [FILE]...',
+    nano:  'nano - Nano\'s ANOther editor, an enhanced free Pico clone\nUsage: nano [FILE]',
+    mkdir: 'mkdir - make directories\nUsage: mkdir [OPTION]... DIRECTORY...\n  -p  create parent directories as needed',
+    rm:    'rm - remove files or directories\nUsage: rm [OPTION]... [FILE]...\n  -r  remove directories recursively\n  -f  ignore nonexistent files',
+    rmdir: 'rmdir - remove empty directories\nUsage: rmdir [DIRECTORY]...',
+    cp:    'cp - copy files and directories\nUsage: cp [SOURCE] [DEST]',
+    mv:    'mv - move/rename files\nUsage: mv [SOURCE] [DEST]',
+    wc:    'wc - word, line, and byte count\nUsage: wc [OPTION]... [FILE]...\n  -l  lines\n  -w  words\n  -c  bytes',
+    head:  'head - output the first part of files\nUsage: head [-n N] [FILE]',
+    tail:  'tail - output the last part of files\nUsage: tail [-n N] [FILE]',
+    sort:  'sort - sort lines of text\nUsage: sort [OPTION]... [FILE]\n  -r  reverse\n  -u  unique',
+    chmod: 'chmod - change file mode bits\nUsage: chmod MODE FILE...',
+    echo:  'echo - display a line of text\nUsage: echo [STRING]...',
+    tree:  'tree - list contents as tree\nUsage: tree [DIR]',
+    cut:   'cut - remove sections from lines\nUsage: cut -d DELIM -f N [FILE]',
+    uniq:  'uniq - report or omit repeated lines\nUsage: uniq [OPTION] [FILE]\n  -c  prefix count',
+    reset: 'reset - factory reset the terminal sandbox environment\nUsage: reset',
+  };
+  if (manPages[cmd]) return { out: `\nNAME\n    ${manPages[cmd]}\n\nPress q to exit man page` };
+  return { err: `No manual entry for ${cmd}` };
+};
+
+COMMANDS.help = () => ({
+  out: `Available commands:\n  Navigation:   cd, ls, pwd, tree\n  Files:        cat, touch, nano, mkdir, rm, rmdir, cp, mv\n  Search:       grep, find, wc, head, tail, sort, uniq, cut\n  Environment:  env, export, echo, which, reset\n  Users:        whoami, id, groups\n  Permissions:  chmod\n  System:       history, clear, help, man\n  Pipes:        supported — e.g. cat file.txt | grep pattern | wc -l`
+});
+
+COMMANDS.date = () => ({ out: new Date().toString() });
+COMMANDS.uname = ({ args }) => {
+  const a = args.includes('-a');
+  if (a) return { out: 'Linux bash-trainer 5.15.0 #1 SMP x86_64 GNU/Linux' };
+  return { out: 'Linux' };
+};
+COMMANDS.uptime = () => ({ out: `${new Date().toTimeString().split(' ')[0]} up 0 days, load average: 0.00, 0.00, 0.00` });
+COMMANDS.hostname = () => ({ out: 'bash-trainer' });
+
+// ─────────────────────────────────────────────────────────────
+// EXECUTOR
+// ─────────────────────────────────────────────────────────────
+function executeSegment(seg, stdin) {
+  const args = resolveArgs(seg.args);
+  const fn = COMMANDS[seg.cmd];
+  if (!fn) return { err: `bash: ${seg.cmd}: command not found` };
+  const result = fn({ args, stdin });
+  return result;
+}
+
+function flattenResult(result) {
+  if (!result) return { out: '', err: '' };
+  if (Array.isArray(result)) {
+    let out = [], err = [];
+    for (const r of result) {
+      const f = flattenResult(r);
+      if (f.out) out.push(f.out);
+      if (f.err) err.push(f.err);
+    }
+    return { out: out.join('\n'), err: err.join('\n') };
+  }
+  return { out: result.out || '', err: result.err || '', html: result.html || '' };
+}
+
+function runPipeline(input) {
+  let redirectFile = null;
+  const redirMatch = input.match(/^(.*?)\s*>\s*(.+)$/);
+  if (redirMatch) {
+    input = redirMatch[1].trim();
+    redirectFile = redirMatch[2].trim();
+  }
+
+  const segments = parseInput(input);
+  if (!segments.length || !segments[0].cmd) return;
+
+  let stdin = undefined;
+  let lastResult = null;
+
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
+    const isLast = i === segments.length - 1;
+
+    if (!seg.cmd) continue;
+
+    const raw = executeSegment(seg, stdin);
+    lastResult = raw;
+
+    if (!isLast) {
+      const flat = flattenResult(raw);
+      if (flat.err) {
+        printText(flat.err, 'line-err');
+        return;
+      }
+      stdin = flat.out;
+    }
+  }
+
+  if (lastResult !== null) {
+    const flat = flattenResult(lastResult);
+
+    if (redirectFile) {
+      const p = normalizePath(redirectFile);
+      const parent = getNode(getParent(p));
+      if (!parent || parent.type !== 'd') {
+        printText(`bash: ${redirectFile}: No such file or directory`, 'line-err');
+        return;
+      }
+      setNode(p, { type: 'f', content: flat.out, perms: '644' });
+      return;
+    }
+
+    if (flat.err) printText(flat.err, 'line-err');
+    if (flat.html) {
+      const d = document.createElement('div');
+      d.className = 'line line-out';
+      d.innerHTML = flat.html;
+      outputEl.appendChild(d);
+      outputEl.scrollTop = outputEl.scrollHeight;
+    } else if (flat.out !== undefined && flat.out !== null) {
+      if (flat.out !== '') printText(flat.out);
+    }
+  }
+}
+
+function handleInput(raw) {
+  if (inNano) return;
+  const input = raw.trim();
+  printPromptEcho(raw);
+
+  if (!input) return;
+
+  if (cmdHistory[cmdHistory.length - 1] !== input) cmdHistory.push(input);
+  histIdx = -1;
+
+  const cmds = input.split(';').map(s => s.trim()).filter(Boolean);
+  for (const cmd of cmds) {
+    runPipeline(cmd);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUTOCOMPLETE
+// ─────────────────────────────────────────────────────────────
+const acEl = document.getElementById('autocomplete');
+
+function getCompletions(val) {
+  const tokens = tokenize(val);
+  const isCmd = tokens.length === 0 || (tokens.length === 1 && !val.endsWith(' '));
+
+  if (isCmd) {
+    const prefix = tokens[0] || '';
+    return Object.keys(COMMANDS).filter(c => c.startsWith(prefix)).map(c => ({ label: c, type: 'cmd' }));
+  }
+
+  const lastToken = val.endsWith(' ') ? '' : (tokens[tokens.length - 1] || '');
+  const lastSlash = lastToken.lastIndexOf('/');
+  const dirPart  = lastSlash >= 0 ? lastToken.slice(0, lastSlash + 1) : '';
+  const filePart = lastSlash >= 0 ? lastToken.slice(lastSlash + 1)    : lastToken;
+
+  const dirPath = dirPart ? normalizePath(dirPart) : normalizePath(cwd);
+  const dirNode = getNode(dirPath);
+  if (!dirNode || dirNode.type !== 'd') return [];
+
+  return Object.entries(dirNode.children)
+    .filter(([n]) => n.startsWith(filePart))
+    .map(([n, nd]) => ({ label: (dirPart || '') + n + (nd.type === 'd' ? '/' : ''), type: nd.type === 'd' ? 'dir' : 'file' }));
+}
+
+function showAC(list) {
+  acEl.innerHTML = '';
+  if (!list.length) { acEl.style.display = 'none'; return; }
+  list.forEach((item, i) => {
+    const d = document.createElement('div');
+    d.className = 'ac-item ' + (item.type === 'dir' ? 'ac-dir' : item.type === 'cmd' ? 'ac-cmd' : '');
+    d.textContent = item.label;
+    d.addEventListener('mousedown', e => { e.preventDefault(); applyAC(item.label); });
+    acEl.appendChild(d);
+  });
+  const inputEl = document.getElementById('cmd-input');
+  const rect = document.getElementById('inputbar').getBoundingClientRect();
+  acEl.style.display = 'block';
+  acEl.style.left = rect.left + 'px';
+  acEl.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+  acEl.style.top = 'auto';
+}
+
+function hideAC() {
+  acEl.style.display = 'none';
+  acList = []; acIdx = -1;
+}
+
+function applyAC(label) {
+  const inputEl = document.getElementById('cmd-input');
+  const val = inputEl.value;
+  const tokens = tokenize(val);
+  const trailingSpace = val.endsWith(' ');
+
+  if (tokens.length === 0 || (tokens.length === 1 && !trailingSpace)) {
+    inputEl.value = label + ' ';
+  } else {
+    tokens[tokens.length - (trailingSpace ? 0 : 1)] = label;
+    inputEl.value = (trailingSpace ? val : tokens.slice(0, -1).join(' ') + (tokens.length > 1 ? ' ' : '')) + label;
+    if (!label.endsWith('/')) inputEl.value += ' ';
+  }
+  hideAC();
+}
+
+// ─────────────────────────────────────────────────────────────
+// INPUT HANDLER
+// ─────────────────────────────────────────────────────────────
+const inputEl = document.getElementById('cmd-input');
+
+inputEl.addEventListener('keydown', e => {
+  if (inNano) return;
+  if (e.key === 'Enter') {
+    hideAC();
+    const val = inputEl.value;
+    inputEl.value = '';
+    handleInput(val);
+    return;
+  }
+
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    if (acEl.style.display === 'none' || !acList.length) {
+      acList = getCompletions(inputEl.value);
+      if (acList.length === 1) { applyAC(acList[0].label); acList = []; return; }
+      acIdx = -1;
+      showAC(acList);
+    } else {
+      acIdx = (acIdx + 1) % acList.length;
+      [...acEl.children].forEach((c, i) => c.classList.toggle('selected', i === acIdx));
+    }
+    return;
+  }
+
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (acEl.style.display !== 'none' && acList.length) {
+      acIdx = (acIdx - 1 + acList.length) % acList.length;
+      [...acEl.children].forEach((c, i) => c.classList.toggle('selected', i === acIdx));
+      return;
+    }
+    if (histIdx === -1) histIdx = cmdHistory.length;
+    if (histIdx > 0) { histIdx--; inputEl.value = cmdHistory[histIdx]; }
+    return;
+  }
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (acEl.style.display !== 'none' && acList.length) {
+      acIdx = (acIdx + 1) % acList.length;
+      [...acEl.children].forEach((c, i) => c.classList.toggle('selected', i === acIdx));
+      return;
+    }
+    if (histIdx === -1) return;
+    histIdx++;
+    inputEl.value = histIdx < cmdHistory.length ? cmdHistory[histIdx] : '';
+    if (histIdx >= cmdHistory.length) histIdx = -1;
+    return;
+  }
+
+  if (e.key === 'Escape') { hideAC(); return; }
+
+  if (acEl.style.display !== 'none' && acIdx !== -1 && e.key === 'Enter') {
+    applyAC(acList[acIdx].label); return;
+  }
+});
+
+inputEl.addEventListener('input', () => {
+  if (inNano) return;
+  hideAC();
+});
+
+document.addEventListener('click', e => {
+  if (!acEl.contains(e.target) && e.target !== inputEl) hideAC();
+});
+
+document.addEventListener('keydown', e => {
+  if (!inNano && document.activeElement !== inputEl && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+    inputEl.focus();
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// PERSISTENCE
+// ─────────────────────────────────────────────────────────────
+const DB_NAME = 'bash-trainer', STORE = 'state', KEY = 'session';
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = e => rej(e);
+  });
+}
+
+async function saveState() {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put({ fs, cwd, env, cmdHistory }, KEY);
+  } catch(e) {
+    try { localStorage.setItem('bash-trainer', JSON.stringify({ fs, cwd, env, cmdHistory })); } catch(_) {}
+  }
+}
+
+async function loadState() {
+  try {
+    const db = await openDB();
+    return new Promise(res => {
+      const tx = db.transaction(STORE, 'readonly');
+      const req = tx.objectStore(STORE).get(KEY);
+      req.onsuccess = e => res(e.target.result || null);
+      req.onerror   = () => res(null);
+    });
+  } catch(e) {
+    try { const d = localStorage.getItem('bash-trainer'); return d ? JSON.parse(d) : null; } catch(_) { return null; }
+  }
+}
+
+setInterval(saveState, 30000);
+
+// ─────────────────────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────────────────────
+async function boot() {
+  const saved = await loadState();
+  if (saved) {
+    fs  = saved.fs  || fs;
+    cwd = saved.cwd || cwd;
+    env = saved.env || env;
+    cmdHistory = saved.cmdHistory || [];
+  }
+
+  updatePrompt();
+
+  const banner = [
+    `<span style="color:var(--green)">  ██████╗  █████╗ ███████╗██╗  ██╗</span>`,
+    `<span style="color:var(--green)">  ██╔══██╗██╔══██╗██╔════╝██║  ██║</span>`,
+    `<span style="color:var(--green)">  ██████╔╝███████║███████╗███████║</span>`,
+    `<span style="color:var(--green)">  ██╔══██╗██╔══██║╚════██║██╔══██║</span>`,
+    `<span style="color:var(--green)">  ██████╔╝██║  ██║███████║██║  ██║</span>`,
+    `<span style="color:var(--green)">  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝  <span style="color:var(--dim)">trainer v1.0</span></span>`,
+    '',
+    `<span style="color:var(--dim)">  Linux Bash Sandbox — Free Mode</span>`,
+    `<span style="color:var(--dim)">  Type <span style="color:var(--white)">help</span> for available commands | <span style="color:var(--white)">man [cmd]</span> for details</span>`,
+    `<span style="color:var(--dim)">  Session auto-saves every 30s</span>`,
+    '',
+  ];
+
+  for (const line of banner) {
+    const d = document.createElement('div');
+    d.className = 'line';
+    d.innerHTML = line;
+    outputEl.appendChild(d);
+  }
+
+  inputEl.focus();
+}
+
+boot();
 </script>
 </body>
 </html>
