@@ -586,6 +586,33 @@
         .intel-pulse { width:5px; height:5px; border-radius:50%; background:#00d4ff; box-shadow:0 0 6px #00d4ff; animation:intelPulse 2s ease-in-out infinite; flex-shrink:0; }
         @keyframes intelPulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.5)} }
 
+        /* ── BUSINESS VIEW BUTTON ── */
+        #businessBtn {
+            position: absolute;
+            top: 72px;
+            right: 88px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid rgba(0,212,255,0.4);
+            border-radius: 6px;
+            color: #00d4ff;
+            padding: 10px 14px;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            pointer-events: all;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            font-family: inherit;
+        }
+        #businessBtn:hover { background:rgba(0,212,255,0.1); border-color:#00d4ff; box-shadow:0 0 16px rgba(0,212,255,0.2); }
+
         /* ── INTEL ARCHIVE OVERLAY ── */
         #intelArchive {
             display: none;
@@ -775,6 +802,9 @@
 <button id="settingsBtn" onclick="toggleSettings()">MENU</button>
 <button id="intelBtn" onclick="openIntelArchive()" title="Intel Archive">
     <span class="intel-pulse"></span>START HERE
+</button>
+<button id="businessBtn" onclick="window.location.href='https://arkive2025.github.io/GALAXY-DRE/GALAXYBUSSITE.html'" title="Business View">
+    <span style="font-size:14px;line-height:1;">🏢</span>BUSINESS VIEW
 </button>
 
 <div id="moonLegend" style="display:none;">
