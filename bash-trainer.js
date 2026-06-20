@@ -39,7 +39,7 @@ const INITIAL_FS = {
       hostname: { type: 'f', content: 'bash-trainer', perms: '644', owner: 'root', mtime: 1718755200000 },
       'os-release': { type: 'f', content: 'NAME="Ubuntu"\nVERSION="22.04.3 LTS (Jammy Jellyfish)"\nID=ubuntu\nID_LIKE=debian\nPRETTY_NAME="Ubuntu 22.04.3 LTS"\nVERSION_ID="22.04"', perms: '644', owner: 'root', mtime: 1718755200000 },
       'resolv.conf': { type: 'f', content: 'nameserver 8.8.8.8\nnameserver 8.8.4.4', perms: '644', owner: 'root', mtime: 1718755200000 },
-      crontab: { type: 'f', content: '# /etc/crontab\nSHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n#m  h  dom mon dow user  command\n17 *  *   *   *  root  cd / && run-parts --report /etc/cron.hourly\n0  6  *   *   *  root  test -x /usr/sbin/anacron || run-parts /etc/cron.daily', perms: '644', owner: 'root', mtime: 1718755200000 },
+      crontab: { type: 'f', content: '# /etc/crontab\nSHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n#m  h  dom mon dow user  command\n17 * * * * root  cd / && run-parts --report /etc/cron.hourly\n0  6  * * * root  test -x /usr/sbin/anacron || run-parts /etc/cron.daily', perms: '644', owner: 'root', mtime: 1718755200000 },
       fstab: { type: 'f', content: '# /etc/fstab\n/dev/sda1  /        ext4  defaults  0  1\n/dev/sda2  /home    ext4  defaults  0  2\ntmpfs      /tmp     tmpfs nodev,nosuid  0  0', perms: '644', owner: 'root', mtime: 1718755200000 },
     } },
     var: { type: 'd', perms: '755', owner: 'root', mtime: 1718755200000, children: {
@@ -380,7 +380,6 @@ function renderAppScreen() {
     outputEl.appendChild(wrapper);
     
     bodyArea.focus();
-    // Cache back referencing adjustments directly on state mapping definitions dynamically
     bodyArea.addEventListener('input', (e) => {
       appState.content = e.target.value;
     });
@@ -403,7 +402,7 @@ function renderAppScreen() {
     controlStatus.style.color = '#000';
     controlStatus.style.padding = '2px 5px';
     controlStatus.style.marginTop = '10px';
-    const percent = Math.round((endIdx / lines.length) * 100);
+    const percent = lines.length ? Math.round((endIdx / lines.length) * 100) : 100;
     controlStatus.textContent = `${appState.filename} (lines ${appState.startRow + 1}-${endIdx}/${lines.length} ${percent}%) - Press 'q' to close. Space/ArrowDown to navigate.`;
     
     wrapper.appendChild(controlStatus);
@@ -566,7 +565,7 @@ function runPipelineWithIntegrity(input) {
   if (lastResult === null) return { out: '', err: '', exitCode: lastExitCode };
   const flat = flattenResult(lastResult);
 
-  // Write files to virtual FS safely without double echo drops or structural corruptions
+  // Write files to virtual FS safely
   if (stdoutFile && !devNullStdout) {
     const p = normalizePath(stdoutFile);
     const parent = getNode(getParent(p));
@@ -624,6 +623,8 @@ function runPipeline(input) {
 // ─────────────────────────────────────────────────────────────
 // COMMAND PORTED DEF MAPS
 // ─────────────────────────────────────────────────────────────
+
+const COMMANDS = {};
 
 // ── Navigation ──
 
@@ -1775,6 +1776,11 @@ COMMANDS.usermod = ({ args }) => {
   return { out: '' };
 };
 
+COMMANDS.groupadd = ({ args }) => {
+  if (currentUser !== 'root') return { err: 'groupadd: Permission denied.' };
+  return { out: '' };
+};
+
 // ── Environment ──
 
 COMMANDS.env = ({ args }) => {
@@ -1980,8 +1986,8 @@ COMMANDS.ip = ({ args }) => {
 COMMANDS.netstat = ({ args }) => {
   const header = `Active Internet connections (only servers)\nProto Recv-Q Send-Q Local Address           Foreign Address         State`;
   const rows   = [
-    `tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN`,
-    `tcp6       0      0 :::22                   :::*                    LISTEN`,
+    `tcp        0      0 0.0.0.0:22              0.0.0.0:* LISTEN`,
+    `tcp6       0      0 :::22                   :::* LISTEN`,
     `tcp        0      0 192.168.1.100:22        192.168.1.50:54321      ESTABLISHED`,
   ];
   return { out: [header, ...rows].join('\n') };
@@ -2552,19 +2558,43 @@ COMMANDS.man = ({ args }) => {
   if (!args.length) return { err: 'What manual page do you want?' };
   const cmd  = args[0];
   const pages = {
-    ls: 'ls — list directory contents\n\nSYNOPSIS\n    ls [OPTION]... [FILE]...\n\nOPTIONS\n    -a    do not ignore entries starting with .\n    -l    use long listing format',
-    cd: 'cd — change the shell working directory\n\nSYNOPSIS\n    cd [DIR]',
-    grep: 'grep — print lines matching a pattern\n\nSYNOPSIS\n    grep [OPTION]... PATTERN [FILE]...',
-    nano: 'nano — full interactive text editor simulator layer\n\nSYNOPSIS\n    nano FILE\n\nSHORTCUTS\n    Ctrl+O: Save layout file change changes\n    Ctrl+X: Exit overlay back to terminal prompt layer context context',
-    less: 'less — interactively page through standard output stream records\n\nSYNOPSIS\n    less FILE\n\nSHORTCUTS\n    Space: Next viewport page block\n    ArrowDown / Enter: Down one row context\n    q: Close page viewport view modal context',
+    ls: 'NAME\n  ls - list directory contents\n\nSYNOPSIS\n  ls [OPTION]... [FILE]...\n\nOPTIONS\n  -a  do not ignore entries starting with .\n  -l  use long listing format',
+    cd: 'NAME\n  cd - change the shell working directory\n\nSYNOPSIS\n  cd [DIR]',
+    grep: 'NAME\n  grep - print lines matching a pattern\n\nSYNOPSIS\n  grep [OPTION]... PATTERN [FILE]...',
+    sed: 'NAME\n  sed - stream editor for filtering and transforming text\n\nSYNOPSIS\n  sed [OPTION]... {script} [FILE]...',
+    awk: 'NAME\n  awk - pattern scanning and processing language\n\nSYNOPSIS\n  awk [ -F fs ] [ -v var=value ] [ \'prog\' | -f progfile ] [ file ... ]',
+    find: 'NAME\n  find - search for files in a directory hierarchy\n\nSYNOPSIS\n  find [path...] [expression]',
+    tar: 'NAME\n  tar - an archiving utility\n\nSYNOPSIS\n  tar [OPTION...] [FILE]...',
+    ssh: 'NAME\n  ssh - OpenSSH remote login client\n\nSYNOPSIS\n  ssh [user@]hostname',
+    curl: 'NAME\n  curl - transfer a URL\n\nSYNOPSIS\n  curl [options] [URL...]',
+    diff: 'NAME\n  diff - compare files line by line\n\nSYNOPSIS\n  diff [OPTION]... FILES',
+    ps: 'NAME\n  ps - report a snapshot of the current processes\n\nSYNOPSIS\n  ps [options]',
+    systemctl: 'NAME\n  systemctl - Control the systemd system and service manager\n\nSYNOPSIS\n  systemctl [OPTIONS...] COMMAND [NAME...]',
+    tr: 'NAME\n  tr - translate or delete characters\n\nSYNOPSIS\n  tr [OPTION]... SET1 [SET2]',
+    xargs: 'NAME\n  xargs - build and execute command lines from standard input\n\nSYNOPSIS\n  xargs [options] [command [initial-arguments]]',
+    tee: 'NAME\n  tee - read from standard input and write to standard output and files\n\nSYNOPSIS\n  tee [OPTION]... [FILE]...',
+    sort: 'NAME\n  sort - sort lines of text files\n\nSYNOPSIS\n  sort [OPTION]... [FILE]...',
+    wc: 'NAME\n  wc - print newline, word, and byte counts for each file\n\nSYNOPSIS\n  wc [OPTION]... [FILE]...',
+    pipe: 'PIPES\n  A pipeline is a sequence of one or more commands separated by the control operator |.',
+    redirect: 'REDIRECTION\n  Before a command is executed, its input and output may be redirected using a special notation interpreted by the shell.',
+    bash: 'NAME\n  bash - GNU Bourne-Again SHell\n\nSYNOPSIS\n  bash [options] [file]',
+    nano: 'NAME\n  nano - Nano\'s ANOther editor, an enhanced free Pico clone\n\nSYNOPSIS\n  nano [filename]\n\nDESCRIPTION\n  Interactive text editor. Ctrl+O to save, Ctrl+X to exit.',
+    less: 'NAME\n  less - opposite of more\n\nSYNOPSIS\n  less [filename]\n\nDESCRIPTION\n  View file contents with pagination. Space/PgDown to scroll, q to quit.',
+    usermod: 'NAME\n  usermod - modify a user account\n\nSYNOPSIS\n  usermod [options] LOGIN\n\nDESCRIPTION\n  Modify a user account. Changes are reflected in the system /etc/passwd and /etc/shadow files.',
+    useradd: 'NAME\n  useradd - create a new user or update default new user information\n\nSYNOPSIS\n  useradd [options] LOGIN',
+    groupadd: 'NAME\n  groupadd - create a new group\n\nSYNOPSIS\n  groupadd [options] group',
+    chown: 'NAME\n  chown - change file owner and group\n\nSYNOPSIS\n  chown [OWNER][:[GROUP]] FILE',
+    chmod: 'NAME\n  chmod - change file mode bits\n\nSYNOPSIS\n  chmod [OPTION] MODE FILE'
   };
+  
   if (pages[cmd]) {
     return { html: `<div style="color:var(--white)"><pre style="font-family:var(--font);white-space:pre-wrap"><span style="color:var(--yellow);font-weight:bold">${escHtml(cmd.toUpperCase())}(1)</span>\n\n${escHtml(pages[cmd])}\n\n<span style="color:var(--dim)">bash-trainer manual — type any command to continue</span></pre></div>` };
   }
+  if (COMMANDS[cmd]) return { out: `${cmd}: a shell command. Try '${cmd} --help' or 'man bash' for scripting.` };
   return { err: `No manual entry for ${cmd}` };
 };
 
-COMMANDS.help = () => ({ html: `<span style="color:var(--green);font-weight:bold">bash-trainer — Available Commands</span>\nType 'help' or 'man' to explore available commands like ls, cd, cat, grep, tree, nano, less, top.` });
+COMMANDS.help = () => ({ html: `<span style="color:var(--green);font-weight:bold">bash-trainer — Available Commands</span>\nType 'help' or 'man' to explore available commands like ls, cd, cat, grep, tree, nano, less, top, usermod, chown, chmod.` });
 
 // ─────────────────────────────────────────────────────────────
 // EXECUTOR PIPELINE STRUCTS
@@ -2631,6 +2661,26 @@ function handleInput(raw) {
     }
     return;
   }
+  
+  const whileMatch = input.match(/^while\s+(.+?);\s*do\s+(.+?);\s*done$/);
+  if (whileMatch) {
+    let iters = 0;
+    while (iters++ < 50) {
+      runPipelineCapture(whileMatch[1]);
+      if (lastExitCode !== 0) break;
+      runPipeline(whileMatch[2]);
+    }
+    return;
+  }
+
+  const ifMatch = input.match(/^if\s+(.+?);\s*then\s+(.+?)(?:;\s*else\s+(.+?))?;\s*fi$/);
+  if (ifMatch) {
+    runPipelineCapture(ifMatch[1]);
+    if (lastExitCode === 0) runPipeline(ifMatch[2]);
+    else if (ifMatch[3]) runPipeline(ifMatch[3]);
+    return;
+  }
+  
   runPipeline(input);
 }
 
@@ -2663,7 +2713,6 @@ function handleAppKeyEvent(e) {
       setTimeout(() => statusNotify.remove(), 2000);
       return true;
     }
-    // Let normal characters navigate the inner textarea focused boundary container cleanly
     return false; 
   }
   
@@ -2795,7 +2844,6 @@ const inputEl = document.getElementById('cmd-input');
 
 if (inputEl) {
   inputEl.addEventListener('keydown', e => {
-    // If an interactive full overlay app handles this click sequence first, drop bubble processing execution immediately
     if (handleAppKeyEvent(e)) return;
 
     if (e.key === 'Enter') {
@@ -2872,7 +2920,6 @@ if (inputEl) {
   inputEl.addEventListener('input', () => { hideAC(); });
 }
 
-// Global window event wire traps for structural terminal app frame handling integration
 document.addEventListener('keydown', e => {
   if (currentAppMode) {
     handleAppKeyEvent(e);
@@ -2902,7 +2949,7 @@ function openDB() {
 }
 
 async function saveState() {
-  if (currentAppMode) return; // Prevent caching raw interface text dumps into disk
+  if (currentAppMode) return;
   const data = { fs, cwd, env, cmdHistory, aliases, currentUser };
   try {
     const db = await openDB();
@@ -2971,5 +3018,4 @@ async function boot() {
   if (inputEl) inputEl.focus();
 }
 
-// Launch the execution routine directly
 boot();
