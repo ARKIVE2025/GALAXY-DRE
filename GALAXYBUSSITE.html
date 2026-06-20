@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-12KBJQ8QDS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-12KBJQ8QDS');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Galaxy-DRE: a unified ecosystem of AI tools, privacy systems, wellness apps, and creative platforms — built single-file, local-first, and human-controlled.">
+    <title>DRE Ecosystem · Galaxy-DRE by Andre Method</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --surface-hover: #111111;
+            --text: #ffffff;
+            --text-muted: #8a8a8a;
+            --text-dim: #5a5a5a;
+            --border: #1f1f1f;
+            --border-hover: #3a3a3a;
+            --accent: #00d4ff;
+            --accent-2: #7b2ff7;
+            --gold: #ffc832;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 48px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.04em; }
+        .logo-mark { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .logo-sub { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; }
+
+        .nav-actions { display: flex; gap: 12px; align-items: center; }
+
+        .btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .btn:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.04); }
+        .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+        .btn-primary:hover { background: #e2e2e2; color: var(--bg); }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 110px 48px 60px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+            font-weight: 700;
+            letter-spacing: -0.035em;
+            line-height: 1.06;
+            margin-bottom: 22px;
+            max-width: 880px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            font-weight: 400;
+            margin-bottom: 36px;
+        }
+
+        .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 56px; }
+
+        /* ── STAT STRIP ── */
+        .stat-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            max-width: 880px;
+        }
+        .stat-cell { background: var(--surface); padding: 20px 22px; }
+        .stat-num { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+        .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+
+        /* ── SECTIONS ── */
+        .system-section {
+            padding: 64px 48px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-head { margin-bottom: 32px; }
+        .section-eyebrow { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .section-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+        .section-desc { color: var(--text-muted); font-size: 0.98rem; margin-top: 8px; max-width: 640px; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--card-accent, var(--accent));
+            opacity: 0.7;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            background: var(--surface-hover);
+        }
+
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+
+        .card-cat {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--card-accent, var(--text-muted));
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-badge {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.06);
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.01em; }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .card-cta { font-size: 0.78rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+        .card-cta span { color: var(--card-accent, var(--accent)); }
+
+        /* ── MODAL ── */
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        #modal.active { display: flex; }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 620px;
+            width: 100%;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-modal:hover { color: var(--text); }
+
+        .modal-header { font-size: 1.9rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; padding-right: 30px; }
+        .modal-category { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .modal-body { font-size: 1rem; line-height: 1.65; color: #ddd; margin-bottom: 24px; white-space: pre-wrap; }
+
+        .modal-protocol {
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: #ccc;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            border-left: 2px solid #444;
+        }
+
+        .portal-btn {
+            margin-top: 24px;
+            width: 100%;
+            padding: 16px;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+        }
+
+        .portal-btn:hover { opacity: 0.9; }
+
+        /* ── FAQ ── */
+        .faq-list { display: flex; flex-direction: column; gap: 10px; max-width: 820px; }
+        .faq-item { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); overflow: hidden; }
+        .faq-q {
+            padding: 18px 22px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .faq-q:hover { background: var(--surface-hover); }
+        .faq-chev { color: var(--text-muted); font-size: 0.85rem; transition: transform 0.2s; flex-shrink: 0; }
+        .faq-item.open .faq-chev { transform: rotate(90deg); color: var(--accent); }
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+        .faq-a-inner { padding: 0 22px 20px; }
+        .faq-item.open .faq-a { max-height: 320px; }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 48px;
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            color: var(--text-dim);
+            font-size: 0.82rem;
+        }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+
+        /* ── INTEL ARCHIVE ── */
+        #intelArchive { display: none; position: fixed; inset: 0; z-index: 50000; background: rgba(0,0,0,0.95); flex-direction: column; opacity: 0; transition: opacity 0.2s; }
+        #intelArchive.ia-open { display: flex; }
+        #intelArchive.ia-visible { opacity: 1; }
+        .ia-topbar { display:flex; justify-content:space-between; padding:16px 24px; border-bottom:1px solid var(--border); }
+        .ia-logo { font-weight:700; font-size:1rem; letter-spacing:0.1em; }
+        .ia-close { background:transparent; border:none; color:white; font-size:1.5rem; cursor:pointer; }
+        .ia-body { display:flex; flex:1; overflow:hidden; }
+        .ia-nav { width:260px; border-right:1px solid var(--border); display:flex; flex-direction:column; background: #050505; }
+        .ia-search-wrap { padding:16px; border-bottom:1px solid var(--border); }
+        .ia-search { width:100%; background:transparent; border:1px solid var(--border); padding:8px 12px; color:white; border-radius:4px; font-family:var(--font-mono); font-size:0.8rem; }
+        .ia-nav-scroll { overflow-y:auto; flex:1; }
+        .ia-nav-item { padding:12px 16px; font-size:0.85rem; color:var(--text-muted); cursor:pointer; text-transform:uppercase; font-family:var(--font-mono); letter-spacing:0.05em; border-left: 2px solid transparent;}
+        .ia-nav-item:hover, .ia-nav-item.ia-active { color:white; background: #111; border-left-color: white;}
+        .ia-content { flex:1; overflow-y:auto; padding:40px; }
+        .ia-title { font-size:2rem; font-weight:600; margin-bottom:8px; }
+        .ia-subtitle { color:var(--text-muted); margin-bottom:32px; font-size:1.1rem;}
+        .ia-card { background: #111; border: 1px solid var(--border); padding: 24px; border-radius: 8px; margin-bottom: 16px; }
+        .ia-card-title { font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+        .ia-ctag { font-size:0.7rem; background:#222; padding:2px 6px; border-radius:4px; font-family:var(--font-mono); color:#aaa;}
+        .ia-card-body { color: #ccc; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
+
+        @media (max-width: 768px) {
+            nav { padding: 16px 24px; }
+            .hero { padding: 80px 24px 40px; }
+            .system-section { padding: 40px 24px; }
+            .ia-nav { display: none; }
+            footer { padding: 32px 24px; }
+        }
+
+        /* ── ADMIN OVERLAY ── */
+        #__dreAdminOverlay {
+            display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 99999; background: #000; border: 1px solid #333; border-radius: 8px;
+            padding: 24px; width: 320px; font-family: var(--font-mono); font-size: 0.8rem;
+        }
+        #__dreAdminOverlay.__dreVisible { display: block; }
+        .__dreRow { display:flex; justify-content:space-between; margin-bottom:12px; }
+        .__dreLabel { color:var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo"><span class="logo-mark"></span>DRE Ecosystem <span class="logo-sub">/ Andre Method</span></div>
+        <div class="nav-actions">
+            <button class="btn" onclick="openIntelArchive()">Intel Archive</button>
+            <button class="btn btn-primary" onclick="window.location.href='Dre_Go_lndpage.html'">Get Andre Go</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-eyebrow">Andre Method · Galaxy-DRE · V14</div>
+        <h1>One ecosystem. AI tools, privacy systems, and execution layers that actually ship.</h1>
+        <p>Single-file, local-first software built for creators and operators — no servers, no lock-in, no tracking. Every tool runs in your browser, stores data on your device, and is built to be edited, not just generated.</p>
+        <div class="hero-ctas">
+            <button class="btn btn-primary" onclick="window.location.href='Dre_Go_lndpage.html'">Get Andre Go — Free</button>
+            <button class="btn" onclick="document.getElementById('systems').scrollIntoView({behavior: 'smooth'})">Explore the systems</button>
+        </div>
+        <div class="stat-strip">
+            <div class="stat-cell"><div class="stat-num">13</div><div class="stat-label">Live Tools</div></div>
+            <div class="stat-cell"><div class="stat-num">10+</div><div class="stat-label">AI Platforms Supported</div></div>
+            <div class="stat-cell"><div class="stat-num">100%</div><div class="stat-label">Local Data Storage</div></div>
+            <div class="stat-cell"><div class="stat-num">$0</div><div class="stat-label">To Start</div></div>
+        </div>
+    </section>
+
+    <section class="system-section" id="systems">
+        <div class="section-head">
+            <div class="section-eyebrow">Start Here</div>
+            <div class="section-title">Andre Go</div>
+            <div class="section-desc">The flagship of the ecosystem — the on-ramp most people start with.</div>
+        </div>
+        <div class="grid" id="flagshipGrid"></div>
+    </section>
+
+    <section class="system-section">
+        <div class="section-head">
+            <div class="section-eyebrow">Build &amp; Execute</div>
+            <div class="section-title">Core Systems</div>
+            <div class="section-desc">Design a plan, execute it, and talk it through with DRE along the way.</div>
+        </div>
+        <div class="grid" id="coreGrid"></div>
+    </section>
+
+    <section class="system-section">
+        <div class="section-head">
+            <div class="section-eyebrow">Utilities &amp; Privacy</div>
+            <div class="section-title">Tools</div>
+            <div class="section-desc">Single-purpose, browser-native utilities. No accounts, no uploads.</div>
+        </div>
+        <div class="grid" id="utilityGrid"></div>
+    </section>
+
+    <section class="system-section">
+        <div class="section-head">
+            <div class="section-eyebrow">Wellness, Career &amp; Creative</div>
+            <div class="section-title">Beyond the Codebase</div>
+            <div class="section-desc">The parts of the ecosystem that aren't about productivity software.</div>
+        </div>
+        <div class="grid" id="creativeGrid"></div>
+    </section>
+
+    <section class="system-section">
+        <div class="section-head">
+            <div class="section-eyebrow">FAQ</div>
+            <div class="section-title">Frequently Asked</div>
+        </div>
+        <div class="faq-list" id="faqList"></div>
+    </section>
+
+    <footer>
+        <div>© 2026 Andre Method. Galaxy-DRE Ecosystem.</div>
+        <div style="display:flex; gap:20px;">
+            <a href="orbit.html">Orbit</a>
+            <a href="authorpage.html">Kleara Studios</a>
+            <a href="#" onclick="openIntelArchive(); return false;">Intel Archive</a>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="modal">
+        <div class="modal-content" id="modalContent">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div class="modal-header" id="modalTitle"></div>
+            <div class="modal-category" id="modalCategory"></div>
+            <div class="modal-body" id="modalDescription"></div>
+            <div class="modal-protocol">
+                <div style="font-size:0.75rem;text-transform:uppercase;margin-bottom:8px;opacity:0.6;font-family:var(--font-mono);">Protocol / Action</div>
+                <div id="modalProtocol"></div>
+            </div>
+            <div id="modalActionArea"></div>
+        </div>
+    </div>
+
+    <!-- INTEL ARCHIVE -->
+    <div id="intelArchive" role="dialog" aria-modal="true" aria-label="Intel Archive">
+        <div class="ia-topbar">
+            <div class="ia-logo">INTEL ARCHIVE</div>
+            <button class="ia-close" id="iaClose" title="Close (ESC)">×</button>
+        </div>
+        <div class="ia-body">
+            <nav class="ia-nav" id="iaNav">
+                <div class="ia-search-wrap">
+                    <input class="ia-search" id="iaSearch" type="text" placeholder="Search systems...">
+                </div>
+                <div class="ia-nav-scroll" id="iaNavScroll"></div>
+            </nav>
+            <main class="ia-content" id="iaContent">
+                <div style="text-align: center; color: var(--text-muted); margin-top: 100px; font-family: var(--font-mono);">LOADING INTELLIGENCE ARCHIVE…</div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ADMIN OVERLAY -->
+    <div id="__dreAdminOverlay" aria-hidden="true">
+        <div style="display:flex;justify-content:space-between;margin-bottom:20px;border-bottom:1px solid #333;padding-bottom:10px;">
+            <strong>DRE ANALYTICS</strong>
+            <button onclick="document.getElementById('__dreAdminOverlay').classList.remove('__dreVisible')" style="background:none;border:none;color:white;cursor:pointer;">×</button>
+        </div>
+        <div class="__dreRow"><span class="__dreLabel">Visits</span><span id="__dreVisitCount">—</span></div>
+        <div class="__dreRow"><span class="__dreLabel">Session</span><span id="__dreSession">—</span></div>
+        <div class="__dreRow"><span class="__dreLabel">Resolution</span><span id="__dreResolution">—</span></div>
+        <div class="__dreRow"><span class="__dreLabel">Device</span><span id="__dreDevice">—</span></div>
+        <div class="__dreRow"><span class="__dreLabel">Referrer</span><span id="__dreReferrer" style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span></div>
+    </div>
+
+<script>
+// ── DATA: accurate per-tool copy, pulled from the live ecosystem ──
+const groups = {
+    flagshipGrid: [
+        { id:"CORE", name:"Andre Go", category:"Revenue Engine · Chrome Extension · v5.0.0", accent:"#00d4ff",
+          desc:"Never lose your AI conversations again. Andre Go captures every message across ChatGPT, Claude, Gemini, Copilot, Grok, DeepSeek, Perplexity, Poe, and more — automatically, in real time, with full export.\n\n✅ Real-time capture with live stats\n✅ Switch models without losing context\n✅ Edit AI responses directly\n✅ Export to JSON, Markdown, CSV, or plain text\n✅ Works across 10+ AI platforms\n✅ 100% local — no tracking\n\nFree: 3 sessions, no card required. Premium: $9.99/mo or $19.99 one-time (lifetime).",
+          protocol:"One click. Your AI memory starts now.\n\nWorks on Chrome 114+, Edge 114+, and Brave.\n\nAI providers: Andre Cloud (no key needed) · OpenAI · Anthropic · Google · DeepSeek · Grok · Custom API.",
+          badge:"FREE TO START", portalFile:"Dre_Go_lndpage.html", portalLabel:"GET ANDRE GO FREE →" }
+    ],
+    coreGrid: [
+        { id:"DRE_WORKFLOW", name:"DRE Workflow", category:"System Builder · Creation Layer", accent:"#00ffaa",
+          desc:"Your system architecture canvas. Build structured workflows using nodes and logic connectors — no code required.\n\n🧱 Visual node builder\n🔗 AND / OR logic paths\n📎 File & template uploads\n🗺️ Minimap navigation\n⚡ AI-assisted flow generation\n\nDesign your execution plan before you run it.",
+          protocol:"Open DRE Workflow → drag nodes → connect with AND/OR logic → generate via prompt or template → export.\n\nThis is the creation layer. Build here first, then execute in DRE Console.",
+          badge:"BUILD", portalFile:"dre_workflow_V2.html", portalLabel:"OPEN DRE WORKFLOW" },
+        { id:"DRE_CONSOLE", name:"DRE Console", category:"Execution System · Command Interface", accent:"#ffc832",
+          desc:"DRE Console is your command and execution center — where structured plans become action.\n\n⚡ Step-by-step execution blocks\n📋 Plan cards with checklists\n🛠️ Tool sidebar\n🤖 AI execution panel\n📊 Progress tracking\n\nBuild your system in DRE Workflow. Execute it here.",
+          protocol:"Build in DRE Workflow → load the plan into DRE Console → execute step by step → track completion.\n\nWorkflow → Console = Build → Execute.",
+          badge:"EXECUTE", portalFile:"DREUserConsolev3.0.HTML", portalLabel:"OPEN DRE CONSOLE" },
+        { id:"EVALUATE", name:"Chat with DRE", category:"AI Chat · Alignment Architect", accent:"#cc44ff",
+          desc:"Talk directly to the DRE Alignment Architect. Get a real-time strategy session, execution plan, or system diagnosis — no fluff, no generic advice.\n\n🧠 Reads your situation\n⚡ Returns structured action steps\n🔗 Links you to the right ecosystem tools\n\nThis is the intelligence layer of the whole ecosystem.",
+          protocol:"Open Chat with DRE → describe your situation → receive a DRE-aligned strategy, execution plan, or diagnosis.\n\nNo API key required — powered by Andre Cloud.",
+          badge:"NO KEY NEEDED", portalFile:"https://galaxy-andre-html-deploy.vercel.app/", portalLabel:"CHAT WITH DRE" },
+        { id:"DRE_INTERFACE", name:"DRE Interface", category:"AI Chat Terminal · v4", accent:"#00d4ff",
+          desc:"A live AI chat terminal running the full DRE Alignment Architect system. Connect your own AI provider and talk directly to DRE.\n\n⚡ Controller modes: DRE Default · Ford Technical · Book Writing\n📎 Attach files: PDF, JSON, TXT, Markdown\n🔑 Requires your own API key — stored locally only.",
+          protocol:"Requires your own API key from OpenAI, Anthropic, Google, DeepSeek, or a local model. No key, no chat.\n\nProviders: OpenAI · Anthropic · Google · DeepSeek · Local (LM Studio) · Custom endpoint.",
+          badge:"KEY REQUIRED", portalFile:"https://project-9dael.vercel.app/DRE_CSInterface_v5.html", portalLabel:"OPEN DRE INTERFACE" }
+    ],
+    utilityGrid: [
+        { id:"ZIP_TOOL", name:"ZIP Tool", category:"File Utility", accent:"#f59e0b",
+          desc:"Create and extract ZIP archives entirely in your browser. No uploads, no accounts — everything stays on your device.",
+          protocol:"Open ZIP Tool → drop files or folders to compress, or drop a ZIP to extract. Fully local.",
+          badge:"LOCAL ONLY", portalFile:"ZIP_tool.html", portalLabel:"OPEN ZIP TOOL" },
+        { id:"DRE_EXTRACTOR", name:"DRE Extractor", category:"Audio Tool", accent:"#ff8c00",
+          desc:"Extract audio from any file directly in your browser. No uploads, no accounts — your files never leave your device.",
+          protocol:"Open DRE Extractor → drop any audio/video file → extract a clean WAV. Local-first, zero server dependency.",
+          badge:"LOCAL ONLY", portalFile:"dre-extractor-v2.html", portalLabel:"OPEN DRE EXTRACTOR" },
+        { id:"DRE_OS", name:"DRE OS", category:"Privacy System", accent:"#00c853",
+          desc:"Find out how exposed your device really is. DRE OS scans your browser and network signals and gives you a real exposure score — then shows you how to fix it.",
+          protocol:"Open DRE OS → run scan → review exposure score → harden device using the recommended steps.",
+          badge:"PRIVACY", portalFile:"dre-os-v2__1_.html", portalLabel:"OPEN DRE OS" },
+        { id:"REPRIZAL", name:"RePrizal AI", category:"Career Tool", accent:"#7c3aed",
+          desc:"Build a professional resume powered by AI. Import your existing PDF, let an LLM reformat it, and export a polished result — no monthly subscription.",
+          protocol:"Open RePrizal AI → import your resume PDF → the LLM converts and structures it → export the polished version.",
+          badge:"AI-POWERED", portalFile:"ATS_Config_Pro_v_3_0.html", portalLabel:"OPEN REPRIZAL AI" },
+        { id:"DRE_CODE", name:"Dre Code", category:"Code Editor", accent:"#ff4800",
+          desc:"The code editor built for creators who move different. Professional tools, zero gatekeeping.\n\n⚡ AI-powered editor\n🛡️ Novice Guard Mode\n🔍 Smart code search\n🌐 Live preview",
+          protocol:"Join the waitlist now — full launch details to follow.",
+          badge:"COMING SOON", portalFile:"https://arkive2025.github.io/GALAXY-DRE/Coming_Soon_DreCode.html", portalLabel:"JOIN WAITLIST" }
+    ],
+    creativeGrid: [
+        { id:"HOURS_24", name:"24 Hours", category:"Wellness · Daily Rhythm · Christ-Centered", accent:"#8b6fff",
+          desc:"A Christ-centered daily rhythm and wellness app. Built for people who want structure, accountability, and a coach rooted in truth — not algorithms.\n\n✝️ AI life coach — powered by scripture and your own API key\n📅 Daily habit tracking with streaks\n🧠 Bilateral focus sessions for deep work\n💪 Urge resistance tracker\n📖 Daily check-in and evening reflection\n🚨 Crisis support mode\n\n100% local. No account. No tracking.",
+          protocol:"Open 24 Hours → configure your API key in Settings → log habits, run focus sessions, talk to the coach.\n\nProviders: OpenAI · Groq · DeepSeek · Anthropic.",
+          badge:"KEY REQUIRED", portalFile:"24_HOURS_.HTML", portalLabel:"OPEN 24 HOURS" },
+        { id:"KLEARA", name:"Kleara Studios", category:"Author Universe · DL Ford & Atlas Parks", accent:"#ff6600",
+          desc:"Two authors. Two perspectives on the same world.\n\n☀️ DL Ford — Light / Exposure\n\"People don't break. They decide.\" The DEFINED series · DEFINED AFFAIR: A Prelude\n\n🌑 Atlas Parks — Dark / Pattern\n\"The dark doesn't hide things. It reveals what light ignores.\" HADDER: Isabella Hadder\n\nThis is not a tool. This is the work — the literary arm of the ecosystem.",
+          protocol:"Enter the universe → choose your perspective: Light or Dark.",
+          badge:"FICTION", portalFile:"authorpage.html", portalLabel:"ENTER KLEARA STUDIOS →" },
+        { id:"ORBIT", name:"Orbit", category:"Social · Community Hub", accent:"#00dcb4",
+          desc:"The social layer of the Galaxy. Stay connected with the Andre ecosystem — updates, community, collaborators, and live progress from inside the system.\n\n🌐 Community hub\n📡 Live ecosystem updates\n🤝 Connect with collaborators\n📣 Follow the mission",
+          protocol:"Open Orbit → join the community → stay connected with the DRE ecosystem.",
+          badge:"COMMUNITY", portalFile:"orbit.html", portalLabel:"ENTER ORBIT →" }
+    ]
+};
+
+Object.keys(groups).forEach(gridId => {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    groups[gridId].forEach(node => {
+        if (node.skip) return;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.setProperty('--card-accent', node.accent || '#00d4ff');
+        card.innerHTML = `
+            <div class="card-top">
+                <div class="card-cat">${node.category}</div>
+                ${node.badge ? `<div class="card-badge">${node.badge}</div>` : ''}
+            </div>
+            <div class="card-title">${node.name}</div>
+            <div class="card-desc">${node.desc.split('\n\n')[0]}</div>
+            <div class="card-cta">View details <span>→</span></div>
+        `;
+        card.onclick = () => window.openModal(node);
+        grid.appendChild(card);
+    });
+});
+
+// ── MODAL LOGIC ──
+window.openModal = function(data) {
+    if (!data) return;
+    document.getElementById('modalTitle').textContent = data.name;
+    document.getElementById('modalCategory').textContent = data.category;
+    document.getElementById('modalDescription').textContent = data.desc;
+    document.getElementById('modalProtocol').textContent = data.protocol;
+
+    const aa = document.getElementById('modalActionArea');
+    aa.innerHTML = '';
+    if (data.portalFile) {
+        const btn = document.createElement('button');
+        btn.className = 'portal-btn';
+        btn.textContent = data.portalLabel || 'OPEN TOOL';
+        btn.onclick = () => {
+            if (typeof gtag === 'function') gtag('event', 'node_opened', { node_name: data.name });
+            window.location.href = data.portalFile;
+        };
+        aa.appendChild(btn);
+    }
+    document.getElementById('modal').classList.add('active');
+};
+
+window.closeModal = () => document.getElementById('modal').classList.remove('active');
+document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ── FAQ ──
+const faqData = [
+    { q:'Is my data safe?', a:'Yes. All tools in the Galaxy-DRE ecosystem store data locally in your browser. Nothing is transmitted to Galaxy-DRE servers. API keys go directly to the AI provider you choose.' },
+    { q:'Do I need an API key?', a:'Not for everything. Andre Go includes Andre Cloud — no key needed. Chat with DRE also runs on Andre Cloud. Some tools, like DRE Interface and 24 Hours, require your own key from OpenAI, Anthropic, Google, DeepSeek, or Groq.' },
+    { q:'What is Andre Go and how much does it cost?', a:'Andre Go is a Chrome extension that captures your AI conversations in real time across 10+ platforms — ChatGPT, Claude, Gemini, Copilot, Grok, and more. Free tier: 3 sessions, all exports, all platforms. Premium: $9.99/mo or $19.99 one-time for lifetime access.' },
+    { q:'What is the difference between DRE Workflow and DRE Console?', a:'DRE Workflow is the creation layer — you design execution plans visually using nodes and logic connectors. DRE Console is the execution layer — you run those plans step by step with checklists and progress tracking. Build first, then execute.' },
+    { q:'What is Chat with DRE?', a:'Chat with DRE is a direct channel to the DRE Alignment Architect AI. It reads your situation and returns structured strategy, execution steps, and ecosystem routing. No API key required.' },
+    { q:'What is Kleara Studios?', a:'Kleara Studios is the literary arm of the ecosystem — a separate creative universe with two authors: DL Ford (light/exposure) and Atlas Parks (dark/pattern). It is not a productivity tool — it is the work itself.' },
+    { q:'What is Orbit?', a:'Orbit is the social layer of the ecosystem — a community hub for updates, collaborators, and live progress from inside the system.' },
+    { q:'How do I get the most out of the ecosystem?', a:'Start with Andre Go. Use Chat with DRE to design your strategy. Build your execution plan in DRE Workflow. Run it in DRE Console. Track daily progress in 24 Hours.' }
+];
+
+const faqList = document.getElementById('faqList');
+faqData.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'faq-item';
+    el.innerHTML = `
+        <div class="faq-q">${item.q}<span class="faq-chev">▶</span></div>
+        <div class="faq-a"><div class="faq-a-inner">${item.a}</div></div>
+    `;
+    el.querySelector('.faq-q').onclick = () => {
+        const wasOpen = el.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(o => o !== el && o.classList.remove('open'));
+        el.classList.toggle('open', !wasOpen);
+        if (typeof gtag === 'function') gtag('event', 'faq_opened', { question: item.q });
+    };
+    faqList.appendChild(el);
+});
+
+// ── INTEL ARCHIVE & ANALYTICS WRAPPERS ──
+const IA_JSON = 'galaxy_master_knowledge.json';
+let _db = null;
+
+async function loadIntelData() {
+    try {
+        const res = await fetch(IA_JSON);
+        if(res.ok) {
+            _db = await res.json();
+            renderIntelNav();
+        }
+    } catch(e) {
+        document.getElementById('iaContent').innerHTML = '<div style="color:#ff4444;">Error loading galaxy_master_knowledge.json. Ensure file exists.</div>';
+    }
+}
+
+function renderIntelNav() {
+    if(!_db || !_db.sections) return;
+    const nav = document.getElementById('iaNavScroll');
+    nav.innerHTML = _db.sections.map(s => `<div class="ia-nav-item" onclick="renderIntelContent('${s.id}')">${s.label || s.name || s.id}</div>`).join('');
+    renderIntelContent(_db.sections[0].id);
+}
+
+function renderIntelContent(id) {
+    document.querySelectorAll('.ia-nav-item').forEach(el => el.classList.remove('ia-active'));
+    event && event.target.classList.add('ia-active');
+
+    const sec = _db.sections.find(s => s.id === id);
+    if(!sec) return;
+
+    let html = `<div class="ia-title">${sec.label || sec.name}</div><div class="ia-subtitle">${sec.subtitle || ''}</div>`;
+    if(sec.entries) {
+        sec.entries.forEach(e => {
+            html += `<div class="ia-card">
+                <div class="ia-card-title">${e.name} <span class="ia-ctag">${e.category || e.codename}</span></div>
+                <div class="ia-card-body">${e.purpose || e.description || ''}</div>
+            </div>`;
+        });
+    } else if (sec.items) {
+        sec.items.forEach(i => {
+            html += `<div class="ia-card">
+                <div class="ia-card-title">${i.q}</div>
+                <div class="ia-card-body">${i.a}</div>
+            </div>`;
+        });
+    } else if (sec.content) {
+        html += `<div class="ia-card"><div class="ia-card-body">${sec.content}</div></div>`;
+    }
+
+    document.getElementById('iaContent').innerHTML = html;
+}
+
+window.openIntelArchive = function() {
+    document.getElementById('intelArchive').classList.add('ia-open');
+    setTimeout(() => document.getElementById('intelArchive').classList.add('ia-visible'), 10);
+    document.body.style.overflow = 'hidden';
+    if(!_db) loadIntelData();
+    if(typeof gtag === 'function') gtag('event', 'intel_archive_opened');
+};
+
+document.getElementById('iaClose').onclick = () => {
+    document.getElementById('intelArchive').classList.remove('ia-visible');
+    setTimeout(() => document.getElementById('intelArchive').classList.remove('ia-open'), 200);
+    document.body.style.overflow = '';
+};
+
+// ── PRIVATE ANALYTICS MODULE ──
+(function() {
+    const _cfg = { counterEndpoint: 'https://api.counterapi.dev/v1/dre-galaxy/visits/up' };
+    const _state = {
+        visitCount: '—',
+        sessionStart: new Date().toLocaleString(),
+        overlayOpen: false
+    };
+
+    function _getDevice() {
+        const ua = navigator.userAgent;
+        if (/tablet|ipad|playbook|silk/i.test(ua)) return 'TABLET';
+        if (/mobile|android|iphone|ipod|blackberry|opera mini|iemobile/i.test(ua)) return 'MOBILE';
+        return 'DESKTOP';
+    }
+
+    async function _incrementVisit() {
+        try {
+            const res = await fetch(_cfg.counterEndpoint);
+            if(res.ok) {
+                const data = await res.json();
+                _state.visitCount = data.value ?? '—';
+            }
+        } catch(e) {}
+    }
+
+    function _renderOverlay() {
+        document.getElementById('__dreVisitCount').textContent = _state.visitCount;
+        document.getElementById('__dreSession').textContent = _state.sessionStart;
+        document.getElementById('__dreResolution').textContent = `${window.screen.width}×${window.screen.height}`;
+        document.getElementById('__dreDevice').textContent = _getDevice();
+        document.getElementById('__dreReferrer').textContent = document.referrer ? new URL(document.referrer).hostname : 'DIRECT';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.shiftKey && e.altKey && e.key.toLowerCase() === 'd') {
+            e.preventDefault();
+            _renderOverlay();
+            document.getElementById('__dreAdminOverlay').classList.toggle('__dreVisible');
+        }
+        if (e.key === 'Escape') {
+            document.getElementById('__dreAdminOverlay').classList.remove('__dreVisible');
+        }
+    });
+
+    setTimeout(_incrementVisit, 800);
+})();
+</script>
+</body>
+</html>
