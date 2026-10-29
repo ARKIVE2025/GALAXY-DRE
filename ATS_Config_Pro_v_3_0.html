@@ -39,747 +39,242 @@
             overflow-x: hidden;
         }
 
-        /* Ambient background */
         body::before {
             content: '';
             position: fixed;
-            top: -200px;
-            right: -200px;
-            width: 600px;
-            height: 600px;
+            top: -200px; right: -200px;
+            width: 600px; height: 600px;
             background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
             pointer-events: none;
             z-index: 0;
         }
 
-        .container {
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-            position: relative;
-            z-index: 1;
-        }
+        .container { max-width: 860px; margin: 0 auto; padding: 3rem 2rem; position: relative; z-index: 1; }
 
-        /* ── HEADER ── */
-        header {
-            margin-bottom: 3.5rem;
-        }
-
+        /* HEADER */
+        header { margin-bottom: 3.5rem; }
         .site-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 3rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-        }
-
+        .brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
         .brand-mark {
-            width: 38px;
-            height: 38px;
-            background: var(--gold);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: var(--black);
-            letter-spacing: -0.05em;
-            flex-shrink: 0;
+            width: 38px; height: 38px; background: var(--gold); border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+            color: var(--black); letter-spacing: -0.05em; flex-shrink: 0;
         }
-
-        .brand-name {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--text);
-            letter-spacing: -0.02em;
-        }
-
-        .brand-name span {
-            color: var(--gold);
-        }
-
-        .nav-link {
-            font-size: 0.82rem;
-            color: var(--text-dim);
-            text-decoration: none;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            transition: color 0.2s;
-        }
-
+        .brand-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--text); letter-spacing: -0.02em; }
+        .brand-name span { color: var(--gold); }
+        .nav-link { font-size: 0.82rem; color: var(--text-dim); text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
         .nav-link:hover { color: var(--gold); }
 
         .hero-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--gold-pale);
-            border: 1px solid var(--gold-border);
-            border-radius: 20px;
-            padding: 0.35rem 0.9rem;
-            font-size: 0.75rem;
-            color: var(--gold-light);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            margin-bottom: 1.25rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--gold-pale); border: 1px solid var(--gold-border);
+            border-radius: 20px; padding: 0.35rem 0.9rem; font-size: 0.75rem;
+            color: var(--gold-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.25rem;
         }
-
         .hero-label::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: var(--gold);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+            content: ''; width: 6px; height: 6px; background: var(--gold);
+            border-radius: 50%; animation: pulse 2s ease-in-out infinite;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
 
         h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2.2rem, 5vw, 3.2rem);
-            font-weight: 800;
-            line-height: 1.05;
-            letter-spacing: -0.03em;
-            color: var(--text);
-            margin-bottom: 0.75rem;
+            font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: var(--text); margin-bottom: 0.75rem;
         }
+        h1 em { font-style: normal; color: var(--gold); }
+        .subtitle { color: var(--text-dim); font-size: 1rem; font-weight: 300; max-width: 520px; line-height: 1.7; }
 
-        h1 em {
-            font-style: normal;
-            color: var(--gold);
-        }
-
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 1rem;
-            font-weight: 300;
-            max-width: 520px;
-            line-height: 1.7;
-        }
-
-        /* ── PROGRESS ── */
-        .progress-wrapper {
-            margin-bottom: 3rem;
-        }
-
-        .progress-track {
-            display: flex;
-            gap: 0;
-            margin-bottom: 0.75rem;
-        }
-
-        .track-seg {
-            flex: 1;
-            height: 3px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-right: 4px;
-            transition: background 0.4s ease;
-        }
-
+        /* PROGRESS */
+        .progress-wrapper { margin-bottom: 3rem; }
+        .progress-track { display: flex; gap: 0; margin-bottom: 0.75rem; }
+        .track-seg { flex: 1; height: 3px; background: var(--border); border-radius: 2px; margin-right: 4px; transition: background 0.4s ease; }
         .track-seg:last-child { margin-right: 0; }
         .track-seg.filled { background: var(--gold); }
         .track-seg.active { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
-
-        .progress-labels {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .prog-label {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-            transition: color 0.3s;
-        }
-
+        .progress-labels { display: flex; justify-content: space-between; }
+        .prog-label { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.03em; text-transform: uppercase; transition: color 0.3s; }
         .prog-label.active { color: var(--gold); font-weight: 500; }
         .prog-label.done { color: var(--text-dim); }
 
-        /* ── CARDS / SECTIONS ── */
-        .form-section {
-            display: none;
-            animation: rise 0.4s ease;
-        }
-
+        /* CARDS */
+        .form-section { display: none; animation: rise 0.4s ease; }
         .form-section.active { display: block; }
+        @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background: var(--off-black);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.75rem;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border);
-        }
-
+        .card { background: var(--off-black); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem; }
+        .card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
         .card-icon {
-            width: 34px;
-            height: 34px;
-            background: var(--gold-pale);
-            border: 1px solid var(--gold-border);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold);
-            font-size: 0.85rem;
-            flex-shrink: 0;
+            width: 34px; height: 34px; background: var(--gold-pale); border: 1px solid var(--gold-border);
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            color: var(--gold); font-size: 0.85rem; flex-shrink: 0;
         }
+        .card-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
 
-        .card-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--text);
-        }
-
-        /* ── PDF CONVERSION CALLOUT ── */
+        /* CONVERSION CALLOUT */
         .conversion-callout {
             background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.03));
-            border: 1px solid var(--gold-border);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
+            border: 1px solid var(--gold-border); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 1.5rem;
         }
-
-        .conversion-callout h3 {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--gold-light);
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .conversion-callout p {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.7;
-        }
-
-        .conversion-steps-list {
-            display: grid;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .conv-step {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-
+        .conversion-callout h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--gold-light); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .conversion-callout p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.7; }
+        .conversion-steps-list { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .conv-step { display: flex; align-items: flex-start; gap: 1rem; }
         .conv-num {
-            width: 24px;
-            height: 24px;
-            background: var(--gold);
-            color: var(--black);
-            border-radius: 50%;
-            font-size: 0.72rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 2px;
+            width: 24px; height: 24px; background: var(--gold); color: var(--black); border-radius: 50%;
+            font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; margin-top: 2px;
         }
+        .conv-step-text strong { display: block; color: var(--text); font-size: 0.88rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .conv-step-text span { color: var(--text-muted); font-size: 0.82rem; }
 
-        .conv-step-text strong {
-            display: block;
-            color: var(--text);
-            font-size: 0.88rem;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-        }
-
-        .conv-step-text span {
-            color: var(--text-muted);
-            font-size: 0.82rem;
-        }
-
-        /* ── DROP ZONE ── */
+        /* DROP ZONE */
         .drop-zone {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: var(--charcoal);
+            border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: 2.5rem 2rem;
+            text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--charcoal);
         }
+        .drop-zone:hover { border-color: var(--gold); background: var(--gold-pale); }
+        .drop-zone.dragover { border-color: var(--success); background: rgba(74,222,128,0.05); }
+        .drop-zone-icon { font-size: 2.2rem; color: var(--gold); margin-bottom: 0.75rem; display: block; }
+        .drop-zone h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; margin-bottom: 0.35rem; }
+        .drop-zone p { font-size: 0.85rem; color: var(--text-muted); }
 
-        .drop-zone:hover {
-            border-color: var(--gold);
-            background: var(--gold-pale);
-        }
-
-        .drop-zone.dragover {
-            border-color: var(--success);
-            background: rgba(74,222,128,0.05);
-        }
-
-        .drop-zone-icon {
-            font-size: 2.2rem;
-            color: var(--gold);
-            margin-bottom: 0.75rem;
-            display: block;
-        }
-
-        .drop-zone h3 {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: -0.01em;
-            margin-bottom: 0.35rem;
-        }
-
-        .drop-zone p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        /* ── FORM ELEMENTS ── */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
+        /* FORM ELEMENTS */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .form-grid.cols-1 { grid-template-columns: 1fr; }
-
-        @media (max-width: 600px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+        .form-group { margin-bottom: 1.25rem; }
         .form-group:last-child { margin-bottom: 0; }
 
         label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 0.5rem;
+            display: block; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.04em;
+            text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem;
         }
-
         label .req { color: var(--gold); margin-left: 2px; }
 
         input:not([type="checkbox"]), textarea, select {
-            width: 100%;
-            padding: 0.7rem 0.9rem;
-            background: var(--charcoal);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--text);
-            font-size: 0.92rem;
-            font-family: 'DM Sans', sans-serif;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            appearance: none;
+            width: 100%; padding: 0.7rem 0.9rem; background: var(--charcoal);
+            border: 1px solid var(--border); border-radius: var(--radius); color: var(--text);
+            font-size: 0.92rem; font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s; appearance: none;
         }
-
         input:not([type="checkbox"])::placeholder, textarea::placeholder { color: var(--text-muted); }
-
         input:not([type="checkbox"]):focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
-            background: var(--mid);
+            outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); background: var(--mid);
         }
+        input.invalid, textarea.invalid { border-color: var(--error); }
+        input:disabled { opacity: 0.4; cursor: not-allowed; }
+        input[type="month"] { color-scheme: dark; }
+        input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
+        textarea { resize: vertical; min-height: 100px; }
+        .hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; }
+        .err-msg { display: none; color: var(--error); font-size: 0.78rem; margin-top: 0.35rem; }
 
-        input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--gold);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .hint {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            margin-top: 0.35rem;
-        }
-
-        .err-msg {
-            display: none;
-            color: var(--error);
-            font-size: 0.78rem;
-            margin-top: 0.35rem;
-        }
-
-        /* ── SELECTORS ── */
-        .option-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
+        /* SELECTORS */
+        .option-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
         .option-card {
-            padding: 1rem 0.75rem;
-            background: var(--charcoal);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
+            padding: 1rem 0.75rem; background: var(--charcoal); border: 1px solid var(--border);
+            border-radius: var(--radius); cursor: pointer; text-align: center; transition: all 0.2s ease;
         }
-
         .option-card:hover { border-color: var(--gold); background: var(--mid); }
-
-        .option-card.selected {
-            border-color: var(--gold);
-            background: var(--gold-pale);
-            box-shadow: 0 0 0 2px rgba(201,168,76,0.2);
-        }
-
-        .option-card strong {
-            display: block;
-            font-family: 'Syne', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 0.25rem;
-        }
-
-        .option-card .sub {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        .option-card .icon {
-            font-size: 1.4rem;
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
+        .option-card.selected { border-color: var(--gold); background: var(--gold-pale); box-shadow: 0 0 0 2px rgba(201,168,76,0.2); }
+        .option-card strong { display: block; font-family: 'Syne', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+        .option-card .sub { font-size: 0.72rem; color: var(--text-muted); }
+        .option-card .icon { font-size: 1.4rem; color: var(--gold); margin-bottom: 0.5rem; display: block; }
         .option-card.selected strong { color: var(--gold-light); }
 
-        /* ── TAGS ── */
-        .tags-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
-        }
-
+        /* TAGS */
+        .tags-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
         .tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.35rem 0.75rem;
-            background: var(--gold-pale);
-            border: 1px solid var(--gold-border);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--gold-light);
+            display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem;
+            background: var(--gold-pale); border: 1px solid var(--gold-border); border-radius: 20px;
+            font-size: 0.8rem; color: var(--gold-light);
         }
-
-        .tag .rm {
-            cursor: pointer;
-            opacity: 0.7;
-            font-size: 0.7rem;
-            transition: opacity 0.2s;
-        }
-
+        .tag .rm { cursor: pointer; opacity: 0.7; font-size: 0.7rem; transition: opacity 0.2s; }
         .tag .rm:hover { opacity: 1; color: var(--error); }
 
-        /* ── WORK ITEMS ── */
-        .work-item {
-            background: var(--charcoal);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .work-item-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .work-item-num {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--gold);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
+        /* WORK ITEMS */
+        .work-item { background: var(--charcoal); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; position: relative; }
+        .work-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .work-item-num { font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; }
         .rm-btn {
-            width: 28px;
-            height: 28px;
-            background: rgba(248,113,113,0.1);
-            border: 1px solid rgba(248,113,113,0.2);
-            color: var(--error);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.2s;
+            width: 28px; height: 28px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2);
+            color: var(--error); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.7rem; transition: all 0.2s;
         }
-
         .rm-btn:hover { background: rgba(248,113,113,0.2); transform: scale(1.1); }
-
         .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .date-row { grid-template-columns: 1fr; } }
 
-        /* ── CHECKBOX ── */
-        .check-row {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 1rem;
-        }
+        /* CHECKBOX */
+        .check-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+        .check-row input[type="checkbox"] { margin-top: 1px; }
+        .check-row label { text-transform: none; letter-spacing: 0; font-size: 0.88rem; color: var(--text); margin: 0; cursor: pointer; }
 
-        .check-row input[type="checkbox"] {
-            margin-top: 1px;
-        }
-
-        .check-row label {
-            text-transform: none;
-            letter-spacing: 0;
-            font-size: 0.88rem;
-            color: var(--text);
-            margin: 0;
-            cursor: pointer;
-        }
-
-        /* ── BUTTONS ── */
+        /* BUTTONS */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.7rem 1.5rem;
-            border-radius: var(--radius);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.88rem;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-            letter-spacing: 0.01em;
+            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.5rem;
+            border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+            font-weight: 500; cursor: pointer; border: none; transition: all 0.2s ease; letter-spacing: 0.01em;
         }
-
-        .btn-gold {
-            background: var(--gold);
-            color: var(--black);
-            font-weight: 600;
-        }
-
-        .btn-gold:hover {
-            background: var(--gold-light);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 20px rgba(201,168,76,0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text-dim);
-            border: 1px solid var(--border);
-        }
-
+        .btn-gold { background: var(--gold); color: var(--black); font-weight: 600; }
+        .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(201,168,76,0.3); }
+        .btn-outline { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
         .btn-outline:hover { background: var(--charcoal); color: var(--text); border-color: var(--subtle); }
-
-        .btn-ghost {
-            background: var(--charcoal);
-            color: var(--text-dim);
-            border: 1px solid var(--border);
-        }
-
+        .btn-ghost { background: var(--charcoal); color: var(--text-dim); border: 1px solid var(--border); }
         .btn-ghost:hover { background: var(--mid); color: var(--text); }
-
         .btn-sm { padding: 0.5rem 1rem; font-size: 0.82rem; }
+        .action-row { display: flex; align-items: center; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
 
-        .action-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        /* ── PREVIEW ── */
+        /* PREVIEW */
         .preview-box {
-            background: var(--charcoal);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            margin-top: 1rem;
-            max-height: 260px;
-            overflow-y: auto;
-            display: none;
-            font-family: 'Courier New', monospace;
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            line-height: 1.5;
+            background: var(--charcoal); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 1.25rem; margin-top: 1rem; max-height: 260px; overflow-y: auto; display: none;
+            font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--text-dim); line-height: 1.5;
         }
-
         .preview-box.active { display: block; }
-
-        .parse-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.82rem;
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-        }
-
+        .preview-box pre { white-space: pre-wrap; word-break: break-word; }
+        .parse-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; font-weight: 500; margin-bottom: 0.75rem; font-family: 'DM Sans', sans-serif; }
         .parse-status.ok { color: var(--success); }
         .parse-status.err { color: var(--error); }
         .parse-status.loading { color: var(--gold); }
-
         @keyframes spin { to { transform: rotate(360deg); } }
         .spin { animation: spin 0.8s linear infinite; display: inline-block; }
 
-        /* ── EXPORT CARD ── */
+        /* EXPORT */
         .export-option {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1.25rem;
-            background: var(--charcoal);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-bottom: 0.75rem;
+            display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem; background: var(--charcoal);
+            border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 0.75rem;
         }
+        .export-option input[type="checkbox"] { margin-top: 3px; }
+        .export-option-text strong { display: block; font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 0.25rem; }
+        .export-option-text span { font-size: 0.8rem; color: var(--text-muted); }
 
-        .export-option input[type="checkbox"] {
-            margin-top: 3px;
-        }
-
-        .export-option-text strong {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 0.25rem;
-        }
-
-        .export-option-text span {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* ── TOAST ── */
+        /* TOAST */
         #toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 0.9rem 1.25rem;
-            border-radius: var(--radius);
-            font-size: 0.88rem;
-            font-weight: 500;
-            z-index: 9999;
-            display: none;
-            animation: toast-in 0.3s ease;
-            max-width: 320px;
+            position: fixed; bottom: 2rem; right: 2rem; padding: 0.9rem 1.25rem; border-radius: var(--radius);
+            font-size: 0.88rem; font-weight: 500; z-index: 9999; display: none;
+            animation: toast-in 0.3s ease; max-width: 320px;
         }
-
         #toast.success { background: #1a2e1a; border: 1px solid var(--success); color: var(--success); }
         #toast.error { background: #2e1a1a; border: 1px solid var(--error); color: var(--error); }
         #toast.info { background: var(--charcoal); border: 1px solid var(--gold-border); color: var(--gold-light); }
+        @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes toast-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── FOOTER ── */
-        footer {
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: gap;
-        }
-
-        .footer-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            text-decoration: none;
-        }
-
+        /* FOOTER */
+        footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+        .footer-brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
         .footer-mark {
-            width: 26px;
-            height: 26px;
-            background: var(--gold);
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 0.75rem;
-            color: var(--black);
+            width: 26px; height: 26px; background: var(--gold); border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.75rem; color: var(--black);
         }
+        .footer-name { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text-dim); }
+        .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
 
-        .footer-name {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-dim);
-        }
-
-        .footer-copy {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-        }
-
-        /* ── SCROLLBAR ── */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 3px; }
@@ -798,11 +293,11 @@
 
     <!-- NAV -->
     <nav class="site-nav">
-        <a class="brand" href="https://andremethod.com" target="_blank">
+        <a class="brand" href="https://andremethod.com" target="_blank" rel="noopener noreferrer">
             <div class="brand-mark">AM</div>
             <div class="brand-name">Andre<span>Method</span></div>
         </a>
-        <a class="nav-link" href="https://andremethod.com" target="_blank">andremethod.com →</a>
+        <a class="nav-link" href="https://andremethod.com" target="_blank" rel="noopener noreferrer">andremethod.com →</a>
     </nav>
 
     <!-- HERO -->
@@ -829,31 +324,19 @@
                 <div class="conversion-steps-list">
                     <div class="conv-step">
                         <div class="conv-num">1</div>
-                        <div class="conv-step-text">
-                            <strong>Download the conversion template</strong>
-                            <span>A structured prompt file your AI assistant understands</span>
-                        </div>
+                        <div class="conv-step-text"><strong>Download the conversion template</strong><span>A structured prompt file your AI assistant understands</span></div>
                     </div>
                     <div class="conv-step">
                         <div class="conv-num">2</div>
-                        <div class="conv-step-text">
-                            <strong>Upload both files to any AI assistant</strong>
-                            <span>Works with ChatGPT, Claude, Gemini, and more</span>
-                        </div>
+                        <div class="conv-step-text"><strong>Upload both files to any AI assistant</strong><span>Works with ChatGPT, Claude, Gemini, and more</span></div>
                     </div>
                     <div class="conv-step">
                         <div class="conv-num">3</div>
-                        <div class="conv-step-text">
-                            <strong>Download the JSON output</strong>
-                            <span>The AI converts your resume into the exact format needed</span>
-                        </div>
+                        <div class="conv-step-text"><strong>Download the JSON output</strong><span>The AI converts your resume into the exact format needed</span></div>
                     </div>
                     <div class="conv-step">
                         <div class="conv-num">4</div>
-                        <div class="conv-step-text">
-                            <strong>Upload the JSON below to auto-fill everything</strong>
-                            <span>All fields populate instantly — just review and continue</span>
-                        </div>
+                        <div class="conv-step-text"><strong>Upload the JSON below to auto-fill everything</strong><span>All fields populate instantly — just review and continue</span></div>
                     </div>
                 </div>
                 <button type="button" class="btn btn-gold" onclick="downloadConversionTemplate()">
@@ -870,9 +353,9 @@
                 <div class="drop-zone" id="dropZone">
                     <span class="drop-zone-icon"><i class="fas fa-file-code"></i></span>
                     <h3>Drag & drop your JSON file here</h3>
-                    <p>or click to browse &nbsp;·&nbsp; .json files only</p>
+                    <p>or click to browse &nbsp;·&nbsp; .json files only &nbsp;·&nbsp; max 1 MB</p>
                 </div>
-                <input type="file" id="fileInput" accept=".json" style="display:none;">
+                <input type="file" id="fileInput" accept=".json,application/json" style="display:none;">
 
                 <div class="preview-box" id="previewBox">
                     <div class="parse-status" id="parseStatus"></div>
@@ -938,33 +421,29 @@
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Full Name <span class="req">*</span></label>
-                        <input type="text" id="fullName" placeholder="Jane Smith">
-                        <div class="err-msg" id="nameErr">Required.</div>
+                        <label for="fullName">Full Name <span class="req">*</span></label>
+                        <input type="text" id="fullName" placeholder="Jane Smith" maxlength="100" autocomplete="name">
                     </div>
                     <div class="form-group">
-                        <label>Email Address <span class="req">*</span></label>
-                        <input type="email" id="email" placeholder="jane@example.com">
-                        <div class="err-msg" id="emailErr">Enter a valid email.</div>
+                        <label for="email">Email Address <span class="req">*</span></label>
+                        <input type="email" id="email" placeholder="jane@example.com" maxlength="254" autocomplete="email">
                     </div>
                     <div class="form-group">
-                        <label>Phone Number <span class="req">*</span></label>
-                        <input type="tel" id="phone" placeholder="(555) 123-4567">
-                        <div class="err-msg" id="phoneErr">Required.</div>
+                        <label for="phone">Phone Number <span class="req">*</span></label>
+                        <input type="tel" id="phone" placeholder="(555) 123-4567" maxlength="30" autocomplete="tel">
                     </div>
                     <div class="form-group">
-                        <label>Location <span class="req">*</span></label>
-                        <input type="text" id="location" placeholder="City, State">
-                        <div class="err-msg" id="locErr">Required.</div>
+                        <label for="location">Location <span class="req">*</span></label>
+                        <input type="text" id="location" placeholder="City, State" maxlength="100">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>LinkedIn URL</label>
-                    <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                    <label for="linkedin">LinkedIn URL</label>
+                    <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile" maxlength="300">
                 </div>
                 <div class="form-group">
-                    <label>Professional Summary</label>
-                    <textarea id="summary" placeholder="Briefly describe your background and key strengths. Your AI assistant can generate this for you — leave it blank if you prefer."></textarea>
+                    <label for="summary">Professional Summary</label>
+                    <textarea id="summary" maxlength="3000" placeholder="Briefly describe your background and key strengths. Your AI assistant can generate this for you — leave it blank if you prefer."></textarea>
                     <div class="hint">Leave blank to let your AI assistant craft this from your experience.</div>
                 </div>
             </div>
@@ -1006,20 +485,20 @@
                 <div id="eduSection" style="display:none;">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>School / University</label>
-                            <input type="text" id="school" placeholder="University of Example">
+                            <label for="school">School / University <span class="req">*</span></label>
+                            <input type="text" id="school" placeholder="University of Example" maxlength="150">
                         </div>
                         <div class="form-group">
-                            <label>Degree / Certificate</label>
-                            <input type="text" id="degree" placeholder="Bachelor of Science">
+                            <label for="degree">Degree / Certificate <span class="req">*</span></label>
+                            <input type="text" id="degree" placeholder="Bachelor of Science" maxlength="150">
                         </div>
                         <div class="form-group">
-                            <label>Field of Study</label>
-                            <input type="text" id="field" placeholder="Computer Science">
+                            <label for="field">Field of Study <span class="req">*</span></label>
+                            <input type="text" id="field" placeholder="Computer Science" maxlength="150">
                         </div>
                         <div class="form-group">
-                            <label>Graduation Year</label>
-                            <input type="number" id="gradYear" placeholder="2020" min="1950" max="2030">
+                            <label for="gradYear">Graduation Year <span class="req">*</span></label>
+                            <input type="number" id="gradYear" placeholder="2020" min="1950" max="2100">
                         </div>
                     </div>
                 </div>
@@ -1031,8 +510,8 @@
                     <div class="card-title">Skills</div>
                 </div>
                 <div class="form-group">
-                    <label>Add Skills</label>
-                    <input type="text" id="skillInput" placeholder="Type a skill and press Enter (e.g. Python, Project Management)">
+                    <label for="skillInput">Add Skills</label>
+                    <input type="text" id="skillInput" placeholder="Type a skill and press Enter (or paste a comma-separated list)">
                     <div class="hint">Press Enter after each skill to add it.</div>
                 </div>
                 <div class="tags-wrap" id="skillTags"></div>
@@ -1044,7 +523,7 @@
                     <div class="card-title">Certifications</div>
                 </div>
                 <div class="form-group">
-                    <textarea id="certs" placeholder="List any relevant certifications (one per line)&#10;e.g. AWS Certified Solutions Architect – 2023&#10;PMP Certification – 2022"></textarea>
+                    <textarea id="certs" maxlength="3000" placeholder="List any relevant certifications (one per line)&#10;e.g. AWS Certified Solutions Architect – 2023&#10;PMP Certification – 2022"></textarea>
                 </div>
             </div>
 
@@ -1064,19 +543,19 @@
                 <p class="hint" style="margin-bottom:1.25rem;">The more detail you provide, the better your AI assistant can tailor your resume to this specific role.</p>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Job Title Applying For <span class="req">*</span></label>
-                        <input type="text" id="targetTitle" placeholder="Senior Software Engineer">
+                        <label for="targetTitle">Job Title Applying For <span class="req">*</span></label>
+                        <input type="text" id="targetTitle" placeholder="Senior Software Engineer" maxlength="150">
                         <div class="err-msg" id="titleErr">Required.</div>
                     </div>
                     <div class="form-group">
-                        <label>Company Name <span class="req">*</span></label>
-                        <input type="text" id="targetCompany" placeholder="Acme Corp">
+                        <label for="targetCompany">Company Name <span class="req">*</span></label>
+                        <input type="text" id="targetCompany" placeholder="Acme Corp" maxlength="150">
                         <div class="err-msg" id="companyErr">Required.</div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Full Job Description / Listing <span class="req">*</span></label>
-                    <textarea id="jobDesc" style="min-height:160px;" placeholder="Paste the complete job posting here. Include requirements, responsibilities, and any keywords. Your AI assistant uses this to tailor every bullet point on your resume."></textarea>
+                    <label for="jobDesc">Full Job Description / Listing <span class="req">*</span></label>
+                    <textarea id="jobDesc" maxlength="20000" style="min-height:160px;" placeholder="Paste the complete job posting here. Include requirements, responsibilities, and any keywords. Your AI assistant uses this to tailor every bullet point on your resume."></textarea>
                     <div class="hint">Copy the entire job listing — more detail = better tailoring.</div>
                     <div class="err-msg" id="descErr">Required.</div>
                 </div>
@@ -1139,7 +618,7 @@
     </form>
 
     <footer>
-        <a class="footer-brand" href="https://andremethod.com" target="_blank">
+        <a class="footer-brand" href="https://andremethod.com" target="_blank" rel="noopener noreferrer">
             <div class="footer-mark">AM</div>
             <div class="footer-name">AndreMethod</div>
         </a>
@@ -1150,23 +629,118 @@
 <div id="toast"></div>
 
 <script>
-// ── STATE ──────────────────────────────────────────────────────────────
-let currentStep = 1;
-let totalSteps = 7;
+// ── CONSTANTS & STATE ──────────────────────────────────────────────────
+const totalSteps = 7;
 const stepLabels = ['Import', 'Profile', 'Personal', 'Experience', 'Education', 'Target Job', 'Export'];
+const MAX_FILE_SIZE = 1024 * 1024; // 1 MB
+const MAX_SKILLS = 50;
+const MAX_JOBS = 20;
+const VALID_LEVELS = ['entry', 'junior', 'mid', 'senior', 'executive'];
+const VALID_INDUSTRIES = ['tech', 'healthcare', 'finance', 'education', 'creative', 'customer-service'];
+const industryNames = { tech: 'Technology', healthcare: 'Healthcare', finance: 'Finance', education: 'Education', creative: 'Creative', 'customer-service': 'Customer Service' };
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+let currentStep = 1;
 let selectedLevel = null;
 let selectedIndustries = [];
 let skills = [];
-let jobCount = 0;
+let toastTimer = null;
+let advanceTimer = null;
+
+// ── SAFE STORAGE (sessionStorage may be blocked) ───────────────────────
+const memStore = {};
+const safeStorage = {
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) { memStore[k] = v; } },
+    get(k) {
+        try { const v = sessionStorage.getItem(k); if (v !== null) return v; } catch (e) { /* fall through */ }
+        return memStore[k] !== undefined ? memStore[k] : null;
+    }
+};
+
+// ── HELPERS ────────────────────────────────────────────────────────────
+function toStr(value, max = 5000) {
+    if (typeof value === 'string' || typeof value === 'number') return String(value).trim().slice(0, max);
+    return '';
+}
+
+function currentMonthString() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+
+// Normalize many date formats to YYYY-MM (or 'Present'); '' if unparseable
+function normalizeDate(value) {
+    if (value === null || value === undefined) return '';
+    const s = String(value).trim();
+    if (!s) return '';
+    if (/^(present|current|now|ongoing|today)$/i.test(s)) return 'Present';
+
+    let y, mo, m;
+    if ((m = s.match(/^(\d{4})[-\/.](\d{1,2})(?:[-\/.]\d{1,2})?$/))) { y = +m[1]; mo = +m[2]; }
+    else if ((m = s.match(/^(\d{1,2})[-\/.](\d{4})$/))) { mo = +m[1]; y = +m[2]; }
+    else if ((m = s.match(/^([A-Za-z]{3,9})\.?,?\s+(\d{4})$/))) { mo = MONTHS.indexOf(m[1].slice(0, 3).toLowerCase()) + 1; y = +m[2]; }
+    else if ((m = s.match(/^(\d{4})$/))) { y = +m[1]; mo = 1; }
+    else return '';
+
+    if (!(mo >= 1 && mo <= 12) || y < 1950 || y > 2100) return '';
+    return y + '-' + String(mo).padStart(2, '0');
+}
+
+function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+function isValidPhone(v) {
+    if (!/^[+()\d\s.\-]{7,25}$/.test(v)) return false;
+    const digits = v.replace(/\D/g, '');
+    return digits.length >= 7 && digits.length <= 15;
+}
+function isValidUrl(v) {
+    try { const u = new URL(v); return u.protocol === 'http:' || u.protocol === 'https:'; } catch (e) { return false; }
+}
+
+// Inline field error (creates its own message element)
+function setFieldError(el, message) {
+    if (!el) return;
+    let err = el.parentElement.querySelector(':scope > .err-msg.dyn');
+    if (message) {
+        el.classList.add('invalid');
+        if (!err) {
+            err = document.createElement('div');
+            err.className = 'err-msg dyn';
+            el.insertAdjacentElement('afterend', err);
+        }
+        err.textContent = message;
+        err.style.display = 'block';
+    } else {
+        el.classList.remove('invalid');
+        if (err) err.style.display = 'none';
+    }
+}
+
+function focusFirstInvalid(el) {
+    if (el) {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function toast(msg, type = 'info') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = type;
+    el.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
 
 // ── INIT ───────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('resumeForm').addEventListener('submit', e => e.preventDefault());
     buildProgress();
     initDropZone();
     initLevelGrid();
     initIndustryGrid();
     initSkillInput();
-    addJob(); // start with one job
+    initWorkContainer();
+    addJob();
     updateProgress();
 });
 
@@ -1177,12 +751,12 @@ function buildProgress() {
     for (let i = 0; i < totalSteps; i++) {
         const seg = document.createElement('div');
         seg.className = 'track-seg';
-        seg.id = `seg${i+1}`;
+        seg.id = `seg${i + 1}`;
         track.appendChild(seg);
 
         const lbl = document.createElement('div');
         lbl.className = 'prog-label';
-        lbl.id = `lbl${i+1}`;
+        lbl.id = `lbl${i + 1}`;
         lbl.textContent = stepLabels[i];
         labels.appendChild(lbl);
     }
@@ -1190,21 +764,26 @@ function buildProgress() {
 
 function updateProgress() {
     for (let i = 1; i <= totalSteps; i++) {
-        const seg = document.getElementById(`seg${i}`);
-        const lbl = document.getElementById(`lbl${i}`);
-        seg.className = 'track-seg' + (i < currentStep ? ' filled' : i === currentStep ? ' active' : '');
-        lbl.className = 'prog-label' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+        document.getElementById(`seg${i}`).className = 'track-seg' + (i < currentStep ? ' filled' : i === currentStep ? ' active' : '');
+        document.getElementById(`lbl${i}`).className = 'prog-label' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
     }
 }
 
-// ── NAV ────────────────────────────────────────────────────────────────
-function nextStep(n) {
-    if (!validate(currentStep)) return;
-    if (currentStep === 1) populateFromImport();
-    go(n);
-}
+// ── NAVIGATION ─────────────────────────────────────────────────────────
+function nextStep(n) { goToStep(n); }
+function prevStep(n) { goToStep(n); }
 
-function prevStep(n) { go(n); }
+function goToStep(target) {
+    if (target < 1 || target > totalSteps || target === currentStep) return;
+
+    // Moving forward requires every step in between to be valid
+    if (target > currentStep) {
+        for (let s = currentStep; s < target; s++) {
+            if (!validate(s)) { go(s); return; }
+        }
+    }
+    go(target);
+}
 
 function go(n) {
     document.getElementById(`step${currentStep}`).classList.remove('active');
@@ -1216,42 +795,115 @@ function go(n) {
 
 // ── VALIDATION ─────────────────────────────────────────────────────────
 function validate(step) {
-    let ok = true;
-    const show = (id) => { document.getElementById(id).style.display = 'block'; ok = false; };
-    const hide = (id) => { document.getElementById(id).style.display = 'none'; };
-
-    if (step === 2) {
-        !selectedLevel ? show('levelErr') : hide('levelErr');
-        selectedIndustries.length === 0 ? show('industryErr') : hide('industryErr');
-        if (!selectedLevel || selectedIndustries.length === 0) ok = false;
+    switch (step) {
+        case 2: return validateStep2();
+        case 3: return validateStep3();
+        case 4: return validateStep4();
+        case 5: return validateStep5();
+        case 6: return validateStep6();
+        default: return true;
     }
-
-    if (step === 3) {
-        const name = document.getElementById('fullName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const loc = document.getElementById('location').value.trim();
-        !name ? show('nameErr') : hide('nameErr');
-        !email || !email.includes('@') ? show('emailErr') : hide('emailErr');
-        !phone ? show('phoneErr') : hide('phoneErr');
-        !loc ? show('locErr') : hide('locErr');
-        if (!name || !email || !phone || !loc) ok = false;
-    }
-
-    if (step === 6) {
-        const t = document.getElementById('targetTitle').value.trim();
-        const c = document.getElementById('targetCompany').value.trim();
-        const d = document.getElementById('jobDesc').value.trim();
-        !t ? show('titleErr') : hide('titleErr');
-        !c ? show('companyErr') : hide('companyErr');
-        !d ? show('descErr') : hide('descErr');
-        if (!t || !c || !d) ok = false;
-    }
-
-    return ok;
 }
 
-// ── DROP ZONE ──────────────────────────────────────────────────────────
+function validateStep2() {
+    const levelErr = document.getElementById('levelErr');
+    const indErr = document.getElementById('industryErr');
+    levelErr.style.display = selectedLevel ? 'none' : 'block';
+    indErr.style.display = selectedIndustries.length ? 'none' : 'block';
+    return !!selectedLevel && selectedIndustries.length > 0;
+}
+
+function validateStep3() {
+    let first = null;
+    const check = (id, bad, msg) => {
+        const el = document.getElementById(id);
+        const isBad = bad(el.value.trim());
+        setFieldError(el, isBad ? msg : '');
+        if (isBad && !first) first = el;
+    };
+    check('fullName', v => v.length < 2, 'Please enter your full name.');
+    check('email', v => !isValidEmail(v), 'Enter a valid email address.');
+    check('phone', v => !isValidPhone(v), 'Enter a valid phone number.');
+    check('location', v => v.length < 2, 'Please enter your location.');
+    check('linkedin', v => v !== '' && !isValidUrl(v), 'Enter a valid URL (starting with https://).');
+    if (first) focusFirstInvalid(first);
+    return !first;
+}
+
+function validateStep4() {
+    let first = null;
+    const nowMonth = currentMonthString();
+    const flag = (el, msg) => { setFieldError(el, msg); if (msg && !first) first = el; };
+
+    document.querySelectorAll('#workContainer .work-item').forEach(item => {
+        const q = s => item.querySelector(s);
+        const co = q('[name=co]'), jt = q('[name=jt]'), sd = q('[name=sd]'), ed = q('[name=ed]'), desc = q('[name=desc]');
+        const current = q('.current-job').checked;
+
+        flag(co, co.value.trim() ? '' : 'Please enter the company name.');
+        flag(jt, jt.value.trim() ? '' : 'Please enter the job title.');
+
+        let sMsg = '';
+        if (!sd.value) sMsg = 'Please enter a start date.';
+        else if (sd.value > nowMonth) sMsg = 'Start date cannot be in the future.';
+        flag(sd, sMsg);
+
+        let eMsg = '';
+        if (!current) {
+            if (!ed.value) eMsg = 'Enter an end date or check "I currently work here".';
+            else if (ed.value > nowMonth) eMsg = 'End date cannot be in the future.';
+            else if (sd.value && ed.value < sd.value) eMsg = 'End date must be after the start date.';
+        }
+        flag(ed, eMsg);
+
+        flag(desc, desc.value.trim() ? '' : 'Please describe your responsibilities.');
+    });
+
+    if (first) focusFirstInvalid(first);
+    return !first;
+}
+
+function validateStep5() {
+    commitSkillInput();
+    let first = null;
+    const flag = (el, msg) => { setFieldError(el, msg); if (msg && !first) first = el; };
+
+    if (document.getElementById('includeEdu').checked) {
+        ['school', 'degree', 'field'].forEach(id => {
+            const el = document.getElementById(id);
+            flag(el, el.value.trim() ? '' : 'Required.');
+        });
+        const yEl = document.getElementById('gradYear');
+        const y = parseInt(yEl.value, 10);
+        const maxYear = new Date().getFullYear() + 6;
+        flag(yEl, (Number.isInteger(y) && y >= 1950 && y <= maxYear) ? '' : 'Enter a year between 1950 and ' + maxYear + '.');
+    }
+
+    if (first) focusFirstInvalid(first);
+    return !first;
+}
+
+function validateStep6() {
+    let first = null;
+    [['targetTitle', 'titleErr'], ['targetCompany', 'companyErr'], ['jobDesc', 'descErr']].forEach(([id, errId]) => {
+        const el = document.getElementById(id);
+        const bad = !el.value.trim();
+        document.getElementById(errId).style.display = bad ? 'block' : 'none';
+        el.classList.toggle('invalid', bad);
+        if (bad && !first) first = el;
+    });
+    if (first) focusFirstInvalid(first);
+    return !first;
+}
+
+function validateAll() {
+    for (let s = 2; s <= 6; s++) {
+        if (!validate(s)) { go(s); return false; }
+    }
+    return true;
+}
+
+// ── DROP ZONE / IMPORT ─────────────────────────────────────────────────
 function initDropZone() {
     const zone = document.getElementById('dropZone');
     const input = document.getElementById('fileInput');
@@ -1264,10 +916,14 @@ function initDropZone() {
         zone.classList.remove('dragover');
         if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
     });
-    input.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+    input.addEventListener('change', e => {
+        if (e.target.files[0]) handleFile(e.target.files[0]);
+        input.value = ''; // allow re-selecting the same file
+    });
 }
 
 async function handleFile(file) {
+    clearTimeout(advanceTimer);
     const box = document.getElementById('previewBox');
     const status = document.getElementById('parseStatus');
     const content = document.getElementById('previewContent');
@@ -1277,95 +933,173 @@ async function handleFile(file) {
     status.innerHTML = '<i class="fas fa-spinner spin"></i> Reading file...';
     content.textContent = '';
 
-    if (!file.name.endsWith('.json')) {
+    const fail = (msg) => {
         status.className = 'parse-status err';
-        status.innerHTML = '<i class="fas fa-times-circle"></i> Only .json files are supported.';
-        toast('Only .json files are supported. Use the PDF conversion template first.', 'error');
-        return;
+        status.innerHTML = '<i class="fas fa-times-circle"></i> ';
+        status.appendChild(document.createTextNode(msg));
+        toast(msg, 'error');
+    };
+
+    if (!/\.json$/i.test(file.name)) return fail('Only .json files are supported. Use the PDF conversion template first.');
+    if (file.size === 0) return fail('File is empty.');
+    if (file.size > MAX_FILE_SIZE) return fail('File is too large (max 1 MB).');
+
+    let raw;
+    try {
+        raw = JSON.parse(await file.text());
+    } catch (e) {
+        return fail('Invalid JSON file.');
     }
 
+    let data;
     try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        const data = parsed.userData || parsed;
-        sessionStorage.setItem('importedData', JSON.stringify(data));
-        status.className = 'parse-status ok';
-        status.innerHTML = '<i class="fas fa-check-circle"></i> Resume loaded successfully — continuing...';
-        content.textContent = JSON.stringify(data, null, 2);
-        toast('Resume imported! Fields will be populated automatically.', 'success');
-        setTimeout(() => nextStep(2), 1400);
+        data = parseResumeData(raw);
     } catch (e) {
-        status.className = 'parse-status err';
-        status.innerHTML = '<i class="fas fa-times-circle"></i> Invalid JSON file.';
-        toast('Could not read the file. Make sure it\'s valid JSON.', 'error');
+        return fail(e.message);
     }
+
+    safeStorage.set('importedData', JSON.stringify(data));
+    populateFromImport(data);
+
+    status.className = 'parse-status ok';
+    status.innerHTML = '<i class="fas fa-check-circle"></i> Resume loaded successfully — continuing...';
+    content.textContent = JSON.stringify(data, null, 2);
+    toast('Resume imported! Fields populated.', 'success');
+
+    advanceTimer = setTimeout(() => { if (currentStep === 1) go(2); }, 1400);
 }
 
-// ── IMPORT POPULATION ──────────────────────────────────────────────────
-function populateFromImport() {
-    const raw = sessionStorage.getItem('importedData');
-    if (!raw) return;
-    const d = JSON.parse(raw);
-
-    const set = (id, val) => { if (val && document.getElementById(id)) document.getElementById(id).value = val; };
-
-    if (d.personalInfo) {
-        set('fullName', d.personalInfo.fullName);
-        set('email', d.personalInfo.email);
-        set('phone', d.personalInfo.phone);
-        set('location', d.personalInfo.location);
-        set('linkedin', d.personalInfo.linkedin);
-        set('summary', d.personalInfo.summary);
+// Validate + sanitize imported JSON into a clean, known shape
+function parseResumeData(config) {
+    if (!config || typeof config !== 'object' || Array.isArray(config)) {
+        throw new Error('JSON must be an object containing resume data.');
+    }
+    if (config.requiredOutputFormat || config.instructions || config.templateVersion) {
+        throw new Error('This is the conversion template, not a resume. Give it to an AI assistant with your PDF first, then upload the JSON it returns.');
     }
 
-    if (d.experienceLevel) {
-        selectedLevel = d.experienceLevel;
-        document.querySelectorAll('[data-level]').forEach(el => {
-            el.classList.toggle('selected', el.dataset.level === d.experienceLevel);
+    const d = (config.userData && typeof config.userData === 'object' && !Array.isArray(config.userData)) ? config.userData : config;
+    const known = ['personalInfo', 'workExperience', 'education', 'skills', 'certifications', 'experienceLevel', 'industries'];
+    if (!known.some(k => k in d)) {
+        throw new Error('No resume data found. Expected fields like personalInfo, workExperience or skills.');
+    }
+
+    const pi = (d.personalInfo && typeof d.personalInfo === 'object') ? d.personalInfo : {};
+    const personalInfo = {
+        fullName: toStr(pi.fullName, 100),
+        email: toStr(pi.email, 254),
+        phone: toStr(pi.phone, 30),
+        location: toStr(pi.location, 100),
+        linkedin: toStr(pi.linkedin, 300),
+        summary: toStr(pi.summary, 3000)
+    };
+
+    const experienceLevel = VALID_LEVELS.includes(d.experienceLevel) ? d.experienceLevel : '';
+    const industries = Array.isArray(d.industries) ? [...new Set(d.industries.filter(i => VALID_INDUSTRIES.includes(i)))] : [];
+
+    const workExperience = Array.isArray(d.workExperience)
+        ? d.workExperience
+            .filter(j => j && typeof j === 'object' && !Array.isArray(j))
+            .slice(0, MAX_JOBS)
+            .map(j => {
+                const endNorm = normalizeDate(j.endDate);
+                const startNorm = normalizeDate(j.startDate);
+                const blankEnd = j.endDate === null || j.endDate === undefined || String(j.endDate).trim() === '';
+                return {
+                    company: toStr(j.company, 150),
+                    jobTitle: toStr(j.jobTitle, 150),
+                    startDate: startNorm === 'Present' ? '' : startNorm,
+                    endDate: (endNorm === 'Present' || blankEnd) ? 'Present' : endNorm,
+                    description: toStr(j.description, 5000),
+                    achievements: toStr(j.achievements, 5000)
+                };
+            })
+        : [];
+
+    let education = null;
+    if (d.education && typeof d.education === 'object' && !Array.isArray(d.education)) {
+        education = {
+            schoolName: toStr(d.education.schoolName, 150),
+            degree: toStr(d.education.degree, 150),
+            fieldOfStudy: toStr(d.education.fieldOfStudy, 150),
+            gradYear: toStr(d.education.gradYear, 4).replace(/\D/g, '')
+        };
+    }
+
+    const skillList = [];
+    if (Array.isArray(d.skills)) {
+        d.skills.forEach(s => {
+            const t = toStr(s, 60);
+            if (t && !skillList.some(x => x.toLowerCase() === t.toLowerCase())) skillList.push(t);
         });
     }
 
-    if (d.industries?.length) {
-        selectedIndustries = d.industries;
-        document.querySelectorAll('[data-industry]').forEach(el => {
-            el.classList.toggle('selected', d.industries.includes(el.dataset.industry));
-        });
-        renderIndustryTags();
-    }
+    const certifications = Array.isArray(d.certifications)
+        ? d.certifications.map(c => toStr(c, 300)).filter(Boolean).join('\n').slice(0, 3000)
+        : toStr(d.certifications, 3000);
 
-    if (d.workExperience?.length) {
-        document.getElementById('workContainer').innerHTML = '';
-        jobCount = 0;
-        d.workExperience.forEach(job => addJob(job));
-    }
+    return { experienceLevel, industries, personalInfo, workExperience, education, skills: skillList.slice(0, MAX_SKILLS), certifications };
+}
 
-    if (d.education) {
+function resetImportableFields() {
+    setLevel(null);
+    setIndustries([]);
+    ['fullName', 'email', 'phone', 'location', 'linkedin', 'summary', 'certs', 'school', 'degree', 'field', 'gradYear'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+        setFieldError(el, '');
+    });
+    document.getElementById('includeEdu').checked = false;
+    toggleEdu();
+    skills = [];
+    renderSkillTags();
+    document.getElementById('workContainer').innerHTML = '';
+}
+
+function populateFromImport(d) {
+    resetImportableFields();
+
+    const pi = d.personalInfo;
+    document.getElementById('fullName').value = pi.fullName;
+    document.getElementById('email').value = pi.email;
+    document.getElementById('phone').value = pi.phone;
+    document.getElementById('location').value = pi.location;
+    document.getElementById('linkedin').value = pi.linkedin;
+    document.getElementById('summary').value = pi.summary;
+
+    if (d.experienceLevel) setLevel(d.experienceLevel);
+    if (d.industries.length) setIndustries(d.industries);
+
+    if (d.workExperience.length) d.workExperience.forEach(job => addJob(job));
+    else addJob();
+
+    if (d.education && (d.education.schoolName || d.education.degree || d.education.fieldOfStudy || d.education.gradYear)) {
         document.getElementById('includeEdu').checked = true;
-        document.getElementById('eduSection').style.display = 'block';
-        set('school', d.education.schoolName);
-        set('degree', d.education.degree);
-        set('field', d.education.fieldOfStudy);
-        set('gradYear', d.education.gradYear);
+        toggleEdu();
+        document.getElementById('school').value = d.education.schoolName;
+        document.getElementById('degree').value = d.education.degree;
+        document.getElementById('field').value = d.education.fieldOfStudy;
+        document.getElementById('gradYear').value = d.education.gradYear;
     }
 
-    if (d.skills?.length) {
-        skills = d.skills;
-        renderSkillTags();
-    }
-
-    if (d.certifications) set('certs', d.certifications);
+    skills = d.skills.slice();
+    renderSkillTags();
+    document.getElementById('certs').value = d.certifications;
 }
 
 // ── LEVEL SELECTOR ─────────────────────────────────────────────────────
 function initLevelGrid() {
     document.querySelectorAll('[data-level]').forEach(el => {
         el.addEventListener('click', () => {
-            document.querySelectorAll('[data-level]').forEach(x => x.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedLevel = el.dataset.level;
+            setLevel(el.dataset.level);
             document.getElementById('levelErr').style.display = 'none';
         });
     });
+}
+
+function setLevel(level) {
+    selectedLevel = VALID_LEVELS.includes(level) ? level : null;
+    document.querySelectorAll('[data-level]').forEach(el => el.classList.toggle('selected', el.dataset.level === selectedLevel));
 }
 
 // ── INDUSTRY SELECTOR ──────────────────────────────────────────────────
@@ -1373,52 +1107,79 @@ function initIndustryGrid() {
     document.querySelectorAll('[data-industry]').forEach(el => {
         el.addEventListener('click', () => {
             const ind = el.dataset.industry;
-            if (el.classList.contains('selected')) {
-                el.classList.remove('selected');
-                selectedIndustries = selectedIndustries.filter(i => i !== ind);
-            } else {
-                el.classList.add('selected');
-                selectedIndustries.push(ind);
-            }
-            renderIndustryTags();
+            selectedIndustries = selectedIndustries.includes(ind)
+                ? selectedIndustries.filter(i => i !== ind)
+                : [...selectedIndustries, ind];
+            syncIndustryUI();
             document.getElementById('industryErr').style.display = 'none';
         });
     });
 }
 
-const industryNames = { tech:'Technology', healthcare:'Healthcare', finance:'Finance', education:'Education', creative:'Creative', 'customer-service':'Customer Service' };
+function setIndustries(list) {
+    selectedIndustries = list.filter(i => VALID_INDUSTRIES.includes(i));
+    syncIndustryUI();
+}
 
-function renderIndustryTags() {
+function makeTag(text, onRemove) {
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.appendChild(document.createTextNode(text));
+    const rm = document.createElement('span');
+    rm.className = 'rm';
+    rm.innerHTML = '<i class="fas fa-times"></i>';
+    rm.addEventListener('click', onRemove);
+    tag.appendChild(rm);
+    return tag;
+}
+
+function syncIndustryUI() {
+    document.querySelectorAll('[data-industry]').forEach(el => el.classList.toggle('selected', selectedIndustries.includes(el.dataset.industry)));
     const wrap = document.getElementById('industryTags');
-    wrap.innerHTML = selectedIndustries.map(i => `
-        <div class="tag">${industryNames[i] || i}
-            <span class="rm" onclick="removeIndustry('${i}')"><i class="fas fa-times"></i></span>
-        </div>`).join('');
+    wrap.innerHTML = '';
+    selectedIndustries.forEach(i => wrap.appendChild(makeTag(industryNames[i] || i, () => removeIndustry(i))));
 }
 
 function removeIndustry(ind) {
     selectedIndustries = selectedIndustries.filter(i => i !== ind);
-    document.querySelector(`[data-industry="${ind}"]`)?.classList.remove('selected');
-    renderIndustryTags();
+    syncIndustryUI();
 }
 
 // ── SKILLS ─────────────────────────────────────────────────────────────
 function initSkillInput() {
-    document.getElementById('skillInput').addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const val = e.target.value.trim();
-            if (val && !skills.includes(val)) { skills.push(val); renderSkillTags(); }
-            e.target.value = '';
-        }
+    const input = document.getElementById('skillInput');
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commitSkillInput(); }
     });
+    input.addEventListener('paste', e => {
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        if (/[,;\n]/.test(text)) { e.preventDefault(); addSkillsFromText(text); }
+    });
+    input.addEventListener('blur', commitSkillInput);
+}
+
+function commitSkillInput() {
+    const input = document.getElementById('skillInput');
+    if (input.value.trim()) { addSkillsFromText(input.value); input.value = ''; }
+}
+
+function addSkillsFromText(text) {
+    let limitHit = false;
+    text.split(/[,;\n]+/).forEach(part => {
+        const s = part.trim().slice(0, 60);
+        if (!s) return;
+        if (skills.some(x => x.toLowerCase() === s.toLowerCase())) return;
+        if (skills.length >= MAX_SKILLS) { limitHit = true; return; }
+        skills.push(s);
+    });
+    renderSkillTags();
+    if (limitHit) toast('Maximum of ' + MAX_SKILLS + ' skills reached.', 'info');
 }
 
 function renderSkillTags() {
-    document.getElementById('skillTags').innerHTML = skills.map(s => `
-        <div class="tag">${s}
-            <span class="rm" onclick="removeSkill('${s.replace(/'/g,"\\'")}')"><i class="fas fa-times"></i></span>
-        </div>`).join('');
+    const wrap = document.getElementById('skillTags');
+    wrap.innerHTML = '';
+    skills.forEach(s => wrap.appendChild(makeTag(s, () => removeSkill(s))));
 }
 
 function removeSkill(s) {
@@ -1428,110 +1189,153 @@ function removeSkill(s) {
 
 // ── EDUCATION TOGGLE ───────────────────────────────────────────────────
 function toggleEdu() {
-    document.getElementById('eduSection').style.display =
-        document.getElementById('includeEdu').checked ? 'block' : 'none';
+    document.getElementById('eduSection').style.display = document.getElementById('includeEdu').checked ? 'block' : 'none';
 }
 
 // ── WORK EXPERIENCE ────────────────────────────────────────────────────
-function addJob(data = {}) {
-    jobCount++;
-    const n = jobCount;
-    const co = (data.company || '').replace(/"/g, '&quot;');
-    const jt = (data.jobTitle || '').replace(/"/g, '&quot;');
-    const sd = data.startDate || '';
-    const ed = (data.endDate && data.endDate !== 'Present') ? data.endDate : '';
-    const desc = data.description || '';
-    const ach = data.achievements || '';
+function initWorkContainer() {
+    const c = document.getElementById('workContainer');
+    c.addEventListener('click', e => {
+        const btn = e.target.closest('.rm-btn');
+        if (btn) removeJob(btn.closest('.work-item'));
+    });
+    c.addEventListener('change', e => {
+        if (e.target.classList.contains('current-job')) applyCurrentState(e.target.closest('.work-item'));
+    });
+}
+
+function addJob(data) {
+    data = data || {};
+    const container = document.getElementById('workContainer');
+    if (container.querySelectorAll('.work-item').length >= MAX_JOBS) {
+        toast('Maximum of ' + MAX_JOBS + ' roles reached.', 'info');
+        return;
+    }
 
     const div = document.createElement('div');
     div.className = 'work-item';
-    div.id = `job${n}`;
     div.innerHTML = `
         <div class="work-item-header">
-            <span class="work-item-num">Role #${n}</span>
-            <button type="button" class="rm-btn" onclick="removeJob(${n})" title="Remove"><i class="fas fa-times"></i></button>
+            <span class="work-item-num"></span>
+            <button type="button" class="rm-btn" title="Remove" aria-label="Remove role"><i class="fas fa-times"></i></button>
         </div>
         <div class="form-grid">
             <div class="form-group">
                 <label>Company Name <span class="req">*</span></label>
-                <input type="text" name="co" value="${co}" placeholder="Acme Corp">
+                <input type="text" name="co" placeholder="Acme Corp" maxlength="150">
             </div>
             <div class="form-group">
                 <label>Job Title <span class="req">*</span></label>
-                <input type="text" name="jt" value="${jt}" placeholder="Software Engineer">
+                <input type="text" name="jt" placeholder="Software Engineer" maxlength="150">
             </div>
         </div>
         <div class="date-row">
             <div class="form-group">
-                <label>Start Date</label>
-                <input type="month" name="sd" value="${sd}">
+                <label>Start Date <span class="req">*</span></label>
+                <input type="month" name="sd" min="1950-01">
             </div>
             <div class="form-group">
                 <label>End Date</label>
-                <input type="month" name="ed" value="${ed}">
-                <div class="hint">Leave blank if current role</div>
+                <input type="month" name="ed" min="1950-01">
             </div>
         </div>
+        <div class="check-row">
+            <input type="checkbox" class="current-job">
+            <label>I currently work here</label>
+        </div>
         <div class="form-group">
-            <label>Responsibilities & Description</label>
-            <textarea name="desc" placeholder="Describe your main responsibilities...">${desc}</textarea>
+            <label>Responsibilities & Description <span class="req">*</span></label>
+            <textarea name="desc" maxlength="5000" placeholder="Describe your main responsibilities..."></textarea>
         </div>
         <div class="form-group">
             <label>Achievements & Metrics</label>
-            <textarea name="ach" placeholder="e.g. Increased sales by 20%, Led team of 8 engineers...">${ach}</textarea>
+            <textarea name="ach" maxlength="5000" placeholder="e.g. Increased sales by 20%, Led team of 8 engineers..."></textarea>
             <div class="hint">Quantified achievements get more attention — include numbers where possible.</div>
         </div>
     `;
-    document.getElementById('workContainer').appendChild(div);
+
+    // Values are set as properties (never as HTML) so imported text cannot inject markup
+    const q = s => div.querySelector(s);
+    q('[name=co]').value = data.company || '';
+    q('[name=jt]').value = data.jobTitle || '';
+    q('[name=sd]').value = data.startDate || '';
+    q('[name=desc]').value = data.description || '';
+    q('[name=ach]').value = data.achievements || '';
+    const isCurrent = data.endDate === 'Present';
+    q('.current-job').checked = isCurrent;
+    q('[name=ed]').value = (!isCurrent && data.endDate) ? data.endDate : '';
+
+    const cbId = 'cur-' + Math.random().toString(36).slice(2, 9);
+    q('.current-job').id = cbId;
+    q('.check-row label').setAttribute('for', cbId);
+
+    applyCurrentState(div);
+    container.appendChild(div);
+    renumberJobs();
 }
 
-function removeJob(n) {
-    const el = document.getElementById(`job${n}`);
-    if (el) el.remove();
-    if (document.querySelectorAll('.work-item').length === 0) addJob();
+function applyCurrentState(item) {
+    const current = item.querySelector('.current-job').checked;
+    const ed = item.querySelector('[name=ed]');
+    ed.disabled = current;
+    if (current) { ed.value = ''; setFieldError(ed, ''); }
+}
+
+function renumberJobs() {
+    document.querySelectorAll('#workContainer .work-item').forEach((item, i) => {
+        item.querySelector('.work-item-num').textContent = 'Role #' + (i + 1);
+    });
+}
+
+function removeJob(item) {
+    if (item) item.remove();
+    if (document.querySelectorAll('#workContainer .work-item').length === 0) addJob();
+    else renumberJobs();
 }
 
 // ── DATA COLLECTION ────────────────────────────────────────────────────
 function collectData() {
+    const val = id => document.getElementById(id).value.trim();
+
     const jobs = [];
-    document.querySelectorAll('.work-item').forEach(item => {
+    document.querySelectorAll('#workContainer .work-item').forEach(item => {
+        const q = s => item.querySelector(s);
         jobs.push({
-            company: item.querySelector('[name=co]').value,
-            jobTitle: item.querySelector('[name=jt]').value,
-            startDate: item.querySelector('[name=sd]').value,
-            endDate: item.querySelector('[name=ed]').value || 'Present',
-            description: item.querySelector('[name=desc]').value,
-            achievements: item.querySelector('[name=ach]').value,
+            company: q('[name=co]').value.trim(),
+            jobTitle: q('[name=jt]').value.trim(),
+            startDate: q('[name=sd]').value,
+            endDate: q('.current-job').checked ? 'Present' : q('[name=ed]').value,
+            description: q('[name=desc]').value.trim(),
+            achievements: q('[name=ach]').value.trim(),
         });
     });
 
-    const includeEdu = document.getElementById('includeEdu').checked;
-    const education = includeEdu ? {
-        schoolName: document.getElementById('school').value,
-        degree: document.getElementById('degree').value,
-        fieldOfStudy: document.getElementById('field').value,
-        gradYear: document.getElementById('gradYear').value,
+    const education = document.getElementById('includeEdu').checked ? {
+        schoolName: val('school'),
+        degree: val('degree'),
+        fieldOfStudy: val('field'),
+        gradYear: val('gradYear'),
     } : null;
 
     return {
         experienceLevel: selectedLevel,
-        industries: selectedIndustries,
+        industries: selectedIndustries.slice(),
         personalInfo: {
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            location: document.getElementById('location').value,
-            linkedin: document.getElementById('linkedin').value,
-            summary: document.getElementById('summary').value,
+            fullName: val('fullName'),
+            email: val('email'),
+            phone: val('phone'),
+            location: val('location'),
+            linkedin: val('linkedin'),
+            summary: val('summary'),
         },
         workExperience: jobs,
         education,
-        skills,
-        certifications: document.getElementById('certs').value,
+        skills: skills.slice(),
+        certifications: val('certs'),
         targetJob: {
-            title: document.getElementById('targetTitle').value,
-            company: document.getElementById('targetCompany').value,
-            description: document.getElementById('jobDesc').value,
+            title: val('targetTitle'),
+            company: val('targetCompany'),
+            description: val('jobDesc'),
         },
     };
 }
@@ -1567,14 +1371,7 @@ function downloadConversionTemplate() {
         requiredOutputFormat: {
             experienceLevel: 'mid',
             industries: ['tech'],
-            personalInfo: {
-                fullName: '',
-                email: '',
-                phone: '',
-                location: 'City, State',
-                linkedin: '',
-                summary: '',
-            },
+            personalInfo: { fullName: '', email: '', phone: '', location: 'City, State', linkedin: '', summary: '' },
             workExperience: [{
                 company: '',
                 jobTitle: '',
@@ -1583,12 +1380,7 @@ function downloadConversionTemplate() {
                 description: '',
                 achievements: '',
             }],
-            education: {
-                schoolName: '',
-                degree: '',
-                fieldOfStudy: '',
-                gradYear: '',
-            },
+            education: { schoolName: '', degree: '', fieldOfStudy: '', gradYear: '' },
             skills: [],
             certifications: '',
         },
@@ -1600,9 +1392,8 @@ function downloadConversionTemplate() {
 
 // ── EXPORT ─────────────────────────────────────────────────────────────
 function exportConfig() {
-    if (!validate(6)) {
-        toast('Please fill in the Target Job section before exporting.', 'error');
-        go(6);
+    if (!validateAll()) {
+        toast('Please fix the highlighted fields before exporting.', 'error');
         return;
     }
 
@@ -1666,15 +1457,7 @@ function downloadJSON(obj, filename) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function toast(msg, type = 'info') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = type;
-    el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, 4000);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 </script>
 </body>
